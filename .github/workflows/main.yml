@@ -24,7 +24,7 @@ jobs:
       - name: install dependencies 
         working-directory: ./back
         run: npm ci
-      - name: run unit tests
+      - name: lint
         working-directory: ./back
         run: npm run lint
       - name: run unit tests
