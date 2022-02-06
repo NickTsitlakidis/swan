@@ -26,4 +26,7 @@ jobs:
         run: npm ci
       - name: run unit tests
         working-directory: ./back
+        run: npm run lint
+      - name: run unit tests
+        working-directory: ./back
         run: npm test
