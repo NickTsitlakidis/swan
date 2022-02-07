@@ -1,6 +1,6 @@
-import * as moment from 'moment';
-import { Logger } from '@nestjs/common';
-import { isNil } from 'lodash';
+import * as moment from "moment";
+import { Logger } from "@nestjs/common";
+import { isNil } from "lodash";
 
 export function LogAsyncMethod(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     if (isNil(descriptor)) {

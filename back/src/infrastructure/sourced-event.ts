@@ -1,10 +1,10 @@
-import { Column, Entity } from 'typeorm';
-import { ClassConstructor, classToPlain, plainToClass } from 'class-transformer';
-import { EventBase } from './event-base';
-import { ObjectID as MongoObjectId } from 'mongodb';
-import * as moment from 'moment';
-import { getEventNameForObject, hasEventName } from './serialized-event';
-import { MongoDocument } from './mongo-document';
+import { Column, Entity } from "typeorm";
+import { ClassConstructor, classToPlain, plainToClass } from "class-transformer";
+import { EventBase } from "./event-base";
+import { ObjectID as MongoObjectId } from "mongodb";
+import * as moment from "moment";
+import { getEventNameForObject, hasEventName } from "./serialized-event";
+import { MongoDocument } from "./mongo-document";
 
 /**
  * The main document that's saved as a sourced event in Mongo. It includes basic metadata like creation date, version
@@ -16,7 +16,7 @@ import { MongoDocument } from './mongo-document';
  *
  * New fields in this class need to be reflected in event store transaction mappings.
  */
-@Entity({ name: 'events' })
+@Entity({ name: "events" })
 export class SourcedEvent extends MongoDocument {
     @Column()
     public createdAt: Date;

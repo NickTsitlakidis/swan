@@ -96,3 +96,4 @@ dist
 
 # TernJS port file
 .tern-port
+/back/globalConfig.json

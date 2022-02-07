@@ -1,5 +1,5 @@
-import { ObjectID, ObjectIdColumn } from 'typeorm';
-import { ObjectID as MongoObjectId } from 'mongodb';
+import { ObjectID, ObjectIdColumn } from "typeorm";
+import { ObjectID as MongoObjectId } from "mongodb";
 
 /**
  * A base class for TypeORM document classes. Although it's not required for a document class to work, it contains

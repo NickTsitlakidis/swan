@@ -1,8 +1,8 @@
-import { sortBy, last, isNil } from 'lodash';
-import { EventBase } from './event-base';
-import { InternalServerErrorException, Logger } from '@nestjs/common';
-import { SourcedEvent } from './sourced-event';
-import { getEventClassForName } from './serialized-event';
+import { sortBy, last, isNil } from "lodash";
+import { EventBase } from "./event-base";
+import { InternalServerErrorException, Logger } from "@nestjs/common";
+import { SourcedEvent } from "./sourced-event";
+import { getEventClassForName } from "./serialized-event";
 
 const REGISTERED: Array<{
     eventClass: any;
@@ -66,8 +66,8 @@ export abstract class EventSourcedEntity {
      * @param events The events to be published
      */
     publish(events: Array<EventBase>): Promise<Array<SourcedEvent>> {
-        this.logger.error('There is no event publisher assigned');
-        return Promise.reject('There is no event publisher assigned');
+        this.logger.error("There is no event publisher assigned");
+        return Promise.reject("There is no event publisher assigned");
     }
 
     /**

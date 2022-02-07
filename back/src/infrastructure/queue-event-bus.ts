@@ -1,9 +1,9 @@
-import { EventBus, IEventHandler } from '@nestjs/cqrs';
-import { IEvent } from '@nestjs/cqrs/dist/interfaces';
-import { find, isNil } from 'lodash';
-import { getLogger, LogAsyncMethod } from './logging';
+import { EventBus, IEventHandler } from "@nestjs/cqrs";
+import { IEvent } from "@nestjs/cqrs/dist/interfaces";
+import { find, isNil } from "lodash";
+import { getLogger, LogAsyncMethod } from "./logging";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const promiseAllSequential = require('promise-all-sequential');
+const promiseAllSequential = require("promise-all-sequential");
 
 /**
  * A nestjs event bus that publishes all events sequentially.

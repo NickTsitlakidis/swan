@@ -1,5 +1,5 @@
-import { find } from 'lodash';
-import { InternalServerErrorException } from '@nestjs/common';
+import { find } from "lodash";
+import { InternalServerErrorException } from "@nestjs/common";
 
 const REGISTERED_EVENTS: Array<{ eventName: string; eventClass: any }> = [];
 

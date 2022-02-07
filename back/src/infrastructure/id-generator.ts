@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { ObjectID as MongoObjectId } from 'mongodb';
+import { Injectable } from "@nestjs/common";
+import { v4 as uuidv4 } from "uuid";
+import { ObjectID as MongoObjectId } from "mongodb";
 
 /**
  * A service that can be used to create ids based on the id usage.
