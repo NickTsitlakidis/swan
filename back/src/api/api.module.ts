@@ -1,9 +1,11 @@
 import { Module } from "@nestjs/common";
-import { TestController } from "./controllers/test-controller";
-import { SecurityModule } from "../security/security.module";
 import { JwtModule, JwtModuleOptions } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { UserGuard } from "./security/user-guard";
+import { ClientRepository } from "./security/client-repository";
+import { ClientTokenIssuer } from "./security/client-token-issuer";
+import { ClientController } from "./controllers/client-controller";
+import { Client } from "./security/client";
 
 const jwtFactory = async (configService: ConfigService): Promise<JwtModuleOptions> => {
     const privateKeyBuffer = new Buffer(configService.get("ES256_PRIVATE_KEY"), "base64");
@@ -18,16 +20,17 @@ const jwtFactory = async (configService: ConfigService): Promise<JwtModuleOption
     };
 };
 
+export const API_DOCUMENTS = [Client];
+
 @Module({
-    controllers: [TestController],
+    controllers: [ClientController],
     imports: [
         JwtModule.registerAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: jwtFactory
-        }),
-        SecurityModule
+        })
     ],
-    providers: [UserGuard]
+    providers: [UserGuard, ClientRepository, ClientTokenIssuer]
 })
 export class ApiModule {}

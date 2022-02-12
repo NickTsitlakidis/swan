@@ -21,11 +21,11 @@ export abstract class EventBase implements IEvent {
         this._aggregateId = aggregateId;
     }
 
-    public get occurredAt(): Moment {
+    get occurredAt(): Moment {
         return this._occurredAt;
     }
 
-    public get aggregateId(): string {
+    get aggregateId(): string {
         return this._aggregateId;
     }
 }

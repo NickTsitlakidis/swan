@@ -3,7 +3,7 @@ import {
     INFRASTRUCTURE_DOCUMENTS,
     InfrastructureModule
 } from "./infrastructure/infrastructure.module";
-import { ApiModule } from "./api/api.module";
+import { API_DOCUMENTS, ApiModule } from "./api/api.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { union } from "lodash";
@@ -11,14 +11,13 @@ import { WinstonModule } from "nest-winston";
 import * as winston from "winston";
 import { utilities } from "nest-winston";
 import { LoggerOptions } from "winston";
-import { SecurityModule } from "./security/security.module";
 
 const typeOrmFactory = async (configService: ConfigService): Promise<TypeOrmModuleOptions> => {
     return {
         logging: ["log", "info", "query", "error"],
         type: "mongodb",
         url: configService.get<string>("MONGO_URI"),
-        entities: union(INFRASTRUCTURE_DOCUMENTS),
+        entities: union(INFRASTRUCTURE_DOCUMENTS, API_DOCUMENTS),
         useUnifiedTopology: true
     };
 };

@@ -3,9 +3,10 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { Connection } from "typeorm";
 import { Collection, MongoClient } from "mongodb";
 import { INFRASTRUCTURE_DOCUMENTS } from "../infrastructure/infrastructure.module";
+import { API_DOCUMENTS } from "../api/api.module";
 
 export const MONGO_MODULE = TypeOrmModule.forRoot({
-    entities: union(INFRASTRUCTURE_DOCUMENTS),
+    entities: union(INFRASTRUCTURE_DOCUMENTS, API_DOCUMENTS),
     type: "mongodb",
     url: process.env.MONGO_URL,
     synchronize: true,
