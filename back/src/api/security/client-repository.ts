@@ -10,7 +10,7 @@ export class ClientRepository {
         this._mongoRepo = connection.getMongoRepository(Client);
     }
 
-    findByApplicationId(id: string): Promise<Client> {
+    findByApplicationId(id: string): Promise<Client | undefined> {
         return this._mongoRepo.findOne({ applicationId: id });
     }
 }

@@ -41,7 +41,7 @@ export class ClientGuard implements CanActivate {
 
         const nowEpoch = Math.floor(new Date().getTime() / 1000);
 
-        if (nowEpoch < verified.exp && verified.tokenType === "client") {
+        if (nowEpoch < verified.exp) {
             const found = await this._clientRepository.findByApplicationId(verified.sub);
             if (isNil(found)) {
                 throw new UnauthorizedException("Invalid or missing credentials");

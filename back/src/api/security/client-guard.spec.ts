@@ -150,7 +150,7 @@ test("canActivate - throws for not matching client", async () => {
         expiresIn: "120m"
     };
 
-    const token = jwtService.sign({ tokenType: "client" }, accessSignOptions);
+    const token = jwtService.sign({}, accessSignOptions);
 
     const context: any = {
         switchToHttp: () => undefined
@@ -182,7 +182,7 @@ test("canActivate - returns true for all passing rules", async () => {
         expiresIn: "120m"
     };
 
-    const token = jwtService.sign({ tokenType: "client" }, accessSignOptions);
+    const token = jwtService.sign({}, accessSignOptions);
 
     const context: any = {
         switchToHttp: () => undefined

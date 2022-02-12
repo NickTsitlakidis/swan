@@ -38,7 +38,7 @@ export class ClientTokenIssuer {
             expiresIn: "120m"
         };
 
-        const jwtAccessToken = this._signService.sign({ tokenType: "client" }, accessSignOptions);
+        const jwtAccessToken = this._signService.sign({}, accessSignOptions);
 
         return new TokenDto(jwtAccessToken, moment.utc().add(120, "minutes"));
     }
