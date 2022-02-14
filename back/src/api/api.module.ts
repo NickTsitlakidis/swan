@@ -10,6 +10,9 @@ import { UserController } from "./controllers/user-controller";
 import { RefreshToken } from "./security/refresh-token";
 import { UserTokenIssuer } from "./security/user-token-issuer";
 import { RefreshTokenRepository } from "./security/refresh-token-repository";
+import { InfrastructureModule } from "../infrastructure/infrastructure.module";
+import { CqrsModule } from "@nestjs/cqrs";
+import { ViewsModule } from "../views/views.module";
 
 const jwtFactory = async (configService: ConfigService): Promise<JwtModuleOptions> => {
     const privateKey = new Buffer(configService.get("ES256_PRIVATE_KEY"), "base64").toString(
@@ -33,7 +36,10 @@ export const API_DOCUMENTS = [Client, RefreshToken];
             imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: jwtFactory
-        })
+        }),
+        CqrsModule,
+        ViewsModule,
+        InfrastructureModule
     ],
     providers: [
         UserGuard,

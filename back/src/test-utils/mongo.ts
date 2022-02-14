@@ -4,9 +4,10 @@ import { Connection } from "typeorm";
 import { Collection, MongoClient } from "mongodb";
 import { INFRASTRUCTURE_DOCUMENTS } from "../infrastructure/infrastructure.module";
 import { API_DOCUMENTS } from "../api/api.module";
+import { VIEW_DOCUMENTS } from "../views/views.module";
 
 export const MONGO_MODULE = TypeOrmModule.forRoot({
-    entities: union(INFRASTRUCTURE_DOCUMENTS, API_DOCUMENTS),
+    entities: union(INFRASTRUCTURE_DOCUMENTS, API_DOCUMENTS, VIEW_DOCUMENTS),
     type: "mongodb",
     url: process.env.MONGO_URL,
     synchronize: true,

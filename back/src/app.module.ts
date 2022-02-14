@@ -11,13 +11,15 @@ import { WinstonModule } from "nest-winston";
 import * as winston from "winston";
 import { utilities } from "nest-winston";
 import { LoggerOptions } from "winston";
+import { VIEW_DOCUMENTS } from "./views/views.module";
+import { CommandsModule } from "./commands/commands.module";
 
 const typeOrmFactory = async (configService: ConfigService): Promise<TypeOrmModuleOptions> => {
     return {
         logging: ["log", "info", "query", "error"],
         type: "mongodb",
         url: configService.get<string>("MONGO_URI"),
-        entities: union(INFRASTRUCTURE_DOCUMENTS, API_DOCUMENTS),
+        entities: union(INFRASTRUCTURE_DOCUMENTS, API_DOCUMENTS, VIEW_DOCUMENTS),
         useUnifiedTopology: true
     };
 };
@@ -50,6 +52,7 @@ const winstonFactory = async (configService: ConfigService): Promise<LoggerOptio
             useFactory: typeOrmFactory
         }),
         InfrastructureModule,
+        CommandsModule,
         ApiModule
     ]
 })
