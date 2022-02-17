@@ -1,7 +1,7 @@
 import { ClientRepository } from "./client-repository";
 import { Connection } from "typeorm";
 import { Collection } from "mongodb";
-import { cleanUpMongo, getCollection, MONGO_MODULE } from "../../test-utils/mongo";
+import { cleanUpMongo, getCollection, MONGO_MODULE } from "../test-utils/mongo";
 import { Test } from "@nestjs/testing";
 
 let repository: ClientRepository;

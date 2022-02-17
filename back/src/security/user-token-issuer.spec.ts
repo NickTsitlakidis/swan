@@ -1,11 +1,11 @@
-import { IdGenerator } from "../../infrastructure/id-generator";
+import { IdGenerator } from "../infrastructure/id-generator";
 import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 import { RefreshTokenRepository } from "./refresh-token-repository";
 import { UserTokenIssuer } from "./user-token-issuer";
 import { Test } from "@nestjs/testing";
 import { UnauthorizedException } from "@nestjs/common";
 import { RefreshToken } from "./refresh-token";
-import { getMockCalledParameters } from "../../test-utils/mocking";
+import { getMockCalledParameters } from "../test-utils/mocking";
 import * as moment from "moment";
 
 const idGeneratorMock: Partial<IdGenerator> = {
@@ -55,9 +55,7 @@ test("issueFromId - creates and stores token", async () => {
     const generateEntityIdSpy = jest
         .spyOn(idGeneratorMock, "generateEntityId")
         .mockReturnValue("507f1f77bcf86cd799439011");
-    const generateDisplayIdSpy = jest
-        .spyOn(idGeneratorMock, "generateUUID")
-        .mockReturnValue("uuid");
+    const generateDisplayIdSpy = jest.spyOn(idGeneratorMock, "generateUUID").mockReturnValue("uuid");
 
     const saved = new RefreshToken();
     saved.tokenValue = "uuid";
@@ -100,9 +98,7 @@ test("issueFromRefreshToken - throws for non existing token", async () => {
     };
     const verifySpy = jest.spyOn(jwtServiceMock, "verify").mockReturnValue(verified);
 
-    await expect(issuer.issueFromRefreshToken("encoded-jwt")).rejects.toThrow(
-        UnauthorizedException
-    );
+    await expect(issuer.issueFromRefreshToken("encoded-jwt")).rejects.toThrow(UnauthorizedException);
 
     expect(verifySpy).toHaveBeenCalledTimes(1);
     expect(verifySpy).toHaveBeenCalledWith("encoded-jwt");
@@ -115,9 +111,7 @@ test("issueFromRefreshToken - throws for invalid jwt", async () => {
         throw "error";
     });
 
-    await expect(issuer.issueFromRefreshToken("encoded-jwt")).rejects.toThrow(
-        UnauthorizedException
-    );
+    await expect(issuer.issueFromRefreshToken("encoded-jwt")).rejects.toThrow(UnauthorizedException);
 
     expect(verifySpy).toHaveBeenCalledTimes(1);
     expect(verifySpy).toHaveBeenCalledWith("encoded-jwt");
@@ -134,9 +128,7 @@ test("issueFromRefreshToken - throws for revoked refresh token", async () => {
     };
     const verifySpy = jest.spyOn(jwtServiceMock, "verify").mockReturnValue(verified);
 
-    await expect(issuer.issueFromRefreshToken("encoded-jwt")).rejects.toThrow(
-        UnauthorizedException
-    );
+    await expect(issuer.issueFromRefreshToken("encoded-jwt")).rejects.toThrow(UnauthorizedException);
 
     expect(verifySpy).toHaveBeenCalledTimes(1);
     expect(verifySpy).toHaveBeenCalledWith("encoded-jwt");

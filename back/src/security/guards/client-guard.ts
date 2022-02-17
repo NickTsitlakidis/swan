@@ -1,13 +1,7 @@
-import {
-    CanActivate,
-    ExecutionContext,
-    Injectable,
-    Logger,
-    UnauthorizedException
-} from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { isNil, startsWith } from "lodash";
-import { ClientRepository } from "./client-repository";
+import { ClientRepository } from "../client-repository";
 import { getLogger } from "../../infrastructure/logging";
 
 @Injectable()

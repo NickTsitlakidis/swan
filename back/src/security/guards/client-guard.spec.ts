@@ -1,9 +1,9 @@
 import { ClientGuard } from "./client-guard";
 import { JwtModule, JwtService, JwtSignOptions } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { ClientRepository } from "./client-repository";
+import { ClientRepository } from "../client-repository";
 import { UnauthorizedException } from "@nestjs/common";
-import { Client } from "./client";
+import { Client } from "../client";
 
 let guard: ClientGuard;
 let jwtService: JwtService;
@@ -80,9 +80,7 @@ test("canActivate - throws for non-bearer header", async () => {
         getRequest: () => undefined
     };
     const contextSpy = jest.spyOn(context, "switchToHttp").mockReturnValue(httpHost);
-    const getRequestSpy = jest
-        .spyOn(httpHost, "getRequest")
-        .mockReturnValue({ headers: { authorization: "other" } });
+    const getRequestSpy = jest.spyOn(httpHost, "getRequest").mockReturnValue({ headers: { authorization: "other" } });
 
     await expect(guard.canActivate(context)).rejects.toThrow(UnauthorizedException);
 
@@ -163,9 +161,7 @@ test("canActivate - throws for not matching client", async () => {
         .spyOn(httpHost, "getRequest")
         .mockReturnValue({ headers: { authorization: `Bearer ${token}` } });
 
-    const repositorySpy = jest
-        .spyOn(clientRepo, "findByApplicationId")
-        .mockResolvedValue(undefined);
+    const repositorySpy = jest.spyOn(clientRepo, "findByApplicationId").mockResolvedValue(undefined);
 
     await expect(guard.canActivate(context)).rejects.toThrow(UnauthorizedException);
 

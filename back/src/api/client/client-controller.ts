@@ -1,6 +1,6 @@
 import { Controller, Headers, Post } from "@nestjs/common";
-import { TokenDto } from "../security/token-dto";
-import { ClientTokenIssuer } from "../security/client-token-issuer";
+import { TokenDto } from "../../security/token-dto";
+import { ClientTokenIssuer } from "../../security/client-token-issuer";
 
 @Controller("/client")
 export class ClientController {

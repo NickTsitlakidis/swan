@@ -2,10 +2,10 @@ import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 import { TokenDto } from "./token-dto";
 import * as moment from "moment";
 import { RefreshTokenRepository } from "./refresh-token-repository";
-import { IdGenerator } from "../../infrastructure/id-generator";
+import { IdGenerator } from "../infrastructure/id-generator";
 import { RefreshToken } from "./refresh-token";
 import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
-import { getLogger } from "../../infrastructure/logging";
+import { getLogger } from "../infrastructure/logging";
 import { isNil } from "lodash";
 
 @Injectable()

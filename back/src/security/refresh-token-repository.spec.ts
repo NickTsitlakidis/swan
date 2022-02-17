@@ -1,5 +1,5 @@
 import { Test } from "@nestjs/testing";
-import { cleanUpMongo, getCollection, MONGO_MODULE } from "../../test-utils/mongo";
+import { cleanUpMongo, getCollection, MONGO_MODULE } from "../test-utils/mongo";
 import { Connection } from "typeorm";
 import { Collection, ObjectId } from "mongodb";
 import { RefreshTokenRepository } from "./refresh-token-repository";
