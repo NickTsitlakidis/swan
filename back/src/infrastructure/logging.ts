@@ -18,9 +18,7 @@ export function LogAsyncMethod(target: any, propertyKey: string, descriptor: Pro
             logger.debug(`Method {${methodName}} duration : ${duration} ms`);
             return result;
         } catch (err) {
-            logger.error(
-                `Method {${methodName}} / error message : ${err.message} / stack : ${err.stack}`
-            );
+            logger.error(`Method {${methodName}} / error message : ${err.message} / stack : ${err.stack}`);
             throw err;
         }
     };

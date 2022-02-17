@@ -33,9 +33,7 @@ export class QueueEventBus<EventBase extends IEvent = IEvent> extends EventBus {
         const promises = [];
         for (let i = 0; i < withHandlers.length; i++) {
             const event = withHandlers[i];
-            const handlerMatches = this._handlerPairs.filter(
-                (pair) => pair.eventName === this.getEventName(event)
-            );
+            const handlerMatches = this._handlerPairs.filter((pair) => pair.eventName === this.getEventName(event));
             for (let j = 0; j < handlerMatches.length; j++) {
                 const eventPromise = async () =>
                     new Promise((resolve, reject) => {

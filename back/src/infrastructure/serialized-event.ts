@@ -12,9 +12,7 @@ const REGISTERED_EVENTS: Array<{ eventName: string; eventClass: any }> = [];
 export function SerializedEvent(eventName: string): ClassDecorator {
     return (target) => {
         if (REGISTERED_EVENTS.some((e) => e.eventName === eventName)) {
-            throw new InternalServerErrorException(
-                `${eventName} is already registered as stored event`
-            );
+            throw new InternalServerErrorException(`${eventName} is already registered as stored event`);
         }
         REGISTERED_EVENTS.push({
             eventName: eventName,

@@ -12,9 +12,7 @@ const REGISTERED: Array<{
 function getEventProcessorKey(eventClass): string {
     const found = REGISTERED.find((pair) => pair.eventClass === eventClass);
     if (isNil(found)) {
-        throw new InternalServerErrorException(
-            `Event class ${eventClass.name} is missing processor.`
-        );
+        throw new InternalServerErrorException(`Event class ${eventClass.name} is missing processor.`);
     }
 
     return found.processorKey;

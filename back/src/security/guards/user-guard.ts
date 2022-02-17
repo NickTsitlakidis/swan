@@ -1,10 +1,4 @@
-import {
-    CanActivate,
-    ExecutionContext,
-    Injectable,
-    Logger,
-    UnauthorizedException
-} from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { getLogger } from "../../infrastructure/logging";
 import { UserViewRepository } from "../../views/user/user-view-repository";
@@ -14,10 +8,7 @@ import { isNil, startsWith } from "lodash";
 export class UserGuard implements CanActivate {
     private _logger: Logger;
 
-    constructor(
-        private _signingService: JwtService,
-        private _userViewRepository: UserViewRepository
-    ) {
+    constructor(private _signingService: JwtService, private _userViewRepository: UserViewRepository) {
         this._logger = getLogger(UserGuard);
     }
 

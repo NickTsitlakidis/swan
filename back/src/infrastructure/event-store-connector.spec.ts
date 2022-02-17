@@ -69,9 +69,7 @@ test("connect - sets a publish that returns for empty events", async () => {
 });
 
 test("connect - sets a publish that stops when save throws", (endTest) => {
-    const saveSpy = jest
-        .spyOn(eventStoreMock, "save")
-        .mockRejectedValue(new InternalServerErrorException());
+    const saveSpy = jest.spyOn(eventStoreMock, "save").mockRejectedValue(new InternalServerErrorException());
     const publishAllSpy = jest.spyOn(eventBusMock, "publishAll").mockResolvedValue({});
     const u = connector.connect(new TestEntity(new ObjectId().toHexString()));
 

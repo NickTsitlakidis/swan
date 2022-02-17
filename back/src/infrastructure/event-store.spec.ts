@@ -57,9 +57,9 @@ test("save - throws for concurrency issue", async () => {
         version: 6
     });
 
-    await expect(
-        eventStore.save([new SourcedEvent(ag.id, new TestEvent1(ag.id))], ag)
-    ).rejects.toThrow(InternalServerErrorException);
+    await expect(eventStore.save([new SourcedEvent(ag.id, new TestEvent1(ag.id))], ag)).rejects.toThrow(
+        InternalServerErrorException
+    );
 
     const eventsCount = await eventsCollection.countDocuments();
     expect(eventsCount).toBe(0);
@@ -92,10 +92,7 @@ test("save - increases version and stores events and aggregate", async () => {
         version: 5
     });
 
-    const events = [
-        new SourcedEvent(ag.id, new TestEvent2(ag.id)),
-        new SourcedEvent(ag.id, new TestEvent1(ag.id))
-    ];
+    const events = [new SourcedEvent(ag.id, new TestEvent2(ag.id)), new SourcedEvent(ag.id, new TestEvent1(ag.id))];
 
     const saved = await eventStore.save(events, ag);
 

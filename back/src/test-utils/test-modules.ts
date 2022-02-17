@@ -7,10 +7,7 @@ export const TEST_MODULES = [
     WinstonModule.forRoot({
         transports: [
             new winston.transports.Console({
-                format: winston.format.combine(
-                    winston.format.timestamp(),
-                    utilities.format.nestLike()
-                )
+                format: winston.format.combine(winston.format.timestamp(), utilities.format.nestLike())
             })
         ],
         level: "debug"

@@ -8,10 +8,7 @@ import * as moment from "moment";
 
 @Injectable()
 export class ClientTokenIssuer {
-    constructor(
-        private readonly _repository: ClientRepository,
-        private readonly _signService: JwtService
-    ) {}
+    constructor(private readonly _repository: ClientRepository, private readonly _signService: JwtService) {}
 
     async issueWithCredentials(encodedCredentials: string): Promise<TokenDto> {
         const decoded = new Buffer(encodedCredentials, "base64").toString("ascii");
