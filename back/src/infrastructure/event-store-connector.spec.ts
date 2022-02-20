@@ -5,21 +5,15 @@ import { EventStoreConnector } from "./event-store-connector";
 import { ObjectId } from "mongodb";
 import { InternalServerErrorException } from "@nestjs/common";
 import { Aggregate } from "./aggregate";
-import { classToPlain } from "class-transformer";
+import { instanceToPlain } from "class-transformer";
 import { EventSourcedEntity } from "./event-sourced-entity";
-import { EventBase } from "./event-base";
-import { SerializedEvent } from "./serialized-event";
-import * as moment from "moment";
+import { EventPayload, SerializedEvent } from "./serialized-event";
 import { getLogger } from "./logging";
 import { getMockCalledParameters } from "../test-utils/mocking";
 import { SourcedEvent } from "./sourced-event";
 
 @SerializedEvent("test-event")
-class TestEvent extends EventBase {
-    constructor(id: string) {
-        super(moment().utc(), id);
-    }
-}
+class TestEvent extends EventPayload {}
 
 class TestEntity extends EventSourcedEntity {
     constructor(id: string) {
@@ -73,7 +67,7 @@ test("connect - sets a publish that stops when save throws", (endTest) => {
     const publishAllSpy = jest.spyOn(eventBusMock, "publishAll").mockResolvedValue({});
     const u = connector.connect(new TestEntity(new ObjectId().toHexString()));
 
-    const event = new TestEvent(u.id);
+    const event = new TestEvent();
     u.publish([event]).catch(() => {
         expect(saveSpy).toHaveBeenCalledTimes(1);
         const [events, aggregate] = getMockCalledParameters(saveSpy, 2);
@@ -84,7 +78,7 @@ test("connect - sets a publish that stops when save throws", (endTest) => {
         expect(events.length).toBe(1);
         expect((events[0] as SourcedEvent).aggregateId).toBe(u.id);
         expect((events[0] as SourcedEvent).eventName).toBe("test-event");
-        expect((events[0] as SourcedEvent).payload).toEqual(classToPlain(event));
+        expect((events[0] as SourcedEvent).payload).toEqual(instanceToPlain(event));
         expect((events[0] as SourcedEvent).id).toBeDefined();
 
         expect(publishAllSpy).toHaveBeenCalledTimes(0);
@@ -100,7 +94,7 @@ test("connect - sets a publish that saves and publishes events", (endTest) => {
 
     const u = connector.connect(new TestEntity(new ObjectId().toHexString()));
 
-    const event = new TestEvent(u.id);
+    const event = new TestEvent();
 
     u.publish([event]).then((publishedEvents) => {
         expect(publishedEvents).toEqual(saved);
@@ -114,7 +108,7 @@ test("connect - sets a publish that saves and publishes events", (endTest) => {
         expect(events.length).toBe(1);
         expect((events[0] as SourcedEvent).aggregateId).toBe(u.id);
         expect((events[0] as SourcedEvent).eventName).toBe("test-event");
-        expect((events[0] as SourcedEvent).payload).toEqual(classToPlain(event));
+        expect((events[0] as SourcedEvent).payload).toEqual(instanceToPlain(event));
         expect((events[0] as SourcedEvent).id).toBeDefined();
 
         expect(publishAllSpy).toHaveBeenCalledTimes(1);

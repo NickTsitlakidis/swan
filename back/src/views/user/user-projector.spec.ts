@@ -30,7 +30,8 @@ test("handle UserCreatedEvent - saves new view with wallet", async () => {
     const saveSpy = jest.spyOn(repositoryMock, "save").mockResolvedValue(saved);
 
     const id = new ObjectId().toHexString();
-    const event = new UserCreatedEvent("the-wallet", id);
+    const event = new UserCreatedEvent("the-wallet");
+    event.aggregateId = id;
     const handled = await projector.handle(event);
 
     expect(handled).toBe(saved);

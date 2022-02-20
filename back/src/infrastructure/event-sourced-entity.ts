@@ -1,8 +1,7 @@
 import { sortBy, last, isNil } from "lodash";
-import { EventBase } from "./event-base";
 import { InternalServerErrorException, Logger } from "@nestjs/common";
 import { SourcedEvent } from "./sourced-event";
-import { getEventClassForName } from "./serialized-event";
+import { EventPayload, getEventClassForName } from "./serialized-event";
 
 const REGISTERED: Array<{
     eventClass: any;
@@ -37,7 +36,7 @@ export function EventProcessor(eventClass: any): PropertyDecorator {
  * an entity from existing events during read.
  */
 export abstract class EventSourcedEntity {
-    private _appliedEvents: Array<EventBase>;
+    private _appliedEvents: Array<EventPayload>;
     private _version: number;
 
     protected constructor(private readonly _id: string, private readonly _logger: Logger) {
@@ -63,7 +62,7 @@ export abstract class EventSourcedEntity {
      * If a publisher is not connected, the method will return a rejected promise.
      * @param events The events to be published
      */
-    publish(events: Array<EventBase>): Promise<Array<SourcedEvent>> {
+    publish(events: Array<EventPayload>): Promise<Array<SourcedEvent>> {
         this.logger.error("There is no event publisher assigned");
         return Promise.reject("There is no event publisher assigned");
     }
@@ -90,14 +89,15 @@ export abstract class EventSourcedEntity {
      * method once all the events you want are appliec.
      * @param event The event to be applied
      */
-    apply(event: EventBase) {
+    apply(event: EventPayload) {
+        event.aggregateId = this.id;
         this._appliedEvents.push(event);
     }
 
     /**
      * Returns a clone array of all the currently applied events of the entity.
      */
-    get appliedEvents(): Array<EventBase> {
+    get appliedEvents(): Array<EventPayload> {
         return this._appliedEvents.slice(0);
     }
 
@@ -113,7 +113,7 @@ export abstract class EventSourcedEntity {
                 try {
                     const eventClass = getEventClassForName(ev.eventName);
                     const processor = getEventProcessorKey(eventClass);
-                    const mappedEvent = ev.getPayloadAs(eventClass) as EventBase;
+                    const mappedEvent = ev.getPayloadAs(eventClass);
                     this[processor](mappedEvent);
                 } catch (error) {
                     this.logger.error(`Unable to process domain event : ${ev.eventName}.`);

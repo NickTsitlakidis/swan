@@ -1,26 +1,16 @@
 import { EventProcessor, EventSourcedEntity } from "./event-sourced-entity";
-import { EventBase } from "./event-base";
 import { getLogger } from "./logging";
 import { SourcedEvent } from "./sourced-event";
-import * as moment from "moment";
-import { SerializedEvent } from "./serialized-event";
+import { EventPayload, SerializedEvent } from "./serialized-event";
 
 @SerializedEvent("test-event-1")
-class TestEvent1 extends EventBase {
-    constructor(aggregateId: string) {
-        super(moment.utc(), aggregateId);
-    }
-}
+class TestEvent1 extends EventPayload {}
 
 @SerializedEvent("test-event-2")
-class TestEvent2 extends EventBase {
-    constructor(aggregateId: string) {
-        super(moment.utc(), aggregateId);
-    }
-}
+class TestEvent2 extends EventPayload {}
 
 class SubEntity extends EventSourcedEntity {
-    public published: Array<EventBase> = [];
+    public published: Array<EventPayload> = [];
 
     constructor(id: string) {
         super(id, getLogger(SubEntity));
@@ -34,7 +24,7 @@ class SubEntity extends EventSourcedEntity {
         return super.sortEvents(events);
     }
 
-    publish(events: Array<EventBase>): Promise<Array<SourcedEvent>> {
+    publish(events: Array<EventPayload>): Promise<Array<SourcedEvent>> {
         this.published = events;
         return Promise.resolve([]);
     }
@@ -67,9 +57,9 @@ test("publish - throws for no override", (endTest) => {
 });
 
 test("processSourcedEvents - calls mapped processors after sorting", () => {
-    const ev1 = new SourcedEvent("id1", new TestEvent2("id1"));
+    const ev1 = new SourcedEvent("id1", new TestEvent2());
     ev1.aggregateVersion = 10;
-    const ev2 = new SourcedEvent("id1", new TestEvent1("id1"));
+    const ev2 = new SourcedEvent("id1", new TestEvent1());
     ev2.aggregateVersion = 2;
 
     const entity = new SubEntity("id1");
@@ -95,8 +85,8 @@ test("processSourcedEvents - calls mapped processors after sorting", () => {
 
 test("commit - publishes and clear applied events", async () => {
     const entity = new SubEntity("ainti");
-    const event1 = new TestEvent2("cor-id");
-    const event2 = new TestEvent2("cor-id");
+    const event1 = new TestEvent2();
+    const event2 = new TestEvent2();
     entity.apply(event1);
     entity.apply(event2);
 
@@ -115,7 +105,7 @@ test("commit - returns for no applied events", async () => {
 
 test("apply - adds event to array", () => {
     const entity = new SubEntity("ainti");
-    const event = new TestEvent2("cor-id");
+    const event = new TestEvent2();
     entity.apply(event);
 
     expect(entity.appliedEvents.length).toBe(1);
@@ -124,8 +114,8 @@ test("apply - adds event to array", () => {
 
 test("apply - adds multiple events to array", () => {
     const entity = new SubEntity("ainti");
-    const event1 = new TestEvent2("cor-id");
-    const event2 = new TestEvent2("cor-id");
+    const event1 = new TestEvent2();
+    const event2 = new TestEvent2();
     entity.apply(event1);
     entity.apply(event2);
 

@@ -1,7 +1,12 @@
 import { find } from "lodash";
 import { InternalServerErrorException } from "@nestjs/common";
+import { IEvent } from "@nestjs/cqrs/dist/interfaces";
 
 const REGISTERED_EVENTS: Array<{ eventName: string; eventClass: any }> = [];
+
+export class EventPayload implements IEvent {
+    aggregateId: string;
+}
 
 /**
  * A decorator which registers an event name and the decorated class as a pair. The name is included in the json object
@@ -27,15 +32,6 @@ export function SerializedEvent(eventName: string): ClassDecorator {
  */
 export function getEventNameForObject(target: unknown) {
     const found = find(REGISTERED_EVENTS, { eventClass: target.constructor });
-    return found.eventName;
-}
-
-/**
- * Returns the event name that matches the provided class. Or undefined.
- * @param target The class to be checked.
- */
-export function getEventNameForClass(target: unknown) {
-    const found = find(REGISTERED_EVENTS, { eventClass: target });
     return found.eventName;
 }
 

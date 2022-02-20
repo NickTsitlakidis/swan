@@ -12,7 +12,7 @@ export class User extends EventSourcedEntity {
 
         if (!isNil(walletAddress)) {
             this._walletAddress = walletAddress;
-            this.apply(new UserCreatedEvent(this._walletAddress, this.id));
+            this.apply(new UserCreatedEvent(this._walletAddress));
         }
 
         if (!isNil(events)) {

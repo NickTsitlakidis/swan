@@ -2,9 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { EventStore } from "./event-store";
 import { EventSourcedEntity } from "./event-sourced-entity";
 import { Aggregate } from "./aggregate";
-import { EventBase } from "./event-base";
 import { QueueEventBus } from "./queue-event-bus";
 import { SourcedEvent } from "./sourced-event";
+import { EventPayload } from "./serialized-event";
 
 @Injectable()
 export class EventStoreConnector {
@@ -17,7 +17,7 @@ export class EventStoreConnector {
      * @param entity The entity in which the new publishing function will be assigned.
      */
     public connect<T extends EventSourcedEntity>(entity: T): T {
-        entity.publish = (events: Array<EventBase>) => {
+        entity.publish = (events: Array<EventPayload>) => {
             if (events.length == 0) {
                 return Promise.resolve([]);
             }

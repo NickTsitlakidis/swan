@@ -6,9 +6,7 @@ import { Aggregate } from "./aggregate";
 import { InternalServerErrorException } from "@nestjs/common";
 import { cleanUpMongo, getCollection, MONGO_MODULE } from "../test-utils/mongo";
 import { SourcedEvent } from "./sourced-event";
-import { EventBase } from "./event-base";
-import { SerializedEvent } from "./serialized-event";
-import * as moment from "moment";
+import { EventPayload, SerializedEvent } from "./serialized-event";
 
 let eventStore: EventStore;
 let eventsCollection: Collection<any>;
@@ -16,18 +14,10 @@ let aggregatesCollection: Collection<any>;
 let connection: Connection;
 
 @SerializedEvent("test-event-1")
-class TestEvent1 extends EventBase {
-    constructor(id: string) {
-        super(moment.utc(), id);
-    }
-}
+class TestEvent1 extends EventPayload {}
 
 @SerializedEvent("test-event-2")
-class TestEvent2 extends EventBase {
-    constructor(id: string) {
-        super(moment.utc(), id);
-    }
-}
+class TestEvent2 extends EventPayload {}
 
 beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -57,7 +47,7 @@ test("save - throws for concurrency issue", async () => {
         version: 6
     });
 
-    await expect(eventStore.save([new SourcedEvent(ag.id, new TestEvent1(ag.id))], ag)).rejects.toThrow(
+    await expect(eventStore.save([new SourcedEvent(ag.id, new TestEvent1())], ag)).rejects.toThrow(
         InternalServerErrorException
     );
 
@@ -92,7 +82,7 @@ test("save - increases version and stores events and aggregate", async () => {
         version: 5
     });
 
-    const events = [new SourcedEvent(ag.id, new TestEvent2(ag.id)), new SourcedEvent(ag.id, new TestEvent1(ag.id))];
+    const events = [new SourcedEvent(ag.id, new TestEvent2()), new SourcedEvent(ag.id, new TestEvent1())];
 
     const saved = await eventStore.save(events, ag);
 

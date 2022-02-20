@@ -1,9 +1,8 @@
 import { Column, Entity } from "typeorm";
-import { ClassConstructor, classToPlain, plainToClass } from "class-transformer";
-import { EventBase } from "./event-base";
+import { ClassConstructor, instanceToPlain, plainToClass } from "class-transformer";
 import { ObjectID as MongoObjectId } from "mongodb";
 import * as moment from "moment";
-import { getEventNameForObject, hasEventName } from "./serialized-event";
+import { EventPayload, getEventNameForObject, hasEventName } from "./serialized-event";
 import { MongoDocument } from "./mongo-document";
 
 /**
@@ -33,11 +32,11 @@ export class SourcedEvent extends MongoDocument {
     @Column()
     public eventName: string;
 
-    constructor(aggregateId: string, serializable?: EventBase) {
+    constructor(aggregateId: string, serializable?: EventPayload) {
         super();
         this.aggregateId = aggregateId;
         if (serializable && hasEventName(serializable)) {
-            this.payload = classToPlain(serializable);
+            this.payload = instanceToPlain(serializable);
             this.eventName = getEventNameForObject(serializable);
         }
         this._id = new MongoObjectId();
