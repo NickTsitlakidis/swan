@@ -8,6 +8,9 @@ import { Logger, UnauthorizedException } from "@nestjs/common";
 import { isNil } from "lodash";
 import { getLogger } from "../../infrastructure/logging";
 import { UserTokenIssuer } from "../../security/user-token-issuer";
+import { sign_detached_verify } from "tweetnacl-ts";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const bs58 = require("bs58");
 
 @CommandHandler(CompleteAuthenticationCommand)
 export class CompleteAuthenticationExecutor implements ICommandHandler<CompleteAuthenticationCommand> {
@@ -28,12 +31,23 @@ export class CompleteAuthenticationExecutor implements ICommandHandler<CompleteA
             throw new UnauthorizedException("Missing or invalid authentication");
         }
 
-        const isValid = false;
+        const verifiedMatches = authentications.filter((auth) => {
+            const decodedSignature = bs58.decode(command.signature);
+            const encodedNonce = new TextEncoder().encode(auth.nonce);
+            const pubKey = bs58.decode(auth.address);
+            try {
+                return sign_detached_verify(encodedNonce, decodedSignature, pubKey);
+            } catch {
+                return false;
+            }
+        });
 
-        if (!isValid) {
+        if (verifiedMatches.length == 0) {
+            this._logger.error(`Detected unverified signature ${command.signature} for ${command.address}`);
             throw new UnauthorizedException("Missing or invalid authentication");
         }
 
+        await this._authenticationRepository.deleteById(verifiedMatches[0].id);
         const existingUser = await this._userViewRepository.findByWalletAddress(command.address);
 
         let userId: string;

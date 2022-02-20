@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Connection, MongoRepository } from "typeorm";
 import { AddressAuthentication } from "./address-authentication";
+import { ObjectId } from "mongodb";
 
 @Injectable()
 export class AddressAuthenticationRepository {
@@ -16,5 +17,9 @@ export class AddressAuthenticationRepository {
 
     findByAddress(address: string): Promise<Array<AddressAuthentication>> {
         return this._mongoRepo.find({ address: address });
+    }
+
+    deleteById(id: string): Promise<any> {
+        return this._mongoRepo.deleteOne({ _id: new ObjectId(id) });
     }
 }

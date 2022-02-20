@@ -70,7 +70,7 @@ test("findByWalletAddress - returns undefined for no match", async () => {
     expect(found).toBeUndefined();
 });
 
-test("save - persists day tracking view", async () => {
+test("save - persists view", async () => {
     const view = new UserView();
     view._id = new ObjectId();
     view.walletAddress = "the-address";

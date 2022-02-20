@@ -6,6 +6,7 @@ import { StartAuthenticationDto } from "./start-authentication-dto";
 import { NonceDto } from "../../commands/authentication/nonce-dto";
 import { StartAuthenticationCommand } from "../../commands/authentication/start-authentication-command";
 import { CompleteAuthenticationDto } from "./complete-authentication-dto";
+import { CompleteAuthenticationCommand } from "../../commands/authentication/complete-authentication-command";
 
 @Controller("user")
 export class UserController {
@@ -20,6 +21,6 @@ export class UserController {
     @Post("complete-authentication")
     @UseGuards(ClientGuard)
     async completeAuthentication(@Body() body: CompleteAuthenticationDto): Promise<TokenDto> {
-        return this._commandBus.execute(new StartAuthenticationCommand(body.walletAddress));
+        return this._commandBus.execute(new CompleteAuthenticationCommand(body));
     }
 }
