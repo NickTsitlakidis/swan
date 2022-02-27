@@ -7,7 +7,7 @@ import 'package:nft_game/js/solana_web3/transaction.dart';
 import 'package:nft_game/js/solflare.dart' as solflare;
 import 'dart:convert' show utf8;
 
-final accountInfo = StateProvider<conn.AccountInfo?>((ref) => null);
+final solflareAccountInfo = StateProvider<conn.AccountInfo?>((ref) => null);
 final hasSolflare = Provider<bool>((ref) => solflare.isInstalled() ?? false);
 
 /// Access Service classes through Provider for singleton and mocking
@@ -69,7 +69,7 @@ class WebWallet extends StateNotifier<PublicKey?> {
       throw Exception(
           'Invalid address, could not locate balance or perform airdrop');
     }
-    read(accountInfo).state = info;
+    read(solflareAccountInfo).state = info;
     return info;
   }
 

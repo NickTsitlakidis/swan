@@ -25,4 +25,4 @@ class SignedMessage {
 }
 
 @JS('wallet.phantom.signMessage')
-external Future<SignedMessage> signMessage(String msg);
+external Future<String> signMessage(String msg);

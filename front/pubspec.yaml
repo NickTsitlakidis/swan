@@ -38,7 +38,9 @@ dependencies:
   hooks_riverpod: 1.0.0-dev.7
   riverpod: 1.0.0-dev.7
   js: ^0.6.3
-
+  provider: ^6.0.0
+  http: ^0.13.4
+  flutter_dotenv: ^5.0.2
 
 dev_dependencies:
   flutter_test:
@@ -65,6 +67,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

@@ -1,5 +1,4 @@
 import * as solanaWeb3 from "@solana/web3.js";
-import { SignedMessage } from "../interfaces/signedMessage";
 
 abstract class Wallet {
   constructor() {}
@@ -14,7 +13,7 @@ abstract class Wallet {
     tx: solanaWeb3.Transaction
   ): Promise<solanaWeb3.Transaction>;
 
-  abstract signMessage(msg: string): Promise<SignedMessage>;
+  abstract signMessage(msg: string): Promise<String>;
 }
 
 export default Wallet;

@@ -7,7 +7,7 @@ import 'package:nft_game/js/solana_web3/transaction.dart';
 import 'package:nft_game/js/phantom.dart' as phantom;
 import 'dart:convert' show utf8;
 
-final accountInfo = StateProvider<conn.AccountInfo?>((ref) => null);
+final phantomAccountInfo = StateProvider<conn.AccountInfo?>((ref) => null);
 final hasPhantom = Provider<bool>((ref) => phantom.isInstalled() ?? false);
 
 /// Access Service classes through Provider for singleton and mocking
@@ -27,7 +27,6 @@ class WebWallet extends StateNotifier<PublicKey?> {
       throw Exception('Phantom is not installed');
     }
     final pubkey = await promiseToFuture(phantom.connect());
-    print(pubkey);
     state = pubkey;
     refreshAccountInfo();
     return pubkey;
@@ -69,7 +68,7 @@ class WebWallet extends StateNotifier<PublicKey?> {
       throw Exception(
           'Invalid address, could not locate balance or perform airdrop');
     }
-    read(accountInfo).state = info;
+    read(phantomAccountInfo).state = info;
     return info;
   }
 

@@ -1,5 +1,5 @@
 import * as solanaWeb3 from "@solana/web3.js";
-import { SignedMessage } from "../interfaces/signedMessage";
+import bs58 from "bs58";
 import Wallet from "./wallet";
 
 declare const window: Window &
@@ -32,9 +32,11 @@ class PhantomWallet extends Wallet {
     return await window.solana.signTransaction(tx);
   }
 
-  async signMessage(msg: string): Promise<SignedMessage> {
+  async signMessage(msg: string): Promise<String> {
     const encodedMsg = new TextEncoder().encode(msg);
-    return await window.solana.signMessage(encodedMsg, "utf8");
+    const signedMessage = await window.solana.signMessage(encodedMsg, "utf8");
+    const bs58SignedMessage = bs58.encode(signedMessage.signature);
+    return bs58SignedMessage;
   }
 }
 

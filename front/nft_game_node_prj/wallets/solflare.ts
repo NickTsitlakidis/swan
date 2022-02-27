@@ -1,6 +1,6 @@
 import * as solanaWeb3 from "@solana/web3.js";
-import { SignedMessage } from "../interfaces/signedMessage";
 import Wallet from "./wallet";
+import bs58 from "bs58";
 
 declare const window: Window &
   typeof globalThis & {
@@ -32,9 +32,11 @@ class SolflareWallet extends Wallet {
     return await window.solflare.signTransaction(tx);
   }
 
-  async signMessage(msg: string): Promise<SignedMessage> {
+  async signMessage(msg: string): Promise<String> {
     const encodedMsg = new TextEncoder().encode(msg);
-    return await window.solflare.signMessage(encodedMsg, "utf8");
+    const signedMessage = await window.solflare.signMessage(encodedMsg, "utf8");
+    const bs58SignedMessage = bs58.encode(signedMessage.signature);
+    return bs58SignedMessage;
   }
 }
 

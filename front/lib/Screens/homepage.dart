@@ -1,24 +1,73 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:nft_game/Screens/wallet_info.dart';
 
 import '../Models/wallet_info.dart';
+import '../Providers/auth.dart';
 import '../Utils/wallets/phantom.dart';
 import '../Utils/wallets/solflare.dart';
 import '../Widgets/wallet_card.dart';
 
+final walletTitle = StateProvider<String?>((ref) => null);
+
 class HomePage extends HookConsumerWidget {
+  static const routeName = '/home';
+
   const HomePage({Key? key}) : super(key: key);
+
+  void _walletInfo(BuildContext context, String wallet) {
+    Navigator.of(context).pushNamed(WalletInfo.routeName, arguments: wallet);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    selectWallet(dynamic title) {
+    final _auth = Auth();
+    selectWallet(dynamic title) async {
       if (title == null) {
         return;
       }
+
+      // Solflare CASE
       if (title == 'Solflare') {
-        ref.read(solflareWallet.notifier).connectWallet();
+        ref.watch(walletTitle).state = title;
+        await ref.read(solflareWallet.notifier).connectWallet();
+        final solflareType = dotenv.get('SOLFLARE_TYPE');
+        if (ref.watch(solflareWallet) != null) {
+          await _auth.getNonce(ref, solflareWallet);
+        }
+        if (ref.watch(nonce).state != null) {
+          ref
+              .read(solflareWallet.notifier)
+              .signPlaintext(ref.watch(tokenValue).state ?? '')
+              .then((signedMessage) async => {
+                    print(signedMessage),
+                    await _auth.completeAuth(ref, solflareWallet, solflareType,
+                        signedMessage.toString())
+                  });
+        }
+        _walletInfo(context, title);
+        // Phantom CASE
       } else {
-        ref.read(phantomWallet.notifier).connectWallet();
+        // Change title
+        ref.watch(walletTitle).state = title;
+        // Connect to wallet
+        await ref.read(phantomWallet.notifier).connectWallet();
+        final phantomType = dotenv.get('PHANTOM_TYPE');
+        if (ref.watch(phantomWallet) != null) {
+          await _auth.getNonce(ref, phantomWallet);
+        }
+        if (ref.watch(nonce).state != null) {
+          ref
+              .read(phantomWallet.notifier)
+              .signPlaintext(ref.watch(tokenValue).state ?? '')
+              .then((signedMessage) async => {
+                    print(signedMessage),
+                    await _auth.completeAuth(ref, phantomWallet, phantomType,
+                        signedMessage.toString())
+                  });
+        }
+        _walletInfo(context, title);
       }
     }
 
