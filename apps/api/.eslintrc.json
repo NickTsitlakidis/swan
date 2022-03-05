@@ -1,0 +1,11 @@
+{
+    "extends": [
+        "../../.eslintrc.json"
+    ],
+    "ignorePatterns": [
+        "!**/*"
+    ],
+    "rules": {
+        "@typescript-eslint/no-empty-function": "warn"
+    }
+}
