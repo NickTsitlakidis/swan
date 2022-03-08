@@ -43,7 +43,7 @@ jobs:
                   aws s3 cp \
                     --recursive \
                     --region eu-central-1 \
-                    dist s3://test-serve
+                    dist/apps/nft-marketplace s3://test-serve
 #            - name: Notification
 #              uses: 8398a7/action-slack@v2.6.0
 #              with:
