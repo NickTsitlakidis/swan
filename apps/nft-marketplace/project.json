@@ -21,7 +21,8 @@
                     "apps/nft-marketplace/src/assets"
                 ],
                 "styles": [
-                    "apps/nft-marketplace/src/styles.scss"
+                    "apps/nft-marketplace/src/app/@theme/styles/styles.scss",
+                    "node_modules/bootstrap/dist/css/bootstrap.css"
                 ],
                 "scripts": []
             },

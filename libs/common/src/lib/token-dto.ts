@@ -9,7 +9,7 @@ export class TokenDto {
     @Type(() => Date)
     expiresAt: Moment;
 
-    constructor(tokenValue: string, expiresAt: Moment, refreshToken?: string) {
+    constructor(tokenValue: string, expiresAt: Moment, refreshToken: string) {
         this.tokenValue = tokenValue;
         this.refreshToken = refreshToken;
         this.expiresAt = expiresAt;

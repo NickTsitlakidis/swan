@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Message } from '@nft-marketplace/common';
+import { Component, OnInit } from "@angular/core";
+import { AnalyticsService } from "./@core/utils/analytics.service";
 
 @Component({
-  selector: 'nft-marketplace-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+    selector: "nft-marketplace-root",
+    template: "<router-outlet></router-outlet>"
 })
-export class AppComponent {
-  hello$ = this.http.get<Message>('/api/hello');
-  constructor(private http: HttpClient) {}
+export class AppComponent implements OnInit {
+    constructor(private _analytics: AnalyticsService) {}
+
+    ngOnInit(): void {
+        this._analytics.trackPageViews();
+    }
 }
