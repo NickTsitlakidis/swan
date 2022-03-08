@@ -1,14 +1,14 @@
 name: Angular Deploy to S3
 on:
     push:
-        branches: [ nx-repo-github-actions ]
+        branches: [ main ]
 
 jobs:
     build:
         runs-on: ubuntu-latest
-        defaults:
-            run:
-                working-directory: apps/nft-marketplace
+#        defaults:
+#            run:
+#                working-directory: apps/nft-marketplace
         steps:
             - name: Checkout source code
               uses: actions/checkout@master
@@ -24,8 +24,9 @@ jobs:
             - name: Install
               run: npm install
 
-            - name: Lint
-              run: npm run lint
+
+#            - name: Lint
+#              run: npm run lint
 
 #            - name: Test
 #              run: npm run test
@@ -35,15 +36,14 @@ jobs:
 
             - name: Deploy
               env:
-#                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-                  AWS_ACCESS_SECRET: ${{ secrets.AWS_ACCESS_SECRET }}
+                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
               run: |
                   aws s3 cp \
                     --recursive \
                     --region eu-central-1 \
-                    dist s3://github-action-angular-build-tutorial
+                    dist/apps/nft-marketplace s3://test-serve
+
 #            - name: Notification
 #              uses: 8398a7/action-slack@v2.6.0
 #              with:
