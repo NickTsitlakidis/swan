@@ -6,9 +6,9 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
-        defaults:
-            run:
-                working-directory: apps/nft-marketplace
+#        defaults:
+#            run:
+#                working-directory: apps/nft-marketplace
         steps:
             - name: Checkout source code
               uses: actions/checkout@master
@@ -24,8 +24,8 @@ jobs:
             - name: Install
               run: npm install
 
-            - name: Lint
-              run: npm run lint
+#            - name: Lint
+#              run: npm run lint
 
 #            - name: Test
 #              run: npm run test
@@ -43,7 +43,7 @@ jobs:
                   aws s3 cp \
                     --recursive \
                     --region eu-central-1 \
-                    dist s3://github-action-angular-build-tutorial
+                    dist s3://test-serve
 #            - name: Notification
 #              uses: 8398a7/action-slack@v2.6.0
 #              with:
