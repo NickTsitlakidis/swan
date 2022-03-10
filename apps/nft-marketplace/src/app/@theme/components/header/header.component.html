@@ -1,1 +1,23 @@
-<div class="header-container"></div>
+<div class="header-container w-100">
+    <div class="row w-100">
+        <div class="col">
+            <nb-select
+                (selectedChange)="walletSelected($event)"
+                class="float-right"
+                hero
+                placeholder="Select your wallet"
+                shape="semi-round"
+                status="info"
+            >
+                <nb-option-group *ngFor="let chain of chains" [title]="chain.chain.title">
+                    <nb-option
+                        *ngFor="let wallet of chain.wallets"
+                        [value]="wallet.adapter.name"
+                        [disabled]="wallet.readyState === 'NotDetected'"
+                        >{{ wallet.adapter.name }} ({{ wallet.readyState }})</nb-option
+                    >
+                </nb-option-group>
+            </nb-select>
+        </div>
+    </div>
+</div>

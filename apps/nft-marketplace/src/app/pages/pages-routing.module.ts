@@ -3,6 +3,7 @@ import { NgModule } from "@angular/core";
 
 import { PagesComponent } from "./pages.component";
 import { NotFoundComponent } from "./miscellaneous/not-found/not-found.component";
+import { HomeComponent } from "./home/home.component";
 
 const routes: Routes = [
     {
@@ -10,12 +11,16 @@ const routes: Routes = [
         component: PagesComponent,
         children: [
             {
+                path: "home",
+                component: HomeComponent
+            },
+            {
                 path: "miscellaneous",
                 loadChildren: () => import("./miscellaneous/miscellaneous.module").then((m) => m.MiscellaneousModule)
             },
             {
                 path: "",
-                redirectTo: "miscellaneous",
+                redirectTo: "home",
                 pathMatch: "full"
             },
             {
