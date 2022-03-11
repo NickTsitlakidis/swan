@@ -22,11 +22,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: install dependencies 
-        working-directory: ./back
         run: npm ci
       - name: lint
-        working-directory: ./back
         run: npm run lint
-      - name: run unit tests
-        working-directory: ./back
-        run: npm test
+      - name: run api unit tests
+        run: npm run test-api
