@@ -18,7 +18,6 @@ async function bootstrap() {
         .setTitle("NFT API")
         .setDescription("The nft API description")
         .setVersion("1.0")
-        .addTag("cats")
         .addBearerAuth()
         .build();
     const document = SwaggerModule.createDocument(app, options);
