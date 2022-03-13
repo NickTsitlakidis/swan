@@ -1,21 +1,22 @@
 import { HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 
-import { LocalStorageService } from "ngx-webstorage";
 import { tap } from "rxjs/operators";
 
 import { environment } from "../../../environments/environment";
+import { ClientAuthService } from "../services/authentication/client_auth.service";
 
 @Injectable()
 export class HttpRequestsInterceptor implements HttpInterceptor {
-    constructor(private _lcStorage: LocalStorageService) {}
+    constructor(private _clientAuthService: ClientAuthService) {}
 
     intercept(req: HttpRequest<unknown>, next: HttpHandler) {
         // const started = Date.now();
         const url = req.url;
 
-        if (this._lcStorage.retrieve("tokenValue") && url.indexOf("/client/login") === -1) {
-            req = this._addBearerToken(req, this._lcStorage.retrieve("tokenValue"));
+        const clientData = this._clientAuthService.getClientTokenData();
+        if (clientData.tokenValue && url.indexOf("/client/login") === -1) {
+            req = this._addBearerToken(req, clientData.tokenValue);
         }
 
         const httpsReq: HttpRequest<unknown> = req.clone({

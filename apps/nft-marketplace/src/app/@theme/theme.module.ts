@@ -1,5 +1,7 @@
 import { ModuleWithProviders, NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+
 import {
     NbActionsModule,
     NbLayoutModule,
@@ -36,7 +38,7 @@ const COMPONENTS = [HeaderComponent, FooterComponent, OneColumnLayoutComponent];
 const PIPES = [CapitalizePipe, PluralPipe, RoundPipe, TimingPipe, NumberWithCommasPipe];
 
 @NgModule({
-    imports: [CommonModule, ...NB_MODULES],
+    imports: [CommonModule, FormsModule, ...NB_MODULES],
     exports: [CommonModule, ...PIPES, ...COMPONENTS],
     declarations: [...COMPONENTS, ...PIPES]
 })

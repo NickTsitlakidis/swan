@@ -4,7 +4,7 @@ import { Type } from "class-transformer";
 export class TokenDto {
     tokenValue: string;
 
-    refreshToken: string | undefined;
+    refreshToken?: string | undefined;
 
     @Type(() => Date)
     expiresAt: Moment;

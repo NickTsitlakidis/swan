@@ -1,4 +1,8 @@
 export enum SupportedWallets {
-    SOLFLARE = "SOLFLARE",
-    PHANTOM = "PHANTOM"
+    SOLFLARE = "Solflare",
+    PHANTOM = "Phantom",
+    SLOPE = "Slope",
+    TORUS = "Torus",
+    LEDGER = "Ledger",
+    SOLLET = "Sollet"
 }

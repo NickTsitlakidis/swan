@@ -1,5 +1,8 @@
 <div class="header-container w-100">
     <div class="row w-100">
+        <div class="col-2 d-flex align-items-center">
+            <span class="header-title">NFT Marketplace</span>
+        </div>
         <div class="col">
             <nb-select
                 (selectedChange)="walletSelected($event)"
@@ -8,13 +11,17 @@
                 placeholder="Select your wallet"
                 shape="semi-round"
                 status="info"
+                [selected]="walletName"
+                [(ngModel)]="selectedWallet"
             >
                 <nb-option-group *ngFor="let chain of chains" [title]="chain.chain.title">
                     <nb-option
                         *ngFor="let wallet of chain.wallets"
                         [value]="wallet.adapter.name"
                         [disabled]="wallet.readyState === 'NotDetected'"
-                        >{{ wallet.adapter.name }} ({{ wallet.readyState }})</nb-option
+                        ><img [src]="imagesService.transform(wallet.adapter.icon)" class="wallet-icon" />{{
+                            wallet.adapter.name
+                        }}</nb-option
                     >
                 </nb-option-group>
             </nb-select>

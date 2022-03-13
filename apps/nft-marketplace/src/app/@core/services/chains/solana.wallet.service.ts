@@ -37,8 +37,8 @@ export class SolanaWalletService {
                     wallet.adapter.readyState === WalletReadyState.Loadable)
         )
     );
-    private readonly connected$ = this._walletStore.connected$;
-    private readonly publicKey$ = this._walletStore.publicKey$;
+    public readonly connected$ = this._walletStore.connected$;
+    public readonly publicKey$ = this._walletStore.publicKey$;
     private lamports = 0;
     private recipient = "";
 
@@ -52,11 +52,18 @@ export class SolanaWalletService {
             new LedgerWalletAdapter(),
             new SolletWalletAdapter({ network: WalletAdapterNetwork.Devnet })
         ]);
-        console.log();
     }
 
     public getWallets() {
         return this.wallets$;
+    }
+
+    public getPublicKey() {
+        return this.publicKey$.pipe(
+            map((data) => {
+                return data?.toString();
+            })
+        );
     }
 
     public onConnect() {
@@ -178,15 +185,19 @@ export class SolanaWalletService {
             });
     }
 
-    public onSignMessage() {
-        const signMessage$ = this._walletStore.signMessage(new TextEncoder().encode("Hello world!"));
+    public onSignMessage(msg: string): Observable<string> | undefined {
+        const signMessage$ = this._walletStore.signMessage(new TextEncoder().encode(msg));
 
         if (!signMessage$) {
-            return console.error(new Error("Sign message method is not defined"));
+            console.error(new Error("Sign message method is not defined"));
+            return;
         }
 
-        signMessage$.pipe(first()).subscribe((signature) => {
-            console.log(`Message signature: ${base58.encode(signature)}`);
-        });
+        return signMessage$.pipe(
+            map((signature) => {
+                return base58.encode(signature);
+            }),
+            first()
+        );
     }
 }

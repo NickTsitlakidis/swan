@@ -1,33 +1,41 @@
 import { Component, OnInit } from "@angular/core";
-import { Wallet } from "@heavy-duty/wallet-adapter";
+import { SupportedWallets } from "@nft-marketplace/common";
 import { WalletName } from "@solana/wallet-adapter-base";
+import { BlockChains } from "../../../@core/interfaces/blockchain.interface";
+import { BlockChainService } from "../../../@core/services/blockchain.service";
 
-import { SolanaWalletService } from "../../../@core/services/solana.wallet.service";
+import { ImagesService } from "../../../@core/services/images_helper/images.service";
 @Component({
     selector: "nft-marketplace-header",
     styleUrls: ["./header.component.scss"],
     templateUrl: "./header.component.html"
 })
 export class HeaderComponent implements OnInit {
-    chains: { chain: { title: string; imageUrl: string }; wallets: Wallet[] }[] | undefined;
+    public chains: BlockChains[] | undefined;
+    public walletName: SupportedWallets;
+    public selectedWallet: BlockChains;
 
-    constructor(private _solanaWalletService: SolanaWalletService) {}
+    constructor(public imagesService: ImagesService, private _blockChainService: BlockChainService) {}
 
     ngOnInit() {
-        this._solanaWalletService.getWallets().subscribe((wallets) => {
-            this.chains = [
-                {
-                    chain: {
-                        title: "Solana",
-                        imageUrl: ""
-                    },
-                    wallets
-                }
-            ];
-        });
+        this._connectToObservables();
+
+        this.walletName = this._blockChainService.getWalletName();
     }
 
-    walletSelected(walletName: WalletName) {
-        this._solanaWalletService.onSelectWallet(walletName);
+    public walletSelected(walletName: WalletName) {
+        const chain = this._blockChainService.getWalletServiceByName(walletName, this.chains);
+        chain?.chain.service.onSelectWallet(walletName);
+        this._blockChainService.startChainAuth(chain?.chain.service);
+    }
+
+    /*********************************************************
+     *                  Private Methods
+     *********************************************************/
+
+    private _connectToObservables() {
+        this._blockChainService.getWallets().subscribe((data) => {
+            this.chains = data;
+        });
     }
 }
