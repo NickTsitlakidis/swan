@@ -17,6 +17,7 @@ import {
     SolletWalletAdapter,
     TorusWalletAdapter
 } from "@solana/wallet-adapter-wallets";
+import { BlockChains } from "../../interfaces/blockchain.interface";
 
 export const isNotNull = <T>(source: Observable<T | null>) =>
     source.pipe(filter((item: T | null): item is T => item !== null));
@@ -54,15 +55,29 @@ export class SolanaWalletService {
         ]);
     }
 
-    public getWallets() {
-        return this.wallets$;
+    public getWallets(): Observable<BlockChains> {
+        return this.wallets$.pipe(
+            map((wallets: Wallet[]) => {
+                const blockchain: BlockChains = {
+                    chain: {
+                        title: "Solana",
+                        imageUrl: "",
+                        service: this
+                    },
+                    wallets
+                };
+                return blockchain;
+            }),
+            first()
+        );
     }
 
-    public getPublicKey() {
+    public getPublicKey(): Observable<string | undefined> {
         return this.publicKey$.pipe(
             map((data) => {
                 return data?.toString();
-            })
+            }),
+            first()
         );
     }
 

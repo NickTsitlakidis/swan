@@ -11,11 +11,14 @@ import { ImagesService } from "../../../@core/services/images_helper/images.serv
     templateUrl: "./header.component.html"
 })
 export class HeaderComponent implements OnInit {
-    public chains: BlockChains[] | undefined;
+    public chains: BlockChains[] | undefined = [];
     public walletName: SupportedWallets;
     public selectedWallet: BlockChains;
 
-    constructor(public imagesService: ImagesService, private _blockChainService: BlockChainService) {}
+    constructor(
+        public imagesService: ImagesService,
+        private _blockChainService: BlockChainService
+    ) {}
 
     ngOnInit() {
         this._connectToObservables();
@@ -24,6 +27,9 @@ export class HeaderComponent implements OnInit {
     }
 
     public walletSelected(walletName: WalletName) {
+        if (this._blockChainService.getWalletName() !== walletName) {
+            this._blockChainService.setWalletName(walletName);
+        }
         const chain = this._blockChainService.getWalletServiceByName(walletName, this.chains);
         chain?.chain.service.onSelectWallet(walletName);
         this._blockChainService.startChainAuth(chain?.chain.service);
@@ -34,8 +40,13 @@ export class HeaderComponent implements OnInit {
      *********************************************************/
 
     private _connectToObservables() {
-        this._blockChainService.getWallets().subscribe((data) => {
-            this.chains = data;
-        });
+        const arrOfWalletObservables = this._blockChainService.getWallets();
+        for (const observable of arrOfWalletObservables) {
+            observable.subscribe((data) => {
+                if (data) {
+                    this.chains?.push(data);
+                }
+            });
+        }
     }
 }

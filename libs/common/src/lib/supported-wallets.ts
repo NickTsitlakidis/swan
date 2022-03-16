@@ -4,5 +4,6 @@ export enum SupportedWallets {
     SLOPE = "Slope",
     TORUS = "Torus",
     LEDGER = "Ledger",
-    SOLLET = "Sollet"
+    SOLLET = "Sollet",
+    METAMASK = "Metamask"
 }

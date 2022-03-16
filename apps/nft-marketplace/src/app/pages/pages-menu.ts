@@ -4,7 +4,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
     {
         title: "Home",
         icon: "home-outline",
-        link: "/pages/home",
+        link: "/home",
         home: true
     },
     {
@@ -13,7 +13,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
         children: [
             {
                 title: "404",
-                link: "/pages/miscellaneous/404"
+                link: "/miscellaneous/404"
             }
         ]
     }

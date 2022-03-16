@@ -11,7 +11,6 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
     constructor(private _clientAuthService: ClientAuthService) {}
 
     intercept(req: HttpRequest<unknown>, next: HttpHandler) {
-        // const started = Date.now();
         const url = req.url;
 
         const clientData = this._clientAuthService.getClientTokenData();
