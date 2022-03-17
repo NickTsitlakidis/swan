@@ -1,14 +1,15 @@
-import { ClientGuard } from "./client-guard";
 import { JwtModule, JwtService, JwtSignOptions } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { ClientRepository } from "../client-repository";
+import { UserGuard } from "./user-guard";
+import { UserViewRepository } from "../../views/user/user-view-repository";
 import { UnauthorizedException } from "@nestjs/common";
-import { Client } from "../client";
+import { UserView } from "../../views/user/user-view";
+import { ObjectId } from "mongodb";
 
-let guard: ClientGuard;
+let guard: UserGuard;
 let jwtService: JwtService;
-const clientRepo: Partial<ClientRepository> = {
-    findByApplicationId: () => Promise.reject("should never be called")
+const clientRepo: Partial<UserViewRepository> = {
+    findById: () => Promise.reject("should never be called")
 };
 beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -17,53 +18,32 @@ beforeEach(async () => {
                 secret: "this-is-secret"
             })
         ],
-        providers: [{ provide: ClientRepository, useValue: clientRepo }, ClientGuard]
+        providers: [{ provide: UserViewRepository, useValue: clientRepo }, UserGuard]
     }).compile();
 
-    guard = moduleRef.get(ClientGuard);
+    guard = moduleRef.get(UserGuard);
     jwtService = moduleRef.get(JwtService);
 });
 
-test("canActivate - throws for missing token", async () => {
+test("UserGuard canActivate - throws for missing token", async () => {
     const context: any = {
         switchToHttp: () => {
             return {
                 getRequest: () => {
-                    return { headers: { authorization: `something else` } };
+                    return { headers: { authorization: "other" } };
                 }
             };
         }
     };
 
     await expect(guard.canActivate(context)).rejects.toThrow(UnauthorizedException);
+
 });
 
-test("canActivate - throws for unverified token", async () => {
+
+test("UserGuard canActivate - throws for expired token", async () => {
     const accessSignOptions: JwtSignOptions = {
-        subject: "app-id",
-        algorithm: "HS256",
-        expiresIn: "120m",
-        secret: "other-secret"
-    };
-
-    const token = jwtService.sign({ tokenType: "client" }, accessSignOptions);
-
-    const context: any = {
-        switchToHttp: () => {
-            return {
-                getRequest: () => {
-                    return { headers: { authorization: `Bearer ${token}` } };
-                }
-            };
-        }
-    };
-
-    await expect(guard.canActivate(context)).rejects.toThrow(UnauthorizedException);
-});
-
-test("canActivate - throws for expired token", async () => {
-    const accessSignOptions: JwtSignOptions = {
-        subject: "app-id",
+        subject: "userId",
         algorithm: "HS256",
         expiresIn: "1"
     };
@@ -83,9 +63,9 @@ test("canActivate - throws for expired token", async () => {
     await expect(guard.canActivate(context)).rejects.toThrow(UnauthorizedException);
 });
 
-test("canActivate - throws for not matching client", async () => {
+test("UserGuard canActivate - throws for not existing user", async () => {
     const accessSignOptions: JwtSignOptions = {
-        subject: "app-id",
+        subject: "userId",
         algorithm: "HS256",
         expiresIn: "120m"
     };
@@ -101,23 +81,23 @@ test("canActivate - throws for not matching client", async () => {
             };
         }
     };
-
-    const repositorySpy = jest.spyOn(clientRepo, "findByApplicationId").mockResolvedValue(undefined);
+    const repositorySpy = jest.spyOn(clientRepo, "findById").mockResolvedValue(undefined);
 
     await expect(guard.canActivate(context)).rejects.toThrow(UnauthorizedException);
 
     expect(repositorySpy).toHaveBeenCalledTimes(1);
-    expect(repositorySpy).toHaveBeenCalledWith("app-id");
+    expect(repositorySpy).toHaveBeenCalledWith("userId");
 });
 
-test("canActivate - returns true for all passing rules", async () => {
+test("UserGuard canActivate - throws for unverified token", async () => {
     const accessSignOptions: JwtSignOptions = {
         subject: "app-id",
         algorithm: "HS256",
-        expiresIn: "120m"
+        expiresIn: "120m",
+        secret: "other-secret"
     };
 
-    const token = jwtService.sign({}, accessSignOptions);
+    const token = jwtService.sign({ tokenType: "client" }, accessSignOptions);
 
     const context: any = {
         switchToHttp: () => {
@@ -128,15 +108,40 @@ test("canActivate - returns true for all passing rules", async () => {
             };
         }
     };
+    await expect(guard.canActivate(context)).rejects.toThrow(UnauthorizedException);
+});
 
-    const client = new Client();
-    client.applicationId = "app-id";
+test("UserGuard canActivate - returns true for all passing rules and updates request", async () => {
+    const view = new UserView();
+    view._id = new ObjectId();
 
-    const repositorySpy = jest.spyOn(clientRepo, "findByApplicationId").mockResolvedValue(client);
+    const accessSignOptions: JwtSignOptions = {
+        subject: view.id,
+        algorithm: "HS256",
+        expiresIn: "120m"
+    };
+
+    const token = jwtService.sign({}, accessSignOptions);
+
+    const request: any = { headers: { authorization: `Bearer ${token}` } };
+    const context: any = {
+        switchToHttp: () => {
+            return {
+                getRequest: () => {
+                    return request;
+                }
+            };
+        }
+    };
+
+
+
+    const repositorySpy = jest.spyOn(clientRepo, "findById").mockResolvedValue(view);
 
     const canActivate = await guard.canActivate(context);
     expect(canActivate).toBe(true);
+    expect(request.userId).toBe(view.id);
 
     expect(repositorySpy).toHaveBeenCalledTimes(1);
-    expect(repositorySpy).toHaveBeenCalledWith("app-id");
+    expect(repositorySpy).toHaveBeenCalledWith(view.id);
 });

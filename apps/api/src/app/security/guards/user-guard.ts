@@ -2,7 +2,8 @@ import { CanActivate, ExecutionContext, Injectable, Logger, UnauthorizedExceptio
 import { JwtService } from "@nestjs/jwt";
 import { getLogger } from "../../infrastructure/logging";
 import { UserViewRepository } from "../../views/user/user-view-repository";
-import { isNil, startsWith } from "lodash";
+import { isNil } from "lodash";
+import { extractBearerValue, hasBearerToken } from "./token-utils";
 
 @Injectable()
 export class UserGuard implements CanActivate {
@@ -15,34 +16,24 @@ export class UserGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
 
-        if (
-            isNil(request) ||
-            isNil(request.headers) ||
-            isNil(request.headers.authorization) ||
-            !startsWith(request.headers.authorization, "Bearer ")
-        ) {
+        if (!hasBearerToken(context)) {
             throw new UnauthorizedException("Invalid or missing credentials");
         }
-        const token = request.headers.authorization.replace("Bearer ", "");
+        const token = extractBearerValue(context);
         let verified;
 
         try {
-            verified = this._signingService.verify(token);
+            verified = this._signingService.verify(extractBearerValue(context));
         } catch (error) {
-            this._logger.error(`Detected unverified token ${token}`);
+            this._logger.error(`Detected unverified or expired token ${token}`);
             throw new UnauthorizedException("Invalid or missing credentials");
         }
 
-        const nowEpoch = Math.floor(new Date().getTime() / 1000);
-
-        if (nowEpoch < verified.exp) {
-            const found = await this._userViewRepository.findById(verified.sub);
-            if (isNil(found)) {
-                throw new UnauthorizedException("Invalid or missing credentials");
-            }
-            return true;
-        } else {
+        const found = await this._userViewRepository.findById(verified.sub);
+        if (isNil(found)) {
             throw new UnauthorizedException("Invalid or missing credentials");
         }
+        request.userId = verified.sub;
+        return true;
     }
 }
