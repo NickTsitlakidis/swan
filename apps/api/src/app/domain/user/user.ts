@@ -2,26 +2,22 @@ import { EventProcessor, EventSourcedEntity } from "../../infrastructure/event-s
 import { SourcedEvent } from "../../infrastructure/sourced-event";
 import { getLogger } from "../../infrastructure/logging";
 import { isNil } from "lodash";
-import { UserCreatedEvent } from "./user-created-event";
+import { UserEvents } from "./user-created-event";
 
 export class User extends EventSourcedEntity {
     private _walletAddress: string;
 
     constructor(id: string, walletAddress?: string, events?: Array<SourcedEvent>) {
-        super(id, getLogger(User));
+        super(id, events, getLogger(User));
 
         if (!isNil(walletAddress)) {
             this._walletAddress = walletAddress;
-            this.apply(new UserCreatedEvent(this._walletAddress));
-        }
-
-        if (!isNil(events)) {
-            this.buildFromEvents(events);
+            this.apply(new UserEvents(this._walletAddress));
         }
     }
 
-    @EventProcessor(UserCreatedEvent)
-    private processUserCreatedEvent = (event: UserCreatedEvent) => {
+    @EventProcessor(UserEvents)
+    private processUserCreatedEvent = (event: UserEvents) => {
         this._walletAddress = event.walletAddress;
     };
 }

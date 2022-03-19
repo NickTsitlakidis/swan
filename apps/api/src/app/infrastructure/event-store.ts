@@ -6,11 +6,14 @@ import { ObjectID as MongoObjectId } from "mongodb";
 import { isNil } from "lodash";
 import { getLogger, LogAsyncMethod } from "./logging";
 import { SourcedEvent } from "./sourced-event";
+import { EventSourcedEntity } from "./event-sourced-entity";
+import { QueueEventBus } from "./queue-event-bus";
+import { EventPayload } from "./serialized-event";
 
 /**
  * The event store is the main way of saving and reading sourced events. It uses a mongo transaction
  * during save to ensure that all the events and the aggregate are saved as a unit of work. Normally
- * the class would not be used directly from application code. The commit phase of the
+ * the store process would not be used directly from application code. The commit phase of the
  * EventSourcedEntity will trigger the save process.
  */
 @Injectable()
@@ -20,11 +23,36 @@ export class EventStore {
     private mongoClient: MongoClient;
     private _logger: Logger;
 
-    constructor(databaseConnection: Connection) {
+    constructor(databaseConnection: Connection, private _eventBus: QueueEventBus) {
         this.eventRepository = databaseConnection.getMongoRepository(SourcedEvent);
         this.aggregateRepository = databaseConnection.getMongoRepository(Aggregate);
         this.mongoClient = (databaseConnection.driver as any).queryRunner.databaseConnection;
         this._logger = getLogger(EventStore);
+    }
+
+    /**
+     * Builds a publishing function which will replace the publish function of the provided entity.
+     * The new function will use the event store to save the events and after that,
+     * it will use the event bus to call the async event handlers.
+     * @param entity The entity in which the new publishing function will be assigned.
+     */
+    connectEntity<T extends EventSourcedEntity>(entity: T): T {
+        entity.publish = (events: Array<EventPayload>) => {
+            if (events.length == 0) {
+                return Promise.resolve([]);
+            }
+            const domainEvents = events.map((serializable) => {
+                return new SourcedEvent(entity.id, serializable);
+            });
+            const aggregate = new Aggregate();
+            aggregate.id = entity.id;
+            aggregate.version = entity.version;
+            return this.save(domainEvents, aggregate).then((savedEvents) => {
+                this._eventBus.publishAll(events);
+                return Promise.resolve(savedEvents);
+            });
+        };
+        return entity;
     }
 
     /**

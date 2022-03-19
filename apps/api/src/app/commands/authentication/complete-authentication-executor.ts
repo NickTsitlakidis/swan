@@ -1,7 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CompleteAuthenticationCommand } from "./complete-authentication-command";
 import { AddressAuthenticationRepository } from "../../security/address-authentication-repository";
-import { UserFactory } from "../../domain/user/user-factory";
 import { UserViewRepository } from "../../views/user/user-view-repository";
 import { Logger, UnauthorizedException } from "@nestjs/common";
 import { isNil } from "lodash";
@@ -9,6 +8,9 @@ import { getLogger } from "../../infrastructure/logging";
 import { UserTokenIssuer } from "../../security/user-token-issuer";
 import { sign_detached_verify } from "tweetnacl-ts";
 import { TokenDto } from "@nft-marketplace/common";
+import { User } from "../../domain/user/user";
+import { IdGenerator } from "../../infrastructure/id-generator";
+import { EventStore } from "../../infrastructure/event-store";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bs58 = require("bs58");
 
@@ -18,9 +20,10 @@ export class CompleteAuthenticationExecutor implements ICommandHandler<CompleteA
 
     constructor(
         private readonly _authenticationRepository: AddressAuthenticationRepository,
+        private readonly _idGenerator: IdGenerator,
         private readonly _userViewRepository: UserViewRepository,
         private readonly _userTokenIssuer: UserTokenIssuer,
-        private readonly _userFactory: UserFactory
+        private readonly _eventStore: EventStore
     ) {
         this._logger = getLogger(CompleteAuthenticationExecutor);
     }
@@ -52,7 +55,7 @@ export class CompleteAuthenticationExecutor implements ICommandHandler<CompleteA
 
         let userId: string;
         if (isNil(existingUser)) {
-            const newUser = this._userFactory.createNew(command.address);
+            const newUser = this._eventStore.connectEntity(new User(this._idGenerator.generateEntityId(), command.address));
             await newUser.commit();
             userId = newUser.id;
         } else {

@@ -2,6 +2,7 @@ import { sortBy, last, isNil } from "lodash";
 import { InternalServerErrorException, Logger } from "@nestjs/common";
 import { SourcedEvent } from "./sourced-event";
 import { EventPayload, getEventClassForName } from "./serialized-event";
+import { getLogger } from "./logging";
 
 const REGISTERED: Array<{
     eventClass: any;
@@ -38,10 +39,16 @@ export function EventProcessor(eventClass: any): PropertyDecorator {
 export abstract class EventSourcedEntity {
     private _appliedEvents: Array<EventPayload>;
     private _version: number;
+    private _logger: Logger;
 
-    protected constructor(private readonly _id: string, private readonly _logger: Logger) {
+    protected constructor(private readonly _id: string, events: Array<SourcedEvent> = [], logger?: Logger) {
         this._appliedEvents = [];
         this._version = 0;
+        this._logger = isNil(logger) ? getLogger(EventSourcedEntity) : logger;
+        if(!isNil(events)) {
+            this.buildFromEvents(events);
+        }
+
     }
 
     get id(): string {

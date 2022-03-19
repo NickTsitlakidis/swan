@@ -13,7 +13,7 @@ class SubEntity extends EventSourcedEntity {
     public published: Array<EventPayload> = [];
 
     constructor(id: string) {
-        super(id, getLogger(SubEntity));
+        super(id, [], getLogger(SubEntity));
     }
 
     public resolveVersion(events: Array<SourcedEvent>) {
@@ -38,7 +38,7 @@ class SubEntity extends EventSourcedEntity {
 
 class SubEntity2 extends EventSourcedEntity {
     constructor(id: string) {
-        super(id, getLogger(SubEntity2));
+        super(id, [], getLogger(SubEntity2));
     }
 }
 
@@ -56,7 +56,7 @@ test("publish - throws for no override", (endTest) => {
     });
 });
 
-test("processSourcedEvents - calls mapped processors after sorting", () => {
+test("buildFromEvents - calls mapped processors after sorting", () => {
     const ev1 = new SourcedEvent("id1", new TestEvent2());
     ev1.aggregateVersion = 10;
     const ev2 = new SourcedEvent("id1", new TestEvent1());

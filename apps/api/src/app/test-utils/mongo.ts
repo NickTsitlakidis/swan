@@ -20,6 +20,9 @@ export function getCollection(collectionName: string, typeOrmConnection: Connect
 }
 
 export function cleanUpMongo(typeOrmConnection: Connection, purge = false): Promise<any> {
+    if(!typeOrmConnection.isConnected) {
+        return;
+    }
     const client: MongoClient = (typeOrmConnection.driver as any).queryRunner.databaseConnection;
 
     if (purge) {

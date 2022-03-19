@@ -7,6 +7,11 @@ import { InternalServerErrorException } from "@nestjs/common";
 import { cleanUpMongo, getCollection, MONGO_MODULE } from "../test-utils/mongo";
 import { SourcedEvent } from "./sourced-event";
 import { EventPayload, SerializedEvent } from "./serialized-event";
+import { EventSourcedEntity } from "./event-sourced-entity";
+import { getLogger } from "./logging";
+import { QueueEventBus } from "./queue-event-bus";
+import { getMockCalledParameters } from "../test-utils/mocking";
+import { instanceToPlain } from "class-transformer";
 
 let eventStore: EventStore;
 let eventsCollection: Collection<any>;
@@ -14,15 +19,30 @@ let aggregatesCollection: Collection<any>;
 let connection: Connection;
 
 @SerializedEvent("test-event-1")
-class TestEvent1 extends EventPayload {}
+class TestEvent1 extends EventPayload {
+}
 
 @SerializedEvent("test-event-2")
-class TestEvent2 extends EventPayload {}
+class TestEvent2 extends EventPayload {
+}
+
+class TestEntity extends EventSourcedEntity {
+    constructor(id: string) {
+        super(id, [], getLogger(TestEntity));
+    }
+}
+
+const eventBusMock: Partial<QueueEventBus> = {
+    publishAll: () => undefined
+};
 
 beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
         imports: [MONGO_MODULE],
-        providers: [EventStore]
+        providers: [EventStore, {
+            provide: QueueEventBus,
+            useValue: eventBusMock
+        }]
     }).compile();
 
     eventStore = moduleRef.get(EventStore);
@@ -157,4 +177,66 @@ test("findEventByAggregateId - returns sorted events", async () => {
     expect(result[1].eventName).toBe("one");
     expect(result[2].aggregateVersion).toBe(15);
     expect(result[2].eventName).toBe("three");
+});
+
+test("connectEntity - sets a publish that returns for empty events", async () => {
+    const id = new ObjectId().toHexString();
+    const beforeConnect = new TestEntity(id);
+    const e = eventStore.connectEntity(beforeConnect);
+
+
+    const result = await e.publish([]);
+    expect(result).toEqual([]);
+
+    const storedAggregates = await aggregatesCollection.find({}).toArray();
+    expect(storedAggregates.length).toBe(0);
+
+    const storedEvents = await eventsCollection.find({}).toArray();
+    expect(storedEvents.length).toBe(0);
+
+    expect(beforeConnect).toBe(e);
+});
+
+test("connectEntity - sets a publish that stops when save throws", (endTest) => {
+    const publishAllSpy = jest.spyOn(eventBusMock, "publishAll").mockResolvedValue({});
+    const u = eventStore.connectEntity(new TestEntity(new ObjectId().toHexString()));
+
+    const event = new TestEvent1();
+
+    cleanUpMongo(connection).then(() => {
+        u.publish([event]).catch(() => {
+            expect(publishAllSpy).toHaveBeenCalledTimes(0);
+            endTest();
+        });
+    });
+});
+
+test("connectEntity - sets a publish that saves and publishes events", async () => {
+    const publishAllSpy = jest.spyOn(eventBusMock, "publishAll").mockResolvedValue({});
+
+    const u = eventStore.connectEntity(new TestEntity(new ObjectId().toHexString()));
+    const event = new TestEvent1();
+    const publishedEvents = await u.publish([event]);
+
+    expect(publishedEvents.length).toBe(1);
+    expect(publishedEvents[0].eventName).toBe("test-event-1");
+    expect(publishedEvents[0].payload).toEqual(instanceToPlain(event));
+    expect(publishedEvents[0].aggregateId).toBe(u.id);
+
+    const storedAggregates = await aggregatesCollection.find({}).toArray();
+    expect(storedAggregates.length).toBe(1);
+
+    const storedEvents = await eventsCollection.find({}).toArray();
+    expect(storedEvents.length).toBe(1);
+
+    expect(storedAggregates[0]._id.toHexString()).toBe(u.id);
+    expect(storedAggregates[0].version).toBe(u.version+1);
+
+    expect(storedEvents[0].aggregateId).toBe(u.id);
+    expect(storedEvents[0].eventName).toBe("test-event-1");
+    expect(storedEvents[0].payload).toEqual(instanceToPlain(event));
+    expect(storedEvents[0]._id).toBeDefined();
+
+    expect(publishAllSpy).toHaveBeenCalledTimes(1);
+    expect(publishAllSpy).toHaveBeenCalledWith([event]);
 });

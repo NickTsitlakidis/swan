@@ -2,8 +2,8 @@ import { UserViewRepository } from "./user-view-repository";
 import { UserProjector } from "./user-projector";
 import { Test } from "@nestjs/testing";
 import { UserView } from "./user-view";
-import { UserCreatedEvent } from "../../domain/user/user-created-event";
 import { ObjectId } from "mongodb";
+import { UserCreatedEvent } from "../../domain/user/user-events";
 
 const repositoryMock: Partial<UserViewRepository> = {
     save: () => Promise.reject("should never be called")
