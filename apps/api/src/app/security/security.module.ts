@@ -9,8 +9,8 @@ import { ClientRepository } from "./client-repository";
 import { ClientTokenIssuer } from "./client-token-issuer";
 import { UserTokenIssuer } from "./user-token-issuer";
 import { RefreshTokenRepository } from "./refresh-token-repository";
-import { AddressAuthenticationRepository } from "./address-authentication-repository";
-import { AddressAuthentication } from "./address-authentication";
+import { SignatureAuthenticationRepository } from "./signature-authentication-repository";
+import { SignatureAuthentication } from "./signature-authentication";
 import { Client } from "./client";
 
 const jwtFactory = async (configService: ConfigService): Promise<JwtModuleOptions> => {
@@ -24,7 +24,7 @@ const jwtFactory = async (configService: ConfigService): Promise<JwtModuleOption
     };
 };
 
-export const SECURITY_DOCUMENTS = [RefreshToken, AddressAuthentication, Client];
+export const SECURITY_DOCUMENTS = [RefreshToken, SignatureAuthentication, Client];
 
 @Module({
     imports: [
@@ -42,14 +42,14 @@ export const SECURITY_DOCUMENTS = [RefreshToken, AddressAuthentication, Client];
         ClientTokenIssuer,
         UserTokenIssuer,
         RefreshTokenRepository,
-        AddressAuthenticationRepository
+        SignatureAuthenticationRepository
     ],
     exports: [
         ClientRepository,
         ClientTokenIssuer,
         UserTokenIssuer,
         RefreshTokenRepository,
-        AddressAuthenticationRepository,
+        SignatureAuthenticationRepository,
         JwtModule
     ]
 })

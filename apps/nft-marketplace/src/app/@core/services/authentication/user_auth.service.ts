@@ -1,6 +1,11 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { CompleteAuthenticationDto, NonceDto, StartAuthenticationDto, TokenDto } from "@nft-marketplace/common";
+import {
+    CompleteAuthenticationDto,
+    NonceDto,
+    StartSignatureAuthenticationDto,
+    TokenDto
+} from "@nft-marketplace/common";
 import { LocalStorageService } from "ngx-webstorage";
 
 @Injectable({
@@ -26,7 +31,7 @@ export class UserAuthService {
         return this.httpClient.post<TokenDto>("/user/complete-authentication", body);
     }
 
-    public getNonce(body: StartAuthenticationDto) {
+    public getNonce(body: StartSignatureAuthenticationDto) {
         return this.httpClient.post<NonceDto>("/user/start-authentication", body);
     }
 }

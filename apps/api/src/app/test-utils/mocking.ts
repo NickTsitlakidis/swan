@@ -6,3 +6,9 @@ export function getMockCalledParameters(spy, length = 1, callNumber = 1): Array<
 
     return toReturn;
 }
+
+export function getThrowingFunction() {
+    return () => {
+        throw "should never be called";
+    };
+}

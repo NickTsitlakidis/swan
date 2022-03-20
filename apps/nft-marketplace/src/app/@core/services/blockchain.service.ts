@@ -1,5 +1,10 @@
 import { Injectable } from "@angular/core";
-import { CompleteAuthenticationDto, NonceDto, StartAuthenticationDto, TokenDto } from "@nft-marketplace/common";
+import {
+    CompleteAuthenticationDto,
+    NonceDto,
+    StartSignatureAuthenticationDto,
+    TokenDto
+} from "@nft-marketplace/common";
 import { WalletName } from "@solana/wallet-adapter-base";
 import { LocalStorageService } from "ngx-webstorage";
 import { Observable } from "rxjs";
@@ -67,7 +72,7 @@ export class BlockChainService {
     }
 
     private _loginUser(service: SolanaWalletService | MetaMaskAuthService, address: string) {
-        const body: StartAuthenticationDto = { walletAddress: address };
+        const body: StartSignatureAuthenticationDto = { walletAddress: address };
         this._userAuthService.getNonce(body).subscribe((res: NonceDto) => {
             service.onSignMessage(res.nonce)?.subscribe((signedMessage: string) => {
                 const completeAuthBody: CompleteAuthenticationDto = {
