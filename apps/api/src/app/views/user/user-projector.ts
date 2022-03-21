@@ -12,7 +12,6 @@ export class UserProjector implements IEventHandler<UserCreatedEvent> {
     async handle(event: UserCreatedEvent): Promise<UserView> {
         const view = new UserView();
         view.id = event.aggregateId;
-        view.walletAddress = event.walletAddress;
 
         return this._repository.save(view);
     }

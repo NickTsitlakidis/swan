@@ -1,7 +1,7 @@
 import { IsEnum, IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { Blockchains } from "./blockchains";
-import { SignatureWallets } from "./signature-wallets";
+import { SupportedWallets } from "./supported-wallets";
 
 export class StartSignatureAuthenticationDto {
     @ApiProperty()
@@ -17,9 +17,9 @@ export class StartSignatureAuthenticationDto {
     @IsEnum(Blockchains)
     blockchain: Blockchains;
 
-    @ApiProperty({ enum: SignatureWallets })
+    @ApiProperty({ enum: SupportedWallets })
     @IsString()
     @IsNotEmpty()
-    @IsEnum(SignatureWallets)
-    wallet: SignatureWallets;
+    @IsEnum(SupportedWallets)
+    wallet: SupportedWallets;
 }

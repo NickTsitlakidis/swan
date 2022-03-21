@@ -1,9 +1,13 @@
-import { Blockchains, SignatureWallets, StartSignatureAuthenticationDto } from "@nft-marketplace/common";
+import {
+    Blockchains,
+    StartSignatureAuthenticationDto,
+    SupportedWallets
+} from "@nft-marketplace/common";
 
 export class StartSignatureAuthenticationCommand {
     address: string;
     blockchain: Blockchains;
-    wallet: SignatureWallets;
+    wallet: SupportedWallets;
 
     constructor(dto: StartSignatureAuthenticationDto) {
         this.address = dto.walletAddress;

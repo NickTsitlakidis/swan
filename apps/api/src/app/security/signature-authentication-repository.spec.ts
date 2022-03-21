@@ -5,7 +5,7 @@ import { cleanUpMongo, getCollection, MONGO_MODULE } from "../test-utils/mongo";
 import { SignatureAuthenticationRepository } from "./signature-authentication-repository";
 import { SignatureAuthentication } from "./signature-authentication";
 import { instanceToPlain } from "class-transformer";
-import { Blockchains, SignatureWallets } from "@nft-marketplace/common";
+import { Blockchains, SupportedWallets } from "@nft-marketplace/common";
 
 let repository: SignatureAuthenticationRepository;
 let collection: Collection<any>;
@@ -32,7 +32,7 @@ test("save - persists authentication", async () => {
     view._id = new ObjectId();
     view.message = "123";
     view.address = "addr";
-    view.wallet = SignatureWallets.PHANTOM;
+    view.wallet = SupportedWallets.PHANTOM;
     view.blockchain = Blockchains.SOLANA;
 
     const saved = await repository.save(view);
@@ -48,7 +48,7 @@ test("findByAddressAndChain - returns authentication match", async () => {
     view._id = new ObjectId();
     view.message = "123";
     view.address = "addr";
-    view.wallet = SignatureWallets.PHANTOM;
+    view.wallet = SupportedWallets.PHANTOM;
     view.blockchain = Blockchains.SOLANA;
 
     await collection.insertOne(instanceToPlain(view));
@@ -62,7 +62,7 @@ test("findByAddress - returns undefined for no address match", async () => {
     view._id = new ObjectId();
     view.message = "123";
     view.address = "addr";
-    view.wallet = SignatureWallets.PHANTOM;
+    view.wallet = SupportedWallets.PHANTOM;
     view.blockchain = Blockchains.SOLANA;
 
     await collection.insertOne(instanceToPlain(view));
@@ -76,7 +76,7 @@ test("findByAddress - returns undefined for no chain match", async () => {
     view._id = new ObjectId();
     view.message = "123";
     view.address = "addr";
-    view.wallet = SignatureWallets.PHANTOM;
+    view.wallet = SupportedWallets.PHANTOM;
     view.blockchain = Blockchains.SOLANA;
 
     await collection.insertOne(instanceToPlain(view));
@@ -90,21 +90,21 @@ test("deleteById - deletes authentication match", async () => {
     view1._id = new ObjectId();
     view1.message = "123";
     view1.address = "addr";
-    view1.wallet = SignatureWallets.PHANTOM;
+    view1.wallet = SupportedWallets.PHANTOM;
     view1.blockchain = Blockchains.SOLANA;
 
     const view2 = new SignatureAuthentication();
     view2._id = new ObjectId();
     view2.message = "456";
     view2.address = "addr";
-    view2.wallet = SignatureWallets.PHANTOM;
+    view2.wallet = SupportedWallets.PHANTOM;
     view2.blockchain = Blockchains.SOLANA;
 
     const view3 = new SignatureAuthentication();
     view3._id = new ObjectId();
     view3.message = "123";
     view3.address = "other";
-    view3.wallet = SignatureWallets.PHANTOM;
+    view3.wallet = SupportedWallets.PHANTOM;
     view3.blockchain = Blockchains.SOLANA;
 
     await collection.insertOne(instanceToPlain(view1));
@@ -124,21 +124,21 @@ test("deleteByAddressAndChain - deletes authentication match", async () => {
     view1._id = new ObjectId();
     view1.message = "123";
     view1.address = "addr1";
-    view1.wallet = SignatureWallets.PHANTOM;
+    view1.wallet = SupportedWallets.PHANTOM;
     view1.blockchain = Blockchains.SOLANA;
 
     const view2 = new SignatureAuthentication();
     view2._id = new ObjectId();
     view2.message = "456";
     view2.address = "addr2";
-    view2.wallet = SignatureWallets.PHANTOM;
+    view2.wallet = SupportedWallets.PHANTOM;
     view2.blockchain = Blockchains.SOLANA;
 
     const view3 = new SignatureAuthentication();
     view3._id = new ObjectId();
     view3.message = "123";
     view3.address = "addr2";
-    view3.wallet = SignatureWallets.METAMASK;
+    view3.wallet = SupportedWallets.METAMASK;
     view3.blockchain = Blockchains.ETHEREUM;
 
     await collection.insertOne(instanceToPlain(view1));

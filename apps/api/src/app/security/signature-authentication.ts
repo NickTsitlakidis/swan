@@ -1,6 +1,6 @@
 import { MongoDocument } from "../infrastructure/mongo-document";
 import { Column, CreateDateColumn, Entity } from "typeorm";
-import { Blockchains, SignatureWallets } from "@nft-marketplace/common";
+import { Blockchains, SupportedWallets } from "@nft-marketplace/common";
 
 @Entity("signature-authentications")
 export class SignatureAuthentication extends MongoDocument {
@@ -11,7 +11,7 @@ export class SignatureAuthentication extends MongoDocument {
     message: string;
 
     @Column()
-    wallet: SignatureWallets;
+    wallet: SupportedWallets;
 
     @Column()
     blockchain: Blockchains;

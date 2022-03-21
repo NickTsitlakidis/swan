@@ -4,4 +4,3 @@ export * from "./lib/token-dto";
 export * from "./lib/supported-wallets";
 export * from "./lib/nonce-dto";
 export * from "./lib/blockchains";
-export * from "./lib/signature-wallets";

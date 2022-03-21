@@ -3,11 +3,16 @@ import { StartSignatureAuthenticationCommand } from "./start-signature-authentic
 import { SignatureAuthenticationRepository } from "../../security/signature-authentication-repository";
 import { IdGenerator } from "../../infrastructure/id-generator";
 import { SignatureAuthentication } from "../../security/signature-authentication";
-import { NonceDto } from "@nft-marketplace/common";
+import { NonceDto, SupportedWallets } from "@nft-marketplace/common";
 import { ConfigService } from "@nestjs/config";
+import { BadRequestException } from "@nestjs/common";
 
 @CommandHandler(StartSignatureAuthenticationCommand)
 export class StartSignatureAuthenticationExecutor implements ICommandHandler<StartSignatureAuthenticationCommand> {
+    private _signatureWallets:Array<SupportedWallets> = [
+        SupportedWallets.METAMASK,
+        SupportedWallets.PHANTOM
+    ]
     constructor(
         private readonly _repository: SignatureAuthenticationRepository,
         private readonly _configService: ConfigService,
@@ -15,6 +20,10 @@ export class StartSignatureAuthenticationExecutor implements ICommandHandler<Sta
     ) {}
 
     async execute(command: StartSignatureAuthenticationCommand): Promise<NonceDto> {
+        if(!this._signatureWallets.includes(command.wallet)) {
+            throw new BadRequestException(`${command.wallet} doesn't support signature authentication`);
+        }
+
         await this._repository.deleteByAddressAndChain(command.address, command.blockchain);
 
         let toSave = new SignatureAuthentication();

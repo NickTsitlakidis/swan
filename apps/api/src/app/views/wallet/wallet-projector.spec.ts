@@ -1,35 +1,35 @@
-import { UserViewRepository } from "./user-view-repository";
-import { UserProjector } from "./user-projector";
 import { Test } from "@nestjs/testing";
-import { UserView } from "./user-view";
 import { ObjectId } from "mongodb";
 import { UserCreatedEvent } from "../../domain/user/user-events";
 import { Wallet } from "../../domain/user/wallet";
 import { Blockchains, SupportedWallets } from "@nft-marketplace/common";
 import { getThrowingFunction } from "../../test-utils/mocking";
+import { WalletViewRepository } from "./wallet-view-repository";
+import { WalletProjector } from "./wallet-projector";
+import { WalletView } from "./wallet-view";
 
-const repositoryMock: Partial<UserViewRepository> = {
+const repositoryMock: Partial<WalletViewRepository> = {
     save: getThrowingFunction()
 };
 
-let projector: UserProjector;
+let projector: WalletProjector;
 
 beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
         providers: [
-            UserProjector,
+            WalletProjector,
             {
-                provide: UserViewRepository,
+                provide: WalletViewRepository,
                 useValue: repositoryMock
             }
         ]
     }).compile();
 
-    projector = moduleRef.get(UserProjector);
+    projector = moduleRef.get(WalletProjector);
 });
 
-test("handle UserCreatedEvent - saves new user view", async () => {
-    const saved = new UserView();
+test("handle UserCreatedEvent - saves new wallet view", async () => {
+    const saved = new WalletView();
     const saveSpy = jest.spyOn(repositoryMock, "save").mockResolvedValue(saved);
 
     const id = new ObjectId().toHexString();
@@ -41,8 +41,12 @@ test("handle UserCreatedEvent - saves new user view", async () => {
 
     expect(handled).toBe(saved);
 
-    const expectedSaved = new UserView();
-    expectedSaved.id = id;
+    const expectedSaved = new WalletView();
+    expectedSaved.id = event.wallet.id;
+    expectedSaved.address = "123";
+    expectedSaved.userId = id;
+    expectedSaved.name = SupportedWallets.METAMASK;
+    expectedSaved.blockchain = Blockchains.ETHEREUM;
 
     expect(saveSpy).toHaveBeenCalledTimes(1);
     expect(saveSpy).toHaveBeenCalledWith(expectedSaved);

@@ -29,7 +29,6 @@ afterEach(async () => {
 test("findById - returns match", async () => {
     const view = new UserView();
     view._id = new ObjectId();
-    view.walletAddress = "the-address";
 
     await collection.insertOne(instanceToPlain(view));
 
@@ -40,7 +39,6 @@ test("findById - returns match", async () => {
 test("findById - returns undefined for no match", async () => {
     const view = new UserView();
     view._id = new ObjectId();
-    view.walletAddress = "the-address";
 
     await collection.insertOne(instanceToPlain(view));
 
@@ -48,32 +46,9 @@ test("findById - returns undefined for no match", async () => {
     expect(found).toBeUndefined();
 });
 
-test("findByWalletAddress - returns match", async () => {
-    const view = new UserView();
-    view._id = new ObjectId();
-    view.walletAddress = "the-address";
-
-    await collection.insertOne(instanceToPlain(view));
-
-    const found = await repository.findByWalletAddress(view.walletAddress);
-    expect(found).toEqual(view);
-});
-
-test("findByWalletAddress - returns undefined for no match", async () => {
-    const view = new UserView();
-    view._id = new ObjectId();
-    view.walletAddress = "the-address";
-
-    await collection.insertOne(instanceToPlain(view));
-
-    const found = await repository.findByWalletAddress("nooooop");
-    expect(found).toBeUndefined();
-});
-
 test("save - persists view", async () => {
     const view = new UserView();
     view._id = new ObjectId();
-    view.walletAddress = "the-address";
 
     const saved = await repository.save(view);
     expect(saved).toEqual(view);

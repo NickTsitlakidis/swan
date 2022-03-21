@@ -5,7 +5,7 @@ import { ConfigService } from "@nestjs/config";
 import { getThrowingFunction } from "../../test-utils/mocking";
 import { StartSignatureAuthenticationExecutor } from "./start-signature-authentication-executor";
 import { StartSignatureAuthenticationCommand } from "./start-signature-authentication-command";
-import { Blockchains, SignatureWallets, StartSignatureAuthenticationDto } from "@nft-marketplace/common";
+import { Blockchains, StartSignatureAuthenticationDto, SupportedWallets } from "@nft-marketplace/common";
 import { SignatureAuthentication } from "../../security/signature-authentication";
 
 const idGeneratorMock: Partial<IdGenerator> = {
@@ -54,7 +54,7 @@ test("execute - builds and saves authentication after deleting previous", async 
     const dto = new StartSignatureAuthenticationDto();
     dto.blockchain = Blockchains.ETHEREUM;
     dto.walletAddress = "the-address";
-    dto.wallet = SignatureWallets.METAMASK;
+    dto.wallet = SupportedWallets.METAMASK;
     const command = new StartSignatureAuthenticationCommand(dto);
 
     const nonce = await executor.execute(command);
@@ -66,7 +66,7 @@ test("execute - builds and saves authentication after deleting previous", async 
     expect(idSpy).toHaveBeenCalledTimes(1);
 
     const expectedAuthentication = new SignatureAuthentication();
-    expectedAuthentication.wallet = SignatureWallets.METAMASK;
+    expectedAuthentication.wallet = SupportedWallets.METAMASK;
     expectedAuthentication.address = "the-address";
     expectedAuthentication.message = "message intro the-id";
     expectedAuthentication.blockchain = Blockchains.ETHEREUM;

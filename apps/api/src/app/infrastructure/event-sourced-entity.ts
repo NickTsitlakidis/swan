@@ -48,7 +48,6 @@ export abstract class EventSourcedEntity {
         if(!isNil(events)) {
             this.buildFromEvents(events);
         }
-
     }
 
     get id(): string {

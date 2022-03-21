@@ -11,10 +11,6 @@ export class UserViewRepository {
         this._mongoRepo = connection.getMongoRepository(UserView);
     }
 
-    findByWalletAddress(address: string): Promise<UserView | undefined> {
-        return this._mongoRepo.findOne({ walletAddress: address });
-    }
-
     findById(id: string): Promise<UserView | undefined> {
         return this._mongoRepo.findOne({ _id: new ObjectID(id) });
     }

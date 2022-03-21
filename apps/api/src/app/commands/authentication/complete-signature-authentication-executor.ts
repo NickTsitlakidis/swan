@@ -1,7 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CompleteSignatureAuthenticationCommand } from "./complete-signature-authentication-command";
 import { SignatureAuthenticationRepository } from "../../security/signature-authentication-repository";
-import { UserViewRepository } from "../../views/user/user-view-repository";
 import { Logger, UnauthorizedException } from "@nestjs/common";
 import { isNil } from "lodash";
 import { getLogger } from "../../infrastructure/logging";
@@ -11,6 +10,9 @@ import { Blockchains, TokenDto } from "@nft-marketplace/common";
 import { User } from "../../domain/user/user";
 import { IdGenerator } from "../../infrastructure/id-generator";
 import { EventStore } from "../../infrastructure/event-store";
+import * as ethUtil from "ethereumjs-util";
+import { Wallet } from "../../domain/user/wallet";
+import { WalletViewRepository } from "../../views/wallet/wallet-view-repository";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bs58 = require("bs58");
 
@@ -23,7 +25,7 @@ export class CompleteSignatureAuthenticationExecutor
     constructor(
         private readonly _authenticationRepository: SignatureAuthenticationRepository,
         private readonly _idGenerator: IdGenerator,
-        private readonly _userViewRepository: UserViewRepository,
+        private readonly _walletViewRepository: WalletViewRepository,
         private readonly _userTokenIssuer: UserTokenIssuer,
         private readonly _eventStore: EventStore
     ) {
@@ -39,7 +41,6 @@ export class CompleteSignatureAuthenticationExecutor
         if (isNil(authentication)) {
             throw new UnauthorizedException("Missing or invalid authentication");
         }
-
         if (authentication.blockchain === Blockchains.SOLANA) {
             const decodedSignature = bs58.decode(command.signature);
             const encodedNonce = new TextEncoder().encode(authentication.message);
@@ -50,22 +51,44 @@ export class CompleteSignatureAuthenticationExecutor
                 this._logger.error(`Detected unverified signature ${command.signature} for ${command.address}`);
                 throw new UnauthorizedException("Missing or invalid authentication");
             }
+        } else {
+            const msgBuffer = ethUtil.toBuffer(authentication.message);
+            const msgHash = ethUtil.hashPersonalMessage(msgBuffer);
+            const signatureBuffer = ethUtil.toBuffer(command.signature);
+            const signatureParams = ethUtil.fromRpcSig(signatureBuffer.toString());
+            const publicKey = ethUtil.ecrecover(msgHash, signatureParams.v, signatureParams.r, signatureParams.s);
+            const addressBuffer = ethUtil.publicToAddress(publicKey);
+            const address = ethUtil.bufferToHex(addressBuffer);
 
-            await this._authenticationRepository.deleteById(authentication.id);
-            const existingUser = await this._userViewRepository.findByWalletAddress(command.address);
-
-            let userId: string;
-            if (isNil(existingUser)) {
-                const newUser = this._eventStore.connectEntity(
-                    new User(this._idGenerator.generateEntityId(), command.address)
-                );
-                await newUser.commit();
-                userId = newUser.id;
-            } else {
-                userId = existingUser.id;
+            // The signature verification is successful if the address found with
+            // ecrecover matches the initial publicAddress
+            if (address.toLowerCase() !== authentication.address) {
+                this._logger.error(`Detected unverified signature ${command.signature} for ${command.address}`);
+                throw new UnauthorizedException("Missing or invalid authentication");
             }
-
-            return this._userTokenIssuer.issueFromId(userId);
         }
+
+        await this._authenticationRepository.deleteById(authentication.id);
+        const existingWallet = await this._walletViewRepository.findByAddressAndBlockchain(
+            command.address,
+            command.blockchain
+        );
+
+        let userId: string;
+        if (isNil(existingWallet)) {
+            const firstWallet = new Wallet(
+                this._idGenerator.generateEntityId(),
+                authentication.address,
+                authentication.blockchain,
+                authentication.wallet
+            );
+            const newUser = this._eventStore.connectEntity(new User(this._idGenerator.generateEntityId(), firstWallet));
+            await newUser.commit();
+            userId = newUser.id;
+        } else {
+            userId = existingWallet.userId;
+        }
+
+        return this._userTokenIssuer.issueFromId(userId);
     }
 }
