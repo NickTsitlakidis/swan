@@ -5,10 +5,11 @@ import { ViewsModule } from "../views/views.module";
 import { StartSignatureAuthenticationExecutor } from "./user/start-signature-authentication-executor";
 import { CompleteSignatureAuthenticationExecutor } from "./user/complete-signature-authentication-executor";
 import { SecurityModule } from "../security/security.module";
+import { ConfigModule } from "@nestjs/config";
 
 @Module({
     providers: [StartSignatureAuthenticationExecutor, CompleteSignatureAuthenticationExecutor],
     exports: [StartSignatureAuthenticationExecutor, CompleteSignatureAuthenticationExecutor],
-    imports: [InfrastructureModule, UserModule, ViewsModule, SecurityModule]
+    imports: [InfrastructureModule, UserModule, ViewsModule, SecurityModule, ConfigModule]
 })
 export class CommandsModule {}

@@ -9,10 +9,11 @@ import { BadRequestException } from "@nestjs/common";
 
 @CommandHandler(StartSignatureAuthenticationCommand)
 export class StartSignatureAuthenticationExecutor implements ICommandHandler<StartSignatureAuthenticationCommand> {
-    private _signatureWallets:Array<SupportedWallets> = [
+    private _signatureWallets: Array<SupportedWallets> = [
         SupportedWallets.METAMASK,
+        SupportedWallets.SOLFLARE,
         SupportedWallets.PHANTOM
-    ]
+    ];
     constructor(
         private readonly _repository: SignatureAuthenticationRepository,
         private readonly _configService: ConfigService,
@@ -20,7 +21,7 @@ export class StartSignatureAuthenticationExecutor implements ICommandHandler<Sta
     ) {}
 
     async execute(command: StartSignatureAuthenticationCommand): Promise<NonceDto> {
-        if(!this._signatureWallets.includes(command.wallet)) {
+        if (!this._signatureWallets.includes(command.wallet)) {
             throw new BadRequestException(`${command.wallet} doesn't support signature authentication`);
         }
 

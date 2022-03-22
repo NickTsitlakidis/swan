@@ -2,13 +2,11 @@ import { Controller, Headers, Post } from "@nestjs/common";
 import { ClientTokenIssuer } from "../../security/client-token-issuer";
 import { TokenDto } from "@nft-marketplace/common";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
-import { User } from "../../domain/user/user";
 import { EventStore } from "../../infrastructure/event-store";
 
 @Controller("/client")
 export class ClientController {
-    constructor(private readonly _issuer: ClientTokenIssuer,
-                private readonly _eventStore: EventStore) {}
+    constructor(private readonly _issuer: ClientTokenIssuer, private readonly _eventStore: EventStore) {}
 
     @ApiOperation({ summary: "Login operation for the api client" })
     @Post("login")
@@ -17,7 +15,6 @@ export class ClientController {
         type: TokenDto
     })
     login(@Headers("Authorization") authorization: string): Promise<TokenDto> {
-        const u = new User("1234");
         return this._issuer.issueWithCredentials(authorization);
     }
 }
