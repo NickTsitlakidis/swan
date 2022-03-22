@@ -10,11 +10,10 @@ import { Blockchains, TokenDto } from "@nft-marketplace/common";
 import { User } from "../../domain/user/user";
 import { IdGenerator } from "../../infrastructure/id-generator";
 import { EventStore } from "../../infrastructure/event-store";
-import * as ethUtil from "ethereumjs-util";
 import { Wallet } from "../../domain/user/wallet";
 import { WalletViewRepository } from "../../views/wallet/wallet-view-repository";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const bs58 = require("bs58");
+import { bufferToHex, ecrecover, fromRpcSig, hashPersonalMessage, publicToAddress, toBuffer } from "ethereumjs-util";
+import { decode } from "bs58";
 
 @CommandHandler(CompleteSignatureAuthenticationCommand)
 export class CompleteSignatureAuthenticationExecutor
@@ -42,9 +41,9 @@ export class CompleteSignatureAuthenticationExecutor
             throw new UnauthorizedException("Missing or invalid authentication");
         }
         if (authentication.blockchain === Blockchains.SOLANA) {
-            const decodedSignature = bs58.decode(command.signature);
+            const decodedSignature = decode(command.signature);
             const encodedNonce = new TextEncoder().encode(authentication.message);
-            const pubKey = bs58.decode(authentication.address);
+            const pubKey = decode(authentication.address);
             try {
                 sign_detached_verify(encodedNonce, decodedSignature, pubKey);
             } catch {
@@ -52,13 +51,12 @@ export class CompleteSignatureAuthenticationExecutor
                 throw new UnauthorizedException("Missing or invalid authentication");
             }
         } else {
-            const msgBuffer = ethUtil.toBuffer(authentication.message);
-            const msgHash = ethUtil.hashPersonalMessage(msgBuffer);
-            const signatureBuffer = ethUtil.toBuffer(command.signature);
-            const signatureParams = ethUtil.fromRpcSig(signatureBuffer.toString());
-            const publicKey = ethUtil.ecrecover(msgHash, signatureParams.v, signatureParams.r, signatureParams.s);
-            const addressBuffer = ethUtil.publicToAddress(publicKey);
-            const address = ethUtil.bufferToHex(addressBuffer);
+            const authenticationHexMessage = toBuffer(bufferToHex(Buffer.from(authentication.message)));
+            const messageHash = hashPersonalMessage(authenticationHexMessage);
+            const signatureParams = fromRpcSig(command.signature);
+            const publicKey = ecrecover(messageHash, signatureParams.v, signatureParams.r, signatureParams.s);
+            const addressBuffer = publicToAddress(publicKey);
+            const address = bufferToHex(addressBuffer);
 
             // The signature verification is successful if the address found with
             // ecrecover matches the initial publicAddress
