@@ -1,0 +1,17 @@
+<div role="button" tabindex="0" shape="round" class="image-placeholder" (click)="imageInput.click()">
+    <input
+        id="image"
+        name="image"
+        accept="image/*"
+        type="file"
+        autocomplete="off"
+        tabindex="-1"
+        class="d-none"
+        #imageInput
+        (change)="onFileChanged($event)"
+    />
+    <div *ngIf="filePath">
+        <img class="loaded-image" [src]="filePath" />
+    </div>
+    <fa-icon *ngIf="!filePath" class="image" [icon]="faImage"></fa-icon>
+</div>

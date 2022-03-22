@@ -8,6 +8,7 @@ import { PagesRoutingModule } from "./pages-routing.module";
 import { MiscellaneousModule } from "./miscellaneous/miscellaneous.module";
 import { HomeModule } from "./home/home.module";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { CreateCollectionModule } from "./create-collection/create-collection.module";
 @NgModule({
     imports: [
         PagesRoutingModule,
@@ -17,6 +18,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
         NbMenuModule,
         MiscellaneousModule,
         HomeModule,
+        CreateCollectionModule,
         HdWalletAdapterModule.forRoot({ autoConnect: true })
     ],
     declarations: [PagesComponent]

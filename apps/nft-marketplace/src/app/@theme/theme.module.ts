@@ -15,6 +15,7 @@ import {
     NbIconModule,
     NbThemeModule
 } from "@nebular/theme";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { NbEvaIconsModule } from "@nebular/eva-icons";
 
 import { FooterComponent, HeaderComponent } from "./components";
@@ -38,7 +39,7 @@ const COMPONENTS = [HeaderComponent, FooterComponent, OneColumnLayoutComponent];
 const PIPES = [CapitalizePipe, PluralPipe, RoundPipe, TimingPipe, NumberWithCommasPipe];
 
 @NgModule({
-    imports: [CommonModule, FormsModule, ...NB_MODULES],
+    imports: [CommonModule, FormsModule, FontAwesomeModule, ...NB_MODULES],
     exports: [CommonModule, ...PIPES, ...COMPONENTS],
     declarations: [...COMPONENTS, ...PIPES]
 })
