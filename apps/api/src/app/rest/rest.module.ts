@@ -5,10 +5,12 @@ import { InfrastructureModule } from "../infrastructure/infrastructure.module";
 import { CqrsModule } from "@nestjs/cqrs";
 import { ViewsModule } from "../views/views.module";
 import { SecurityModule } from "../security/security.module";
+import { SystemController } from "./system/system-controller";
+import { QueriesModule } from "../queries/queries.module";
 
 @Module({
-    controllers: [ClientController, UserController],
-    imports: [CqrsModule, ViewsModule, InfrastructureModule, SecurityModule],
+    controllers: [ClientController, UserController, SystemController],
+    imports: [CqrsModule, ViewsModule, InfrastructureModule, SecurityModule, QueriesModule],
     providers: []
 })
 export class RestModule {}
