@@ -1,4 +1,4 @@
 export enum Blockchains {
-    ETHEREUM = "ETHEREUM",
-    SOLANA = "SOLANA"
+    ETHEREUM = "Ethereum",
+    SOLANA = "Solana"
 }

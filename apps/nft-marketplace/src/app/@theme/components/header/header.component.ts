@@ -37,6 +37,7 @@ export class HeaderComponent implements OnInit {
             this._blockChainService.setWalletName(walletName);
         }
         const chain = this._blockChainService.getWalletServiceByName(walletName, this.chains);
+        this._blockChainService.setBlockchain(chain?.chain.title);
         chain?.chain.service.onSelectWallet(walletName);
         this._blockChainService.startChainAuth(chain?.chain.service);
     }

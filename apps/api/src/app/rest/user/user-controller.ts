@@ -4,7 +4,7 @@ import { ClientGuard } from "../../security/guards/client-guard";
 import { StartSignatureAuthenticationCommand } from "../../commands/user/start-signature-authentication-command";
 import { CompleteSignatureAuthenticationCommand } from "../../commands/user/complete-signature-authentication-command";
 import {
-    CompleteAuthenticationDto,
+    CompleteSignatureAuthenticationDto,
     NonceDto,
     StartSignatureAuthenticationDto,
     TokenDto
@@ -31,7 +31,7 @@ export class UserController {
     @ApiOkResponse({ description: "The token information for the user", type: TokenDto })
     @Post("complete-signature-authentication")
     @UseGuards(ClientGuard)
-    completeAuthentication(@Body() body: CompleteAuthenticationDto): Promise<TokenDto> {
+    completeAuthentication(@Body() body: CompleteSignatureAuthenticationDto): Promise<TokenDto> {
         return this._commandBus.execute(new CompleteSignatureAuthenticationCommand(body));
     }
 
@@ -43,7 +43,10 @@ export class UserController {
 
     @Post("complete-wallet-addition")
     @UseGuards(UserGuard)
-    completeWalletAddition(@RequestUserId() userId: string, @Body() body: CompleteAuthenticationDto): Promise<any> {
+    completeWalletAddition(
+        @RequestUserId() userId: string,
+        @Body() body: CompleteSignatureAuthenticationDto
+    ): Promise<any> {
         return this._commandBus.execute(new CompleteWalletAdditionCommand(body, userId));
     }
 }

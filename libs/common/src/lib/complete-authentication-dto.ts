@@ -1,9 +1,8 @@
-import { IsEnum, IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
-import { SupportedWallets } from "./supported-wallets";
+import { IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { Blockchains } from "./blockchains";
 
-export class CompleteAuthenticationDto {
+export class CompleteSignatureAuthenticationDto {
     @ApiProperty()
     @IsString()
     @IsNotEmpty()

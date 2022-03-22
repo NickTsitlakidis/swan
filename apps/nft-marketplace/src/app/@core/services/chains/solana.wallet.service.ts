@@ -4,7 +4,7 @@ import { WalletAdapterNetwork, WalletName, WalletReadyState } from "@solana/wall
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import * as base58 from "bs58";
 import { defer, from, throwError } from "rxjs";
-import { concatMap, first, map } from "rxjs/operators";
+import { concatMap, first, map, take } from "rxjs/operators";
 
 import { Observable } from "rxjs";
 import { filter } from "rxjs/operators";
@@ -74,10 +74,11 @@ export class SolanaWalletService {
 
     public getPublicKey(): Observable<string | undefined> {
         return this.publicKey$.pipe(
+            filter((data) => data !== null),
             map((data) => {
                 return data?.toString();
             }),
-            first()
+            take(1)
         );
     }
 

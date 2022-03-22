@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import {
-    CompleteAuthenticationDto,
+    CompleteSignatureAuthenticationDto,
     NonceDto,
     StartSignatureAuthenticationDto,
     TokenDto
@@ -27,11 +27,11 @@ export class UserAuthService {
         };
     }
 
-    public completeAuthentication(body: CompleteAuthenticationDto) {
-        return this.httpClient.post<TokenDto>("/user/complete-authentication", body);
+    public completeAuthentication(body: CompleteSignatureAuthenticationDto) {
+        return this.httpClient.post<TokenDto>("/user/complete-signature-authentication", body);
     }
 
     public getNonce(body: StartSignatureAuthenticationDto) {
-        return this.httpClient.post<NonceDto>("/user/start-authentication", body);
+        return this.httpClient.post<NonceDto>("/user/start-signature-authentication", body);
     }
 }

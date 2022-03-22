@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import {
-    CompleteAuthenticationDto,
+    Blockchains,
+    CompleteSignatureAuthenticationDto,
     NonceDto,
     StartSignatureAuthenticationDto,
     TokenDto
@@ -47,8 +48,17 @@ export class BlockChainService {
         return this._lcStorage.retrieve("walletName");
     }
 
+    public getBlockchain(): Blockchains {
+        const chain: Blockchains = this._lcStorage.retrieve("blockchainName");
+        return chain;
+    }
+
+    public setBlockchain(chainName: string | undefined) {
+        this._lcStorage.store("blockchainName", chainName);
+    }
+
     public setWalletName(walletName: string) {
-        return this._lcStorage.store("walletName", walletName);
+        this._lcStorage.store("walletName", walletName);
     }
 
     public getWalletServiceByName(walletName: WalletName, chains: BlockChains[] | undefined): BlockChains | undefined {
@@ -62,6 +72,7 @@ export class BlockChainService {
      *                  Private Methods
      *********************************************************/
 
+    /* TODO: Check for Multi chain wallets */
     private _filterChains(chains: BlockChains[], walletName: WalletName): BlockChains | undefined {
         const chain = chains.find((chain) => {
             return chain.wallets.find((wallet) => {
@@ -72,12 +83,16 @@ export class BlockChainService {
     }
 
     private _loginUser(service: SolanaWalletService | MetaMaskAuthService, address: string) {
-        const body: StartSignatureAuthenticationDto = { walletAddress: address };
+        const body: StartSignatureAuthenticationDto = {
+            walletAddress: address,
+            wallet: this.getWalletName(),
+            blockchain: this.getBlockchain()
+        };
         this._userAuthService.getNonce(body).subscribe((res: NonceDto) => {
             service.onSignMessage(res.nonce)?.subscribe((signedMessage: string) => {
-                const completeAuthBody: CompleteAuthenticationDto = {
+                const completeAuthBody: CompleteSignatureAuthenticationDto = {
                     walletAddress: address,
-                    walletType: this.getWalletName(),
+                    blockchain: this.getBlockchain(),
                     signature: signedMessage
                 };
                 this._userAuthService.completeAuthentication(completeAuthBody).subscribe((res: TokenDto) => {
