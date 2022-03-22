@@ -1,4 +1,4 @@
-export * from "./lib/complete-authentication-dto";
+export * from "./lib/complete-signature-authentication-dto";
 export * from "./lib/start-signature-authentication-dto";
 export * from "./lib/token-dto";
 export * from "./lib/supported-wallets";
