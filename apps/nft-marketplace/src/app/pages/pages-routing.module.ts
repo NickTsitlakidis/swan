@@ -3,7 +3,6 @@ import { NgModule } from "@angular/core";
 
 import { PagesComponent } from "./pages.component";
 import { NotFoundComponent } from "./miscellaneous/not-found/not-found.component";
-import { HomeComponent } from "./home/home.component";
 
 const routes: Routes = [
     {
@@ -12,7 +11,12 @@ const routes: Routes = [
         children: [
             {
                 path: "home",
-                component: HomeComponent
+                loadChildren: () => import("./home/home.module").then((m) => m.HomeModule)
+            },
+            {
+                path: "create-collection",
+                loadChildren: () =>
+                    import("./create-collection/create-collection.module").then((m) => m.CreateCollectionModule)
             },
             {
                 path: "miscellaneous",

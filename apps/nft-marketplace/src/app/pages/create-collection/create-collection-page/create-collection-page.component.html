@@ -1,0 +1,207 @@
+<div class="create-collection container-fluid">
+    <form class="row" [formGroup]="createCollectionForm" (ngSubmit)="onSubmit()">
+        <div class="col-12 text-description">* Required fields</div>
+
+        <!-- Collection's logo image -->
+        <div class="col-12">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.logoImage.title"
+                [subtitle]="labelsAndPlaceholders.logoImage.subtitle"
+            ></nft-marketplace-title-subtitle>
+            <nft-marketplace-image-placeholder
+                (uploadedImage)="updateLogoImage($event)"
+            ></nft-marketplace-image-placeholder>
+        </div>
+
+        <!-- Collection's name -->
+        <div class="col-12">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.collectionName.title"
+            ></nft-marketplace-title-subtitle>
+            <input
+                class="w-100"
+                nbInput
+                type="text"
+                [placeholder]="labelsAndPlaceholders.collectionName.placeholder"
+                formControlName="collectionName"
+            />
+            <div
+                class="text-danger mt-2 mb-2"
+                *ngIf="
+                    createCollectionForm.get('collectionName')?.invalid &&
+                    (createCollectionForm.get('collectionName')?.dirty ||
+                        createCollectionForm.get('collectionName')?.touched)
+                "
+            >
+                This field is required *
+            </div>
+        </div>
+
+        <!-- Collection's marketPlaceUrl -->
+
+        <div class="col-12">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.marketPlaceUrl.title"
+                [subtitle]="labelsAndPlaceholders.marketPlaceUrl.subtitle"
+            ></nft-marketplace-title-subtitle>
+            <nb-form-field>
+                <input
+                    nbInput
+                    type="text"
+                    [placeholder]="labelsAndPlaceholders.marketPlaceUrl.placeholder"
+                    formControlName="marketPlaceUrl"
+                />
+            </nb-form-field>
+        </div>
+
+        <!-- Collection's Description -->
+        <div class="col-12">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.description.title"
+                [subtitle]="labelsAndPlaceholders.description.subtitle"
+            ></nft-marketplace-title-subtitle>
+            <textarea class="w-50" formControlName="description" nbInput></textarea>
+            <div
+                class="text-danger mt-2 mb-2"
+                *ngIf="
+                    createCollectionForm.get('description')?.invalid &&
+                    (createCollectionForm.get('description')?.dirty || createCollectionForm.get('description')?.touched)
+                "
+            >
+                The maximum length of the description should be 1000 characters
+            </div>
+        </div>
+
+        <!-- Collection's Category -->
+        <div class="col-12">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.category.title"
+                [subtitle]="labelsAndPlaceholders.category.subtitle"
+            ></nft-marketplace-title-subtitle>
+            <nb-select placeholder="Add category" shape="semi-round" formControlName="category">
+                <nb-option *ngFor="let cat of categories" [value]="cat">{{ cat }}</nb-option>
+            </nb-select>
+        </div>
+
+        <!-- Collection's Social links -->
+        <div class="col-12" formGroupName="socialLinks">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.socialLinks.title"
+            ></nft-marketplace-title-subtitle>
+
+            <!-- Your site -->
+            <nb-form-field>
+                <fa-icon nbPrefix class="mr-2" [icon]="['fas', 'globe']"></fa-icon>
+                <input
+                    nbInput
+                    type="text"
+                    [placeholder]="labelsAndPlaceholders.socialLinks.customUrl.placeholder"
+                    formControlName="customUrl"
+                />
+            </nb-form-field>
+
+            <!-- Discord -->
+            <nb-form-field>
+                <fa-icon nbPrefix class="mr-2" [icon]="['fab', 'discord']"></fa-icon>
+                <input
+                    nbInput
+                    type="text"
+                    [placeholder]="labelsAndPlaceholders.socialLinks.discord.placeholder"
+                    formControlName="discord"
+                />
+            </nb-form-field>
+
+            <!-- Instagram -->
+            <nb-form-field>
+                <fa-icon nbPrefix class="mr-2" [icon]="['fab', 'instagram']"></fa-icon>
+                <input
+                    nbInput
+                    type="text"
+                    [placeholder]="labelsAndPlaceholders.socialLinks.instagram.placeholder"
+                    formControlName="instagram"
+                />
+            </nb-form-field>
+
+            <!-- Medium -->
+            <nb-form-field>
+                <fa-icon nbPrefix class="mr-2" [icon]="['fab', 'medium']"></fa-icon>
+                <input
+                    nbInput
+                    type="text"
+                    [placeholder]="labelsAndPlaceholders.socialLinks.medium.placeholder"
+                    formControlName="medium"
+                />
+            </nb-form-field>
+
+            <!-- Telegram -->
+            <nb-form-field>
+                <fa-icon nbPrefix class="mr-2" [icon]="['fab', 'telegram']"></fa-icon>
+                <input
+                    nbInput
+                    type="text"
+                    [placeholder]="labelsAndPlaceholders.socialLinks.telegram.placeholder"
+                    formControlName="telegram"
+                />
+            </nb-form-field>
+        </div>
+
+        <!-- Collection's Blockchain -->
+        <div class="col-12">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.chain.title"
+                [subtitle]="labelsAndPlaceholders.chain.subtitle"
+            ></nft-marketplace-title-subtitle>
+            <nb-select shape="semi-round" formControlName="chain" [ngModel]="blockchains[0]">
+                <nb-option *ngFor="let chain of blockchains" [value]="chain">{{ chain.name }}</nb-option>
+            </nb-select>
+        </div>
+
+        <!-- Collection's Payment token -->
+        <div class="col-12">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.paymentToken.title"
+                [subtitle]="labelsAndPlaceholders.paymentToken.subtitle"
+            ></nft-marketplace-title-subtitle>
+            <nb-select shape="semi-round" formControlName="paymentToken" [ngModel]="paymentTokens[0]">
+                <nb-option *ngFor="let token of paymentTokens" [value]="token">{{ token.name }}</nb-option>
+            </nb-select>
+        </div>
+
+        <!-- Collection's percentage fee -->
+        <div class="col-12">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.percentageFee.title"
+                [subtitle]="labelsAndPlaceholders.percentageFee.subtitle"
+            ></nft-marketplace-title-subtitle>
+            <nb-form-field>
+                <input
+                    nbInput
+                    type="text"
+                    [placeholder]="labelsAndPlaceholders.percentageFee.placeholder"
+                    formControlName="percentageFee"
+                />
+            </nb-form-field>
+        </div>
+
+        <!-- Collection's is sensitive content -->
+        <div class="col-12">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.sensitiveContent.title"
+                [subtitle]="labelsAndPlaceholders.sensitiveContent.subtitle"
+            ></nft-marketplace-title-subtitle>
+            <nb-toggle formControlName="sensitiveContent" status="warning" [ngModel]="false"></nb-toggle>
+        </div>
+
+        <hr />
+        <div class="col-12">
+            <button
+                type="submit"
+                [ngClass]="{ 'opacity-50': !createCollectionForm.valid }"
+                class="bg-blue-600 p-2 text-white rounded w-32"
+                [disabled]="!createCollectionForm.valid"
+            >
+                Submit
+            </button>
+        </div>
+    </form>
+</div>

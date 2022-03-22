@@ -12,6 +12,7 @@ import { CoreModule } from "./@core/core.module";
 import { AppRoutingModule } from "./app-routing.module";
 import { HttpRequestsInterceptor } from "./@core/interceptors/http.interceptor";
 import { NgxWebstorageModule } from "ngx-webstorage";
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
     declarations: [AppComponent],
@@ -27,7 +28,8 @@ import { NgxWebstorageModule } from "ngx-webstorage";
             separator: "",
             caseSensitive: true
         }),
-        HttpClientModule
+        HttpClientModule,
+        FontAwesomeModule
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true },

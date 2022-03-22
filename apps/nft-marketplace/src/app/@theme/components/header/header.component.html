@@ -4,6 +4,11 @@
             <span class="header-title">NFT Marketplace</span>
         </div>
         <div class="col">
+            <button nbButton hero shape="semi-round" status="primary" (click)="navigateToCreateCollection()">
+                <fa-icon class="mr-2" [icon]="faPaintBrush"></fa-icon>Create
+            </button>
+        </div>
+        <div class="col">
             <nb-select
                 (selectedChange)="walletSelected($event)"
                 class="float-right"

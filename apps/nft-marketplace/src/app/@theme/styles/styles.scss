@@ -28,4 +28,10 @@
   @include ngx-pace-theme();
 
   @include nb-overrides();
+
+  .text-description {
+      color: nb-theme(text-hint-color);
+      font-weight: nb-theme(text-caption-font-weight);
+      font-size: nb-theme(text-caption-font-size);
+  }
 };
