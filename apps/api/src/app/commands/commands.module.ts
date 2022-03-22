@@ -6,9 +6,10 @@ import { StartSignatureAuthenticationExecutor } from "./user/start-signature-aut
 import { CompleteSignatureAuthenticationExecutor } from "./user/complete-signature-authentication-executor";
 import { SecurityModule } from "../security/security.module";
 import { ConfigModule } from "@nestjs/config";
+import { SignatureValidator } from "./user/signature-validator";
 
 @Module({
-    providers: [StartSignatureAuthenticationExecutor, CompleteSignatureAuthenticationExecutor],
+    providers: [StartSignatureAuthenticationExecutor, CompleteSignatureAuthenticationExecutor, SignatureValidator],
     exports: [StartSignatureAuthenticationExecutor, CompleteSignatureAuthenticationExecutor],
     imports: [InfrastructureModule, UserModule, ViewsModule, SecurityModule, ConfigModule]
 })

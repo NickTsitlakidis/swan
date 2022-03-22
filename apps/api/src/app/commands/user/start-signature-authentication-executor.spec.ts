@@ -7,6 +7,7 @@ import { StartSignatureAuthenticationExecutor } from "./start-signature-authenti
 import { StartSignatureAuthenticationCommand } from "./start-signature-authentication-command";
 import { Blockchains, StartSignatureAuthenticationDto, SupportedWallets } from "@nft-marketplace/common";
 import { SignatureAuthentication } from "../../security/signature-authentication";
+import { BadRequestException } from "@nestjs/common";
 
 const idGeneratorMock: Partial<IdGenerator> = {
     generateUUID: getThrowingFunction()
@@ -43,6 +44,16 @@ beforeEach(async () => {
     }).compile();
 
     executor = moduleRef.get(StartSignatureAuthenticationExecutor);
+});
+
+test("execute - throws for non-signature wallet", async () => {
+    const dto = new StartSignatureAuthenticationDto();
+    dto.blockchain = Blockchains.SOLANA;
+    dto.walletAddress = "the-address";
+    dto.wallet = SupportedWallets.SLOPE;
+    const command = new StartSignatureAuthenticationCommand(dto);
+
+    await expect(executor.execute(command)).rejects.toThrow(BadRequestException);
 });
 
 test("execute - builds and saves authentication after deleting previous", async () => {
