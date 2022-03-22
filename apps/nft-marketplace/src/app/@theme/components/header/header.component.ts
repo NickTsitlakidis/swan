@@ -1,23 +1,29 @@
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { SupportedWallets } from "@nft-marketplace/common";
 import { WalletName } from "@solana/wallet-adapter-base";
 import { BlockChains } from "../../../@core/interfaces/blockchain.interface";
 import { BlockChainService } from "../../../@core/services/blockchain.service";
 
 import { ImagesService } from "../../../@core/services/images_helper/images.service";
+
+import { faPaintBrush } from "@fortawesome/free-solid-svg-icons";
+import { Router } from "@angular/router";
 @Component({
     selector: "nft-marketplace-header",
     styleUrls: ["./header.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush,
     templateUrl: "./header.component.html"
 })
 export class HeaderComponent implements OnInit {
     public chains: BlockChains[] | undefined = [];
     public walletName: SupportedWallets;
     public selectedWallet: BlockChains;
+    public faPaintBrush = faPaintBrush;
 
     constructor(
         public imagesService: ImagesService,
-        private _blockChainService: BlockChainService
+        private _blockChainService: BlockChainService,
+        private _router: Router
     ) {}
 
     ngOnInit() {
@@ -33,6 +39,10 @@ export class HeaderComponent implements OnInit {
         const chain = this._blockChainService.getWalletServiceByName(walletName, this.chains);
         chain?.chain.service.onSelectWallet(walletName);
         this._blockChainService.startChainAuth(chain?.chain.service);
+    }
+
+    public navigateToCreateCollection() {
+        this._router.navigate(["/create-collection"]);
     }
 
     /*********************************************************

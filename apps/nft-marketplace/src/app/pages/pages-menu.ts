@@ -8,6 +8,11 @@ export const MENU_ITEMS: NbMenuItem[] = [
         home: true
     },
     {
+        title: "Create collection",
+        link: "/create-collection",
+        home: true
+    },
+    {
         title: "Miscellaneous",
         icon: "shuffle-2-outline",
         children: [

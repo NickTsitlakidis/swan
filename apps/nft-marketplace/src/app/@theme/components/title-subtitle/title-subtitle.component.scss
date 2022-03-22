@@ -1,0 +1,13 @@
+@import '../../styles/themes';
+@import '~@nebular/theme/styles/global/breakpoints';
+@import '~bootstrap/scss/mixins/breakpoints';
+
+@include nb-install-component() {
+
+  .title-subtitle {
+    width: 100%;
+    display: flex;
+    margin-bottom: 0.25rem;
+    flex-direction: column;
+  }
+}
