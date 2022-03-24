@@ -10,7 +10,6 @@ import { EventPayload, SerializedEvent } from "./serialized-event";
 import { EventSourcedEntity } from "./event-sourced-entity";
 import { getLogger } from "./logging";
 import { QueueEventBus } from "./queue-event-bus";
-import { getMockCalledParameters } from "../test-utils/mocking";
 import { instanceToPlain } from "class-transformer";
 
 let eventStore: EventStore;
@@ -19,12 +18,10 @@ let aggregatesCollection: Collection<any>;
 let connection: Connection;
 
 @SerializedEvent("test-event-1")
-class TestEvent1 extends EventPayload {
-}
+class TestEvent1 extends EventPayload {}
 
 @SerializedEvent("test-event-2")
-class TestEvent2 extends EventPayload {
-}
+class TestEvent2 extends EventPayload {}
 
 class TestEntity extends EventSourcedEntity {
     constructor(id: string) {
@@ -39,10 +36,13 @@ const eventBusMock: Partial<QueueEventBus> = {
 beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
         imports: [MONGO_MODULE],
-        providers: [EventStore, {
-            provide: QueueEventBus,
-            useValue: eventBusMock
-        }]
+        providers: [
+            EventStore,
+            {
+                provide: QueueEventBus,
+                useValue: eventBusMock
+            }
+        ]
     }).compile();
 
     eventStore = moduleRef.get(EventStore);
@@ -184,7 +184,6 @@ test("connectEntity - sets a publish that returns for empty events", async () =>
     const beforeConnect = new TestEntity(id);
     const e = eventStore.connectEntity(beforeConnect);
 
-
     const result = await e.publish([]);
     expect(result).toEqual([]);
 
@@ -230,7 +229,7 @@ test("connectEntity - sets a publish that saves and publishes events", async () 
     expect(storedEvents.length).toBe(1);
 
     expect(storedAggregates[0]._id.toHexString()).toBe(u.id);
-    expect(storedAggregates[0].version).toBe(u.version+1);
+    expect(storedAggregates[0].version).toBe(u.version + 1);
 
     expect(storedEvents[0].aggregateId).toBe(u.id);
     expect(storedEvents[0].eventName).toBe("test-event-1");

@@ -1,8 +1,7 @@
 import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { Connection, MongoRepository } from "typeorm";
 import { Aggregate } from "./aggregate";
-import { MongoClient } from "mongodb";
-import { ObjectID as MongoObjectId } from "mongodb";
+import { MongoClient, ObjectID as MongoObjectId } from "mongodb";
 import { isNil } from "lodash";
 import { getLogger, LogAsyncMethod } from "./logging";
 import { SourcedEvent } from "./sourced-event";
@@ -26,6 +25,7 @@ export class EventStore {
     constructor(databaseConnection: Connection, private _eventBus: QueueEventBus) {
         this.eventRepository = databaseConnection.getMongoRepository(SourcedEvent);
         this.aggregateRepository = databaseConnection.getMongoRepository(Aggregate);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.mongoClient = (databaseConnection.driver as any).queryRunner.databaseConnection;
         this._logger = getLogger(EventStore);
     }
@@ -87,7 +87,6 @@ export class EventStore {
         });
 
         const session = this.mongoClient.startSession();
-
         await session.withTransaction(async () => {
             const eventsCollection = this.mongoClient.db().collection("events");
             const aggregatesCollection = this.mongoClient.db().collection("aggregates");

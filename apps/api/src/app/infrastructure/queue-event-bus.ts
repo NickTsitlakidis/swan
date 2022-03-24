@@ -14,7 +14,7 @@ export class QueueEventBus<EventBase extends IEvent = IEvent> extends EventBus {
 
     private _logger = getLogger(QueueEventBus);
 
-    publish<T extends IEvent>(event: T): any {
+    publish<T extends IEvent>(event: T) {
         const found = find(this._handlerPairs, { eventName: this.getEventName(event) });
         if (isNil(found)) {
             return Promise.resolve();
@@ -24,7 +24,7 @@ export class QueueEventBus<EventBase extends IEvent = IEvent> extends EventBus {
     }
 
     @LogAsyncMethod
-    publishAll<T extends IEvent>(events: T[]): any {
+    publishAll<T extends IEvent>(events: T[]) {
         const withHandlers = events.filter((event) => {
             const found = find(this._handlerPairs, { eventName: this.getEventName(event) });
             return !isNil(found);
