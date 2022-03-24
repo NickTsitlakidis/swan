@@ -9,7 +9,7 @@ import { BadRequestException } from "@nestjs/common";
 export class User extends EventSourcedEntity {
     private _wallets: Array<Wallet>;
 
-    constructor(id: string, wallet: Wallet, events?: Array<SourcedEvent>) {
+    constructor(id: string, wallet?: Wallet, events?: Array<SourcedEvent>) {
         super(id, events, getLogger(User));
 
         if (!isNil(wallet)) {

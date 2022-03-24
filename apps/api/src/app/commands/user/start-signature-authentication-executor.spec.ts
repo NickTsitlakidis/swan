@@ -60,7 +60,7 @@ test("execute - builds and saves authentication after deleting previous", async 
     const configSpy = jest.spyOn(configServiceMock, "get").mockReturnValue("message intro");
     const idSpy = jest.spyOn(idGeneratorMock, "generateUUID").mockReturnValue("the-id");
     const saveSpy = jest.spyOn(repoMock, "save").mockImplementation((value) => Promise.resolve(value));
-    const deleteSpy = jest.spyOn(repoMock, "deleteByAddressAndChain").mockResolvedValue(true);
+    const deleteSpy = jest.spyOn(repoMock, "deleteByAddressAndChain").mockResolvedValue({ result: {} });
 
     const dto = new StartSignatureAuthenticationDto();
     dto.blockchain = Blockchains.ETHEREUM;

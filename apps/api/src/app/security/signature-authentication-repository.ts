@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Connection, MongoRepository } from "typeorm";
 import { SignatureAuthentication } from "./signature-authentication";
-import { ObjectId } from "mongodb";
+import { DeleteWriteOpResultObject, ObjectId } from "mongodb";
 import { Blockchains } from "@nft-marketplace/common";
 
 @Injectable()
@@ -20,11 +20,11 @@ export class SignatureAuthenticationRepository {
         return this._mongoRepo.findOne({ address: address, blockchain: chain });
     }
 
-    deleteById(id: string): Promise<any> {
+    deleteById(id: string): Promise<DeleteWriteOpResultObject> {
         return this._mongoRepo.deleteOne({ _id: new ObjectId(id) });
     }
 
-    deleteByAddressAndChain(address: string, chain: Blockchains): Promise<any> {
+    deleteByAddressAndChain(address: string, chain: Blockchains): Promise<DeleteWriteOpResultObject> {
         return this._mongoRepo.deleteOne({ address: address, blockchain: chain });
     }
 }

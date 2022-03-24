@@ -6,12 +6,11 @@ import { isNil } from "lodash";
 import { getLogger } from "../../infrastructure/logging";
 import { UserTokenIssuer } from "../../security/user-token-issuer";
 import { Blockchains, TokenDto } from "@nft-marketplace/common";
-import { User } from "../../domain/user/user";
 import { IdGenerator } from "../../infrastructure/id-generator";
-import { EventStore } from "../../infrastructure/event-store";
 import { Wallet } from "../../domain/user/wallet";
 import { WalletViewRepository } from "../../views/wallet/wallet-view-repository";
 import { SignatureValidator } from "./signature-validator";
+import { UserFactory } from "../../domain/user/user-factory";
 
 @CommandHandler(CompleteSignatureAuthenticationCommand)
 export class CompleteSignatureAuthenticationExecutor
@@ -25,7 +24,7 @@ export class CompleteSignatureAuthenticationExecutor
         private readonly _idGenerator: IdGenerator,
         private readonly _walletViewRepository: WalletViewRepository,
         private readonly _userTokenIssuer: UserTokenIssuer,
-        private readonly _eventStore: EventStore
+        private readonly _userFactory: UserFactory
     ) {
         this._logger = getLogger(CompleteSignatureAuthenticationExecutor);
     }
@@ -65,7 +64,7 @@ export class CompleteSignatureAuthenticationExecutor
                 auth.blockchain,
                 auth.wallet
             );
-            const newUser = this._eventStore.connectEntity(new User(this._idGenerator.generateEntityId(), firstWallet));
+            const newUser = this._userFactory.createNew(firstWallet);
             await newUser.commit();
             userId = newUser.id;
         } else {
