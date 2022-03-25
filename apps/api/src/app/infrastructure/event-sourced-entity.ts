@@ -5,7 +5,7 @@ import { EventPayload, getEventClassForName } from "./serialized-event";
 import { getLogger } from "./logging";
 
 const REGISTERED: Array<{
-    eventClass: any;
+    eventClass;
     processorKey: string;
 }> = [];
 
@@ -25,7 +25,7 @@ function getEventProcessorKey(eventClass): string {
  * @param eventClass The event class that will trigger the function.
  * @constructor
  */
-export function EventProcessor(eventClass: any): PropertyDecorator {
+export function EventProcessor(eventClass): PropertyDecorator {
     return (propertyParent, propertyKey) => {
         REGISTERED.push({ eventClass: eventClass, processorKey: propertyKey as string });
     };
@@ -45,7 +45,7 @@ export abstract class EventSourcedEntity {
         this._appliedEvents = [];
         this._version = 0;
         this._logger = isNil(logger) ? getLogger(EventSourcedEntity) : logger;
-        if(!isNil(events)) {
+        if (!isNil(events)) {
             this.buildFromEvents(events);
         }
     }

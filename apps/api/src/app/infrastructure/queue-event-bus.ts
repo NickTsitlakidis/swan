@@ -9,7 +9,7 @@ const promiseAllSequential = require("promise-all-sequential");
  * A nestjs event bus that publishes all events sequentially.
  * Cases where the processing of an event depends on a previous, require sequential publishing.
  */
-export class QueueEventBus<EventBase extends IEvent = IEvent> extends EventBus {
+export class QueueEventBus extends EventBus {
     private _handlerPairs: Array<{ eventName: string; handler: IEventHandler<IEvent> }>;
 
     private _logger = getLogger(QueueEventBus);

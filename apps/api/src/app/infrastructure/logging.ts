@@ -2,15 +2,15 @@ import * as moment from "moment";
 import { Logger } from "@nestjs/common";
 import { isNil } from "lodash";
 
-export function LogAsyncMethod(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+export function LogAsyncMethod(target, propertyKey: string, descriptor: PropertyDescriptor) {
     if (isNil(descriptor)) {
-        descriptor = Object.getOwnPropertyDescriptor(target, propertyKey)!;
+        descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
     }
 
     const logger = new Logger(target.constructor.name);
     const methodName = `${target.constructor.name} : ${propertyKey}`;
     const originalMethod = descriptor.value;
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function (...args) {
         const startedAt = moment.utc();
         try {
             const result = await originalMethod.apply(this, args);

@@ -21,7 +21,7 @@ export class SourcedEvent extends MongoDocument {
     public createdAt: Date;
 
     @Column()
-    public payload: any;
+    public payload: unknown;
 
     @Column()
     public aggregateId: string;

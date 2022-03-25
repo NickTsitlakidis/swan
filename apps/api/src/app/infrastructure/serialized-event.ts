@@ -2,7 +2,7 @@ import { find } from "lodash";
 import { InternalServerErrorException } from "@nestjs/common";
 import { IEvent } from "@nestjs/cqrs/dist/interfaces";
 
-const REGISTERED_EVENTS: Array<{ eventName: string; eventClass: any }> = [];
+const REGISTERED_EVENTS: Array<{ eventName: string; eventClass }> = [];
 
 export class EventPayload implements IEvent {
     aggregateId: string;
