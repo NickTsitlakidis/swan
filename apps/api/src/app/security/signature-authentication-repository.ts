@@ -20,6 +20,14 @@ export class SignatureAuthenticationRepository {
         return this._mongoRepo.findOne({ address: address, blockchain: chain });
     }
 
+    findByAddressAndChainAndUserId(
+        address: string,
+        chain: Blockchains,
+        userId: string
+    ): Promise<SignatureAuthentication> {
+        return this._mongoRepo.findOne({ address: address, blockchain: chain, userId: userId });
+    }
+
     deleteById(id: string): Promise<DeleteWriteOpResultObject> {
         return this._mongoRepo.deleteOne({ _id: new ObjectId(id) });
     }

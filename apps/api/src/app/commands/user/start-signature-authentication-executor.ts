@@ -32,6 +32,7 @@ export class StartSignatureAuthenticationExecutor implements ICommandHandler<Sta
         toSave.address = command.address;
         toSave.wallet = command.wallet;
         toSave.blockchain = command.blockchain;
+        toSave.userId = command.userId;
 
         toSave = await this._repository.save(toSave);
         return new NonceDto(toSave.message);

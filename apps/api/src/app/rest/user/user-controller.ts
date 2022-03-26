@@ -7,12 +7,12 @@ import {
     CompleteSignatureAuthenticationDto,
     NonceDto,
     StartSignatureAuthenticationDto,
-    TokenDto
+    TokenDto,
+    WalletDto
 } from "@nft-marketplace/common";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { UserGuard } from "../../security/guards/user-guard";
 import { RequestUserId } from "../../security/request-user-id";
-import { StartWalletAdditionCommand } from "../../commands/user/start-wallet-addition-command";
 import { CompleteWalletAdditionCommand } from "../../commands/user/complete-wallet-addition-command";
 
 @Controller("user")
@@ -35,18 +35,23 @@ export class UserController {
         return this._commandBus.execute(new CompleteSignatureAuthenticationCommand(body));
     }
 
+    @ApiOkResponse({ description: "The generated nonce", type: NonceDto })
     @Post("start-wallet-addition")
     @UseGuards(UserGuard)
-    startWalletAddition(@RequestUserId() userId: string, @Body() body: StartSignatureAuthenticationDto): Promise<any> {
-        return this._commandBus.execute(new StartWalletAdditionCommand(body, userId));
+    startWalletAddition(
+        @RequestUserId() userId: string,
+        @Body() body: StartSignatureAuthenticationDto
+    ): Promise<NonceDto> {
+        return this._commandBus.execute(new StartSignatureAuthenticationCommand(body, userId));
     }
 
+    @ApiOkResponse({ description: "The added wallet", type: WalletDto })
     @Post("complete-wallet-addition")
     @UseGuards(UserGuard)
     completeWalletAddition(
         @RequestUserId() userId: string,
         @Body() body: CompleteSignatureAuthenticationDto
-    ): Promise<any> {
+    ): Promise<WalletDto> {
         return this._commandBus.execute(new CompleteWalletAdditionCommand(body, userId));
     }
 }

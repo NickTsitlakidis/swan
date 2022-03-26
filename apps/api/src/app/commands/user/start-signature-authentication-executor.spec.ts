@@ -66,7 +66,7 @@ test("execute - builds and saves authentication after deleting previous", async 
     dto.blockchain = Blockchains.ETHEREUM;
     dto.walletAddress = "the-address";
     dto.wallet = SupportedWallets.METAMASK;
-    const command = new StartSignatureAuthenticationCommand(dto);
+    const command = new StartSignatureAuthenticationCommand(dto, "the-user");
 
     const nonce = await executor.execute(command);
     expect(nonce.nonce).toBe("message intro the-id");
@@ -81,6 +81,7 @@ test("execute - builds and saves authentication after deleting previous", async 
     expectedAuthentication.address = "the-address";
     expectedAuthentication.message = "message intro the-id";
     expectedAuthentication.blockchain = Blockchains.ETHEREUM;
+    expectedAuthentication.userId = "the-user";
 
     expect(saveSpy).toHaveBeenCalledTimes(1);
     expect(saveSpy).toHaveBeenCalledWith(expectedAuthentication);

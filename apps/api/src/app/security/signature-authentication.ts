@@ -16,6 +16,9 @@ export class SignatureAuthentication extends MongoDocument {
     @Column()
     blockchain: Blockchains;
 
+    @Column()
+    userId: string;
+
     @CreateDateColumn()
     createdAt: Date;
 }
