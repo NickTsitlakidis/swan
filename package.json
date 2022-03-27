@@ -1,6 +1,6 @@
 {
-  "name": "nft-marketplace",
-  "version": "0.0.0",
+  "name": "swan-marketplace",
+  "version": "0.0.1",
   "license": "MIT",
   "scripts": {
     "ng": "nx",
