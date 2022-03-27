@@ -1,6 +1,14 @@
 
 
-# NftMarketplace
+# Swan Marketplace
+
+## NestJS - Backend
+
+### Docker
+
+`docker build -t <tag> .`<br />
+`docker run --env-file ./.env -p 3310:3310 <tag>`
+
 
 This project was generated using [Nx](https://nx.dev).
 
