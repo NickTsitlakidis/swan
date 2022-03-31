@@ -6,10 +6,10 @@ import { ObjectId } from "mongodb";
 import { UserCreatedEvent } from "../../domain/user/user-events";
 import { Wallet } from "../../domain/user/wallet";
 import { Blockchains, SupportedWallets } from "@nft-marketplace/common";
-import { getThrowingFunction } from "../../test-utils/mocking";
+import { getThrower } from "../../test-utils/mocking";
 
 const repositoryMock: Partial<UserViewRepository> = {
-    save: getThrowingFunction()
+    save: getThrower()
 };
 
 let projector: UserProjector;

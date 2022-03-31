@@ -1,7 +1,7 @@
 import { CategoryDto } from "@nft-marketplace/common";
 import { Controller, Get, UseGuards } from "@nestjs/common";
-import { ClientGuard } from "../../security/guards/client-guard";
-import { SystemQueryHandler } from "../../queries/system-query-handler";
+import { ClientGuard } from "../security/guards/client-guard";
+import { SystemQueryHandler } from "../queries/system-query-handler";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 
 @Controller("system")

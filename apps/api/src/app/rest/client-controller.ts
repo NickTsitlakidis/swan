@@ -1,8 +1,8 @@
 import { Controller, Headers, Post } from "@nestjs/common";
-import { ClientTokenIssuer } from "../../security/client-token-issuer";
+import { ClientTokenIssuer } from "../security/client-token-issuer";
 import { TokenDto } from "@nft-marketplace/common";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
-import { EventStore } from "../../infrastructure/event-store";
+import { EventStore } from "../infrastructure/event-store";
 
 @Controller("/client")
 export class ClientController {

@@ -41,13 +41,10 @@ export abstract class EventSourcedEntity {
     private _version: number;
     private _logger: Logger;
 
-    protected constructor(private readonly _id: string, events: Array<SourcedEvent> = [], logger?: Logger) {
+    protected constructor(private readonly _id: string, logger?: Logger) {
         this._appliedEvents = [];
         this._version = 0;
         this._logger = isNil(logger) ? getLogger(EventSourcedEntity) : logger;
-        if (!isNil(events)) {
-            this.buildFromEvents(events);
-        }
     }
 
     get id(): string {
@@ -113,7 +110,7 @@ export abstract class EventSourcedEntity {
      * application logic.
      * @param events The events that will be sent to EventProcessors
      */
-    buildFromEvents(events: Array<SourcedEvent>) {
+    processEvents(events: Array<SourcedEvent>) {
         if (events.length > 0) {
             this.sortEvents(events).forEach((ev) => {
                 try {

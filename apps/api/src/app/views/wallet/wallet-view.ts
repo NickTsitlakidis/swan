@@ -1,10 +1,9 @@
 import { Blockchains, SupportedWallets } from "@nft-marketplace/common";
-import { Column, Entity } from "typeorm";
+import { Column, CreateDateColumn, Entity } from "typeorm";
 import { MongoDocument } from "../../infrastructure/mongo-document";
 
 @Entity("wallet-views")
 export class WalletView extends MongoDocument {
-
     @Column()
     address: string;
 
@@ -16,4 +15,7 @@ export class WalletView extends MongoDocument {
 
     @Column()
     userId: string;
+
+    @CreateDateColumn()
+    createdAt: Date;
 }

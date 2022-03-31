@@ -3,13 +3,13 @@ import { ObjectId } from "mongodb";
 import { UserCreatedEvent } from "../../domain/user/user-events";
 import { Wallet } from "../../domain/user/wallet";
 import { Blockchains, SupportedWallets } from "@nft-marketplace/common";
-import { getThrowingFunction } from "../../test-utils/mocking";
+import { getThrower } from "../../test-utils/mocking";
 import { WalletViewRepository } from "./wallet-view-repository";
 import { WalletProjector } from "./wallet-projector";
 import { WalletView } from "./wallet-view";
 
 const repositoryMock: Partial<WalletViewRepository> = {
-    save: getThrowingFunction()
+    save: getThrower()
 };
 
 let projector: WalletProjector;

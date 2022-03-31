@@ -10,10 +10,10 @@ export class UserFactory {
     constructor(private _store: EventStore, private _idGenerator: IdGenerator) {}
 
     createFromEvents(id: string, events: Array<SourcedEvent>): User {
-        return this._store.connectEntity(new User(id, undefined, events));
+        return this._store.connectEntity(User.fromEvents(id, events));
     }
 
     createNew(firstWallet: Wallet): User {
-        return this._store.connectEntity(new User(this._idGenerator.generateEntityId(), firstWallet));
+        return this._store.connectEntity(User.create(this._idGenerator.generateEntityId(), firstWallet));
     }
 }

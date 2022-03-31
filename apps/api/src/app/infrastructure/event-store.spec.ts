@@ -25,7 +25,7 @@ class TestEvent2 extends EventPayload {}
 
 class TestEntity extends EventSourcedEntity {
     constructor(id: string) {
-        super(id, [], getLogger(TestEntity));
+        super(id, getLogger(TestEntity));
     }
 }
 
