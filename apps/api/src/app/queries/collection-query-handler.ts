@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { AvailabilityDto } from "@nft-marketplace/common";
+import {AvailabilityDto, CollectionDto} from "@nft-marketplace/common";
 import { CollectionViewRepository } from "../views/collection/collection-view-repository";
+import {LogAsyncMethod} from "../infrastructure/logging";
 
 @Injectable()
 export class CollectionQueryHandler {
@@ -12,5 +13,15 @@ export class CollectionQueryHandler {
 
     getUrlAvailability(url: string): Promise<AvailabilityDto> {
         return this._collectionRepository.countByCustomUrl(url).then((count) => new AvailabilityDto(count === 0));
+    }
+
+    @LogAsyncMethod
+    async fetchOneCollection(id: string): Promise<CollectionDto> {
+        const view = await this._collectionRepository.findOne(id);
+        let cto = new CollectionDto();
+            cto.id = view.id;
+            cto.name = view.name;
+            cto.blockchain = view.blockchain;
+        return cto;
     }
 }

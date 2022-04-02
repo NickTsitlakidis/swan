@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
-import { AvailabilityDto, CreateCollectionDto, EntityDto } from "@nft-marketplace/common";
+import {AvailabilityDto, CollectionDto, CreateCollectionDto, EntityDto} from "@nft-marketplace/common";
 import { UserGuard } from "../security/guards/user-guard";
 import { CollectionQueryHandler } from "../queries/collection-query-handler";
-import { ApiOkResponse } from "@nestjs/swagger";
+import {ApiOkResponse, ApiOperation} from "@nestjs/swagger";
 import { RequestUserId } from "../security/request-user-id";
 import { instanceToPlain, plainToClass } from "class-transformer";
 import { CreateCollectionCommand } from "../commands/collection/create-collection-command";
@@ -11,6 +11,8 @@ import { CommandBus } from "@nestjs/cqrs";
 @Controller("collections")
 export class CollectionController {
     constructor(private _collectionQueryHandler: CollectionQueryHandler, private _commandBus: CommandBus) {}
+
+
 
     @ApiOkResponse({ type: AvailabilityDto })
     @UseGuards(UserGuard)
@@ -33,5 +35,17 @@ export class CollectionController {
         const command = plainToClass(CreateCollectionCommand, instanceToPlain(dto));
         command.userId = userId;
         return this._commandBus.execute(command);
+    }
+
+    @ApiOperation({summary: "Fetch a collection using it's own id"})
+    @Get("/")
+    @ApiOkResponse({
+        description: "A user's collection",
+        type: CollectionDto
+    })
+
+    @UseGuards(UserGuard)
+    fetchCollection(@RequestUserId() userId: string, @Query('id') id: string): Promise<CollectionDto> {
+        return this._collectionQueryHandler.fetchOneCollection(id);
     }
 }

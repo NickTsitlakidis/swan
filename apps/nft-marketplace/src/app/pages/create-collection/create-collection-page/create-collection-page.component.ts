@@ -39,7 +39,7 @@ export class CreateCollectionPageComponent implements OnInit {
         },
         marketPlaceUrl: {
             title: "URL",
-            subtitle: "Customize your URL on OpenSea. Must only contain lowercase letters,numbers, and hyphens.",
+            subtitle: "Customize your URL on Swan :P. Must only contain lowercase letters,numbers, and hyphens.",
             placeholder: "temple-of-illusions",
             prefix: "https://swan-marketplace.io/collection/"
         },
