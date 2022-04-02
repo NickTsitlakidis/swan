@@ -1,4 +1,4 @@
-import { Controller, Query, Get, Headers, UseGuards } from "@nestjs/common";
+import { Controller, Query, Get, UseGuards } from "@nestjs/common";
 import { CollectionDto } from "@nft-marketplace/common";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { UserGuard } from "../../security/guards/user-guard";
@@ -18,10 +18,7 @@ export class CollectionController {
     })
 
     @UseGuards(UserGuard)
-    fetchCollection(@RequestUserId() userId: string, /*@Headers('Authorization') authorization: string,*/ @Query('id') id: string): object /*Promise<CollectionDto>*/ {
-        console.log({userId, id})
-
-        return this._queryHandler.fetchOneCollection(id);// this._issuer.issueWithCredentials(authorization);
-        return {test: userId, id};// this._issuer.issueWithCredentials(authorization);
+    fetchCollection(@RequestUserId() userId: string, @Query('id') id: string): Promise<CollectionDto> {
+        return this._queryHandler.fetchOneCollection(id);
     }
 }

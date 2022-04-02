@@ -7,7 +7,7 @@ import { ViewsModule } from "../views/views.module";
 import { SecurityModule } from "../security/security.module";
 import { SystemController } from "./system/system-controller";
 import { QueriesModule } from "../queries/queries.module";
-import {CollectionController} from "./collection/collection-controller";
+import { CollectionController } from "./collection/collection-controller";
 
 @Module({
     controllers: [ClientController, UserController, SystemController, CollectionController],
