@@ -1,6 +1,7 @@
-import { Blockchains, CollectionDescriptor, CollectionLinksDto } from "@nft-marketplace/common";
+import { Blockchains, CollectionLinksDto } from "@nft-marketplace/common";
+import { Type } from "class-transformer";
 
-export class CreateCollectionCommand implements CollectionDescriptor {
+export class CreateCollectionCommand {
     userId: string;
     name: string;
     description: string;
@@ -8,8 +9,9 @@ export class CreateCollectionCommand implements CollectionDescriptor {
     imageUrl: string;
     categoryId: string;
     customUrl: string;
-    links: CollectionLinksDto;
     salePercentage: number;
     blockchain: Blockchains;
     paymentToken: string;
+    @Type(() => CollectionLinksDto)
+    links: CollectionLinksDto;
 }

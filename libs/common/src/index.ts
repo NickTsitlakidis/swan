@@ -10,4 +10,4 @@ export * from "./lib/create-collection-dto";
 export * from "./lib/collection-links-dto";
 export * from "./lib/collection-dto";
 export * from "./lib/availability-dto";
-export * from "./lib/descriptors/collection-descriptor";
+export * from "./lib/entity-dto";

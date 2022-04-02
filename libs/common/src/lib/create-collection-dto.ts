@@ -1,9 +1,16 @@
 import { CollectionLinksDto } from "./collection-links-dto";
 import { Blockchains } from "./blockchains";
 import { ApiProperty } from "@nestjs/swagger";
-import { CollectionDescriptor } from "./descriptors/collection-descriptor";
+import { Type } from "class-transformer";
 
-export class CreateCollectionDto implements CollectionDescriptor {
+export class CreateCollectionDto {
+    @ApiProperty()
+    @Type(() => CollectionLinksDto)
+    links: CollectionLinksDto;
+
+    @ApiProperty({ enum: Blockchains })
+    blockchain: Blockchains;
+
     @ApiProperty()
     name: string;
     @ApiProperty()
@@ -17,11 +24,7 @@ export class CreateCollectionDto implements CollectionDescriptor {
     @ApiProperty()
     imageUrl: string;
     @ApiProperty()
-    links: CollectionLinksDto;
-    @ApiProperty()
     salePercentage: number;
-    @ApiProperty({ enum: Blockchains })
-    blockchain: Blockchains;
     @ApiProperty()
     paymentToken: string;
 }
