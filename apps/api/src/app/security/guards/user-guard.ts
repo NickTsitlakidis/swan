@@ -16,6 +16,7 @@ export class UserGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
 
+
         if (!hasBearerToken(context)) {
             throw new UnauthorizedException("Invalid or missing credentials");
         }
@@ -23,6 +24,7 @@ export class UserGuard implements CanActivate {
         let verified;
 
         try {
+            // todo:  Error ? 'Argument passed in must be a single String of 12 bytes or a string of 24 hex characters'
             verified = this._signingService.verify(extractBearerValue(context));
         } catch (error) {
             this._logger.error(`Detected unverified or expired token ${token}`);

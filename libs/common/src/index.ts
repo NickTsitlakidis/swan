@@ -6,3 +6,4 @@ export * from "./lib/nonce-dto";
 export * from "./lib/blockchains";
 export * from "./lib/category-dto";
 export * from "./lib/wallet-dto";
+export * from "./lib/collection-dto";
