@@ -1,5 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { CategoryDto, CreateCollectionDto } from "@nft-marketplace/common";
+import { CollectionsService } from "../../../@core/services/collections/collections.service";
 
 @Component({
     selector: "nft-marketplace-create-collection-page",
@@ -8,7 +10,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 })
 export class CreateCollectionPageComponent implements OnInit {
     public createCollectionForm: FormGroup;
-    public categories = ["Image", "Audio", "Video"];
+    public categories: CategoryDto[];
     public blockchains = [
         {
             name: "Ethereum"
@@ -86,7 +88,11 @@ export class CreateCollectionPageComponent implements OnInit {
         }
     };
 
-    constructor(private _fb: FormBuilder) {}
+    constructor(private _fb: FormBuilder, private _collectionsService: CollectionsService) {
+        this._collectionsService.getCategories().subscribe((categories) => {
+            this.categories = categories;
+        });
+    }
 
     ngOnInit(): void {
         this.createCollectionForm = this._fb.group({
@@ -94,7 +100,7 @@ export class CreateCollectionPageComponent implements OnInit {
             collectionName: ["", Validators.required],
             marketPlaceUrl: [""],
             description: ["", Validators.maxLength(1000)],
-            category: [""],
+            category: ["", Validators.required],
             socialLinks: this._fb.group({
                 customUrl: [""],
                 discord: [""],
@@ -102,7 +108,7 @@ export class CreateCollectionPageComponent implements OnInit {
                 medium: [""],
                 telegram: [""]
             }),
-            chain: [""],
+            chain: ["", Validators.required],
             paymentToken: [""],
             percentageFee: [""],
             sensitiveContent: [""]
@@ -118,6 +124,23 @@ export class CreateCollectionPageComponent implements OnInit {
     }
 
     onSubmit() {
-        console.log("Hi");
+        const name = this.createCollectionForm.controls["collectionName"].value;
+        const url = this.createCollectionForm.controls["marketPlaceUrl"].value;
+        console.log(name, url);
+        this._collectionsService.validateCollectioName(name).subscribe((data) => {
+            console.log(data);
+        });
+        this._collectionsService.validateCollectioUrl(url).subscribe((data) => {
+            console.log(data);
+        });
+
+        const body = new CreateCollectionDto();
+        body.name = name;
+        body.categoryId = this.createCollectionForm.controls["category"].value;
+        body.blockchain = this.createCollectionForm.controls["chain"].value;
+
+        this._collectionsService.createCollection(body).subscribe((data) => {
+            console.log(data);
+        });
     }
 }

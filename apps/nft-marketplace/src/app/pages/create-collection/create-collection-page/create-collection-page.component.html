@@ -79,7 +79,7 @@
                 [subtitle]="labelsAndPlaceholders.category.subtitle"
             ></nft-marketplace-title-subtitle>
             <nb-select placeholder="Add category" shape="semi-round" formControlName="category">
-                <nb-option *ngFor="let cat of categories" [value]="cat">{{ cat }}</nb-option>
+                <nb-option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</nb-option>
             </nb-select>
         </div>
 

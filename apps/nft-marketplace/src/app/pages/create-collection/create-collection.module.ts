@@ -12,6 +12,7 @@ import { CreateCollectionComponent } from "./create-collection.component";
 
 import { faInstagram, faMedium, faDiscord, faTelegram } from "@fortawesome/free-brands-svg-icons";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
+import { CollectionsService } from "../../@core/services/collections/collections.service";
 
 @NgModule({
     imports: [
@@ -26,7 +27,8 @@ import { faGlobe } from "@fortawesome/free-solid-svg-icons";
         TitleSubTitleModule,
         ImagePlaceholderModule
     ],
-    declarations: [CreateCollectionComponent, CreateCollectionPageComponent]
+    declarations: [CreateCollectionComponent, CreateCollectionPageComponent],
+    providers: [CollectionsService]
 })
 export class CreateCollectionModule {
     constructor(library: FaIconLibrary) {
