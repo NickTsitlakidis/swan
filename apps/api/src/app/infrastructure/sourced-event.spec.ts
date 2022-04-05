@@ -2,9 +2,13 @@ import moment = require("moment");
 import { instanceToPlain } from "class-transformer";
 import { EventPayload, SerializedEvent } from "./serialized-event";
 import { SourcedEvent } from "./sourced-event";
+import { keys } from "lodash";
 
 @SerializedEvent("test-event")
-class TestEvent extends EventPayload {}
+class TestEvent extends EventPayload {
+    field1: string;
+    field2: string;
+}
 
 test("constructor - skips serializable", () => {
     const expectedDate = new Date();
@@ -25,13 +29,16 @@ test("constructor - handles serializable", () => {
         return +expectedDate;
     };
 
-    const verifiedEvent = new TestEvent();
-    const event = new SourcedEvent("agr-id", verifiedEvent);
+    const testEvent = new TestEvent();
+    testEvent.field1 = "the-field";
+    testEvent.field2 = undefined;
+    const event = new SourcedEvent("agr-id", testEvent);
 
     expect(event.aggregateId).toBe("agr-id");
     expect(event.id).toBeDefined();
     expect(event.createdAt).toEqual(expectedDate);
-    expect(event.payload).toEqual(instanceToPlain(verifiedEvent));
+    expect(keys(event.payload).length).toEqual(1);
+    expect(event.payload["field1"]).toBe("the-field");
     expect(event.eventName).toBe("test-event");
 });
 
