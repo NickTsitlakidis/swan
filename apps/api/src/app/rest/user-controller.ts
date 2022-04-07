@@ -1,8 +1,8 @@
 import { Body, Controller, Post, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
-import { ClientGuard } from "../../security/guards/client-guard";
-import { StartSignatureAuthenticationCommand } from "../../commands/user/start-signature-authentication-command";
-import { CompleteSignatureAuthenticationCommand } from "../../commands/user/complete-signature-authentication-command";
+import { ClientGuard } from "../security/guards/client-guard";
+import { StartSignatureAuthenticationCommand } from "../commands/user/start-signature-authentication-command";
+import { CompleteSignatureAuthenticationCommand } from "../commands/user/complete-signature-authentication-command";
 import {
     CompleteSignatureAuthenticationDto,
     NonceDto,
@@ -11,9 +11,9 @@ import {
     WalletDto
 } from "@nft-marketplace/common";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
-import { UserGuard } from "../../security/guards/user-guard";
-import { RequestUserId } from "../../security/request-user-id";
-import { CompleteWalletAdditionCommand } from "../../commands/user/complete-wallet-addition-command";
+import { UserGuard } from "../security/guards/user-guard";
+import { RequestUserId } from "../security/request-user-id";
+import { CompleteWalletAdditionCommand } from "../commands/user/complete-wallet-addition-command";
 
 @Controller("user")
 export class UserController {

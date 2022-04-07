@@ -6,3 +6,8 @@ export * from "./lib/nonce-dto";
 export * from "./lib/blockchains";
 export * from "./lib/category-dto";
 export * from "./lib/wallet-dto";
+export * from "./lib/create-collection-dto";
+export * from "./lib/collection-links-dto";
+export * from "./lib/collection-dto";
+export * from "./lib/availability-dto";
+export * from "./lib/entity-dto";

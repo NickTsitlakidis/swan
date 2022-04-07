@@ -1,7 +1,6 @@
 import { EventProcessor, EventSourcedEntity } from "../../infrastructure/event-sourced-entity";
 import { SourcedEvent } from "../../infrastructure/sourced-event";
 import { getLogger } from "../../infrastructure/logging";
-import { isNil } from "lodash";
 import { Wallet } from "./wallet";
 import { WalletAddedEvent, UserCreatedEvent } from "./user-events";
 import { BadRequestException } from "@nestjs/common";
@@ -9,13 +8,21 @@ import { BadRequestException } from "@nestjs/common";
 export class User extends EventSourcedEntity {
     private _wallets: Array<Wallet>;
 
-    constructor(id: string, wallet?: Wallet, events?: Array<SourcedEvent>) {
-        super(id, events, getLogger(User));
+    static fromEvents(id: string, events: Array<SourcedEvent>): User {
+        const u = new User(id);
+        u.processEvents(events);
+        return u;
+    }
 
-        if (!isNil(wallet)) {
-            this._wallets = [wallet];
-            this.apply(new UserCreatedEvent(wallet));
-        }
+    static create(id: string, wallet: Wallet): User {
+        const u = new User(id);
+        u._wallets = [wallet];
+        u.apply(new UserCreatedEvent(wallet));
+        return u;
+    }
+
+    private constructor(id: string) {
+        super(id, getLogger(User));
     }
 
     addWallet(wallet: Wallet) {

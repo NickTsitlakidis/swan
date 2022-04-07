@@ -1,5 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { Blockchains, CategoryDto, CollectionLinksDto, CreateCollectionDto } from "@nft-marketplace/common";
+import { CollectionsService } from "../../../@core/services/collections/collections.service";
+import { ValidateName, ValidateUrl } from "./create-collection-page.validator";
 
 @Component({
     selector: "nft-marketplace-create-collection-page",
@@ -8,7 +11,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 })
 export class CreateCollectionPageComponent implements OnInit {
     public createCollectionForm: FormGroup;
-    public categories = ["Image", "Audio", "Video"];
+    public categories: CategoryDto[];
     public blockchains = [
         {
             name: "Ethereum"
@@ -45,7 +48,7 @@ export class CreateCollectionPageComponent implements OnInit {
             subtitle: "0 of 1000 characters used."
         },
         category: {
-            title: "Category",
+            title: "Category *",
             subtitle: "Adding a category will help make your item discoverable on Swan."
         },
         socialLinks: {
@@ -67,7 +70,7 @@ export class CreateCollectionPageComponent implements OnInit {
             }
         },
         chain: {
-            title: "Blockchain",
+            title: "Blockchain *",
             subtitle: "Select the blockchain where you'd like new items from this collection to be added by default."
         },
         paymentToken: {
@@ -86,26 +89,30 @@ export class CreateCollectionPageComponent implements OnInit {
         }
     };
 
-    constructor(private _fb: FormBuilder) {}
+    constructor(private _fb: FormBuilder, private _collectionsService: CollectionsService) {
+        this._collectionsService.getCategories().subscribe((categories) => {
+            this.categories = categories;
+        });
+    }
 
     ngOnInit(): void {
         this.createCollectionForm = this._fb.group({
-            logoImage: [null, Validators.required],
-            collectionName: ["", Validators.required],
-            marketPlaceUrl: [""],
-            description: ["", Validators.maxLength(1000)],
-            category: [""],
+            logoImage: [undefined, Validators.required],
+            collectionName: [undefined, [Validators.required], [ValidateName.validateName(this._collectionsService)]],
+            marketPlaceUrl: [undefined, [ValidateUrl.validateUrl(this._collectionsService)]],
+            description: [undefined, Validators.maxLength(1000)],
+            category: [undefined, Validators.required],
             socialLinks: this._fb.group({
-                customUrl: [""],
-                discord: [""],
-                instagram: [""],
-                medium: [""],
-                telegram: [""]
+                customUrl: [undefined],
+                discord: [undefined],
+                instagram: [undefined],
+                medium: [undefined],
+                telegram: [undefined]
             }),
-            chain: [""],
-            paymentToken: [""],
-            percentageFee: [""],
-            sensitiveContent: [""]
+            chain: [undefined, Validators.required],
+            paymentToken: [undefined],
+            percentageFee: [undefined],
+            sensitiveContent: [undefined]
         });
     }
 
@@ -118,6 +125,34 @@ export class CreateCollectionPageComponent implements OnInit {
     }
 
     onSubmit() {
-        console.log("Hi");
+        const body = new CreateCollectionDto();
+        const socialLinks = new CollectionLinksDto();
+        const socialFormVal = this.createCollectionForm.get("socialLinks")?.value;
+
+        socialLinks.discord = socialFormVal.discord;
+        socialLinks.instagram = socialFormVal?.instagram;
+        socialLinks.medium = socialFormVal?.medium;
+        socialLinks.telegram = socialFormVal?.telegram;
+        socialLinks.website = socialFormVal?.customUrl;
+        body.links = socialLinks;
+
+        const blockChainFormVal =
+            this.createCollectionForm.get("chain")?.value === Blockchains.ETHEREUM
+                ? Blockchains.ETHEREUM
+                : Blockchains.SOLANA;
+        body.blockchain = blockChainFormVal;
+
+        body.name = this.createCollectionForm.get("collectionName")?.value;
+        body.categoryId = this.createCollectionForm.get("category")?.value;
+        body.customUrl = this.createCollectionForm.get("marketPlaceUrl")?.value;
+        body.description = this.createCollectionForm.get("description")?.value;
+        body.isExplicit = this.createCollectionForm.get("sensitiveContent")?.value;
+        body.imageUrl = this.createCollectionForm.get("logoImage")?.value;
+        body.salePercentage = this.createCollectionForm.get("percentageFee")?.value;
+        body.paymentToken = this.createCollectionForm.get("paymentToken")?.value;
+
+        this._collectionsService.createCollection(body).subscribe((data) => {
+            console.log(data);
+        });
     }
 }

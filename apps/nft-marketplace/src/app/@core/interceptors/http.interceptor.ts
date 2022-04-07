@@ -5,17 +5,31 @@ import { tap } from "rxjs/operators";
 
 import { environment } from "../../../environments/environment";
 import { ClientAuthService } from "../services/authentication/client_auth.service";
+import { UserAuthService } from "../services/authentication/user_auth.service";
 
 @Injectable()
 export class HttpRequestsInterceptor implements HttpInterceptor {
-    constructor(private _clientAuthService: ClientAuthService) {}
+    public clientRequests = [
+        "/system",
+        "/user/start-signature-authentication",
+        "/user/complete-signature-authentication"
+    ];
+    public clientLogin = "/client/login";
+    public userRequests = ["/collections"];
+
+    constructor(private _clientAuthService: ClientAuthService, private _userAuthService: UserAuthService) {}
 
     intercept(req: HttpRequest<unknown>, next: HttpHandler) {
         const url = req.url;
 
         const clientData = this._clientAuthService.getClientTokenData();
-        if (clientData.tokenValue && url.indexOf("/client/login") === -1) {
+        const userData = this._userAuthService.getUserTokenData();
+        if (clientData.tokenValue && this.clientRequests.some((requestString) => url.includes(requestString))) {
             req = this._addBearerToken(req, clientData.tokenValue);
+        }
+
+        if (userData.tokenValue && this.userRequests.some((requestString) => url.includes(requestString))) {
+            req = this._addBearerToken(req, userData.tokenValue);
         }
 
         const httpsReq: HttpRequest<unknown> = req.clone({

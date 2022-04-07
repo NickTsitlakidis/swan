@@ -1,4 +1,4 @@
-import { getThrowingFunction } from "../test-utils/mocking";
+import { getThrower } from "../test-utils/mocking";
 import { Test } from "@nestjs/testing";
 import { SystemQueryHandler } from "./system-query-handler";
 import { CategoryViewRepository } from "../views/categories/category-view-repository";
@@ -7,13 +7,13 @@ import { ObjectId } from "mongodb";
 import { CategoryDto } from "@nft-marketplace/common";
 
 const repoMock: Partial<CategoryViewRepository> = {
-    findAll: getThrowingFunction()
+    findAll: getThrower()
 };
 
 let handler: SystemQueryHandler;
 
 beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
+    const testModule = await Test.createTestingModule({
         providers: [
             SystemQueryHandler,
             {
@@ -23,7 +23,7 @@ beforeEach(async () => {
         ]
     }).compile();
 
-    handler = moduleRef.get(SystemQueryHandler);
+    handler = testModule.get(SystemQueryHandler);
 });
 
 test("getCategories - returns empty array if there are no views", async () => {

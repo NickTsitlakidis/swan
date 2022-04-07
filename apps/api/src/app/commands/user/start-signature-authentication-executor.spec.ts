@@ -2,7 +2,7 @@ import { IdGenerator } from "../../infrastructure/id-generator";
 import { Test } from "@nestjs/testing";
 import { SignatureAuthenticationRepository } from "../../security/signature-authentication-repository";
 import { ConfigService } from "@nestjs/config";
-import { getThrowingFunction } from "../../test-utils/mocking";
+import { getThrower } from "../../test-utils/mocking";
 import { StartSignatureAuthenticationExecutor } from "./start-signature-authentication-executor";
 import { StartSignatureAuthenticationCommand } from "./start-signature-authentication-command";
 import { Blockchains, StartSignatureAuthenticationDto, SupportedWallets } from "@nft-marketplace/common";
@@ -10,16 +10,16 @@ import { SignatureAuthentication } from "../../security/signature-authentication
 import { BadRequestException } from "@nestjs/common";
 
 const idGeneratorMock: Partial<IdGenerator> = {
-    generateUUID: getThrowingFunction()
+    generateUUID: getThrower()
 };
 
 const repoMock: Partial<SignatureAuthenticationRepository> = {
-    save: getThrowingFunction(),
-    deleteByAddressAndChain: getThrowingFunction()
+    save: getThrower(),
+    deleteByAddressAndChain: getThrower()
 };
 
 const configServiceMock: Partial<ConfigService> = {
-    get: getThrowingFunction()
+    get: getThrower()
 };
 
 let executor: StartSignatureAuthenticationExecutor;

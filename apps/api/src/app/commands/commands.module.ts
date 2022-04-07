@@ -8,19 +8,23 @@ import { SecurityModule } from "../security/security.module";
 import { ConfigModule } from "@nestjs/config";
 import { SignatureValidator } from "./user/signature-validator";
 import { CompleteWalletAdditionCommandExecutor } from "./user/complete-wallet-addition-command-executor";
+import { CollectionModule } from "../domain/collection/collection.module";
+import { CreateCollectionCommandExecutor } from "./collection/create-collection-command-executor";
 
 @Module({
     providers: [
         StartSignatureAuthenticationExecutor,
         CompleteSignatureAuthenticationExecutor,
         SignatureValidator,
-        CompleteWalletAdditionCommandExecutor
+        CompleteWalletAdditionCommandExecutor,
+        CreateCollectionCommandExecutor
     ],
     exports: [
         StartSignatureAuthenticationExecutor,
         CompleteSignatureAuthenticationExecutor,
-        CompleteWalletAdditionCommandExecutor
+        CompleteWalletAdditionCommandExecutor,
+        CreateCollectionCommandExecutor
     ],
-    imports: [InfrastructureModule, UserModule, ViewsModule, SecurityModule, ConfigModule]
+    imports: [InfrastructureModule, UserModule, ViewsModule, SecurityModule, ConfigModule, CollectionModule]
 })
 export class CommandsModule {}

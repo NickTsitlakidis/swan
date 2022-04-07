@@ -1,7 +1,7 @@
 import { IdGenerator } from "../../infrastructure/id-generator";
 import { Test } from "@nestjs/testing";
 import { SignatureAuthenticationRepository } from "../../security/signature-authentication-repository";
-import { getThrowingFunction } from "../../test-utils/mocking";
+import { getThrower } from "../../test-utils/mocking";
 import { Blockchains, CompleteSignatureAuthenticationDto, SupportedWallets, TokenDto } from "@nft-marketplace/common";
 import { CompleteSignatureAuthenticationExecutor } from "./complete-signature-authentication-executor";
 import { SignatureValidator } from "./signature-validator";
@@ -18,29 +18,29 @@ import { User } from "../../domain/user/user";
 import { Wallet } from "../../domain/user/wallet";
 
 const idGeneratorMock: Partial<IdGenerator> = {
-    generateEntityId: getThrowingFunction()
+    generateEntityId: getThrower()
 };
 
 const validatorMock: Partial<SignatureValidator> = {
-    validateEthereumSignature: getThrowingFunction(),
-    validateSolanaSignature: getThrowingFunction()
+    validateEthereumSignature: getThrower(),
+    validateSolanaSignature: getThrower()
 };
 
 const authenticationRepoMock: Partial<SignatureAuthenticationRepository> = {
-    findByAddressAndChain: getThrowingFunction(),
-    deleteById: getThrowingFunction()
+    findByAddressAndChain: getThrower(),
+    deleteById: getThrower()
 };
 
 const issuerMock: Partial<UserTokenIssuer> = {
-    issueFromId: getThrowingFunction()
+    issueFromId: getThrower()
 };
 
 const walletViewRepoMock: Partial<WalletViewRepository> = {
-    findByAddressAndBlockchain: getThrowingFunction()
+    findByAddressAndBlockchain: getThrower()
 };
 
 const factoryMock: Partial<UserFactory> = {
-    createNew: getThrowingFunction()
+    createNew: getThrower()
 };
 
 let executor: CompleteSignatureAuthenticationExecutor;
@@ -220,7 +220,7 @@ test("execute - returns token of new user", async () => {
 
     const idSpy = jest.spyOn(idGeneratorMock, "generateEntityId").mockReturnValue("mongo-id");
 
-    const userMock = new User("some-id");
+    const userMock = User.create("some-id", new Wallet("", "", Blockchains.ETHEREUM, SupportedWallets.LEDGER));
     const commitSpy = jest.spyOn(userMock, "commit").mockResolvedValue(userMock);
     const factorySpy = jest.spyOn(factoryMock, "createNew").mockReturnValue(userMock);
 
