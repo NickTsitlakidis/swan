@@ -10,11 +10,11 @@ export class CollectionsService {
         return this._httpClient.get<CategoryDto[]>("/system/categories");
     }
 
-    public validateCollectioName(name: string) {
+    public validateCollectionName(name: string) {
         return this._httpClient.get<AvailabilityDto>("/collections/name-availability", { params: { name } });
     }
 
-    public validateCollectioUrl(url: string) {
+    public validateCollectionUrl(url: string) {
         return this._httpClient.get<AvailabilityDto>("/collections/url-availability", { params: { url } });
     }
 

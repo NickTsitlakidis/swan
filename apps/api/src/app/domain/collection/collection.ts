@@ -24,11 +24,11 @@ export class Collection extends EventSourcedEntity {
             command.salePercentage,
             command.blockchain,
             command.paymentToken,
-            command.links.instagram,
-            command.links.medium,
-            command.links.telegram,
-            command.links.website,
-            command.links.discord
+            command.links?.instagram,
+            command.links?.medium,
+            command.links?.telegram,
+            command.links?.website,
+            command.links?.discord
         );
         c.apply(event);
         return c;

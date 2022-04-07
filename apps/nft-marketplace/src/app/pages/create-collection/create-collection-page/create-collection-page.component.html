@@ -29,11 +29,23 @@
                 class="text-danger mt-2 mb-2"
                 *ngIf="
                     createCollectionForm.get('collectionName')?.invalid &&
+                    createCollectionForm.get('collectionName')?.hasError('required') &&
                     (createCollectionForm.get('collectionName')?.dirty ||
                         createCollectionForm.get('collectionName')?.touched)
                 "
             >
                 This field is required *
+            </div>
+            <div
+                class="text-danger mt-2 mb-2"
+                *ngIf="
+                    createCollectionForm.get('collectionName')?.invalid &&
+                    createCollectionForm.get('collectionName')?.hasError('invalidName') &&
+                    (createCollectionForm.get('collectionName')?.dirty ||
+                        createCollectionForm.get('collectionName')?.touched)
+                "
+            >
+                This name already exists
             </div>
         </div>
 
@@ -51,6 +63,17 @@
                     [placeholder]="labelsAndPlaceholders.marketPlaceUrl.placeholder"
                     formControlName="marketPlaceUrl"
                 />
+                <div
+                    class="text-danger mt-2 mb-2"
+                    *ngIf="
+                        createCollectionForm.get('marketPlaceUrl')?.invalid &&
+                        createCollectionForm.get('marketPlaceUrl')?.hasError('invalidUrl') &&
+                        (createCollectionForm.get('marketPlaceUrl')?.dirty ||
+                            createCollectionForm.get('marketPlaceUrl')?.touched)
+                    "
+                >
+                    This name already exists
+                </div>
             </nb-form-field>
         </div>
 
@@ -81,6 +104,16 @@
             <nb-select placeholder="Add category" shape="semi-round" formControlName="category">
                 <nb-option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</nb-option>
             </nb-select>
+            <div
+                class="text-danger mt-2 mb-2"
+                *ngIf="
+                    createCollectionForm.get('category')?.invalid &&
+                    createCollectionForm.get('category')?.hasError('required') &&
+                    (createCollectionForm.get('category')?.dirty || createCollectionForm.get('category')?.touched)
+                "
+            >
+                This field is required *
+            </div>
         </div>
 
         <!-- Collection's Social links -->
@@ -154,6 +187,16 @@
             <nb-select shape="semi-round" formControlName="chain" [ngModel]="blockchains[0]">
                 <nb-option *ngFor="let chain of blockchains" [value]="chain">{{ chain.name }}</nb-option>
             </nb-select>
+            <div
+                class="text-danger mt-2 mb-2"
+                *ngIf="
+                    createCollectionForm.get('chain')?.invalid &&
+                    createCollectionForm.get('chain')?.hasError('required') &&
+                    (createCollectionForm.get('chain')?.dirty || createCollectionForm.get('chain')?.touched)
+                "
+            >
+                This field is required *
+            </div>
         </div>
 
         <!-- Collection's Payment token -->
@@ -176,9 +219,11 @@
             <nb-form-field>
                 <input
                     nbInput
-                    type="text"
+                    type="number"
                     [placeholder]="labelsAndPlaceholders.percentageFee.placeholder"
                     formControlName="percentageFee"
+                    [min]="0"
+                    [max]="100"
                 />
             </nb-form-field>
         </div>
@@ -198,7 +243,6 @@
                 type="submit"
                 [ngClass]="{ 'opacity-50': !createCollectionForm.valid }"
                 class="bg-blue-600 p-2 text-white rounded w-32"
-                [disabled]="!createCollectionForm.valid"
             >
                 Submit
             </button>

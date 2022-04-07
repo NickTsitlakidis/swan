@@ -41,12 +41,7 @@ test("save - persists collection view", async () => {
     view.imageUrl = "collection-image";
     view.isExplicit = false;
     view.paymentToken = "ETH";
-    view.links = new CollectionLinksView();
-    view.links.medium = "med";
-    view.links.discord = "dis";
-    view.links.instagram = "ins";
-    view.links.telegram = "tel";
-    view.links.website = "web";
+    view.links = new CollectionLinksView("ins", "dis", "tel", "web", "med");
 
     const saved = await repository.save(view);
     expect(saved).toEqual(view);
@@ -69,12 +64,7 @@ test("countByName - returns 0 for no match", async () => {
     view.imageUrl = "collection-image";
     view.isExplicit = false;
     view.paymentToken = "ETH";
-    view.links = new CollectionLinksView();
-    view.links.medium = "med";
-    view.links.discord = "dis";
-    view.links.instagram = "ins";
-    view.links.telegram = "tel";
-    view.links.website = "web";
+    view.links = new CollectionLinksView("ins", "dis", "tel", "web", "med");
 
     await collection.insertOne(instanceToPlain(view));
 
@@ -94,12 +84,7 @@ test("countByName - returns 1 for match", async () => {
     view1.imageUrl = "collection-image";
     view1.isExplicit = false;
     view1.paymentToken = "ETH";
-    view1.links = new CollectionLinksView();
-    view1.links.medium = "med";
-    view1.links.discord = "dis";
-    view1.links.instagram = "ins";
-    view1.links.telegram = "tel";
-    view1.links.website = "web";
+    view1.links = new CollectionLinksView("ins", "dis", "tel", "web", "med");
 
     const view2 = cloneDeep(view1);
     view2._id = new ObjectId();
@@ -124,7 +109,7 @@ test("countByCustomUrl - returns 0 for no match", async () => {
     view.imageUrl = "collection-image";
     view.isExplicit = false;
     view.paymentToken = "ETH";
-    view.links = new CollectionLinksView();
+    view.links = new CollectionLinksView("ins", "dis", "tel", "web", "med");
     view.links.medium = "med";
     view.links.discord = "dis";
     view.links.instagram = "ins";
@@ -149,12 +134,7 @@ test("countByCustomUrl - returns 1 for match", async () => {
     view1.imageUrl = "collection-image";
     view1.isExplicit = false;
     view1.paymentToken = "ETH";
-    view1.links = new CollectionLinksView();
-    view1.links.medium = "med";
-    view1.links.discord = "dis";
-    view1.links.instagram = "ins";
-    view1.links.telegram = "tel";
-    view1.links.website = "web";
+    view1.links = new CollectionLinksView("ins", "dis", "tel", "web", "med");
 
     const view2 = cloneDeep(view1);
     view2._id = new ObjectId();

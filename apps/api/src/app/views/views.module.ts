@@ -10,6 +10,7 @@ import { CategoryViewRepository } from "./categories/category-view-repository";
 import { CategoryView } from "./categories/category-view";
 import { CollectionView } from "./collection/collection-view";
 import { CollectionViewRepository } from "./collection/collection-view-repository";
+import { CollectionProjector } from "./collection/collection-projector";
 
 export const VIEW_DOCUMENTS = [UserView, WalletView, CategoryView, CollectionView];
 
@@ -21,15 +22,9 @@ export const VIEW_DOCUMENTS = [UserView, WalletView, CategoryView, CollectionVie
         CategoryViewRepository,
         WalletProjector,
         WalletViewRepository,
-        CollectionViewRepository
+        CollectionViewRepository,
+        CollectionProjector
     ],
-    exports: [
-        UserViewRepository,
-        UserProjector,
-        CategoryViewRepository,
-        WalletProjector,
-        WalletViewRepository,
-        CollectionViewRepository
-    ]
+    exports: [UserViewRepository, CategoryViewRepository, WalletViewRepository, CollectionViewRepository]
 })
 export class ViewsModule {}
