@@ -128,6 +128,7 @@ export class CreateCollectionPageComponent implements OnInit {
         const body = new CreateCollectionDto();
         const socialLinks = new CollectionLinksDto();
         const socialFormVal = this.createCollectionForm.get("socialLinks")?.value;
+
         socialLinks.discord = socialFormVal.discord;
         socialLinks.instagram = socialFormVal?.instagram;
         socialLinks.medium = socialFormVal?.medium;
@@ -149,8 +150,7 @@ export class CreateCollectionPageComponent implements OnInit {
         body.imageUrl = this.createCollectionForm.get("logoImage")?.value;
         body.salePercentage = this.createCollectionForm.get("percentageFee")?.value;
         body.paymentToken = this.createCollectionForm.get("paymentToken")?.value;
-        console.log(body);
-        console.log(this.createCollectionForm);
+
         this._collectionsService.createCollection(body).subscribe((data) => {
             console.log(data);
         });
