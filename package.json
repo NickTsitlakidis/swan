@@ -44,6 +44,7 @@
     "@nestjs/typeorm": "8.0.3",
     "@ngrx/component-store": "^13.0.2",
     "@nrwl/angular": "13.8.4",
+    "@openzeppelin/contracts": "4.5.0",
     "@solana/wallet-adapter-base": "^0.9.4",
     "@solana/wallet-adapter-wallets": "^0.15.5",
     "@solana/web3.js": "^1.36.0",

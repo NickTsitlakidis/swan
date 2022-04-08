@@ -43,3 +43,4 @@ globalConfig.json
 
 /apps/api/globalConfig.json
 /.env
+/contracts-build/
