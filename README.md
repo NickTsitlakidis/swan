@@ -12,7 +12,7 @@ This is the main back end module of Swan. The module is based on [Nest.js](https
 `./apps/nft-marketplace`
 
 The main front end application of Swan. The module is based on Angular. The module's configuration is located in the
-`project.json` because the build process is handled by [NX](https://nx.dev/)nes.
+`project.json` because the build process is handled by [NX](https://nx.dev/).
 
 ### Marketplace end-to-end tests
 `./apps/nft-marketplace-e2e`
