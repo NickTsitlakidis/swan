@@ -1,5 +1,6 @@
-import { Moment } from "moment";
-import { Type } from "class-transformer";
+import moment, { Moment } from "moment";
+import { Transform, Type } from "class-transformer";
+import { isNil } from "lodash";
 
 export class TokenDto {
     tokenValue: string;
@@ -7,6 +8,7 @@ export class TokenDto {
     refreshToken?: string | undefined;
 
     @Type(() => Date)
+    @Transform(({ value }) => (isNil(value) ? undefined : moment(value)), { toClassOnly: true })
     expiresAt: Moment;
 
     constructor(tokenValue: string, expiresAt: Moment, refreshToken?: string) {

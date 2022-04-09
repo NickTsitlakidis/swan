@@ -21,9 +21,6 @@ export class AppComponent implements OnInit {
 
     ngOnInit(): void {
         this._analytics.trackPageViews();
-        this._clientAuthService.getClientToken().subscribe((res: TokenDto) => {
-            this._lcStorage.store("clientTokenValue", res.tokenValue);
-            this._lcStorage.store("clientExpiresAt", res.expiresAt);
-        });
+        this._clientAuthService.getAndStoreClientToken().subscribe((res: TokenDto) => {});
     }
 }

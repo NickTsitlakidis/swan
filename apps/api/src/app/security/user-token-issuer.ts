@@ -48,23 +48,23 @@ export class UserTokenIssuer {
         return new TokenDto(jwtAccessToken, moment.utc().add(120, "minutes"), jwtRefreshToken);
     }
 
-    async issueFromRefreshToken(refreshTokenJwt: string) {
+    async issueFromRefreshToken(refreshTokenJwt: string): Promise<TokenDto> {
         let decoded: { jti: string };
         try {
             decoded = this._signService.verify(refreshTokenJwt);
         } catch (error) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException("Invalid credentials");
         }
 
         const found = await this._refreshTokenRepository.findByTokenValue(decoded.jti);
 
         if (isNil(found)) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException("Invalid credentials");
         }
 
         if (found.isRevoked) {
             this._logger.log(`Attempted refresh of revoked token : ${found.id}`);
-            throw new UnauthorizedException();
+            throw new UnauthorizedException("Invalid credentials");
         }
 
         this._logger.debug(`Refreshing token for user ${found.userId}`);

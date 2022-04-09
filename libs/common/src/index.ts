@@ -11,3 +11,4 @@ export * from "./lib/collection-links-dto";
 export * from "./lib/collection-dto";
 export * from "./lib/availability-dto";
 export * from "./lib/entity-dto";
+export * from "./lib/refresh-token-dto";

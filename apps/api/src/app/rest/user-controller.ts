@@ -6,6 +6,7 @@ import { CompleteSignatureAuthenticationCommand } from "../commands/user/complet
 import {
     CompleteSignatureAuthenticationDto,
     NonceDto,
+    RefreshTokenDto,
     StartSignatureAuthenticationDto,
     TokenDto,
     WalletDto
@@ -14,10 +15,11 @@ import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { UserGuard } from "../security/guards/user-guard";
 import { RequestUserId } from "../security/request-user-id";
 import { CompleteWalletAdditionCommand } from "../commands/user/complete-wallet-addition-command";
+import { UserTokenIssuer } from "../security/user-token-issuer";
 
 @Controller("user")
 export class UserController {
-    constructor(private readonly _commandBus: CommandBus) {}
+    constructor(private readonly _commandBus: CommandBus, private readonly _tokenIssuer: UserTokenIssuer) {}
 
     @ApiOperation({ summary: "Starts the signature authentication process for a user by generating a nonce" })
     @ApiOkResponse({ description: "The generated nonce", type: NonceDto })
@@ -33,6 +35,12 @@ export class UserController {
     @UseGuards(ClientGuard)
     completeAuthentication(@Body() body: CompleteSignatureAuthenticationDto): Promise<TokenDto> {
         return this._commandBus.execute(new CompleteSignatureAuthenticationCommand(body));
+    }
+
+    @Post("refresh-token")
+    @UseGuards(ClientGuard)
+    refreshToken(@Body() body: RefreshTokenDto): Promise<TokenDto> {
+        return this._tokenIssuer.issueFromRefreshToken(body.token);
     }
 
     @ApiOkResponse({ description: "The generated nonce", type: NonceDto })
