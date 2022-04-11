@@ -65,6 +65,7 @@ export abstract class EventSourcedEntity {
      * If a publisher is not connected, the method will return a rejected promise.
      * @param events The events to be published
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     publish(events: Array<EventPayload>): Promise<Array<SourcedEvent>> {
         this.logger.error("There is no event publisher assigned");
         return Promise.reject("There is no event publisher assigned");

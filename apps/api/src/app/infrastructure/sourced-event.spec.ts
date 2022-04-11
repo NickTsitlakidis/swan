@@ -1,5 +1,4 @@
 import moment = require("moment");
-import { instanceToPlain } from "class-transformer";
 import { EventPayload, SerializedEvent } from "./serialized-event";
 import { SourcedEvent } from "./sourced-event";
 import { keys } from "lodash";

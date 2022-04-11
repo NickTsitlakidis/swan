@@ -7,6 +7,7 @@ import { QueueEventBus } from "./queue-event-bus";
 import { Module, OnApplicationBootstrap } from "@nestjs/common";
 import { EventStore } from "./event-store";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const INFRASTRUCTURE_DOCUMENTS: Array<any> = [SourcedEvent, Aggregate];
 
 @Module({
@@ -17,7 +18,7 @@ export const INFRASTRUCTURE_DOCUMENTS: Array<any> = [SourcedEvent, Aggregate];
 export class InfrastructureModule implements OnApplicationBootstrap {
     constructor(private _eventBus: QueueEventBus, private _explorer: ExplorerService) {}
 
-    onApplicationBootstrap(): any {
+    onApplicationBootstrap() {
         const explored = this._explorer.explore();
         this._eventBus.register(explored.events);
     }
