@@ -1,4 +1,9 @@
 module.exports = {
+
+    mocha: {
+        reporter: "list"
+    },
+
     contracts_directory: "./apps/solidity-contracts/contracts",
     contracts_build_directory: "./contracts-build",
     migrations_directory: "./apps/solidity-contracts/migrations",
