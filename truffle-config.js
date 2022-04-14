@@ -1,3 +1,6 @@
+process.env.TS_NODE_PROJECT = "./apps/solidity-contracts/tsconfig.json";
+require("ts-node/register");
+
 module.exports = {
 
     mocha: {

@@ -99,6 +99,7 @@
         "@nrwl/workspace": "13.8.4",
         "@schematics/angular": "~13.2.0",
         "@shelf/jest-mongodb": "1.2.4",
+        "@tsconfig/node14": "^1.0.1",
         "@typechain/truffle-v5": "^8.0.0",
         "@types/bcrypt": "5.0.0",
         "@types/bs58": "4.0.1",

@@ -19,8 +19,7 @@
         "baseUrl": ".",
         "paths": {
             "@nft-marketplace/common": ["libs/common/src/index.ts"]
-        },
-        "typeRoots": ["./node_modules/@types", "./apps/solidity-contracts/types"]
+        }
     },
     "exclude": ["node_modules", "tmp"]
 }
