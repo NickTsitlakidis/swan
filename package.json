@@ -12,6 +12,7 @@
         "build": "nx build",
         "build-api": "nx build api",
         "lint-api": "nx lint api",
+        "lint-nft-marketplace": "nx lint nft-marketplace",
         "test": "nx test",
         "test-api": "nx test api",
         "test-solidity": "npm-run-all --parallel --race ganache truffle-test",
