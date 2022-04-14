@@ -50,6 +50,10 @@ contract Swan {
         swanWallet = msg.sender;
     }
 
+    function getSwanWallet() public returns(address) {
+        return swanWallet;
+    }
+
     function createTokenListing(address tokenAddress, uint tokenId, uint price) public {
         ERC721Token(tokenAddress).transferFrom(msg.sender, address(this), tokenId);
 
