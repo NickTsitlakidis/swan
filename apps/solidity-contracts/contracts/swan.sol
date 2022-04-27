@@ -40,7 +40,7 @@ contract Swan {
         uint listingId
     );
 
-
+    //todo check if mapping or other structure is cheaper
     TokenListing[] private listings;
     address private swanWallet;
     uint idCounter;
@@ -88,6 +88,7 @@ contract Swan {
 
         ERC721Token(listings[uint(foundAt)].tokenAddress).transferFrom(address(this), msg.sender, listings[uint(foundAt)].tokenId);
 
+        //todo: use openzeppelin payment splitter here
         uint serviceFee = ((listings[uint(foundAt)].price * 2) / 100);
         uint sellerFee = listings[uint(foundAt)].price - serviceFee;
         payable(listings[uint(foundAt)].seller).transfer(sellerFee);
