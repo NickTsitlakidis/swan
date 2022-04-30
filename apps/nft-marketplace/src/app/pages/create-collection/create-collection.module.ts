@@ -1,7 +1,7 @@
 import { NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { FaIconLibrary, FontAwesomeModule } from "@fortawesome/angular-fontawesome";
-import { NbFormFieldModule, NbInputModule, NbSelectModule, NbToggleModule } from "@nebular/theme";
+import { NbButtonModule, NbFormFieldModule, NbInputModule, NbSelectModule, NbToggleModule } from "@nebular/theme";
 import { ImagePlaceholderModule } from "../../@theme/components/image-placeholder/image-placeholder.module";
 import { TitleSubTitleModule } from "../../@theme/components/title-subtitle/title-subtitle.module";
 
@@ -20,6 +20,7 @@ import { ValidateName, ValidateUrl } from "./create-collection-page/create-colle
         ThemeModule,
         CreateCollectionRoutingModule,
         NbInputModule,
+        NbButtonModule,
         NbSelectModule,
         NbFormFieldModule,
         FontAwesomeModule,

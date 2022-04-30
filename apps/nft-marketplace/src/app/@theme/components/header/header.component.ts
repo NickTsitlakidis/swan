@@ -46,6 +46,10 @@ export class HeaderComponent implements OnInit {
         this._router.navigate(["/create-collection"]);
     }
 
+    public navigateToCreateNFT() {
+        this._router.navigate(["/create-nft"]);
+    }
+
     /*********************************************************
      *                  Private Methods
      *********************************************************/

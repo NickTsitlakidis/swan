@@ -1,0 +1,108 @@
+<div class="col-md-6 col-12 offset-md-3 offset-1">
+    <nft-marketplace-upload></nft-marketplace-upload>
+    <form class="row" [formGroup]="createNFTForm" (ngSubmit)="onSubmit()">
+        <!-- NFT's title -->
+        <div class="col-12 mt-4">
+            <nft-marketplace-title-subtitle [title]="labelsAndPlaceholders.title.name"></nft-marketplace-title-subtitle>
+            <input
+                class="w-100"
+                nbInput
+                type="text"
+                [placeholder]="labelsAndPlaceholders.title.placeholder"
+                formControlName="title"
+            />
+            <div
+                class="text-danger mt-2 mb-2"
+                *ngIf="
+                    createNFTForm.get('title')?.invalid &&
+                    (createNFTForm.get('title')?.dirty || createNFTForm.get('title')?.touched)
+                "
+            >
+                The maximum length of the title should be 50 characters
+            </div>
+        </div>
+
+        <!-- NFT's symbol -->
+        <div class="col-12 mt-4">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.symbol.name"
+            ></nft-marketplace-title-subtitle>
+            <input
+                class="w-100"
+                nbInput
+                type="text"
+                [placeholder]="labelsAndPlaceholders.symbol.placeholder"
+                formControlName="symbol"
+            />
+            <div
+                class="text-danger mt-2 mb-2"
+                *ngIf="
+                    createNFTForm.get('symbol')?.invalid &&
+                    (createNFTForm.get('symbol')?.dirty || createNFTForm.get('symbol')?.touched)
+                "
+            >
+                The maximum length of the symbol should be 10 characters
+            </div>
+        </div>
+
+        <!-- NFT's is parent collection -->
+        <div class="col-12 mt-4">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.isParentCollection"
+            ></nft-marketplace-title-subtitle>
+            <nb-toggle formControlName="isParentCollection" status="warning" [ngModel]="false"></nb-toggle>
+        </div>
+
+        <!-- NFT's Description -->
+        <div class="col-12 mt-4">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.description.title"
+            ></nft-marketplace-title-subtitle>
+            <textarea
+                class="w-50"
+                formControlName="description"
+                [placeholder]="labelsAndPlaceholders.description.placeholder"
+                nbInput
+            ></textarea>
+            <div
+                class="text-danger mt-2 mb-2"
+                *ngIf="
+                    createNFTForm.get('description')?.invalid &&
+                    (createNFTForm.get('description')?.dirty || createNFTForm.get('description')?.touched)
+                "
+            >
+                The maximum length of the description should be 500 characters
+            </div>
+        </div>
+
+        <!-- NFT's max supply -->
+        <div class="col-12 mt-4">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.maxSupply.title"
+            ></nft-marketplace-title-subtitle>
+            <input
+                nbInput
+                type="number"
+                [placeholder]="labelsAndPlaceholders.maxSupply.placeholder"
+                formControlName="maxSupply"
+            />
+        </div>
+
+        <!-- NFT's custom attributes -->
+        <div class="col-12 mt-4">
+            <nft-marketplace-title-subtitle [title]="labelsAndPlaceholders.attributes"></nft-marketplace-title-subtitle>
+            <button nbButton class="add-attribute-button">+ Add attribute</button>
+        </div>
+
+        <div class="col-12 mt-4">
+            <button
+                nbButton
+                type="submit"
+                [ngClass]="{ 'opacity-50': !createNFTForm.valid }"
+                class="bg-blue-600 p-2 text-white rounded w-32"
+            >
+                Submit
+            </button>
+        </div>
+    </form>
+</div>

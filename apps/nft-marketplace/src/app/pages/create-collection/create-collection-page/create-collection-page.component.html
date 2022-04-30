@@ -1,4 +1,4 @@
-<div class="create-collection container-fluid">
+<div class="col-md-6 col-12 offset-md-3 offset-1">
     <form class="row" [formGroup]="createCollectionForm" (ngSubmit)="onSubmit()">
         <div class="col-12 text-description">* Required fields</div>
 
@@ -240,6 +240,7 @@
         <hr />
         <div class="col-12">
             <button
+                nbButton
                 type="submit"
                 [ngClass]="{ 'opacity-50': !createCollectionForm.valid }"
                 class="bg-blue-600 p-2 text-white rounded w-32"

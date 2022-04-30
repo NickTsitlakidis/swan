@@ -19,6 +19,10 @@ const routes: Routes = [
                     import("./create-collection/create-collection.module").then((m) => m.CreateCollectionModule)
             },
             {
+                path: "create-nft",
+                loadChildren: () => import("./create-nft/create-nft.module").then((m) => m.CreateNFTModule)
+            },
+            {
                 path: "miscellaneous",
                 loadChildren: () => import("./miscellaneous/miscellaneous.module").then((m) => m.MiscellaneousModule)
             },

@@ -1,0 +1,12 @@
+.imageUrl {
+    max-height: 400px;
+    max-width: 400px;
+    border-radius: 10px;
+    min-height: 350px;
+    min-width: 350px;
+    object-fit: cover;
+}
+
+.custom-upload {
+    background: rgba(255, 255, 255, 0.08);
+}
