@@ -1,6 +1,6 @@
 <div class="col-md-6 col-12 offset-md-3 offset-1">
     <nft-marketplace-upload></nft-marketplace-upload>
-    <form class="row" [formGroup]="createNFTForm" (ngSubmit)="onSubmit()">
+    <form class="row" [formGroup]="createNFTForm">
         <!-- NFT's title -->
         <div class="col-12 mt-4">
             <nft-marketplace-title-subtitle [title]="labelsAndPlaceholders.title.name"></nft-marketplace-title-subtitle>
@@ -90,8 +90,30 @@
 
         <!-- NFT's custom attributes -->
         <div class="col-12 mt-4">
+            <!-- <div *ngFor="let attribute of attributes">
+                <input
+                nbInput
+                type="text"
+                [placeholder]="labelsAndPlaceholders.maxSupply.placeholder"
+                formControlName="maxSupply"
+            />
+
+            <input
+                nbInput
+                type="text"
+                [placeholder]="labelsAndPlaceholders.maxSupply.placeholder"
+                formControlName="maxSupply"
+            />
+
+            <input
+                nbInput
+                type="text"
+                [placeholder]="labelsAndPlaceholders.maxSupply.placeholder"
+                formControlName="maxSupply"
+            />
+            </div> -->
             <nft-marketplace-title-subtitle [title]="labelsAndPlaceholders.attributes"></nft-marketplace-title-subtitle>
-            <button nbButton class="add-attribute-button">+ Add attribute</button>
+            <button type="text" (click)="addAtrribute()" nbButton class="add-attribute-button">+ Add attribute</button>
         </div>
 
         <div class="col-12 mt-4">
@@ -100,6 +122,7 @@
                 type="submit"
                 [ngClass]="{ 'opacity-50': !createNFTForm.valid }"
                 class="bg-blue-600 p-2 text-white rounded w-32"
+                (click)="onSubmit()"
             >
                 Submit
             </button>

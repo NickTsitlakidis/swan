@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { SolanaAttributes } from "../../../@core/interfaces/create-nft.interface";
 
 @Component({
     selector: "nft-marketplace-create-nft-page",
@@ -38,7 +39,21 @@ export class CreateNFTPageComponent implements OnInit {
             isParentCollection: [false],
             description: [undefined, Validators.maxLength(500)],
             maxSupply: [undefined, Validators.pattern("-?\\d+(?:\\.\\d+)?")],
-            attributes: [{}]
+            attributes: [[]]
+        });
+    }
+
+    public addAtrribute() {
+        console.log("Hola");
+        const newAttribute: SolanaAttributes = {
+            traitType: "",
+            displayType: "",
+            value: ""
+        };
+        const currentValue = this.createNFTForm.get("attributes")?.value;
+        currentValue.push(newAttribute);
+        this.createNFTForm.patchValue({
+            attributes: currentValue
         });
     }
 
