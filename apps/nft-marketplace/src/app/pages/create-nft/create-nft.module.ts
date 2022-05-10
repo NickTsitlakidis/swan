@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
-import { NbButtonModule, NbInputModule, NbToggleModule } from "@nebular/theme";
+import { NbButtonModule, NbFormFieldModule, NbInputModule, NbToggleModule } from "@nebular/theme";
+import { SolanaNFTService } from "../../@core/services/nft/solana-nft.service";
 import { TitleSubTitleModule } from "../../@theme/components/title-subtitle/title-subtitle.module";
 import { UploadModule } from "../../@theme/components/upload/upload.module";
 
@@ -18,9 +19,10 @@ import { CreateNFTComponent } from "./create-nft.component";
         NbButtonModule,
         NbToggleModule,
         UploadModule,
+        NbFormFieldModule,
         TitleSubTitleModule
     ],
     declarations: [CreateNFTComponent, CreateNFTPageComponent],
-    providers: []
+    providers: [SolanaNFTService]
 })
 export class CreateNFTModule {}

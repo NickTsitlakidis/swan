@@ -90,30 +90,62 @@
 
         <!-- NFT's custom attributes -->
         <div class="col-12 mt-4">
-            <!-- <div *ngFor="let attribute of attributes">
+            <div @fade *ngFor="let attribute of attributes; let i = index">
                 <input
-                nbInput
-                type="text"
-                [placeholder]="labelsAndPlaceholders.maxSupply.placeholder"
-                formControlName="maxSupply"
-            />
+                    class="m-2"
+                    nbInput
+                    type="text"
+                    [placeholder]="labelsAndPlaceholders.attributeTrait"
+                    [formControlName]="'attributeTrait' + (i + 1)"
+                />
 
-            <input
-                nbInput
-                type="text"
-                [placeholder]="labelsAndPlaceholders.maxSupply.placeholder"
-                formControlName="maxSupply"
-            />
+                <input
+                    class="m-2"
+                    nbInput
+                    type="text"
+                    [placeholder]="labelsAndPlaceholders.attributeValue"
+                    [formControlName]="'attributeValue' + (i + 1)"
+                />
+                <div
+                    class="text-danger mt-2 mb-2"
+                    *ngIf="
+                        createNFTForm.get('attributeValue' + (i + 1))?.invalid &&
+                        createNFTForm.get('attributeValue' + (i + 1))?.hasError('required') &&
+                        (createNFTForm.get('attributeValue' + (i + 1))?.dirty ||
+                            createNFTForm.get('attributeValue' + (i + 1))?.touched)
+                    "
+                >
+                    This field is required *
+                </div>
 
-            <input
-                nbInput
-                type="text"
-                [placeholder]="labelsAndPlaceholders.maxSupply.placeholder"
-                formControlName="maxSupply"
-            />
-            </div> -->
+                <input
+                    class="m-2"
+                    nbInput
+                    type="text"
+                    [placeholder]="labelsAndPlaceholders.attributeDisplay"
+                    [formControlName]="'attributeDisplay' + (i + 1)"
+                />
+            </div>
             <nft-marketplace-title-subtitle [title]="labelsAndPlaceholders.attributes"></nft-marketplace-title-subtitle>
             <button type="text" (click)="addAtrribute()" nbButton class="add-attribute-button">+ Add attribute</button>
+        </div>
+
+        <!-- Collection's percentage fee -->
+        <div class="col-12 mt-4">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.royalties.title"
+                [subtitle]="labelsAndPlaceholders.royalties.subtitle"
+            ></nft-marketplace-title-subtitle>
+            <nb-form-field>
+                <input
+                    nbInput
+                    type="number"
+                    [placeholder]="labelsAndPlaceholders.royalties.placeholder"
+                    formControlName="royalties"
+                    [min]="0"
+                    [max]="100"
+                />
+            </nb-form-field>
         </div>
 
         <div class="col-12 mt-4">
