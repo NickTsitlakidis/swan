@@ -1,9 +1,9 @@
 const Migrations = artifacts.require("Migrations");
-const Swan = artifacts.require("Swan");
-const TestNft = artifacts.require("TestNft");
+const SwanNft = artifacts.require("SwanNft");
+const SwanMarketplace = artifacts.require("SwanMarketplace");
 
 module.exports = function (deployer) {
     deployer.deploy(Migrations);
-    deployer.deploy(Swan);
-    deployer.deploy(TestNft);
+    deployer.deploy(SwanNft);
+    deployer.deploy(SwanMarketplace);
 };
