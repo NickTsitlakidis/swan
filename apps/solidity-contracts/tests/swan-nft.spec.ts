@@ -1,27 +1,50 @@
-const Migrations = artifacts.require("Migrations");
-const SwanNft = artifacts.require("SwanNft");
+import { expect } from "chai";
+import { ethers } from "hardhat";
 
-contract("SwanNft", (accounts) => {
-    // it("constructor - sets name and symbol correctly", async () => {
-    //     const deployed = await SwanNft.deployed();
-    //
-    //     const name = await deployed.name();
-    //     const symbol = await deployed.symbol();
-    //
-    //     assert.equal(name, "SwanNft");
-    //     assert.equal(symbol, "SNFT");
-    // });
+describe("SwanNft", function () {
+    it("constructor - sets name and symbol correctly", async function () {
+        const SwanNft = await ethers.getContractFactory("SwanNft");
+        const deployed = await SwanNft.deploy();
+        await deployed.deployed();
 
-    it("createItem - mints with token uri and returns id", async () => {
-        const deployed = await SwanNft.deployed();
+        expect(await deployed.name()).to.equal("SwanNft");
+        expect(await deployed.symbol()).to.equal("SNFT");
+    });
 
-        const tokenId = await deployed.createItem.call(accounts[2], "http://the-uri");
-        assert.equal(tokenId.toNumber(), 1);
+    it("createItem - mints with uri", async function () {
+        const SwanNft = await ethers.getContractFactory("SwanNft");
+        const deployed = await SwanNft.deploy();
+        await deployed.deployed();
 
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const savedUri = await deployed.tokenURI("1");
-        assert.equal(savedUri, "http://the-uri");
+        const signers = await ethers.getSigners();
 
-        //assert.equal(accounts[2], owner);
+        await expect(() => deployed.createItem(signers[2].address, "the-uri")).to.changeTokenBalance(
+            deployed,
+            signers[2],
+            1
+        );
+
+        const uri = await deployed.tokenURI(1);
+        expect(uri).to.equal("the-uri");
+    });
+
+    it("createItem - increments id on every call", async function () {
+        const SwanNft = await ethers.getContractFactory("SwanNft");
+        const deployed = await SwanNft.deploy();
+        await deployed.deployed();
+
+        const signers = await ethers.getSigners();
+
+        await expect(deployed.createItem(signers[2].address, "the-uri"))
+            .to.emit(deployed, "Transfer")
+            .withArgs("0x0000000000000000000000000000000000000000", signers[2].address, "1");
+
+        await expect(deployed.createItem(signers[2].address, "the-uri"))
+            .to.emit(deployed, "Transfer")
+            .withArgs("0x0000000000000000000000000000000000000000", signers[2].address, "2");
+
+        await expect(deployed.createItem(signers[2].address, "the-uri"))
+            .to.emit(deployed, "Transfer")
+            .withArgs("0x0000000000000000000000000000000000000000", signers[2].address, "3");
     });
 });

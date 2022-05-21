@@ -1,26 +1,12 @@
 {
-    "extends": "@tsconfig/node14/tsconfig.json",
     "compilerOptions": {
-        "target": "es2017",
+        "target": "es2018",
         "module": "commonjs",
         "strict": true,
-        "moduleResolution": "node",
-        "noImplicitThis": true,
-        "alwaysStrict": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "forceConsistentCasingInFileNames": true,
-        "lib": ["es2015", "esnext.asynciterable"],
-        "sourceMap": true,
-        "typeRoots": ["./node_modules/@types", "./types"],
-        "types": ["node", "types"],
+        "esModuleInterop": true,
+        "outDir": "dist",
+        "declaration": true
     },
-    "include": ["**/*.ts"],
-    "exclude": ["node_modules", "example", "build"],
-    "ts-node": {
-        "files": true,
-
-        "compilerOptions": {
-        }
-    }
+    "include": ["./scripts", "./tests", "./typechain"],
+    "files": ["./hardhat.config.ts"]
 }

@@ -43,5 +43,10 @@ globalConfig.json
 
 /apps/api/globalConfig.json
 /.env
-/contracts-build/
-/apps/solidity-contracts/types/
+coverage
+coverage.json
+./apps/solidity-contracts/typechain
+
+#Hardhat files
+cache
+artifacts
