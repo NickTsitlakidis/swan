@@ -18,7 +18,8 @@
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
         "paths": {
-            "@nft-marketplace/common": ["libs/common/src/index.ts"]
+            "@nft-marketplace/common": ["libs/common/src/index.ts"],
+            "crypto": ["node_modules/crypto-browserify"]
         }
     },
     "exclude": ["node_modules", "tmp"]
