@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@
 import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { fade } from "../../../@core/animations/enter-leave.animation";
 import { SolanaAttributes } from "../../../@core/interfaces/create-nft.interface";
-import { SolanaNFTService } from "../../../@core/services/nft/solana-nft.service";
 
 @Component({
     selector: "nft-marketplace-create-nft-page",
@@ -43,11 +42,7 @@ export class CreateNFTPageComponent implements OnInit {
     public createNFTForm: FormGroup;
     public attributes: SolanaAttributes[] = [];
 
-    constructor(
-        private _fb: FormBuilder,
-        private _cd: ChangeDetectorRef,
-        private _solanaNFTService: SolanaNFTService
-    ) {}
+    constructor(private _fb: FormBuilder, private _cd: ChangeDetectorRef) {}
 
     ngOnInit(): void {
         this.createNFTForm = this._fb.group({

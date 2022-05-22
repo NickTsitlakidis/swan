@@ -1,7 +1,7 @@
 import { NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { NbButtonModule, NbFormFieldModule, NbInputModule, NbToggleModule } from "@nebular/theme";
-import { SolanaNFTService } from "../../@core/services/nft/solana-nft.service";
+import { MetaplexService } from "../../@core/services/nft/metaplex.service";
 import { TitleSubTitleModule } from "../../@theme/components/title-subtitle/title-subtitle.module";
 import { UploadModule } from "../../@theme/components/upload/upload.module";
 
@@ -23,6 +23,6 @@ import { CreateNFTComponent } from "./create-nft.component";
         TitleSubTitleModule
     ],
     declarations: [CreateNFTComponent, CreateNFTPageComponent],
-    providers: [SolanaNFTService]
+    providers: [MetaplexService]
 })
 export class CreateNFTModule {}

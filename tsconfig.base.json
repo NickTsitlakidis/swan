@@ -19,7 +19,9 @@
         "baseUrl": ".",
         "paths": {
             "@nft-marketplace/common": ["libs/common/src/index.ts"],
-            "crypto": ["node_modules/crypto-browserify"]
+            "crypto": ["node_modules/crypto-browserify"],
+            "zlib": ["node_modules/browserify-zlib"],
+            "path": ["node_modules/path-browserify"]
         }
     },
     "exclude": ["node_modules", "tmp"]
