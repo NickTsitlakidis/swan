@@ -21,8 +21,12 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - name: clear modules
+        run: rm -rf ./node_modules
+      - name: remove package-lock
+        run: rm ./package-lock.json
       - name: install dependencies
-        run: npm ci
+        run: npm install
       - name: api lint
         run: npm run lint-api
       - name: api unit tests
