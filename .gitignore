@@ -45,8 +45,8 @@ globalConfig.json
 /.env
 coverage
 coverage.json
-./apps/solidity-contracts/typechain
 
 #Hardhat files
 cache
 artifacts
+typechain
