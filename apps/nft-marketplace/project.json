@@ -1,6 +1,5 @@
 {
     "projectType": "application",
-    "root": "apps/nft-marketplace",
     "sourceRoot": "apps/nft-marketplace/src",
     "prefix": "nft-marketplace",
     "targets": {
@@ -95,7 +94,7 @@
                 "coverage/apps/nft-marketplace"
             ],
             "options": {
-                "jestConfig": "apps/nft-marketplace/jest.config.js",
+                "jestConfig": "apps/nft-marketplace/jest.config.ts",
                 "passWithNoTests": true
             }
         }
