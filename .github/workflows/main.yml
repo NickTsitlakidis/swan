@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: clear modules
-        run: rm -rd ./node_modules
+        run: rm -rf ./node_modules
       - name: remove package-lock
         run: rm ./package-lock.json
       - name: install dependencies
