@@ -45,7 +45,7 @@ contract SwanMarketplace is ReentrancyGuard {
     TokenListing[] private listings;
     address public immutable swanWallet;
     uint idCounter;
-    uint private immutable feePercentage;
+    uint public immutable feePercentage;
     //mapping(uint => TokenListing) public listings;
 
     constructor() {
@@ -55,7 +55,7 @@ contract SwanMarketplace is ReentrancyGuard {
     }
 
     function createListing(address tokenContractAddress, uint tokenId, uint price) external nonReentrant {
-        require(price > 0, "Price can only be a positive number");
+        require(price > 0, "Price must be greater than 0");
         ERC721(tokenContractAddress).transferFrom(msg.sender, address(this), tokenId);
 
         int foundAt = - 1;

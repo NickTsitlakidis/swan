@@ -13,7 +13,8 @@
         "lint-nft-marketplace": "nx lint nft-marketplace",
         "test": "nx test",
         "test-api": "nx test api",
-        "test-solidity": "cd ./apps/solidity-contracts && npx hardhat test"
+        "test-solidity": "cd ./apps/solidity-contracts && npx hardhat test",
+        "create-solidity-types": "cd ./apps/solidity-contracts && npx hardhat typechain"
     },
     "private": true,
     "dependencies": {
