@@ -31,5 +31,7 @@ jobs:
         run: npm run lint-api
       - name: api unit tests
         run: npm run test-api
+      - name: create solidity types
+        run: npm run create-solidity-types
       - name: solidity tests
         run: npm run test-solidity
