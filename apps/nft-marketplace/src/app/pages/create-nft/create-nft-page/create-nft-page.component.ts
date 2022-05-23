@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@
 import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { fade } from "../../../@core/animations/enter-leave.animation";
 import { SolanaAttributes } from "../../../@core/interfaces/create-nft.interface";
+import { MetaplexService } from "../../../@core/services/nft/metaplex.service";
 
 @Component({
     selector: "nft-marketplace-create-nft-page",
@@ -42,7 +43,9 @@ export class CreateNFTPageComponent implements OnInit {
     public createNFTForm: FormGroup;
     public attributes: SolanaAttributes[] = [];
 
-    constructor(private _fb: FormBuilder, private _cd: ChangeDetectorRef) {}
+    constructor(private _fb: FormBuilder, private _cd: ChangeDetectorRef, private _metaplexService: MetaplexService) {
+        this._metaplexService.run();
+    }
 
     ngOnInit(): void {
         this.createNFTForm = this._fb.group({
@@ -60,7 +63,6 @@ export class CreateNFTPageComponent implements OnInit {
     }
 
     public addAtrribute() {
-        console.log("Hola");
         const newAttribute: SolanaAttributes = {
             traitType: "",
             displayType: "",
