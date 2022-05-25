@@ -11,13 +11,14 @@ import { VIEW_DOCUMENTS } from "./views/views.module";
 import { CommandsModule } from "./commands/commands.module";
 import { SECURITY_DOCUMENTS } from "./security/security.module";
 import { RestModule } from "./rest/rest.module";
+import { SUPPORT_DOCUMENTS } from "./support/support.module";
 
 const typeOrmFactory = async (configService: ConfigService): Promise<TypeOrmModuleOptions> => {
     return {
         logging: ["log", "info", "query", "error"],
         type: "mongodb",
         url: configService.get<string>("MONGO_URI"),
-        entities: union(INFRASTRUCTURE_DOCUMENTS, VIEW_DOCUMENTS, SECURITY_DOCUMENTS),
+        entities: union(INFRASTRUCTURE_DOCUMENTS, VIEW_DOCUMENTS, SECURITY_DOCUMENTS, SUPPORT_DOCUMENTS),
         useUnifiedTopology: true
     };
 };

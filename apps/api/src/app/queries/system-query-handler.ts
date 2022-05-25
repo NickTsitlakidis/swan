@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { CategoryDto } from "@nft-marketplace/common";
-import { CategoryViewRepository } from "../views/categories/category-view-repository";
+import { CategoryRepository } from "../support/categories/category-repository";
 import { LogAsyncMethod } from "../infrastructure/logging";
 
 @Injectable()
 export class SystemQueryHandler {
-    constructor(private _repository: CategoryViewRepository) {}
+    constructor(private _repository: CategoryRepository) {}
 
     @LogAsyncMethod
     async getCategories(): Promise<Array<CategoryDto>> {

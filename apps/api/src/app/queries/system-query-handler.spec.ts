@@ -1,12 +1,12 @@
 import { getThrower } from "../test-utils/mocking";
 import { Test } from "@nestjs/testing";
 import { SystemQueryHandler } from "./system-query-handler";
-import { CategoryViewRepository } from "../views/categories/category-view-repository";
-import { CategoryView } from "../views/categories/category-view";
+import { CategoryRepository } from "../support/categories/category-repository";
+import { Category } from "../support/categories/category";
 import { ObjectId } from "mongodb";
 import { CategoryDto } from "@nft-marketplace/common";
 
-const repoMock: Partial<CategoryViewRepository> = {
+const repoMock: Partial<CategoryRepository> = {
     findAll: getThrower()
 };
 
@@ -17,7 +17,7 @@ beforeEach(async () => {
         providers: [
             SystemQueryHandler,
             {
-                provide: CategoryViewRepository,
+                provide: CategoryRepository,
                 useValue: repoMock
             }
         ]
@@ -37,7 +37,7 @@ test("getCategories - returns empty array if there are no views", async () => {
 });
 
 test("getCategories - returns mapped dto array", async () => {
-    const views = [new CategoryView(), new CategoryView()];
+    const views = [new Category(), new Category()];
 
     views[0]._id = new ObjectId();
     views[0].name = "one";
