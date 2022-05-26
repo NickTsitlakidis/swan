@@ -2,8 +2,6 @@ import { EventBus, IEventHandler } from "@nestjs/cqrs";
 import { IEvent } from "@nestjs/cqrs/dist/interfaces";
 import { find, isNil } from "lodash";
 import { getLogger, LogAsyncMethod } from "./logging";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const promiseAllSequential = require("promise-all-sequential");
 
 /**
  * A nestjs event bus that publishes all events sequentially.
@@ -49,7 +47,7 @@ export class QueueEventBus extends EventBus {
             }
         }
 
-        return promiseAllSequential(promises);
+        return this.executeSequentially(promises);
     }
 
     bind(handler: IEventHandler<IEvent>, name: string) {
@@ -70,5 +68,15 @@ export class QueueEventBus extends EventBus {
 
     get handlerPairs(): Array<{ eventName: string; handler: IEventHandler<IEvent> }> {
         return this._handlerPairs.slice(0);
+    }
+
+    private async executeSequentially(promises: Promise<any>[]): Promise<any> {
+        for (let i = 0; i < promises.length; i++) {
+            try {
+                await promises[i];
+            } catch (error) {
+                this._logger.error("Failed to execute sequential promise with error: "+ error.message);
+            }
+        }
     }
 }
