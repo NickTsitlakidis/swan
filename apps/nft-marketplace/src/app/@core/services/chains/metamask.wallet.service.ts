@@ -54,11 +54,12 @@ export class MetaMaskAuthService {
     }
 
     private getEthersProvider(): Observable<ethers.providers.Web3Provider> {
-        if(!isNil((window as any).ethereum)) {
+        const externalProvider = (window as any).ethereum;
+        if(!isNil(externalProvider)) {
             if(!isNil(this._ethersProvider)) {
                 return of(this._ethersProvider);
             }
-            this._ethersProvider = new ethers.providers.Web3Provider((window as any).ethereum)
+            this._ethersProvider = new ethers.providers.Web3Provider(externalProvider)
             return from(this._ethersProvider.send("eth_requestAccounts", [])).pipe(map(() => this._ethersProvider));
         } else {
             return throwError(() => "Ethereum object is not added to window");

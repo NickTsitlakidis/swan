@@ -3,8 +3,7 @@ import {
     Blockchains,
     CompleteSignatureAuthenticationDto,
     NonceDto,
-    StartSignatureAuthenticationDto,
-    TokenDto
+    StartSignatureAuthenticationDto
 } from "@nft-marketplace/common";
 import { WalletName } from "@solana/wallet-adapter-base";
 import { LocalStorageService } from "ngx-webstorage";
@@ -95,7 +94,7 @@ export class BlockChainService {
                     blockchain: this.getBlockchain(),
                     signature: signedMessage
                 };
-                this._userAuthService.completeAuthentication(completeAuthBody).subscribe(() => {});
+                this._userAuthService.completeAuthentication(completeAuthBody).subscribe(() => undefined);
             });
         });
     }

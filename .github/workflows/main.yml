@@ -1,4 +1,4 @@
-name: linting-testing
+name: Lint checks and tests
 
 on:
   push:
@@ -21,12 +21,18 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - name: clear modules
+        run: rm -rf ./node_modules
+      - name: remove package-lock
+        run: rm ./package-lock.json
       - name: install dependencies
-        run: npm ci
+        run: npm install
       - name: api lint
         run: npm run lint-api
       - name: api unit tests
         run: npm run test-api
+      - name: nft-marketplace lint
+        run: npm run lint-nft-marketplace
       - name: create solidity types
         run: npm run create-solidity-types
       - name: solidity tests
