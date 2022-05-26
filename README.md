@@ -23,7 +23,7 @@ A standalone module to include e2e tests for the marketplace angular app.
 `./apps/solidity-contracts`
 
 A basic module to include all the smart contracts which are written with Solidity. The module is structured to work
-with the [Truffle](https://trufflesuite.com/) framework.
+with the [Hardhat](https://hardhat.org/) framework.
 
 ### Common library
 `./libs/common`
@@ -55,6 +55,10 @@ Run `npm run build` to create a production build of the marketplace module. The 
 ## Marketplace serve
 Run `npm start` to compile and run the marketplace module and serve it in the browser. During serve, files are watched and changes are automatically compiled
 
+
+## Solidity contract tests
+
+Run `npm run test-solidity` to execute the solidity tests which are based on [Hardhat](https://hardhat.org/) and [Ethers](https://docs.ethers.io/v5/getting-started/).
 
 ## Understand your workspace
 
