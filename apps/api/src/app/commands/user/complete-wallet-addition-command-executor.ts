@@ -60,6 +60,6 @@ export class CompleteWalletAdditionCommandExecutor implements ICommandHandler<Co
 
         await this._authenticationRepository.deleteById(auth.id);
 
-        return new WalletDto(wallet.id, wallet.blockchain, wallet.name);
+        return new WalletDto(wallet.id, wallet.blockchain);
     }
 }

@@ -1,12 +1,12 @@
 import { Module } from "@nestjs/common";
-import { SystemQueryHandler } from "./system-query-handler";
+import { SupportQueryHandler } from "./support-query-handler";
 import { ViewsModule } from "../views/views.module";
 import { CollectionQueryHandler } from "./collection-query-handler";
 import { SupportModule } from "../support/support.module";
 
 @Module({
     imports: [ViewsModule, SupportModule],
-    providers: [SystemQueryHandler, CollectionQueryHandler],
-    exports: [SystemQueryHandler, CollectionQueryHandler]
+    providers: [SupportQueryHandler, CollectionQueryHandler],
+    exports: [SupportQueryHandler, CollectionQueryHandler]
 })
 export class QueriesModule {}

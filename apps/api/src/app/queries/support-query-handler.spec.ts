@@ -1,6 +1,6 @@
 import { getThrower } from "../test-utils/mocking";
 import { Test } from "@nestjs/testing";
-import { SystemQueryHandler } from "./system-query-handler";
+import { SupportQueryHandler } from "./support-query-handler";
 import { CategoryRepository } from "../support/categories/category-repository";
 import { Category } from "../support/categories/category";
 import { ObjectId } from "mongodb";
@@ -10,12 +10,12 @@ const repoMock: Partial<CategoryRepository> = {
     findAll: getThrower()
 };
 
-let handler: SystemQueryHandler;
+let handler: SupportQueryHandler;
 
 beforeEach(async () => {
     const testModule = await Test.createTestingModule({
         providers: [
-            SystemQueryHandler,
+            SupportQueryHandler,
             {
                 provide: CategoryRepository,
                 useValue: repoMock
@@ -23,7 +23,7 @@ beforeEach(async () => {
         ]
     }).compile();
 
-    handler = testModule.get(SystemQueryHandler);
+    handler = testModule.get(SupportQueryHandler);
 });
 
 test("getCategories - returns empty array if there are no views", async () => {
