@@ -1,4 +1,4 @@
-name: linting-testing
+name: Lint checks and tests
 
 on:
   push:
@@ -31,6 +31,8 @@ jobs:
         run: npm run lint-api
       - name: api unit tests
         run: npm run test-api
+      - name: nft-marketplace lint
+        run: npm run lint-nft-marketplace
       - name: create solidity types
         run: npm run create-solidity-types
       - name: solidity tests
