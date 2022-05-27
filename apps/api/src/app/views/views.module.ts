@@ -3,16 +3,16 @@ import { InfrastructureModule } from "../infrastructure/infrastructure.module";
 import { UserViewRepository } from "./user/user-view-repository";
 import { Module } from "@nestjs/common";
 import { UserProjector } from "./user/user-projector";
-import { WalletView } from "./wallet/wallet-view";
-import { WalletViewRepository } from "./wallet/wallet-view-repository";
-import { WalletProjector } from "./wallet/wallet-projector";
+import { UserWalletView } from "./user-wallet/user-wallet-view";
+import { UserWalletViewRepository } from "./user-wallet/user-wallet-view-repository";
+import { UserWalletProjector } from "./user-wallet/user-wallet-projector";
 import { CategoryRepository } from "../support/categories/category-repository";
 import { Category } from "../support/categories/category";
 import { CollectionView } from "./collection/collection-view";
 import { CollectionViewRepository } from "./collection/collection-view-repository";
 import { CollectionProjector } from "./collection/collection-projector";
 
-export const VIEW_DOCUMENTS = [UserView, WalletView, Category, CollectionView];
+export const VIEW_DOCUMENTS = [UserView, UserWalletView, Category, CollectionView];
 
 @Module({
     imports: [InfrastructureModule],
@@ -20,11 +20,11 @@ export const VIEW_DOCUMENTS = [UserView, WalletView, Category, CollectionView];
         UserViewRepository,
         UserProjector,
         CategoryRepository,
-        WalletProjector,
-        WalletViewRepository,
+        UserWalletProjector,
+        UserWalletViewRepository,
         CollectionViewRepository,
         CollectionProjector
     ],
-    exports: [UserViewRepository, CategoryRepository, WalletViewRepository, CollectionViewRepository]
+    exports: [UserViewRepository, CategoryRepository, UserWalletViewRepository, CollectionViewRepository]
 })
 export class ViewsModule {}

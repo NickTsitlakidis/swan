@@ -13,4 +13,8 @@ export class BlockchainWalletRepository {
     findAll(): Promise<Array<BlockchainWallet>> {
         return this._mongoRepo.find({});
     }
+
+    findByWalletIdAndBlockchainId(walletId: string, chainId: string): Promise<BlockchainWallet | undefined> {
+        return this._mongoRepo.findOne({ blockchainId: chainId, walletId: walletId });
+    }
 }

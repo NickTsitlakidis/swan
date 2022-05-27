@@ -13,3 +13,4 @@ export * from "./lib/availability-dto";
 export * from "./lib/entity-dto";
 export * from "./lib/refresh-token-dto";
 export * from "./lib/blockchain-wallet-dto";
+export * from "./lib/user-wallet-dto";

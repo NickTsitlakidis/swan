@@ -9,6 +9,7 @@ import {
     RefreshTokenDto,
     StartSignatureAuthenticationDto,
     TokenDto,
+    UserWalletDto,
     WalletDto
 } from "@nft-marketplace/common";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
@@ -16,6 +17,7 @@ import { UserGuard } from "../security/guards/user-guard";
 import { RequestUserId } from "../security/request-user-id";
 import { CompleteWalletAdditionCommand } from "../commands/user/complete-wallet-addition-command";
 import { UserTokenIssuer } from "../security/user-token-issuer";
+import { mapObject } from "../infrastructure/object-mapper";
 
 @Controller("user")
 export class UserController {
@@ -26,7 +28,7 @@ export class UserController {
     @Post("start-signature-authentication")
     @UseGuards(ClientGuard)
     startAuthentication(@Body() body: StartSignatureAuthenticationDto): Promise<NonceDto> {
-        return this._commandBus.execute(new StartSignatureAuthenticationCommand(body));
+        return this._commandBus.execute(mapObject(body, StartSignatureAuthenticationCommand));
     }
 
     @ApiOperation({ summary: "Completes the authentication process for a user and returns user token" })
@@ -34,7 +36,7 @@ export class UserController {
     @Post("complete-signature-authentication")
     @UseGuards(ClientGuard)
     completeAuthentication(@Body() body: CompleteSignatureAuthenticationDto): Promise<TokenDto> {
-        return this._commandBus.execute(new CompleteSignatureAuthenticationCommand(body));
+        return this._commandBus.execute(mapObject(body, CompleteSignatureAuthenticationCommand));
     }
 
     @Post("refresh-token")
@@ -50,16 +52,20 @@ export class UserController {
         @RequestUserId() userId: string,
         @Body() body: StartSignatureAuthenticationDto
     ): Promise<NonceDto> {
-        return this._commandBus.execute(new StartSignatureAuthenticationCommand(body, userId));
+        const mapped = mapObject(body, StartSignatureAuthenticationCommand);
+        mapped.userId = userId;
+        return this._commandBus.execute(mapped);
     }
 
-    @ApiOkResponse({ description: "The added wallet", type: WalletDto })
+    @ApiOkResponse({ description: "The added wallet", type: UserWalletDto })
     @Post("complete-wallet-addition")
     @UseGuards(UserGuard)
     completeWalletAddition(
         @RequestUserId() userId: string,
         @Body() body: CompleteSignatureAuthenticationDto
-    ): Promise<WalletDto> {
-        return this._commandBus.execute(new CompleteWalletAdditionCommand(body, userId));
+    ): Promise<UserWalletDto> {
+        const mapped = mapObject(body, CompleteWalletAdditionCommand);
+        mapped.userId = userId;
+        return this._commandBus.execute(mapped);
     }
 }

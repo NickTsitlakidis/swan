@@ -1,33 +1,22 @@
-import { getThrower } from "../test-utils/mocking";
-import { Test } from "@nestjs/testing";
 import { SupportQueryHandler } from "./support-query-handler";
 import { CategoryRepository } from "../support/categories/category-repository";
 import { Category } from "../support/categories/category";
 import { ObjectId } from "mongodb";
 import { CategoryDto } from "@nft-marketplace/common";
+import { getUnitTestingModule } from "../test-utils/test-modules";
 
-const repoMock: Partial<CategoryRepository> = {
-    findAll: getThrower()
-};
-
+let categoryRepoMock: CategoryRepository;
 let handler: SupportQueryHandler;
 
 beforeEach(async () => {
-    const testModule = await Test.createTestingModule({
-        providers: [
-            SupportQueryHandler,
-            {
-                provide: CategoryRepository,
-                useValue: repoMock
-            }
-        ]
-    }).compile();
+    const testModule = await getUnitTestingModule(SupportQueryHandler);
 
     handler = testModule.get(SupportQueryHandler);
+    categoryRepoMock = testModule.get(CategoryRepository);
 });
 
 test("getCategories - returns empty array if there are no views", async () => {
-    const repoSpy = jest.spyOn(repoMock, "findAll").mockResolvedValue([]);
+    const repoSpy = jest.spyOn(categoryRepoMock, "findAll").mockResolvedValue([]);
 
     const result = await handler.getCategories();
 
@@ -46,7 +35,7 @@ test("getCategories - returns mapped dto array", async () => {
     views[1]._id = new ObjectId();
     views[1].name = "two";
     views[1].imageUrl = "two-url";
-    const repoSpy = jest.spyOn(repoMock, "findAll").mockResolvedValue(views);
+    const repoSpy = jest.spyOn(categoryRepoMock, "findAll").mockResolvedValue(views);
 
     const result = await handler.getCategories();
 

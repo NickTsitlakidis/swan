@@ -5,7 +5,6 @@ import { cleanUpMongo, getCollection, MONGO_MODULE } from "../test-utils/mongo";
 import { SignatureAuthenticationRepository } from "./signature-authentication-repository";
 import { SignatureAuthentication } from "./signature-authentication";
 import { instanceToPlain } from "class-transformer";
-import { Blockchains, SupportedWallets } from "@nft-marketplace/common";
 
 let repository: SignatureAuthenticationRepository;
 let collection: Collection<any>;
@@ -32,8 +31,8 @@ test("save - persists authentication", async () => {
     view._id = new ObjectId();
     view.message = "123";
     view.address = "addr";
-    view.wallet = SupportedWallets.PHANTOM;
-    view.blockchain = Blockchains.SOLANA;
+    view.walletId = "w-id";
+    view.blockchainId = "b-id";
 
     const saved = await repository.save(view);
     expect(saved).toEqual(view);
@@ -48,12 +47,12 @@ test("findByAddressAndChain - returns authentication match", async () => {
     view._id = new ObjectId();
     view.message = "123";
     view.address = "addr";
-    view.wallet = SupportedWallets.PHANTOM;
-    view.blockchain = Blockchains.SOLANA;
+    view.walletId = "w-id";
+    view.blockchainId = "b-id";
 
     await collection.insertOne(instanceToPlain(view));
 
-    const found = await repository.findByAddressAndChain(view.address, Blockchains.SOLANA);
+    const found = await repository.findByAddressAndChain(view.address, "b-id");
     expect(found).toEqual(view);
 });
 
@@ -62,12 +61,12 @@ test("findByAddress - returns undefined for no address match", async () => {
     view._id = new ObjectId();
     view.message = "123";
     view.address = "addr";
-    view.wallet = SupportedWallets.PHANTOM;
-    view.blockchain = Blockchains.SOLANA;
+    view.walletId = "w-id";
+    view.blockchainId = "b-id";
 
     await collection.insertOne(instanceToPlain(view));
 
-    const found = await repository.findByAddressAndChain("nooooop", Blockchains.SOLANA);
+    const found = await repository.findByAddressAndChain("nooooop", "b-id");
     expect(found).toBeUndefined();
 });
 
@@ -76,12 +75,12 @@ test("findByAddress - returns undefined for no chain match", async () => {
     view._id = new ObjectId();
     view.message = "123";
     view.address = "addr";
-    view.wallet = SupportedWallets.PHANTOM;
-    view.blockchain = Blockchains.SOLANA;
+    view.walletId = "w-id";
+    view.blockchainId = "b-id";
 
     await collection.insertOne(instanceToPlain(view));
 
-    const found = await repository.findByAddressAndChain("addr", Blockchains.ETHEREUM);
+    const found = await repository.findByAddressAndChain("addr", "other");
     expect(found).toBeUndefined();
 });
 
@@ -90,22 +89,22 @@ test("deleteById - deletes authentication match", async () => {
     view1._id = new ObjectId();
     view1.message = "123";
     view1.address = "addr";
-    view1.wallet = SupportedWallets.PHANTOM;
-    view1.blockchain = Blockchains.SOLANA;
+    view1.walletId = "w-id1";
+    view1.blockchainId = "b-id1";
 
     const view2 = new SignatureAuthentication();
     view2._id = new ObjectId();
     view2.message = "456";
     view2.address = "addr";
-    view2.wallet = SupportedWallets.PHANTOM;
-    view2.blockchain = Blockchains.SOLANA;
+    view2.walletId = "w-id2";
+    view2.blockchainId = "b-id2";
 
     const view3 = new SignatureAuthentication();
     view3._id = new ObjectId();
     view3.message = "123";
     view3.address = "other";
-    view3.wallet = SupportedWallets.PHANTOM;
-    view3.blockchain = Blockchains.SOLANA;
+    view3.walletId = "w-id3";
+    view3.blockchainId = "b-id3";
 
     await collection.insertOne(instanceToPlain(view1));
     await collection.insertOne(instanceToPlain(view2));
@@ -124,28 +123,28 @@ test("deleteByAddressAndChain - deletes authentication match", async () => {
     view1._id = new ObjectId();
     view1.message = "123";
     view1.address = "addr1";
-    view1.wallet = SupportedWallets.PHANTOM;
-    view1.blockchain = Blockchains.SOLANA;
+    view1.walletId = "w-id1";
+    view1.blockchainId = "b-id1";
 
     const view2 = new SignatureAuthentication();
     view2._id = new ObjectId();
     view2.message = "456";
     view2.address = "addr2";
-    view2.wallet = SupportedWallets.PHANTOM;
-    view2.blockchain = Blockchains.SOLANA;
+    view2.walletId = "w-id2";
+    view2.blockchainId = "b-id2";
 
     const view3 = new SignatureAuthentication();
     view3._id = new ObjectId();
     view3.message = "123";
-    view3.address = "addr2";
-    view3.wallet = SupportedWallets.METAMASK;
-    view3.blockchain = Blockchains.ETHEREUM;
+    view3.address = "other";
+    view3.walletId = "w-id3";
+    view3.blockchainId = "b-id3";
 
     await collection.insertOne(instanceToPlain(view1));
     await collection.insertOne(instanceToPlain(view2));
     await collection.insertOne(instanceToPlain(view3));
 
-    await repository.deleteByAddressAndChain("addr2", Blockchains.SOLANA);
+    await repository.deleteByAddressAndChain("addr2", "b-id2");
 
     const inCollection = await collection.find().toArray();
     expect(inCollection.length).toBe(2);

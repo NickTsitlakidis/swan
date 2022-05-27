@@ -1,17 +1,16 @@
-import { Blockchains, SupportedWallets } from "@nft-marketplace/common";
 import { Column, CreateDateColumn, Entity } from "typeorm";
 import { MongoDocument } from "../../infrastructure/mongo-document";
 
-@Entity("wallet-views")
-export class WalletView extends MongoDocument {
+@Entity("user-wallet-views")
+export class UserWalletView extends MongoDocument {
     @Column()
     address: string;
 
     @Column()
-    blockchain: Blockchains;
+    blockchainId: string;
 
     @Column()
-    name: SupportedWallets;
+    walletId: string;
 
     @Column()
     userId: string;

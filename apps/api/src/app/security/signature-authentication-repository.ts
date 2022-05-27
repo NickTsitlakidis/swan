@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { Connection, MongoRepository } from "typeorm";
 import { SignatureAuthentication } from "./signature-authentication";
 import { DeleteWriteOpResultObject, ObjectId } from "mongodb";
-import { Blockchains } from "@nft-marketplace/common";
 
 @Injectable()
 export class SignatureAuthenticationRepository {
@@ -16,23 +15,19 @@ export class SignatureAuthenticationRepository {
         return this._mongoRepo.save(authentication);
     }
 
-    findByAddressAndChain(address: string, chain: Blockchains): Promise<SignatureAuthentication> {
-        return this._mongoRepo.findOne({ address: address, blockchain: chain });
+    findByAddressAndChain(address: string, chainId: string): Promise<SignatureAuthentication> {
+        return this._mongoRepo.findOne({ address: address, blockchainId: chainId });
     }
 
-    findByAddressAndChainAndUserId(
-        address: string,
-        chain: Blockchains,
-        userId: string
-    ): Promise<SignatureAuthentication> {
-        return this._mongoRepo.findOne({ address: address, blockchain: chain, userId: userId });
+    findByAddressAndChainAndUserId(address: string, chainId: string, userId: string): Promise<SignatureAuthentication> {
+        return this._mongoRepo.findOne({ address: address, blockchainId: chainId, userId: userId });
     }
 
     deleteById(id: string): Promise<DeleteWriteOpResultObject> {
         return this._mongoRepo.deleteOne({ _id: new ObjectId(id) });
     }
 
-    deleteByAddressAndChain(address: string, chain: Blockchains): Promise<DeleteWriteOpResultObject> {
-        return this._mongoRepo.deleteOne({ address: address, blockchain: chain });
+    deleteByAddressAndChain(address: string, chainId: string): Promise<DeleteWriteOpResultObject> {
+        return this._mongoRepo.deleteOne({ address: address, blockchainId: chainId });
     }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Blockchain } from "./blockchain";
 import { Connection, MongoRepository } from "typeorm";
+import { ObjectId } from "mongodb";
 
 @Injectable()
 export class BlockchainRepository {
@@ -12,5 +13,9 @@ export class BlockchainRepository {
 
     findAll(): Promise<Array<Blockchain>> {
         return this._mongoRepo.find({});
+    }
+
+    findById(id: string): Promise<Blockchain | undefined> {
+        return this._mongoRepo.findOne({ _id: new ObjectId(id) });
     }
 }

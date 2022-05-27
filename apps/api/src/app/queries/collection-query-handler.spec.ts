@@ -1,27 +1,15 @@
-import { getThrower } from "../test-utils/mocking";
-import { Test } from "@nestjs/testing";
 import { CollectionViewRepository } from "../views/collection/collection-view-repository";
 import { CollectionQueryHandler } from "./collection-query-handler";
+import { getUnitTestingModule } from "../test-utils/test-modules";
 
-const repoMock: Partial<CollectionViewRepository> = {
-    countByName: getThrower(),
-    countByCustomUrl: getThrower()
-};
-
+let repoMock: CollectionViewRepository;
 let handler: CollectionQueryHandler;
 
 beforeEach(async () => {
-    const testModule = await Test.createTestingModule({
-        providers: [
-            CollectionQueryHandler,
-            {
-                provide: CollectionViewRepository,
-                useValue: repoMock
-            }
-        ]
-    }).compile();
+    const testModule = await getUnitTestingModule(CollectionQueryHandler);
 
     handler = testModule.get(CollectionQueryHandler);
+    repoMock = testModule.get(CollectionViewRepository);
 });
 
 test("getNameAvailability - returns true when name is not found", async () => {

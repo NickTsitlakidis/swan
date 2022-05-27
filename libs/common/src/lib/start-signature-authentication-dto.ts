@@ -1,7 +1,4 @@
-import { IsEnum, IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
-
-import { Blockchains } from "./blockchains";
-import { SupportedWallets } from "./supported-wallets";
+import { IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
 
 export class StartSignatureAuthenticationDto {
     @IsString()
@@ -12,11 +9,9 @@ export class StartSignatureAuthenticationDto {
 
     @IsString()
     @IsNotEmpty()
-    @IsEnum(Blockchains)
-    blockchain: Blockchains;
+    blockchainId: string;
 
     @IsString()
     @IsNotEmpty()
-    @IsEnum(SupportedWallets)
-    wallet: SupportedWallets;
+    walletId: string;
 }

@@ -1,15 +1,12 @@
-import { MONGO_MODULE } from "./mongo";
-import { utilities, WinstonModule } from "nest-winston";
-import * as winston from "winston";
+import { Test, TestingModule } from "@nestjs/testing";
+import { createMock } from "@golevelup/ts-jest";
 
-export const TEST_MODULES = [
-    MONGO_MODULE,
-    WinstonModule.forRoot({
-        transports: [
-            new winston.transports.Console({
-                format: winston.format.combine(winston.format.timestamp(), utilities.format.nestLike())
-            })
-        ],
-        level: "debug"
-    })
-];
+export function getUnitTestingModule(testClass): Promise<TestingModule> {
+    return Test.createTestingModule({ providers: [testClass] })
+        .useMocker((token) => {
+            if (typeof token === "function") {
+                return createMock();
+            }
+        })
+        .compile();
+}

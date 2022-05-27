@@ -4,10 +4,10 @@ import { UserGuard } from "../security/guards/user-guard";
 import { CollectionQueryHandler } from "../queries/collection-query-handler";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { RequestUserId } from "../security/request-user-id";
-import { instanceToPlain, plainToClass } from "class-transformer";
 import { CreateCollectionCommand } from "../commands/collection/create-collection-command";
 import { CommandBus } from "@nestjs/cqrs";
 import { ClientGuard } from "../security/guards/client-guard";
+import { mapObject } from "../infrastructure/object-mapper";
 
 @Controller("collections")
 export class CollectionController {
@@ -31,7 +31,7 @@ export class CollectionController {
     @UseGuards(UserGuard)
     @Post("create-collection")
     create(@RequestUserId() userId: string, @Body() dto: CreateCollectionDto): Promise<EntityDto> {
-        const command = plainToClass(CreateCollectionCommand, instanceToPlain(dto));
+        const command = mapObject(dto, CreateCollectionCommand);
         command.userId = userId;
         return this._commandBus.execute(command);
     }
