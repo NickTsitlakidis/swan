@@ -3,6 +3,9 @@ import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms"
 import { fade } from "../../../@core/animations/enter-leave.animation";
 import { SolanaAttributes } from "../../../@core/interfaces/create-nft.interface";
 import { MetaplexService } from "../../../@core/services/nft/metaplex.service";
+import { CreateNftInput } from "@metaplex-foundation/js-next";
+import { UserAuthService } from "../../../@core/services/authentication/user_auth.service";
+import { PublicKey } from "@solana/web3.js";
 
 @Component({
     selector: "nft-marketplace-create-nft-page",
@@ -43,9 +46,12 @@ export class CreateNFTPageComponent implements OnInit {
     public createNFTForm: FormGroup;
     public attributes: SolanaAttributes[] = [];
 
-    constructor(private _fb: FormBuilder, private _cd: ChangeDetectorRef, private _metaplexService: MetaplexService) {
-        this._metaplexService.run();
-    }
+    constructor(
+        private _fb: FormBuilder,
+        private _userAuthService: UserAuthService,
+        private _cd: ChangeDetectorRef,
+        private _metaplexService: MetaplexService
+    ) {}
 
     ngOnInit(): void {
         this.createNFTForm = this._fb.group({
@@ -77,6 +83,27 @@ export class CreateNFTPageComponent implements OnInit {
     }
 
     public onSubmit() {
-        console.log("Hey");
+        const nft = {
+            uri: "https://images.unsplash.com/photo-1653387711918-9d36fb815849?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2574&q=80",
+            name: this.createNFTForm.get("title")?.value,
+            symbol: this.createNFTForm.get("symbol")?.value,
+            sellerFeeBasisPoints: this.createNFTForm.get("royalties")?.value,
+            // creators?: Creator[],
+            // collection?: Collection,
+            // uses?: Uses,
+            isMutable: false,
+            maxSupply: this.createNFTForm.get("maxSupply")?.value,
+            // allowHolderOffCurve: boolean,
+            // mint: Signer,
+            // payer: Signer,
+            // mintAuthority: Signer,
+            // updateAuthority: Signer,
+            owner: new PublicKey(this._userAuthService.getPublicKey())
+            // freezeAuthority: PublicKey,
+            // tokenProgram: PublicKey,
+            // associatedTokenProgram: PublicKey,
+            // confirmOptions: ConfirmOptions
+        } as CreateNftInput;
+        this._metaplexService.mintNFT(nft);
     }
 }

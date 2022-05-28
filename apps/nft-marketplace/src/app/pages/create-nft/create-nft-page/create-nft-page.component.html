@@ -151,12 +151,14 @@
         <div class="col-12 mt-4">
             <button
                 nbButton
+                hero
+                status="success"
                 type="submit"
                 [ngClass]="{ 'opacity-50': !createNFTForm.valid }"
                 class="bg-blue-600 p-2 text-white rounded w-32"
                 (click)="onSubmit()"
             >
-                Submit
+                Create NFT
             </button>
         </div>
     </form>
