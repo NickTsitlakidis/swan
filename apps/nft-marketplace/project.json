@@ -23,7 +23,13 @@
                     "apps/nft-marketplace/src/app/@theme/styles/styles.scss",
                     "node_modules/bootstrap/dist/css/bootstrap.css"
                 ],
-                "scripts": []
+                "scripts": [],
+                "allowedCommonJsDependencies": [
+                    "validator",
+                    "bs58",
+                    "buffer",
+                    "tweetnacl"
+                ]
             },
             "configurations": {
                 "production": {

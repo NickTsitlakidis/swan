@@ -3,22 +3,22 @@ import { Connection } from "typeorm";
 import { Test } from "@nestjs/testing";
 import { instanceToPlain } from "class-transformer";
 import { cleanUpMongo, getCollection, MONGO_MODULE } from "../../test-utils/mongo";
-import { CategoryViewRepository } from "./category-view-repository";
-import { CategoryView } from "./category-view";
+import { CategoryRepository } from "./category-repository";
+import { Category } from "./category";
 
-let repository: CategoryViewRepository;
+let repository: CategoryRepository;
 let collection: Collection<any>;
 let connection: Connection;
 
 beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
         imports: [MONGO_MODULE],
-        providers: [CategoryViewRepository]
+        providers: [CategoryRepository]
     }).compile();
 
-    repository = moduleRef.get(CategoryViewRepository);
+    repository = moduleRef.get(CategoryRepository);
     connection = moduleRef.get(Connection);
-    collection = getCollection("category-views", connection);
+    collection = getCollection("categories", connection);
     await collection.deleteMany({});
 });
 
@@ -27,12 +27,12 @@ afterEach(async () => {
 });
 
 test("findAll - returns all when they exist", async () => {
-    const cat1 = new CategoryView();
+    const cat1 = new Category();
     cat1.name = "cat1";
     cat1.imageUrl = "url1";
     cat1._id = new ObjectId();
 
-    const cat2 = new CategoryView();
+    const cat2 = new Category();
     cat2.name = "cat2";
     cat2.imageUrl = "url2";
     cat2._id = new ObjectId();

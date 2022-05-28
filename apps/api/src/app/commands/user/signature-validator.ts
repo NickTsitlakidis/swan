@@ -26,6 +26,6 @@ export class SignatureValidator {
 
         // The signature verification is successful if the address found with
         // ecrecover matches the initial publicAddress
-        return signatureAddress.toLowerCase() === address;
+        return signatureAddress.toLowerCase() === address.toLowerCase();
     }
 }

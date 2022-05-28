@@ -1,17 +1,17 @@
 import { Injectable } from "@nestjs/common";
-import { CategoryView } from "./category-view";
+import { Category } from "./category";
 import { Connection, MongoRepository } from "typeorm";
 import { ObjectID } from "mongodb";
 
 @Injectable()
-export class CategoryViewRepository {
-    private _mongoRepo: MongoRepository<CategoryView>;
+export class CategoryRepository {
+    private _mongoRepo: MongoRepository<Category>;
 
     constructor(connection: Connection) {
-        this._mongoRepo = connection.getMongoRepository(CategoryView);
+        this._mongoRepo = connection.getMongoRepository(Category);
     }
 
-    findAll(): Promise<Array<CategoryView>> {
+    findAll(): Promise<Array<Category>> {
         return this._mongoRepo.find({});
     }
 

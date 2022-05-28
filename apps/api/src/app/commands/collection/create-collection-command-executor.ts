@@ -4,7 +4,7 @@ import { CollectionFactory } from "../../domain/collection/collection-factory";
 import { CollectionViewRepository } from "../../views/collection/collection-view-repository";
 import { BadRequestException } from "@nestjs/common";
 import { EntityDto } from "@nft-marketplace/common";
-import { CategoryViewRepository } from "../../views/categories/category-view-repository";
+import { CategoryRepository } from "../../support/categories/category-repository";
 import { LogAsyncMethod } from "../../infrastructure/logging";
 
 @CommandHandler(CreateCollectionCommand)
@@ -12,7 +12,7 @@ export class CreateCollectionCommandExecutor implements ICommandHandler<CreateCo
     constructor(
         private _factory: CollectionFactory,
         private _repository: CollectionViewRepository,
-        private _categoryRepository: CategoryViewRepository
+        private _categoryRepository: CategoryRepository
     ) {}
 
     @LogAsyncMethod

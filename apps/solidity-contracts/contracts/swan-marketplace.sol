@@ -17,7 +17,7 @@ contract SwanMarketplace is ReentrancyGuard {
         ListingStatus status;
     }
 
-    event TokenListed(
+    event ListingCreated(
         address seller,
         address tokenContractAddress,
         uint tokenId,
@@ -45,7 +45,7 @@ contract SwanMarketplace is ReentrancyGuard {
     TokenListing[] private listings;
     address public immutable swanWallet;
     uint idCounter;
-    uint private immutable feePercentage;
+    uint public immutable feePercentage;
     //mapping(uint => TokenListing) public listings;
 
     constructor() {
@@ -55,8 +55,7 @@ contract SwanMarketplace is ReentrancyGuard {
     }
 
     function createListing(address tokenContractAddress, uint tokenId, uint price) external nonReentrant {
-        require(price > 0, "Price can only be a positive number");
-        ERC721(tokenContractAddress).transferFrom(msg.sender, address(this), tokenId);
+        require(price > 0, "Price must be greater than 0");
 
         int foundAt = - 1;
         for (uint i = 0; i < listings.length; i++) {
@@ -67,6 +66,8 @@ contract SwanMarketplace is ReentrancyGuard {
             }
         }
         require(foundAt == - 1, "Token is already listed");
+
+        ERC721(tokenContractAddress).transferFrom(msg.sender, address(this), tokenId);
         idCounter++;
         TokenListing memory newListing = TokenListing(
             price,
@@ -78,7 +79,7 @@ contract SwanMarketplace is ReentrancyGuard {
         );
         listings.push(newListing);
 
-        emit TokenListed(
+        emit ListingCreated(
             newListing.seller,
             newListing.tokenContractAddress,
             newListing.tokenId,
@@ -125,8 +126,8 @@ contract SwanMarketplace is ReentrancyGuard {
                 foundAt = int(i);
             }
         }
-        require(foundAt > - 1, "Listing id does not exist");
-        require(listings[uint(foundAt)].seller == msg.sender, "You can only cancel your own listings");
+        require(foundAt > - 1, "Listing does not exist");
+        require(listings[uint(foundAt)].seller == msg.sender, "Invalid listing owner");
 
         listings[uint(foundAt)].status = ListingStatus.CANCELLED;
         ERC721(listings[uint(foundAt)].tokenContractAddress).transferFrom(address(this), msg.sender, listings[uint(foundAt)].tokenId);
