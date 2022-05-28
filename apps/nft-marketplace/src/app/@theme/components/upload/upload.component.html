@@ -1,0 +1,64 @@
+<img
+    class="imageUrl shadow"
+    [width]="width"
+    [height]="height"
+    *ngIf="imageUrl && !imageAsBackground; else imagePreview"
+    src="{{ imageUrl }}"
+/>
+
+<ng-template #imagePreview>
+    <div
+        class="custom-dropzone overflow-hidden custom-upload"
+        #dropzoneContainer
+        [class.overflow-x-auto]="multiple"
+        [ngClass]="class"
+        [class.hover-dropzone]="imageAsBackground || (hoverAnimation && !files?.length)"
+        [ngStyle]="{
+            width: width ? width + 'px' : null,
+            height: height ? height + 'px' : null,
+            border: hideBorder ? 'none' : null
+        }"
+        ngx-dropzone
+        [maxFileSize]="maxFileSize"
+        [multiple]="multiple"
+        [accept]="fileType"
+        (change)="onSelect($event)"
+    >
+        <ng-container *ngIf="!(imageAsBackground && (backgroundBase64 || imageUrl)); else bgImage">
+            <ng-container *ngFor="let f of files">
+                <ngx-dropzone-image-preview
+                    ngProjectAs="ngx-dropzone-preview"
+                    *ngIf="f.type?.startsWith('image')"
+                    [file]="f"
+                    [removable]="true"
+                    (removed)="onRemove(f)"
+                >
+                </ngx-dropzone-image-preview>
+
+                <ngx-dropzone-preview *ngIf="!f.type?.startsWith('image')" [removable]="true" (removed)="onRemove(f)">
+                    <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                </ngx-dropzone-preview>
+            </ng-container>
+
+            <ngx-dropzone-label *ngIf="!files?.length">
+                <div class="row">
+                    <div class="col-12 float-left">
+                        <h4>Upload your cover image (PNG, JPG, GIF, SVG)</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 p-2">
+                        <span class="text-secondary" *ngIf="uploadMessage">
+                            {{ uploadMessage }}
+                        </span>
+                    </div>
+                </div>
+            </ngx-dropzone-label>
+        </ng-container>
+        <ng-template #bgImage>
+            <div class="text-center w-100 h-100">
+                <img [src]="backgroundBase64 || imageUrl" height="100%" class="scale-down" />
+            </div>
+        </ng-template>
+    </div>
+</ng-template>

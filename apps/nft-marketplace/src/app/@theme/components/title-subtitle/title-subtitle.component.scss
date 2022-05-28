@@ -9,5 +9,8 @@
     display: flex;
     margin-bottom: 0.25rem;
     flex-direction: column;
+    label {
+        margin-bottom: unset;
+    }
   }
 }
