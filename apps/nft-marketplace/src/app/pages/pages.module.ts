@@ -9,6 +9,7 @@ import { MiscellaneousModule } from "./miscellaneous/miscellaneous.module";
 import { HomeModule } from "./home/home.module";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { CreateCollectionModule } from "./create-collection/create-collection.module";
+import { CreateNFTModule } from "./create-nft/create-nft.module";
 @NgModule({
     imports: [
         PagesRoutingModule,
@@ -19,6 +20,7 @@ import { CreateCollectionModule } from "./create-collection/create-collection.mo
         MiscellaneousModule,
         HomeModule,
         CreateCollectionModule,
+        CreateNFTModule,
         HdWalletAdapterModule.forRoot({ autoConnect: true })
     ],
     declarations: [PagesComponent]

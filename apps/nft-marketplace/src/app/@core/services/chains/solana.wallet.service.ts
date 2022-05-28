@@ -18,6 +18,7 @@ import {
     TorusWalletAdapter
 } from "@solana/wallet-adapter-wallets";
 import { BlockChains } from "../../interfaces/blockchain.interface";
+import { environment } from "../../../../environments/environment";
 
 export const isNotNull = <T>(source: Observable<T | null>) =>
     source.pipe(filter((item: T | null): item is T => item !== null));
@@ -28,8 +29,8 @@ export const isNotNull = <T>(source: Observable<T | null>) =>
 export class SolanaWalletService {
     private readonly connection$ = this._connectionStore.connection$;
     private readonly wallets$ = this._walletStore.wallets$;
-    private readonly wallet$ = this._walletStore.wallet$;
-    private readonly walletName$ = this.wallet$.pipe(map((wallet: Wallet | null) => wallet?.adapter.name || null));
+    public readonly wallet$ = this._walletStore.wallet$;
+    /* private readonly walletName$ = this.wallet$.pipe(map((wallet: Wallet | null) => wallet?.adapter.name || null));
     private readonly ready$ = this.wallet$.pipe(
         map(
             (wallet) =>
@@ -37,14 +38,14 @@ export class SolanaWalletService {
                 (wallet.adapter.readyState === WalletReadyState.Installed ||
                     wallet.adapter.readyState === WalletReadyState.Loadable)
         )
-    );
+    ); */
     public readonly connected$ = this._walletStore.connected$;
     public readonly publicKey$ = this._walletStore.publicKey$;
     private lamports = 0;
     private recipient = "";
 
     constructor(private readonly _connectionStore: ConnectionStore, private readonly _walletStore: WalletStore) {
-        this._connectionStore.setEndpoint("http://api.devnet.solana.com");
+        this._connectionStore.setEndpoint(environment.solanaNetwork);
         this._walletStore.setAdapters([
             new PhantomWalletAdapter(),
             new SlopeWalletAdapter(),

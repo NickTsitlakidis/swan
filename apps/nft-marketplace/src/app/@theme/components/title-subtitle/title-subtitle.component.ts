@@ -6,7 +6,7 @@ import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
     styleUrls: ["./title-subtitle.component.scss"],
     template: `
         <div class="title-subtitle">
-            <label *ngIf="title" for="image">{{ title }}</label
+            <label *ngIf="title">{{ title }}</label
             ><span *ngIf="subtitle" class="text-description">{{ subtitle }}</span>
         </div>
     `

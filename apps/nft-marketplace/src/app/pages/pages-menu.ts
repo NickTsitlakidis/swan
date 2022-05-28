@@ -9,8 +9,11 @@ export const MENU_ITEMS: NbMenuItem[] = [
     },
     {
         title: "Create collection",
-        link: "/create-collection",
-        home: true
+        link: "/create-collection"
+    },
+    {
+        title: "Create nft",
+        link: "/create-nft"
     },
     {
         title: "Miscellaneous",

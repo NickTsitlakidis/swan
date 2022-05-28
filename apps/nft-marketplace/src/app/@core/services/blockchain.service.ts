@@ -94,7 +94,9 @@ export class BlockChainService {
                     blockchain: this.getBlockchain(),
                     signature: signedMessage
                 };
-                this._userAuthService.completeAuthentication(completeAuthBody).subscribe(() => undefined);
+                this._userAuthService.completeAuthentication(completeAuthBody).subscribe(() => {
+                    this._userAuthService.setPublicKey(address);
+                });
             });
         });
     }
