@@ -1,5 +1,4 @@
 import { IdGenerator } from "../../infrastructure/id-generator";
-import { Test } from "@nestjs/testing";
 import { SignatureAuthenticationRepository } from "../../security/signature-authentication-repository";
 import { TokenDto } from "@nft-marketplace/common";
 import { CompleteSignatureAuthenticationExecutor } from "./complete-signature-authentication-executor";
@@ -18,7 +17,6 @@ import { BlockchainRepository } from "../../support/blockchains/blockchain-repos
 import { Blockchain } from "../../support/blockchains/blockchain";
 import { SignatureTypes } from "../../support/blockchains/signature-types";
 import { UserWallet } from "../../domain/user/user-wallet";
-import { createMock } from "@golevelup/ts-jest";
 import { getUnitTestingModule } from "../../test-utils/test-modules";
 
 let validatorMock: SignatureValidator;

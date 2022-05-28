@@ -6,27 +6,24 @@ import { BadRequestException } from "@nestjs/common";
 import { EntityDto } from "@nft-marketplace/common";
 import { CategoryRepository } from "../../support/categories/category-repository";
 import { LogAsyncMethod } from "../../infrastructure/logging";
+import { BlockchainRepository } from "../../support/blockchains/blockchain-repository";
+import { isNil } from "lodash";
 
 @CommandHandler(CreateCollectionCommand)
 export class CreateCollectionCommandExecutor implements ICommandHandler<CreateCollectionCommand> {
     constructor(
         private _factory: CollectionFactory,
-        private _repository: CollectionViewRepository,
-        private _categoryRepository: CategoryRepository
+        private _collectionRepository: CollectionViewRepository,
+        private _categoryRepository: CategoryRepository,
+        private _blockchainRepository: BlockchainRepository
     ) {}
 
     @LogAsyncMethod
     async execute(command: CreateCollectionCommand): Promise<EntityDto> {
-        if (command.customUrl) {
-            const withUrl = await this._repository.countByCustomUrl(command.customUrl);
-            if (withUrl > 0) {
-                throw new BadRequestException(`A collection with url ${command.customUrl} already exists`);
-            }
-        }
-
-        const [withName, withCategoryId] = await Promise.all([
-            this._repository.countByName(command.name),
-            this._categoryRepository.countById(command.categoryId)
+        const [withName, withCategoryId, chain] = await Promise.all([
+            this._collectionRepository.countByName(command.name),
+            this._categoryRepository.countById(command.categoryId),
+            this._blockchainRepository.findById(command.blockchainId)
         ]);
 
         if (withName > 0) {
@@ -37,7 +34,20 @@ export class CreateCollectionCommandExecutor implements ICommandHandler<CreateCo
             throw new BadRequestException(`No category found with id ${command.categoryId}`);
         }
 
-        //todo check if the blockchain-token pair is valid
+        if (isNil(chain)) {
+            throw new BadRequestException("Blockchain not found");
+        }
+
+        if (chain.mainTokenSymbol !== command.paymentToken) {
+            throw new BadRequestException("Token doesn't match with blockchain");
+        }
+
+        if (command.customUrl) {
+            const withUrl = await this._collectionRepository.countByCustomUrl(command.customUrl);
+            if (withUrl > 0) {
+                throw new BadRequestException(`A collection with url ${command.customUrl} already exists`);
+            }
+        }
 
         const newCollection = this._factory.createNew(command);
         await newCollection.commit();
