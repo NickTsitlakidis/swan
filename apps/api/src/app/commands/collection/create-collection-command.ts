@@ -1,4 +1,4 @@
-import { Blockchains, CollectionLinksDto } from "@nft-marketplace/common";
+import { CollectionLinksDto } from "@nft-marketplace/common";
 import { Type } from "class-transformer";
 
 export class CreateCollectionCommand {
@@ -10,7 +10,7 @@ export class CreateCollectionCommand {
     categoryId: string;
     customUrl: string;
     salePercentage: number;
-    blockchain: Blockchains;
+    blockchainId: string;
     paymentToken: string;
     @Type(() => CollectionLinksDto)
     links: CollectionLinksDto;

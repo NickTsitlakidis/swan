@@ -1,7 +1,5 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-import { Blockchains } from "./blockchains";
-
 export class CompleteSignatureAuthenticationDto {
     @IsString()
     @IsNotEmpty()
@@ -13,5 +11,5 @@ export class CompleteSignatureAuthenticationDto {
 
     @IsString()
     @IsNotEmpty()
-    blockchain: Blockchains;
+    blockchainId: string;
 }

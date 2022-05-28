@@ -1,6 +1,5 @@
 import { MongoDocument } from "../../infrastructure/mongo-document";
 import { Column, CreateDateColumn, Entity } from "typeorm";
-import { Blockchains } from "@nft-marketplace/common";
 import { CollectionLinksView } from "./collection-links-view";
 
 @Entity("collection-views")
@@ -30,7 +29,7 @@ export class CollectionView extends MongoDocument {
     salePercentage: number;
 
     @Column()
-    blockchain: Blockchains;
+    blockchainId: string;
 
     @Column()
     paymentToken: string;
