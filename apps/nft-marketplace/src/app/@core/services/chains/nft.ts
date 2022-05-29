@@ -1,4 +1,3 @@
-import { MetadataAttribute } from "./metadata-attribute";
 import { Collection } from "./collection";
 
 export interface CreateNft {
@@ -16,4 +15,10 @@ export interface MintTransaction {
     tokenAddress: string;
     metadataUri: string;
     imageUri: string;
+}
+
+export interface MetadataAttribute {
+    traitType: string;
+    value: string;
+    displayType: string;
 }
