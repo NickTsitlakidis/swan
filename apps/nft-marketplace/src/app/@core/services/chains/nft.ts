@@ -1,4 +1,4 @@
-import { Collection } from "./collection";
+import { Collection } from "../collections/collection";
 
 export interface CreateNft {
     metadataUri: string;

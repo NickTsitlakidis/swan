@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Blockchains, CategoryDto, CollectionLinksDto, CreateCollectionDto } from "@nft-marketplace/common";
 import { CollectionsService } from "../../../@core/services/collections/collections.service";
 import { ValidateName, ValidateUrl } from "./create-collection-page.validator";
+import { SupportService } from "../../../@core/services/support/support.service";
 
 @Component({
     selector: "nft-marketplace-create-collection-page",
@@ -89,8 +90,12 @@ export class CreateCollectionPageComponent implements OnInit {
         }
     };
 
-    constructor(private _fb: FormBuilder, private _collectionsService: CollectionsService) {
-        this._collectionsService.getCategories().subscribe((categories) => {
+    constructor(
+        private _fb: FormBuilder,
+        private _collectionsService: CollectionsService,
+        private _supportService: SupportService
+    ) {
+        this._supportService.getCategories().subscribe((categories) => {
             this.categories = categories;
         });
     }
