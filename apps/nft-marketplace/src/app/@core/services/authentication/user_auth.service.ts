@@ -45,6 +45,10 @@ export class UserAuthService {
         );
     }
 
+    public startAuthentication(): Observable<void> {
+
+    }
+
     public completeAuthentication(body: CompleteSignatureAuthenticationDto) {
         return this.httpClient.post("/user/complete-signature-authentication", body).pipe(
             map((httpResult) => plainToClass(TokenDto, httpResult)),

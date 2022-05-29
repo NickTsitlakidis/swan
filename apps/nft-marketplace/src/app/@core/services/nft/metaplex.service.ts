@@ -20,6 +20,7 @@ export class MetaplexService {
                 const account = await connection.getAccountInfo(pubKey);
                 if (account?.owner) {
                     await metaplex.nfts().create(nftInput);
+
                 }
             }
         });

@@ -34,6 +34,12 @@ export class CollectionView extends MongoDocument {
     @Column()
     paymentToken: string;
 
+    @Column()
+    userId: string;
+
+    @Column()
+    collectionAddress: string;
+
     @CreateDateColumn()
     createdAt: Date;
 }

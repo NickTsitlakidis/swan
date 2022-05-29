@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { fade } from "../../../@core/animations/enter-leave.animation";
-import { SolanaAttributes } from "../../../@core/interfaces/create-nft.interface";
+import { MetadataAttribute } from "../../../@core/services/chains/create-nft.interface";
 import { MetaplexService } from "../../../@core/services/nft/metaplex.service";
 import { CreateNftInput } from "@metaplex-foundation/js-next";
 import { UserAuthService } from "../../../@core/services/authentication/user_auth.service";
@@ -44,7 +44,7 @@ export class CreateNFTPageComponent implements OnInit {
         attributeDisplay: "Display type (Optional)"
     };
     public createNFTForm: FormGroup;
-    public attributes: SolanaAttributes[] = [];
+    public attributes: MetadataAttribute[] = [];
 
     constructor(
         private _fb: FormBuilder,
@@ -69,7 +69,7 @@ export class CreateNFTPageComponent implements OnInit {
     }
 
     public addAtrribute() {
-        const newAttribute: SolanaAttributes = {
+        const newAttribute: MetadataAttribute = {
             traitType: "",
             displayType: "",
             value: ""
