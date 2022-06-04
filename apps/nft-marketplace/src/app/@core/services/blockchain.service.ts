@@ -1,10 +1,4 @@
 import { Injectable } from "@angular/core";
-import {
-    Blockchains,
-    CompleteSignatureAuthenticationDto,
-    NonceDto,
-    StartSignatureAuthenticationDto
-} from "@nft-marketplace/common";
 import { WalletName } from "@solana/wallet-adapter-base";
 import { LocalStorageService } from "ngx-webstorage";
 import { Observable } from "rxjs";
@@ -38,7 +32,7 @@ export class BlockChainService {
             }
             const userData = this._userAuthService.getUserTokenData();
             if (address && !userData.tokenValue) {
-                this._loginUser(service, address);
+                //this._loginUser(service, address);
             }
         });
     }
@@ -47,10 +41,10 @@ export class BlockChainService {
         return this._lcStorage.retrieve("walletName");
     }
 
-    public getBlockchain(): Blockchains {
-        const chain: Blockchains = this._lcStorage.retrieve("blockchainName");
-        return chain;
-    }
+    // public getBlockchain(): Blockchains {
+    //     const chain: Blockchains = this._lcStorage.retrieve("blockchainName");
+    //     return chain;
+    // }
 
     public setBlockchain(chainName: string | undefined) {
         this._lcStorage.store("blockchainName", chainName);
@@ -81,23 +75,22 @@ export class BlockChainService {
         return chain;
     }
 
-    private _loginUser(service: SolanaWalletService | MetaMaskAuthService, address: string) {
-        const body: StartSignatureAuthenticationDto = {
-            walletAddress: address,
-            wallet: this.getWalletName(),
-            blockchain: this.getBlockchain()
-        };
-        this._userAuthService.getNonce(body).subscribe((res: NonceDto) => {
-            service.onSignMessage(res.nonce)?.subscribe((signedMessage: string) => {
-                const completeAuthBody: CompleteSignatureAuthenticationDto = {
-                    walletAddress: address,
-                    blockchain: this.getBlockchain(),
-                    signature: signedMessage
-                };
-                this._userAuthService.completeAuthentication(completeAuthBody).subscribe(() => {
-                    this._userAuthService.setPublicKey(address);
-                });
-            });
-        });
-    }
+    // private _loginUser(service: SolanaWalletService | MetaMaskAuthService, address: string) {
+    //     const body: StartSignatureAuthenticationDto = {
+    //         walletAddress: address,
+    //         blockchain: this.getBlockchain()
+    //     };
+    //     this._userAuthService.getNonce(body).subscribe((res: NonceDto) => {
+    //         service.onSignMessage(res.nonce)?.subscribe((signedMessage: string) => {
+    //             const completeAuthBody: CompleteSignatureAuthenticationDto = {
+    //                 walletAddress: address,
+    //                 blockchain: this.getBlockchain(),
+    //                 signature: signedMessage
+    //             };
+    //             this._userAuthService.completeAuthentication(completeAuthBody).subscribe(() => {
+    //                 this._userAuthService.setPublicKey(address);
+    //             });
+    //         });
+    //     });
+    // }
 }

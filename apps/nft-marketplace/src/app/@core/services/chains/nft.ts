@@ -13,6 +13,7 @@ export interface CreateNft {
 export interface MintTransaction {
     transactionId: string;
     tokenAddress: string;
+    tokenId: string;
     metadataUri: string;
     imageUri: string;
 }

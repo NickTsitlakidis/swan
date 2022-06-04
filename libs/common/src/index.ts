@@ -3,7 +3,6 @@ export * from "./lib/start-signature-authentication-dto";
 export * from "./lib/token-dto";
 export * from "./lib/supported-wallets";
 export * from "./lib/nonce-dto";
-export * from "./lib/blockchains";
 export * from "./lib/category-dto";
 export * from "./lib/wallet-dto";
 export * from "./lib/create-collection-dto";

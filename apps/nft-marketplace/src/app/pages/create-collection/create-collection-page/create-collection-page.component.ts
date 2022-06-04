@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { Blockchains, CategoryDto, CollectionLinksDto, CreateCollectionDto } from "@nft-marketplace/common";
+import { CategoryDto, CollectionLinksDto, CreateCollectionDto } from "@nft-marketplace/common";
 import { CollectionsService } from "../../../@core/services/collections/collections.service";
 import { ValidateName, ValidateUrl } from "./create-collection-page.validator";
 import { SupportService } from "../../../@core/services/support/support.service";
@@ -141,12 +141,12 @@ export class CreateCollectionPageComponent implements OnInit {
         socialLinks.website = socialFormVal?.customUrl;
         body.links = socialLinks;
 
-        const blockChainFormVal =
-            this.createCollectionForm.get("chain")?.value === Blockchains.ETHEREUM
-                ? Blockchains.ETHEREUM
-                : Blockchains.SOLANA;
-        body.blockchain = blockChainFormVal;
+        // const blockChainFormVal =
+        //     this.createCollectionForm.get("chain")?.value === Blockchains.ETHEREUM
+        //         ? Blockchains.ETHEREUM
+        //         : Blockchains.SOLANA;
 
+        //todo set blockchain id here
         body.name = this.createCollectionForm.get("collectionName")?.value;
         body.categoryId = this.createCollectionForm.get("category")?.value;
         body.customUrl = this.createCollectionForm.get("marketPlaceUrl")?.value;

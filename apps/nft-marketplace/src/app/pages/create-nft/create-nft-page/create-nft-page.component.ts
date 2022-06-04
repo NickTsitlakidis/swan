@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { fade } from "../../../@core/animations/enter-leave.animation";
-import { MetadataAttribute } from "../../../@core/services/chains/create-nft.interface";
 import { MetaplexService } from "../../../@core/services/nft/metaplex.service";
 import { CreateNftInput } from "@metaplex-foundation/js-next";
 import { UserAuthService } from "../../../@core/services/authentication/user_auth.service";
 import { PublicKey } from "@solana/web3.js";
+import { MetadataAttribute } from "../../../@core/services/chains/nft";
 
 @Component({
     selector: "nft-marketplace-create-nft-page",
