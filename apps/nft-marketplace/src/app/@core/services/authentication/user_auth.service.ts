@@ -8,7 +8,7 @@ import {
     TokenDto
 } from "@nft-marketplace/common";
 import { LocalStorageService } from "ngx-webstorage";
-import { EMPTY, Observable, switchMap, throwError } from "rxjs";
+import { Observable, switchMap, throwError } from "rxjs";
 import { plainToClass } from "class-transformer";
 import { map, tap } from "rxjs/operators";
 import moment from "moment";

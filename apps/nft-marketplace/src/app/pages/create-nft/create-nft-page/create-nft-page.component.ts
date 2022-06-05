@@ -1,11 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { fade } from "../../../@core/animations/enter-leave.animation";
-import { MetaplexService } from "../../../@core/services/nft/metaplex.service";
-import { CreateNftInput } from "@metaplex-foundation/js-next";
-import { UserAuthService } from "../../../@core/services/authentication/user_auth.service";
-import { PublicKey } from "@solana/web3.js";
-import { MetadataAttribute } from "../../../@core/services/chains/nft";
+import { CreateNft, MetadataAttribute } from "../../../@core/services/chains/nft";
+import { SolanaWalletService } from "../../../@core/services/chains/solana.wallet.service";
 
 @Component({
     selector: "nft-marketplace-create-nft-page",
@@ -48,9 +45,8 @@ export class CreateNFTPageComponent implements OnInit {
 
     constructor(
         private _fb: FormBuilder,
-        private _userAuthService: UserAuthService,
         private _cd: ChangeDetectorRef,
-        private _metaplexService: MetaplexService
+        private _solanaWalletService: SolanaWalletService
     ) {}
 
     ngOnInit(): void {
@@ -83,27 +79,24 @@ export class CreateNFTPageComponent implements OnInit {
     }
 
     public onSubmit() {
+        const metadata: MetadataAttribute[] = [];
+        for (const index in this.attributes) {
+            metadata.push({
+                traitType: this.createNFTForm.get(`attributeTrait${index}`)?.value,
+                value: this.createNFTForm.get(`attributeValue${index}`)?.value,
+                displayType: this.createNFTForm.get(`attributeDisplay${index}`)?.value
+            });
+        }
         const nft = {
-            uri: "https://images.unsplash.com/photo-1653387711918-9d36fb815849?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2574&q=80",
+            metadataUri:
+                "https://images.unsplash.com/photo-1653387711918-9d36fb815849?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2574&q=80",
             name: this.createNFTForm.get("title")?.value,
             symbol: this.createNFTForm.get("symbol")?.value,
-            sellerFeeBasisPoints: this.createNFTForm.get("royalties")?.value,
-            // creators?: Creator[],
-            // collection?: Collection,
-            // uses?: Uses,
-            isMutable: false,
+            resellPercentage: this.createNFTForm.get("royalties")?.value,
             maxSupply: this.createNFTForm.get("maxSupply")?.value,
-            // allowHolderOffCurve: boolean,
-            // mint: Signer,
-            // payer: Signer,
-            // mintAuthority: Signer,
-            // updateAuthority: Signer,
-            owner: new PublicKey(this._userAuthService.getPublicKey())
-            // freezeAuthority: PublicKey,
-            // tokenProgram: PublicKey,
-            // associatedTokenProgram: PublicKey,
-            // confirmOptions: ConfirmOptions
-        } as CreateNftInput;
-        this._metaplexService.mintNFT(nft);
+            metadata
+        } as CreateNft;
+
+        this._solanaWalletService.mint(nft);
     }
 }

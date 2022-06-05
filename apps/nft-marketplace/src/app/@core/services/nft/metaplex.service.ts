@@ -1,28 +1,26 @@
 import { Injectable } from "@angular/core";
+import { Wallet } from "@heavy-duty/wallet-adapter";
 import { CreateNftInput, Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js-next";
-import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
+import { clusterApiUrl, Connection } from "@solana/web3.js";
 
-import { UserAuthService } from "../authentication/user_auth.service";
-import { SolanaWalletService } from "../chains/solana.wallet.service";
-
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class MetaplexService {
-    constructor(private _userAuthService: UserAuthService, private _solanaWalletService: SolanaWalletService) {}
-
-    public async mintNFT(nftInput: CreateNftInput) {
+    public async mintNFT(nftInput: CreateNftInput, wallet: Wallet) {
         const connection = new Connection(clusterApiUrl("devnet"));
         const metaplex = Metaplex.make(connection);
 
-        const pubKey = new PublicKey(this._userAuthService.getPublicKey());
-        this._solanaWalletService.wallet$.subscribe(async (wallet) => {
-            if (wallet) {
-                metaplex.use(walletAdapterIdentity(wallet.adapter));
-                const account = await connection.getAccountInfo(pubKey);
-                if (account?.owner) {
-                    await metaplex.nfts().create(nftInput);
-
-                }
-            }
-        });
+        const pubKey = nftInput.owner;
+        metaplex.use(walletAdapterIdentity(wallet.adapter));
+        let account;
+        if (pubKey) {
+            account = await connection.getAccountInfo(pubKey);
+        }
+        if (account?.owner) {
+            return await metaplex.nfts().create(nftInput);
+        } else {
+            return;
+        }
     }
 }

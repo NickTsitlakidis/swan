@@ -2,7 +2,7 @@ import { Collection } from "../collections/collection";
 
 export interface CreateNft {
     metadataUri: string;
-    collection: Collection;
+    collection?: Collection;
     name?: string;
     symbol?: string;
     resellPercentage?: number;
@@ -13,9 +13,14 @@ export interface CreateNft {
 export interface MintTransaction {
     transactionId: string;
     tokenAddress: string;
-    tokenId: string;
+    tokenId?: string;
     metadataUri: string;
-    imageUri: string;
+    imageUri?: string;
+}
+
+export interface ErrorMintTransaction {
+    success: boolean;
+    message: string;
 }
 
 export interface MetadataAttribute {
