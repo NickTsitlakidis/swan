@@ -14,10 +14,9 @@ import { map, tap } from "rxjs/operators";
 import moment from "moment";
 import { WalletRegistryService } from "../chains/wallet-registry.service";
 import { isNil } from "lodash";
-import { AuthenticationModule } from "./authentication.module";
 
 @Injectable({
-    providedIn: AuthenticationModule
+    providedIn: "root"
 })
 export class UserAuthService {
     constructor(

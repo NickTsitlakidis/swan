@@ -10,23 +10,26 @@ import { ChainsModule } from "./chains.module";
 export class WalletRegistryService {
     private _registry: Map<string, WalletService>;
 
-    constructor(metamaskService: MetamaskService, supportService: SupportService) {
+    constructor(private _metamaskService: MetamaskService, private _supportService: SupportService) {
         this._registry = new Map();
 
-        supportService.getBlockchainWallets().subscribe((results) => {
+    }
+
+    getWalletService(walletId: string): WalletService | undefined {
+        return this._registry.get(walletId);
+    }
+
+    populateRegistry() {
+        this._supportService.getBlockchainWallets().subscribe((results) => {
             results.forEach((dto) => {
                 dto.wallets.forEach((wallet) => {
                     if (!this._registry.has(wallet.id)) {
                         if (wallet.name === "Metamask") {
-                            this._registry.set(wallet.id, metamaskService);
+                            this._registry.set(wallet.id, this._metamaskService);
                         }
                     }
                 });
             });
         });
-    }
-
-    getWalletService(walletId: string): WalletService | undefined {
-        return this._registry.get(walletId);
     }
 }

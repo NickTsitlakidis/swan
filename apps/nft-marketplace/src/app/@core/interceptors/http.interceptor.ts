@@ -12,7 +12,7 @@ import { TokenDto } from "@nft-marketplace/common";
 @Injectable()
 export class HttpRequestsInterceptor implements HttpInterceptor {
     public clientRequests = [
-        "/system",
+        "/support",
         "/user/start-signature-authentication",
         "/user/complete-signature-authentication",
         "/user/refresh-token"

@@ -7,10 +7,9 @@ import { Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { plainToClass } from "class-transformer";
 import moment from "moment";
-import { AuthenticationModule } from "./authentication.module";
 
 @Injectable({
-    providedIn: AuthenticationModule
+    providedIn: "root"
 })
 export class ClientAuthService {
     constructor(private httpClient: HttpClient, private _lcStorage: LocalStorageService) {}
