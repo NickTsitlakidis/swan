@@ -4,9 +4,10 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { plainToInstance } from "class-transformer";
 import { map } from "rxjs/operators";
+import { SupportModule } from "./support.module";
 
 @Injectable({
-    providedIn: "root"
+    providedIn: SupportModule
 })
 export class SupportService {
     constructor(private _httpClient: HttpClient) {}

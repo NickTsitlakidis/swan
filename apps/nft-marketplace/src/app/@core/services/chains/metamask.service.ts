@@ -6,9 +6,10 @@ import { isNil } from "lodash";
 import { CreateNft, MintTransaction } from "./nft";
 import { Injectable } from "@angular/core";
 import fantomSwanNft from "../../../../assets/evm-abi/fantom-swan-nft.json";
+import { ChainsModule } from "./chains.module";
 
 @Injectable({
-    providedIn: "root"
+    providedIn: ChainsModule
 })
 export class MetamaskService implements WalletService {
     private _events: Subject<WalletEvent>;
@@ -54,6 +55,7 @@ export class MetamaskService implements WalletService {
                             };
                             subscriber.next(mintTransaction);
                             contract.removeAllListeners();
+                            subscriber.complete();
                         }
                     });
                 });
