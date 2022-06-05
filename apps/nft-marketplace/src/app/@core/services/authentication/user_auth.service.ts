@@ -14,14 +14,15 @@ import { map, tap } from "rxjs/operators";
 import moment from "moment";
 import { WalletRegistryService } from "../chains/wallet-registry.service";
 import { isNil } from "lodash";
+import { AuthenticationModule } from "./authentication.module";
 
 @Injectable({
-    providedIn: "root"
+    providedIn: AuthenticationModule
 })
 export class UserAuthService {
     constructor(
         private _httpClient: HttpClient,
-        private _walletProvider: WalletRegistryService,
+        private _walletRegistry: WalletRegistryService,
         private _lcStorage: LocalStorageService
     ) {}
 
@@ -52,7 +53,7 @@ export class UserAuthService {
     }
 
     public authenticateWithSignature(body: StartSignatureAuthenticationDto) {
-        const walletService = this._walletProvider.getWalletService(body.walletId);
+        const walletService = this._walletRegistry.getWalletService(body.walletId);
         if (isNil(walletService)) {
             return throwError(() => "Unable to match wallet with service");
         }

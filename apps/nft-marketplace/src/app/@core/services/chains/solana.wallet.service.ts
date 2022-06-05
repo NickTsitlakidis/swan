@@ -23,14 +23,15 @@ import { WalletService } from "./wallet-service";
 import { CreateNft, MintTransaction } from "./nft";
 import { WalletEvent, WalletEventType } from "./wallet-event";
 import { CreateNftInput } from "@metaplex-foundation/js-next";
-import { MetaplexService } from "../nft/metaplex.service";
+import { MetaplexService } from "./metaplex.service";
 import { SwanError } from "../../interfaces/swan-error";
+import { ChainsModule } from "./chains.module";
 
 export const isNotNull = <T>(source: Observable<T | null>) =>
     source.pipe(filter((item: T | null): item is T => item !== null));
 
 @Injectable({
-    providedIn: "root"
+    providedIn: ChainsModule
 })
 export class SolanaWalletService implements WalletService {
     private readonly connection$ = this._connectionStore.connection$;

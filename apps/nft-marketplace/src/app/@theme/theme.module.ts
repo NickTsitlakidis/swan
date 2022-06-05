@@ -21,6 +21,7 @@ import { NbEvaIconsModule } from "@nebular/eva-icons";
 import { FooterComponent, HeaderComponent } from "./components";
 import { CapitalizePipe, PluralPipe, RoundPipe, TimingPipe, NumberWithCommasPipe } from "./pipes";
 import { OneColumnLayoutComponent } from "./layouts";
+import { ImagesModule } from "../@core/services/images/images.module";
 
 const NB_MODULES = [
     NbLayoutModule,
@@ -39,7 +40,7 @@ const COMPONENTS = [HeaderComponent, FooterComponent, OneColumnLayoutComponent];
 const PIPES = [CapitalizePipe, PluralPipe, RoundPipe, TimingPipe, NumberWithCommasPipe];
 
 @NgModule({
-    imports: [CommonModule, FormsModule, FontAwesomeModule, ...NB_MODULES],
+    imports: [CommonModule, FormsModule, FontAwesomeModule, ImagesModule, ...NB_MODULES],
     exports: [CommonModule, ...PIPES, ...COMPONENTS],
     declarations: [...COMPONENTS, ...PIPES]
 })

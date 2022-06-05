@@ -12,8 +12,8 @@ import { CreateCollectionComponent } from "./create-collection.component";
 
 import { faInstagram, faMedium, faDiscord, faTelegram } from "@fortawesome/free-brands-svg-icons";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
-import { CollectionsService } from "../../@core/services/collections/collections.service";
 import { ValidateName, ValidateUrl } from "./create-collection-page/create-collection-page.validator";
+import { CollectionsModule } from "../../@core/services/collections/collections.module";
 
 @NgModule({
     imports: [
@@ -27,10 +27,11 @@ import { ValidateName, ValidateUrl } from "./create-collection-page/create-colle
         ReactiveFormsModule,
         NbToggleModule,
         TitleSubTitleModule,
-        ImagePlaceholderModule
+        ImagePlaceholderModule,
+        CollectionsModule
     ],
     declarations: [CreateCollectionComponent, CreateCollectionPageComponent],
-    providers: [CollectionsService, ValidateName, ValidateUrl]
+    providers: [ValidateName, ValidateUrl]
 })
 export class CreateCollectionModule {
     constructor(library: FaIconLibrary) {

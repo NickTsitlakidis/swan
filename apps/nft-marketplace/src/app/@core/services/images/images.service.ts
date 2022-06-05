@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
+import { ImagesModule } from "./images.module";
 
 @Injectable({
-    providedIn: "root"
+    providedIn: ImagesModule
 })
 export class ImagesService {
     constructor(private sanitizer: DomSanitizer) {}

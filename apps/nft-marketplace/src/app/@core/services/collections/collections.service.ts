@@ -1,8 +1,11 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { AvailabilityDto, CreateCollectionDto, EntityDto } from "@nft-marketplace/common";
+import { CollectionsModule } from "./collections.module";
 
-@Injectable()
+@Injectable({
+    providedIn: CollectionsModule
+})
 export class CollectionsService {
     constructor(private _httpClient: HttpClient) {}
 

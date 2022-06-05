@@ -4,7 +4,7 @@ import { WalletName } from "@solana/wallet-adapter-base";
 import { BlockChains } from "../../../@core/interfaces/blockchain.interface";
 import { BlockChainService } from "../../../@core/services/blockchain.service";
 
-import { ImagesService } from "../../../@core/services/images_helper/images.service";
+import { ImagesService } from "../../../@core/services/images/images.service";
 
 import { faPaintBrush } from "@fortawesome/free-solid-svg-icons";
 import { Router } from "@angular/router";
