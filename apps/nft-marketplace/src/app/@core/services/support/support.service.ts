@@ -13,7 +13,11 @@ export class SupportService {
     constructor(private _httpClient: HttpClient) {}
 
     getBlockchainWallets(): Observable<Array<BlockchainWalletDto>> {
-        return of([]);
+        return this._httpClient.get<Array<unknown>>("/support/blockchain-wallets").pipe(
+            map((wallets) => {
+                return plainToInstance(BlockchainWalletDto, wallets)
+            })
+        )
     }
 
     getCategories(): Observable<Array<CategoryDto>> {
