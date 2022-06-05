@@ -5,7 +5,7 @@ export class StartSignatureAuthenticationDto {
     @IsNotEmpty()
     @MinLength(32)
     @MaxLength(44)
-    walletAddress: string;
+    address: string;
 
     @IsString()
     @IsNotEmpty()

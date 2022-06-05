@@ -1,10 +1,6 @@
 import { NgModule } from "@angular/core";
-import { HttpClientModule } from "@angular/common/http";
-
 
 @NgModule({
-    declarations: [],
-    imports: [HttpClientModule]
+    declarations: []
 })
-export class SupportModule {
-}
+export class SupportModule {}

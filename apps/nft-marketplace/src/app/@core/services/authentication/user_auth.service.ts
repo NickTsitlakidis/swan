@@ -69,17 +69,21 @@ export class UserAuthService {
                 const completeBody = new CompleteSignatureAuthenticationDto();
                 completeBody.signature = signature;
                 completeBody.blockchainId = body.blockchainId;
-                completeBody.walletAddress = body.walletAddress;
+                completeBody.address = body.address;
                 return this._httpClient.post("/user/complete-signature-authentication", completeBody);
             }),
             map((httpResult) => plainToClass(TokenDto, httpResult)),
-            tap((dto) => this._storeUserData(dto))
+            tap((dto) => this._storeUserData(dto, body))
         );
     }
 
-    private _storeUserData(userData: TokenDto) {
+    private _storeUserData(userData: TokenDto, authBody?: StartSignatureAuthenticationDto) {
         this._lcStorage.store("userTokenValue", userData.tokenValue);
         this._lcStorage.store("userExpiresAt", userData.expiresAt.toISOString());
         this._lcStorage.store("userRefreshToken", userData.refreshToken);
+        if (authBody) {
+            this._lcStorage.store("walletId", authBody.walletId);
+            this._lcStorage.store("chainId", authBody.blockchainId);
+        }
     }
 }

@@ -1,10 +1,7 @@
 import { NgModule } from "@angular/core";
-import { SupportModule } from "../support/support.module";
-
 
 @NgModule({
     declarations: [],
-    imports: [SupportModule]
+    imports: []
 })
-export class ChainsModule {
-}
+export class ChainsModule {}

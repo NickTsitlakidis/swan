@@ -31,10 +31,10 @@ export class SupportQueryHandler {
 
         return blockchains.map((chain) => {
             const finalWallets = blockchainWallets
-                .filter((pair) => (pair.blockchainId = chain.id))
+                .filter((pair) => pair.blockchainId === chain.id)
                 .map((pair) => wallets.find((wallet) => wallet.id === pair.walletId))
                 .filter((wallet) => wallet)
-                .map((wallet) => new WalletDto(wallet.id, wallet.name));
+                .map((wallet) => new WalletDto(wallet.id, wallet.name, chain.id));
 
             return new BlockchainWalletDto(
                 chain.id,

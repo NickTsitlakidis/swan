@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString } from "class-validator";
 export class CompleteSignatureAuthenticationDto {
     @IsString()
     @IsNotEmpty()
-    walletAddress: string;
+    address: string;
 
     @IsString()
     @IsNotEmpty()

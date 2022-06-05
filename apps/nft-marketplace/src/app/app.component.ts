@@ -21,8 +21,9 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this._walletRegistry.populateRegistry()
         this._analytics.trackPageViews();
-        this._clientAuthService.getAndStoreClientToken().subscribe(() => undefined);
+        this._clientAuthService.getAndStoreClientToken().subscribe(() => {
+            this._walletRegistry.populateRegistry();
+        });
     }
 }
