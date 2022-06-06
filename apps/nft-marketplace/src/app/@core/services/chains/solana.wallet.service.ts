@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { ConnectionStore, WalletStore, Wallet } from "@heavy-duty/wallet-adapter";
+import { ConnectionStore, WalletStore } from "@heavy-duty/wallet-adapter";
 import { WalletAdapterNetwork, WalletName } from "@solana/wallet-adapter-base";
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import * as base58 from "bs58";
@@ -17,7 +17,6 @@ import {
     SolletWalletAdapter,
     TorusWalletAdapter
 } from "@solana/wallet-adapter-wallets";
-import { BlockChains } from "../../interfaces/blockchain.interface";
 import { environment } from "../../../../environments/environment";
 import { WalletService } from "./wallet-service";
 import { CreateNft, MintTransaction } from "./nft";
@@ -26,6 +25,7 @@ import { CreateNftInput } from "@metaplex-foundation/js-next";
 import { MetaplexService } from "./metaplex.service";
 import { SwanError } from "../../interfaces/swan-error";
 import { ChainsModule } from "./chains.module";
+import { LocalStorageService } from "ngx-webstorage";
 
 export const isNotNull = <T>(source: Observable<T | null>) =>
     source.pipe(filter((item: T | null): item is T => item !== null));
@@ -55,7 +55,8 @@ export class SolanaWalletService implements WalletService {
     constructor(
         private readonly _connectionStore: ConnectionStore,
         private readonly _walletStore: WalletStore,
-        private _metaplexService: MetaplexService
+        private _metaplexService: MetaplexService,
+        private _lcStorage: LocalStorageService
     ) {
         this._events = new Subject<WalletEvent>();
         this._connectionStore.setEndpoint(environment.solanaNetwork);
@@ -86,7 +87,9 @@ export class SolanaWalletService implements WalletService {
         });
     }
 
-    public getPublicKey(): Observable<string> {
+    public getPublicKey(walletName?: string): Observable<string> {
+        const walletFromLocalStorage = this._lcStorage.retrieve("walletName");
+        this._walletStore.selectWallet((walletName || walletFromLocalStorage) as WalletName);
         return this.publicKey$.pipe(
             filter((data) => data !== null),
             map((data) => {
@@ -153,31 +156,6 @@ export class SolanaWalletService implements WalletService {
 
     public getEvents(): Observable<WalletEvent> {
         return this._events.asObservable();
-    }
-
-    public getWallets(): Observable<BlockChains> {
-        return this.wallets$.pipe(
-            map((wallets: Wallet[]) => {
-                const blockchain: BlockChains = {
-                    chain: {
-                        title: "Solana",
-                        imageUrl: "",
-                        service: this
-                    },
-                    wallets
-                };
-                return blockchain;
-            }),
-            first()
-        );
-    }
-
-    public onConnect() {
-        this._walletStore.connect().subscribe();
-    }
-
-    public onDisconnect() {
-        this._walletStore.disconnect().subscribe();
     }
 
     public onSelectWallet(walletName: WalletName) {

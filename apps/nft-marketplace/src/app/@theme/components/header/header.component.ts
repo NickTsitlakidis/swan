@@ -6,7 +6,6 @@ import {
     WalletDto
 } from "@nft-marketplace/common";
 import { BlockChains } from "../../../@core/interfaces/blockchain.interface";
-import { BlockChainService } from "../../../@core/services/blockchain.service";
 
 import { ImagesService } from "../../../@core/services/images/images.service";
 
@@ -31,7 +30,6 @@ export class HeaderComponent implements OnInit {
 
     constructor(
         public imagesService: ImagesService,
-        private _blockChainService: BlockChainService,
         private _router: Router,
         private _supportService: SupportService,
         private _cd: ChangeDetectorRef,
@@ -42,21 +40,20 @@ export class HeaderComponent implements OnInit {
 
     ngOnInit() {
         this._connectToObservables();
-
-        this.walletName = this._blockChainService.getWalletName();
     }
 
     public walletSelected(wallet: WalletDto) {
-        console.log(wallet);
         this._walletRegistryService
             .getWalletService(wallet.id)
-            ?.getPublicKey()
+            ?.getPublicKey(wallet.name)
             .subscribe((walletAddress) => {
                 const authBody = new StartSignatureAuthenticationDto();
                 authBody.address = walletAddress;
                 authBody.blockchainId = wallet.chainId;
                 authBody.walletId = wallet.id;
-                this._userAuthService.authenticateWithSignature(authBody).subscribe(() => undefined);
+                this._userAuthService.authenticateWithSignature(authBody).subscribe(() => {
+                    this._lcStorage.store("walletName", wallet.name);
+                });
             });
     }
 
