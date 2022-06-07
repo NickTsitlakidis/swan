@@ -18,7 +18,7 @@ export class CollectionQueryHandler {
     @LogAsyncMethod
     async fetchOneCollection(id: string): Promise<CollectionDto> {
         const view = await this._collectionRepository.findOne(id);
-        let cto = new CollectionDto();
+        const cto = new CollectionDto();
         cto.id = view.id;
         cto.name = view.name;
         cto.blockchainId = view.blockchainId;
