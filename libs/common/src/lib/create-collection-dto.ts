@@ -1,12 +1,11 @@
 import { CollectionLinksDto } from "./collection-links-dto";
-import { Blockchains } from "./blockchains";
 import { Type } from "class-transformer";
 
 export class CreateCollectionDto {
     @Type(() => CollectionLinksDto)
     links: CollectionLinksDto;
 
-    blockchain: Blockchains;
+    blockchainId: string;
 
     name: string;
     categoryId: string;

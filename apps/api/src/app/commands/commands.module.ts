@@ -10,6 +10,7 @@ import { SignatureValidator } from "./user/signature-validator";
 import { CompleteWalletAdditionCommandExecutor } from "./user/complete-wallet-addition-command-executor";
 import { CollectionModule } from "../domain/collection/collection.module";
 import { CreateCollectionCommandExecutor } from "./collection/create-collection-command-executor";
+import { SupportModule } from "../support/support.module";
 
 @Module({
     providers: [
@@ -25,6 +26,14 @@ import { CreateCollectionCommandExecutor } from "./collection/create-collection-
         CompleteWalletAdditionCommandExecutor,
         CreateCollectionCommandExecutor
     ],
-    imports: [InfrastructureModule, UserModule, ViewsModule, SecurityModule, ConfigModule, CollectionModule]
+    imports: [
+        InfrastructureModule,
+        UserModule,
+        ViewsModule,
+        SecurityModule,
+        ConfigModule,
+        CollectionModule,
+        SupportModule
+    ]
 })
 export class CommandsModule {}

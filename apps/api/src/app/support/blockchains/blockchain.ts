@@ -1,9 +1,9 @@
 import { MongoDocument } from "../../infrastructure/mongo-document";
 import { Column, Entity } from "typeorm";
+import { SignatureTypes } from "./signature-types";
 
 @Entity("blockchains")
 export class Blockchain extends MongoDocument {
-
     @Column()
     name: string;
 
@@ -24,4 +24,7 @@ export class Blockchain extends MongoDocument {
 
     @Column()
     scanSiteUrl: string;
+
+    @Column()
+    signatureType: SignatureTypes;
 }

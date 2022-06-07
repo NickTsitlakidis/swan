@@ -1,90 +1,52 @@
 import { IdGenerator } from "../../infrastructure/id-generator";
-import { Test } from "@nestjs/testing";
 import { SignatureAuthenticationRepository } from "../../security/signature-authentication-repository";
-import { getThrower } from "../../test-utils/mocking";
-import { Blockchains, CompleteSignatureAuthenticationDto, SupportedWallets, TokenDto } from "@nft-marketplace/common";
+import { TokenDto } from "@nft-marketplace/common";
 import { CompleteSignatureAuthenticationExecutor } from "./complete-signature-authentication-executor";
 import { SignatureValidator } from "./signature-validator";
 import { UserTokenIssuer } from "../../security/user-token-issuer";
-import { WalletViewRepository } from "../../views/wallet/wallet-view-repository";
+import { UserWalletViewRepository } from "../../views/user-wallet/user-wallet-view-repository";
 import { CompleteSignatureAuthenticationCommand } from "./complete-signature-authentication-command";
 import { UnauthorizedException } from "@nestjs/common";
 import { SignatureAuthentication } from "../../security/signature-authentication";
 import { ObjectId } from "mongodb";
-import { WalletView } from "../../views/wallet/wallet-view";
+import { UserWalletView } from "../../views/user-wallet/user-wallet-view";
 import * as moment from "moment";
 import { UserFactory } from "../../domain/user/user-factory";
 import { User } from "../../domain/user/user";
-import { Wallet } from "../../domain/user/wallet";
+import { BlockchainRepository } from "../../support/blockchains/blockchain-repository";
+import { Blockchain } from "../../support/blockchains/blockchain";
+import { SignatureTypes } from "../../support/blockchains/signature-types";
+import { UserWallet } from "../../domain/user/user-wallet";
+import { getUnitTestingModule } from "../../test-utils/test-modules";
 
-const idGeneratorMock: Partial<IdGenerator> = {
-    generateEntityId: getThrower()
-};
-
-const validatorMock: Partial<SignatureValidator> = {
-    validateEthereumSignature: getThrower(),
-    validateSolanaSignature: getThrower()
-};
-
-const authenticationRepoMock: Partial<SignatureAuthenticationRepository> = {
-    findByAddressAndChain: getThrower(),
-    deleteById: getThrower()
-};
-
-const issuerMock: Partial<UserTokenIssuer> = {
-    issueFromId: getThrower()
-};
-
-const walletViewRepoMock: Partial<WalletViewRepository> = {
-    findByAddressAndBlockchain: getThrower()
-};
-
-const factoryMock: Partial<UserFactory> = {
-    createNew: getThrower()
-};
+let validatorMock: SignatureValidator;
+let authenticationRepoMock: SignatureAuthenticationRepository;
+let issuerMock: UserTokenIssuer;
+let walletViewRepoMock: UserWalletViewRepository;
+let factoryMock: UserFactory;
+let idGeneratorMock: IdGenerator;
+let blockchainRepoMock: BlockchainRepository;
 
 let executor: CompleteSignatureAuthenticationExecutor;
 
 beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
-        providers: [
-            CompleteSignatureAuthenticationExecutor,
-            {
-                provide: SignatureAuthenticationRepository,
-                useValue: authenticationRepoMock
-            },
-            {
-                provide: IdGenerator,
-                useValue: idGeneratorMock
-            },
-            {
-                provide: UserFactory,
-                useValue: factoryMock
-            },
-            {
-                provide: WalletViewRepository,
-                useValue: walletViewRepoMock
-            },
-            {
-                provide: UserTokenIssuer,
-                useValue: issuerMock
-            },
-            {
-                provide: SignatureValidator,
-                useValue: validatorMock
-            }
-        ]
-    }).compile();
+    const moduleRef = await getUnitTestingModule(CompleteSignatureAuthenticationExecutor);
 
+    validatorMock = moduleRef.get(SignatureValidator);
+    authenticationRepoMock = moduleRef.get(SignatureAuthenticationRepository);
+    issuerMock = moduleRef.get(UserTokenIssuer);
+    walletViewRepoMock = moduleRef.get(UserWalletViewRepository);
+    factoryMock = moduleRef.get(UserFactory);
+    idGeneratorMock = moduleRef.get(IdGenerator);
+    blockchainRepoMock = moduleRef.get(BlockchainRepository);
     executor = moduleRef.get(CompleteSignatureAuthenticationExecutor);
 });
 
 test("execute - throws if authentication is missing", async () => {
-    const dto = new CompleteSignatureAuthenticationDto();
-    dto.walletAddress = "addr";
-    dto.blockchain = Blockchains.SOLANA;
-    dto.signature = "signature";
-    const command = new CompleteSignatureAuthenticationCommand(dto);
+    const command = new CompleteSignatureAuthenticationCommand();
+    command.signature = "signature";
+    command.blockchainId = "block";
+    command.address = "addr";
 
     const findAuthenticationSpy = jest
         .spyOn(authenticationRepoMock, "findByAddressAndChain")
@@ -92,73 +54,105 @@ test("execute - throws if authentication is missing", async () => {
 
     await expect(executor.execute(command)).rejects.toThrow(UnauthorizedException);
 
-    expect(findAuthenticationSpy).toHaveBeenCalledWith("addr", Blockchains.SOLANA);
+    expect(findAuthenticationSpy).toHaveBeenCalledWith("addr", "block");
     expect(findAuthenticationSpy).toHaveBeenCalledTimes(1);
 });
 
 test("execute - throws if solana signature is invalid", async () => {
-    const dto = new CompleteSignatureAuthenticationDto();
-    dto.walletAddress = "addr";
-    dto.blockchain = Blockchains.SOLANA;
-    dto.signature = "signature";
-    const command = new CompleteSignatureAuthenticationCommand(dto);
+    const command = new CompleteSignatureAuthenticationCommand();
+    command.signature = "signature";
+    command.blockchainId = "block";
+    command.address = "addr";
 
     const authentication = new SignatureAuthentication();
     authentication.address = "auth-address";
     authentication.message = "auth-message";
-    authentication.blockchain = Blockchains.SOLANA;
+    authentication.blockchainId = "block";
+    authentication._id = new ObjectId();
+
+    const deleteAuthSpy = jest.spyOn(authenticationRepoMock, "deleteById").mockResolvedValue({ result: {} });
 
     const findAuthenticationSpy = jest
         .spyOn(authenticationRepoMock, "findByAddressAndChain")
         .mockResolvedValue(authentication);
+
+    const blockchain = new Blockchain();
+    blockchain.signatureType = SignatureTypes.SOLANA;
+
+    const blockchainSpy = jest.spyOn(blockchainRepoMock, "findById").mockResolvedValue(blockchain);
+
     const validatorSpy = jest.spyOn(validatorMock, "validateSolanaSignature").mockReturnValue(false);
 
     await expect(executor.execute(command)).rejects.toThrow(UnauthorizedException);
 
-    expect(findAuthenticationSpy).toHaveBeenCalledWith("addr", Blockchains.SOLANA);
+    expect(findAuthenticationSpy).toHaveBeenCalledWith("addr", "block");
     expect(findAuthenticationSpy).toHaveBeenCalledTimes(1);
 
     expect(validatorSpy).toHaveBeenCalledWith("signature", "auth-address", "auth-message");
     expect(validatorSpy).toHaveBeenCalledTimes(1);
+
+    expect(blockchainSpy).toHaveBeenCalledTimes(1);
+    expect(blockchainSpy).toHaveBeenCalledWith("block");
+
+    expect(deleteAuthSpy).toHaveBeenCalledTimes(1);
+    expect(deleteAuthSpy).toHaveBeenCalledWith(authentication.id);
 });
 
 test("execute - throws if ethereum signature is invalid", async () => {
-    const dto = new CompleteSignatureAuthenticationDto();
-    dto.walletAddress = "addr";
-    dto.blockchain = Blockchains.ETHEREUM;
-    dto.signature = "signature";
-    const command = new CompleteSignatureAuthenticationCommand(dto);
+    const command = new CompleteSignatureAuthenticationCommand();
+    command.signature = "signature";
+    command.blockchainId = "block";
+    command.address = "addr";
 
     const authentication = new SignatureAuthentication();
     authentication.address = "auth-address";
     authentication.message = "auth-message";
-    authentication.blockchain = Blockchains.ETHEREUM;
+    authentication.blockchainId = "block";
+    authentication._id = new ObjectId();
+
+    const deleteAuthSpy = jest.spyOn(authenticationRepoMock, "deleteById").mockResolvedValue({ result: {} });
 
     const findAuthenticationSpy = jest
         .spyOn(authenticationRepoMock, "findByAddressAndChain")
         .mockResolvedValue(authentication);
-    const validatorSpy = jest.spyOn(validatorMock, "validateEthereumSignature").mockReturnValue(false);
+
+    const blockchain = new Blockchain();
+    blockchain.signatureType = SignatureTypes.EVM;
+
+    const blockchainSpy = jest.spyOn(blockchainRepoMock, "findById").mockResolvedValue(blockchain);
+
+    const validatorSpy = jest.spyOn(validatorMock, "validateEvmSignature").mockReturnValue(false);
 
     await expect(executor.execute(command)).rejects.toThrow(UnauthorizedException);
 
-    expect(findAuthenticationSpy).toHaveBeenCalledWith("addr", Blockchains.ETHEREUM);
+    expect(findAuthenticationSpy).toHaveBeenCalledWith("addr", "block");
     expect(findAuthenticationSpy).toHaveBeenCalledTimes(1);
 
     expect(validatorSpy).toHaveBeenCalledWith("signature", "auth-address", "auth-message");
     expect(validatorSpy).toHaveBeenCalledTimes(1);
+
+    expect(blockchainSpy).toHaveBeenCalledTimes(1);
+    expect(blockchainSpy).toHaveBeenCalledWith("block");
+
+    expect(deleteAuthSpy).toHaveBeenCalledTimes(1);
+    expect(deleteAuthSpy).toHaveBeenCalledWith(authentication.id);
 });
 
 test("execute - returns token of existing user", async () => {
-    const dto = new CompleteSignatureAuthenticationDto();
-    dto.walletAddress = "addr";
-    dto.blockchain = Blockchains.SOLANA;
-    dto.signature = "signature";
-    const command = new CompleteSignatureAuthenticationCommand(dto);
+    const command = new CompleteSignatureAuthenticationCommand();
+    command.signature = "signature";
+    command.blockchainId = "block";
+    command.address = "addr";
+
+    const blockchain = new Blockchain();
+    blockchain.signatureType = SignatureTypes.SOLANA;
+
+    const blockchainSpy = jest.spyOn(blockchainRepoMock, "findById").mockResolvedValue(blockchain);
 
     const authentication = new SignatureAuthentication();
     authentication.address = "auth-address";
     authentication.message = "auth-message";
-    authentication.blockchain = Blockchains.SOLANA;
+    authentication.blockchainId = "block";
     authentication._id = new ObjectId();
 
     const findAuthenticationSpy = jest
@@ -167,7 +161,7 @@ test("execute - returns token of existing user", async () => {
     const validatorSpy = jest.spyOn(validatorMock, "validateSolanaSignature").mockReturnValue(true);
     const deleteAuthSpy = jest.spyOn(authenticationRepoMock, "deleteById").mockResolvedValue({ result: {} });
 
-    const wallet = new WalletView();
+    const wallet = new UserWalletView();
     wallet.userId = "user1";
     const findWalletSpy = jest.spyOn(walletViewRepoMock, "findByAddressAndBlockchain").mockResolvedValue(wallet);
 
@@ -177,7 +171,7 @@ test("execute - returns token of existing user", async () => {
     const result = await executor.execute(command);
     expect(result).toBe(token);
 
-    expect(findAuthenticationSpy).toHaveBeenCalledWith("addr", Blockchains.SOLANA);
+    expect(findAuthenticationSpy).toHaveBeenCalledWith("addr", "block");
     expect(findAuthenticationSpy).toHaveBeenCalledTimes(1);
 
     expect(validatorSpy).toHaveBeenCalledWith("signature", "auth-address", "auth-message");
@@ -187,24 +181,31 @@ test("execute - returns token of existing user", async () => {
     expect(deleteAuthSpy).toHaveBeenCalledWith(authentication.id);
 
     expect(findWalletSpy).toHaveBeenCalledTimes(1);
-    expect(findWalletSpy).toHaveBeenCalledWith("addr", Blockchains.SOLANA);
+    expect(findWalletSpy).toHaveBeenCalledWith("addr", "block");
 
     expect(issuerSpy).toHaveBeenCalledTimes(1);
     expect(issuerSpy).toHaveBeenCalledWith("user1");
+
+    expect(blockchainSpy).toHaveBeenCalledTimes(1);
+    expect(blockchainSpy).toHaveBeenCalledWith("block");
 });
 
 test("execute - returns token of new user", async () => {
-    const dto = new CompleteSignatureAuthenticationDto();
-    dto.walletAddress = "addr";
-    dto.blockchain = Blockchains.SOLANA;
-    dto.signature = "signature";
-    const command = new CompleteSignatureAuthenticationCommand(dto);
+    const command = new CompleteSignatureAuthenticationCommand();
+    command.signature = "signature";
+    command.blockchainId = "block";
+    command.address = "addr";
+
+    const blockchain = new Blockchain();
+    blockchain.signatureType = SignatureTypes.SOLANA;
+
+    const blockchainSpy = jest.spyOn(blockchainRepoMock, "findById").mockResolvedValue(blockchain);
 
     const authentication = new SignatureAuthentication();
     authentication.address = "auth-address";
     authentication.message = "auth-message";
-    authentication.blockchain = Blockchains.SOLANA;
-    authentication.wallet = SupportedWallets.LEDGER;
+    authentication.blockchainId = "block";
+    authentication.walletId = "wallet";
     authentication._id = new ObjectId();
 
     const findAuthenticationSpy = jest
@@ -220,14 +221,14 @@ test("execute - returns token of new user", async () => {
 
     const idSpy = jest.spyOn(idGeneratorMock, "generateEntityId").mockReturnValue("mongo-id");
 
-    const userMock = User.create("some-id", new Wallet("", "", Blockchains.ETHEREUM, SupportedWallets.LEDGER));
+    const userMock = User.create("some-id", new UserWallet("", "", "block", "wallet"));
     const commitSpy = jest.spyOn(userMock, "commit").mockResolvedValue(userMock);
     const factorySpy = jest.spyOn(factoryMock, "createNew").mockReturnValue(userMock);
 
     const result = await executor.execute(command);
     expect(result).toBe(token);
 
-    expect(findAuthenticationSpy).toHaveBeenCalledWith("addr", Blockchains.SOLANA);
+    expect(findAuthenticationSpy).toHaveBeenCalledWith("addr", "block");
     expect(findAuthenticationSpy).toHaveBeenCalledTimes(1);
 
     expect(validatorSpy).toHaveBeenCalledWith("signature", "auth-address", "auth-message");
@@ -237,7 +238,7 @@ test("execute - returns token of new user", async () => {
     expect(deleteAuthSpy).toHaveBeenCalledWith(authentication.id);
 
     expect(findWalletSpy).toHaveBeenCalledTimes(1);
-    expect(findWalletSpy).toHaveBeenCalledWith("addr", Blockchains.SOLANA);
+    expect(findWalletSpy).toHaveBeenCalledWith("addr", "block");
 
     expect(issuerSpy).toHaveBeenCalledTimes(1);
     expect(issuerSpy).toHaveBeenCalledWith("some-id");
@@ -246,8 +247,11 @@ test("execute - returns token of new user", async () => {
 
     expect(commitSpy).toHaveBeenCalledTimes(1);
 
-    const expectedNewWallet = new Wallet("mongo-id", "auth-address", Blockchains.SOLANA, SupportedWallets.LEDGER);
+    const expectedNewWallet = new UserWallet("mongo-id", "auth-address", "block", "wallet");
 
     expect(factorySpy).toHaveBeenCalledTimes(1);
     expect(factorySpy).toHaveBeenCalledWith(expectedNewWallet);
+
+    expect(blockchainSpy).toHaveBeenCalledTimes(1);
+    expect(blockchainSpy).toHaveBeenCalledWith("block");
 });

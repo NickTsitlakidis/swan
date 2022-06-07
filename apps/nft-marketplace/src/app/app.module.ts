@@ -12,7 +12,9 @@ import { CoreModule } from "./@core/core.module";
 import { AppRoutingModule } from "./app-routing.module";
 import { HttpRequestsInterceptor } from "./@core/interceptors/http.interceptor";
 import { NgxWebstorageModule } from "ngx-webstorage";
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { ChainsModule } from "./@core/services/chains/chains.module";
+import { SupportModule } from "./@core/services/support/support.module";
 
 @NgModule({
     declarations: [AppComponent],
@@ -29,7 +31,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
             caseSensitive: true
         }),
         HttpClientModule,
-        FontAwesomeModule
+        FontAwesomeModule,
+        ChainsModule,
+        SupportModule
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true },

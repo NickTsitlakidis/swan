@@ -22,7 +22,7 @@ export class Collection extends EventSourcedEntity {
             command.isExplicit,
             command.imageUrl,
             command.salePercentage,
-            command.blockchain,
+            command.blockchainId,
             command.paymentToken,
             command.links?.instagram,
             command.links?.medium,

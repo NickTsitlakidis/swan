@@ -1,4 +1,3 @@
-import { Blockchains } from "./blockchains";
 import { CollectionLinksDto } from "./collection-links-dto";
 
 export class CollectionDto {
@@ -20,7 +19,7 @@ export class CollectionDto {
 
     salePercentage: number;
 
-    blockchain: Blockchains;
+    blockchainId: string;
 
     paymentToken: string;
 

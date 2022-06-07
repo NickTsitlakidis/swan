@@ -5,12 +5,12 @@ import { InfrastructureModule } from "../infrastructure/infrastructure.module";
 import { CqrsModule } from "@nestjs/cqrs";
 import { ViewsModule } from "../views/views.module";
 import { SecurityModule } from "../security/security.module";
-import { SystemController } from "./system-controller";
+import { SupportController } from "./support-controller";
 import { QueriesModule } from "../queries/queries.module";
 import { CollectionController } from "./collection-controller";
 
 @Module({
-    controllers: [ClientController, UserController, SystemController, CollectionController],
+    controllers: [ClientController, UserController, SupportController, CollectionController],
     imports: [CqrsModule, ViewsModule, InfrastructureModule, SecurityModule, QueriesModule],
     providers: []
 })

@@ -3,6 +3,7 @@ import { NgModule } from "@angular/core";
 
 import { PagesComponent } from "./pages.component";
 import { NotFoundComponent } from "./miscellaneous/not-found/not-found.component";
+import { AuthGuard } from "../@core/guards/user-auth.guard";
 
 const routes: Routes = [
     {
@@ -15,11 +16,13 @@ const routes: Routes = [
             },
             {
                 path: "create-collection",
+                canActivate: [AuthGuard],
                 loadChildren: () =>
                     import("./create-collection/create-collection.module").then((m) => m.CreateCollectionModule)
             },
             {
                 path: "create-nft",
+                canActivate: [AuthGuard],
                 loadChildren: () => import("./create-nft/create-nft.module").then((m) => m.CreateNFTModule)
             },
             {

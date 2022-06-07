@@ -9,7 +9,7 @@ import {
     RefreshTokenDto,
     StartSignatureAuthenticationDto,
     TokenDto,
-    WalletDto
+    UserWalletDto
 } from "@nft-marketplace/common";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { UserGuard } from "../security/guards/user-guard";
@@ -26,7 +26,7 @@ export class UserController {
     @Post("start-signature-authentication")
     @UseGuards(ClientGuard)
     startAuthentication(@Body() body: StartSignatureAuthenticationDto): Promise<NonceDto> {
-        return this._commandBus.execute(new StartSignatureAuthenticationCommand(body));
+        return this._commandBus.execute(StartSignatureAuthenticationCommand.fromDto(body));
     }
 
     @ApiOperation({ summary: "Completes the authentication process for a user and returns user token" })
@@ -34,7 +34,7 @@ export class UserController {
     @Post("complete-signature-authentication")
     @UseGuards(ClientGuard)
     completeAuthentication(@Body() body: CompleteSignatureAuthenticationDto): Promise<TokenDto> {
-        return this._commandBus.execute(new CompleteSignatureAuthenticationCommand(body));
+        return this._commandBus.execute(CompleteSignatureAuthenticationCommand.fromDto(body));
     }
 
     @Post("refresh-token")
@@ -50,16 +50,20 @@ export class UserController {
         @RequestUserId() userId: string,
         @Body() body: StartSignatureAuthenticationDto
     ): Promise<NonceDto> {
-        return this._commandBus.execute(new StartSignatureAuthenticationCommand(body, userId));
+        const mapped = StartSignatureAuthenticationCommand.fromDto(body);
+        mapped.userId = userId;
+        return this._commandBus.execute(mapped);
     }
 
-    @ApiOkResponse({ description: "The added wallet", type: WalletDto })
+    @ApiOkResponse({ description: "The added wallet", type: UserWalletDto })
     @Post("complete-wallet-addition")
     @UseGuards(UserGuard)
     completeWalletAddition(
         @RequestUserId() userId: string,
         @Body() body: CompleteSignatureAuthenticationDto
-    ): Promise<WalletDto> {
-        return this._commandBus.execute(new CompleteWalletAdditionCommand(body, userId));
+    ): Promise<UserWalletDto> {
+        const mapped = CompleteWalletAdditionCommand.fromDto(body);
+        mapped.userId = userId;
+        return this._commandBus.execute(mapped);
     }
 }

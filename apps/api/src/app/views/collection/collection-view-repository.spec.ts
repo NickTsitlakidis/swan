@@ -4,7 +4,6 @@ import { Test } from "@nestjs/testing";
 import { cleanUpMongo, getCollection, MONGO_MODULE } from "../../test-utils/mongo";
 import { CollectionViewRepository } from "./collection-view-repository";
 import { CollectionView } from "./collection-view";
-import { Blockchains } from "@nft-marketplace/common";
 import { CollectionLinksView } from "./collection-links-view";
 import { instanceToPlain } from "class-transformer";
 import { cloneDeep } from "lodash";
@@ -34,7 +33,7 @@ test("save - persists collection view", async () => {
     view._id = new ObjectId();
     view.categoryId = "cat-id";
     view.name = "the-collection";
-    view.blockchain = Blockchains.ETHEREUM;
+    view.blockchainId = "block";
     view.customUrl = "some-url";
     view.salePercentage = 45;
     view.description = "a description";
@@ -57,7 +56,7 @@ test("countByName - returns 0 for no match", async () => {
     view._id = new ObjectId();
     view.categoryId = "cat-id";
     view.name = "the-collection";
-    view.blockchain = Blockchains.ETHEREUM;
+    view.blockchainId = "block";
     view.customUrl = "some-url";
     view.salePercentage = 45;
     view.description = "a description";
@@ -77,7 +76,7 @@ test("countByName - returns 1 for match", async () => {
     view1._id = new ObjectId();
     view1.categoryId = "cat-id";
     view1.name = "the-collection";
-    view1.blockchain = Blockchains.ETHEREUM;
+    view1.blockchainId = "block";
     view1.customUrl = "some-url";
     view1.salePercentage = 45;
     view1.description = "a description";
@@ -102,7 +101,7 @@ test("countByCustomUrl - returns 0 for no match", async () => {
     view._id = new ObjectId();
     view.categoryId = "cat-id";
     view.name = "the-collection";
-    view.blockchain = Blockchains.ETHEREUM;
+    view.blockchainId = "block";
     view.customUrl = "some-url";
     view.salePercentage = 45;
     view.description = "a description";
@@ -127,7 +126,7 @@ test("countByCustomUrl - returns 1 for match", async () => {
     view1._id = new ObjectId();
     view1.categoryId = "cat-id";
     view1.name = "the-collection";
-    view1.blockchain = Blockchains.ETHEREUM;
+    view1.blockchainId = "block";
     view1.customUrl = "some-url";
     view1.salePercentage = 45;
     view1.description = "a description";

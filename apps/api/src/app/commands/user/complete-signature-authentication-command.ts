@@ -1,13 +1,15 @@
-import { Blockchains, CompleteSignatureAuthenticationDto } from "@nft-marketplace/common";
+import { CompleteSignatureAuthenticationDto } from "@nft-marketplace/common";
 
 export class CompleteSignatureAuthenticationCommand {
     address: string;
     signature: string;
-    blockchain: Blockchains;
+    blockchainId: string;
 
-    constructor(dto: CompleteSignatureAuthenticationDto) {
-        this.signature = dto.signature;
-        this.address = dto.walletAddress;
-        this.blockchain = dto.blockchain;
+    static fromDto(dto: CompleteSignatureAuthenticationDto): CompleteSignatureAuthenticationCommand {
+        const mapped = new CompleteSignatureAuthenticationCommand();
+        mapped.address = dto.address;
+        mapped.blockchainId = dto.blockchainId;
+        mapped.signature = dto.signature;
+        return mapped;
     }
 }

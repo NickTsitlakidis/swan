@@ -22,15 +22,8 @@
                 [selected]="walletName"
                 [(ngModel)]="selectedWallet"
             >
-                <nb-option-group *ngFor="let chain of chains" [title]="chain.chain.title">
-                    <nb-option
-                        *ngFor="let wallet of chain.wallets"
-                        [value]="wallet.adapter.name"
-                        [disabled]="wallet.readyState === 'NotDetected'"
-                        ><img [src]="imagesService.transform(wallet.adapter.icon)" class="wallet-icon" />{{
-                            wallet.adapter.name
-                        }}</nb-option
-                    >
+                <nb-option-group *ngFor="let chain of chainsNew" [title]="chain.name">
+                    <nb-option *ngFor="let wallet of chain.wallets" [value]="wallet">{{ wallet.name }}</nb-option>
                 </nb-option-group>
             </nb-select>
         </div>

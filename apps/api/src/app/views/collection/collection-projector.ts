@@ -13,7 +13,7 @@ export class CollectionProjector implements IEventHandler<CollectionCreatedEvent
     async handle(event: CollectionCreatedEvent): Promise<CollectionView> {
         const view = new CollectionView();
         view.id = event.aggregateId;
-        view.blockchain = event.blockchain;
+        view.blockchainId = event.blockchainId;
         view.categoryId = event.categoryId;
         view.customUrl = event.customUrl;
         view.description = event.description;

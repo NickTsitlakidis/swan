@@ -1,13 +1,12 @@
 export class WalletDto {
     id: string;
 
-    blockchain: string;
-
     name: string;
+    chainId: string;
 
-    constructor(id: string, blockchain: string, name: string) {
+    constructor(id: string, name: string, chainId: string) {
         this.id = id;
-        this.blockchain = blockchain;
         this.name = name;
+        this.chainId = chainId;
     }
 }

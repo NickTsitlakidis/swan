@@ -1,31 +1,19 @@
 import { UserViewRepository } from "./user-view-repository";
 import { UserProjector } from "./user-projector";
-import { Test } from "@nestjs/testing";
 import { UserView } from "./user-view";
 import { ObjectId } from "mongodb";
 import { UserCreatedEvent } from "../../domain/user/user-events";
-import { Wallet } from "../../domain/user/wallet";
-import { Blockchains, SupportedWallets } from "@nft-marketplace/common";
-import { getThrower } from "../../test-utils/mocking";
+import { UserWallet } from "../../domain/user/user-wallet";
+import { getUnitTestingModule } from "../../test-utils/test-modules";
 
-const repositoryMock: Partial<UserViewRepository> = {
-    save: getThrower()
-};
-
+let repositoryMock: UserViewRepository;
 let projector: UserProjector;
 
 beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
-        providers: [
-            UserProjector,
-            {
-                provide: UserViewRepository,
-                useValue: repositoryMock
-            }
-        ]
-    }).compile();
+    const moduleRef = await getUnitTestingModule(UserProjector);
 
     projector = moduleRef.get(UserProjector);
+    repositoryMock = moduleRef.get(UserViewRepository);
 });
 
 test("handle UserCreatedEvent - saves new user view", async () => {
@@ -33,9 +21,7 @@ test("handle UserCreatedEvent - saves new user view", async () => {
     const saveSpy = jest.spyOn(repositoryMock, "save").mockResolvedValue(saved);
 
     const id = new ObjectId().toHexString();
-    const event = new UserCreatedEvent(
-        new Wallet(new ObjectId().toHexString(), "123", Blockchains.ETHEREUM, SupportedWallets.METAMASK)
-    );
+    const event = new UserCreatedEvent(new UserWallet(new ObjectId().toHexString(), "123", "b-id", "w-id"));
     event.aggregateId = id;
     const handled = await projector.handle(event);
 

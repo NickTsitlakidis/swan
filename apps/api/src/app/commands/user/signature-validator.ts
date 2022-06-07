@@ -16,7 +16,7 @@ export class SignatureValidator {
         }
     }
 
-    validateEthereumSignature(signature: string, address: string, message: string): boolean {
+    validateEvmSignature(signature: string, address: string, message: string): boolean {
         const authenticationHexMessage = toBuffer(bufferToHex(Buffer.from(message)));
         const messageHash = hashPersonalMessage(authenticationHexMessage);
         const signatureParams = fromRpcSig(signature);

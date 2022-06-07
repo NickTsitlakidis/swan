@@ -5,4 +5,7 @@ import { Column, Entity } from "typeorm";
 export class Wallet extends MongoDocument {
     @Column()
     name: string;
+
+    @Column()
+    supportsSignatureAuthentication: boolean;
 }

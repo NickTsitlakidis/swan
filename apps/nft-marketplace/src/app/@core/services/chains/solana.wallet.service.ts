@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
-import { ConnectionStore, WalletStore, Wallet } from "@heavy-duty/wallet-adapter";
-import { WalletAdapterNetwork, WalletName, WalletReadyState } from "@solana/wallet-adapter-base";
+import { ConnectionStore, WalletStore } from "@heavy-duty/wallet-adapter";
+import { WalletAdapterNetwork, WalletName } from "@solana/wallet-adapter-base";
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import * as base58 from "bs58";
-import { defer, from, throwError } from "rxjs";
-import { concatMap, first, map, take } from "rxjs/operators";
+import { defer, forkJoin, from, of, Subject, throwError } from "rxjs";
+import { concatMap, first, map, switchMap, take } from "rxjs/operators";
 
 import { Observable } from "rxjs";
 import { filter } from "rxjs/operators";
@@ -17,16 +17,23 @@ import {
     SolletWalletAdapter,
     TorusWalletAdapter
 } from "@solana/wallet-adapter-wallets";
-import { BlockChains } from "../../interfaces/blockchain.interface";
 import { environment } from "../../../../environments/environment";
+import { WalletService } from "./wallet-service";
+import { CreateNft, MintTransaction } from "./nft";
+import { WalletEvent, WalletEventType } from "./wallet-event";
+import { CreateNftInput } from "@metaplex-foundation/js-next";
+import { MetaplexService } from "./metaplex.service";
+import { SwanError } from "../../interfaces/swan-error";
+import { ChainsModule } from "./chains.module";
+import { LocalStorageService } from "ngx-webstorage";
 
 export const isNotNull = <T>(source: Observable<T | null>) =>
     source.pipe(filter((item: T | null): item is T => item !== null));
 
 @Injectable({
-    providedIn: "root"
+    providedIn: ChainsModule
 })
-export class SolanaWalletService {
+export class SolanaWalletService implements WalletService {
     private readonly connection$ = this._connectionStore.connection$;
     private readonly wallets$ = this._walletStore.wallets$;
     public readonly wallet$ = this._walletStore.wallet$;
@@ -43,8 +50,15 @@ export class SolanaWalletService {
     public readonly publicKey$ = this._walletStore.publicKey$;
     private lamports = 0;
     private recipient = "";
+    private _events: Subject<WalletEvent>;
 
-    constructor(private readonly _connectionStore: ConnectionStore, private readonly _walletStore: WalletStore) {
+    constructor(
+        private readonly _connectionStore: ConnectionStore,
+        private readonly _walletStore: WalletStore,
+        private _metaplexService: MetaplexService,
+        private _lcStorage: LocalStorageService
+    ) {
+        this._events = new Subject<WalletEvent>();
         this._connectionStore.setEndpoint(environment.solanaNetwork);
         this._walletStore.setAdapters([
             new PhantomWalletAdapter(),
@@ -54,45 +68,104 @@ export class SolanaWalletService {
             new LedgerWalletAdapter(),
             new SolletWalletAdapter({ network: WalletAdapterNetwork.Devnet })
         ]);
+        this._walletStore.connected$.subscribe(() => {
+            const e = {
+                type: WalletEventType.Connected,
+                walletName: "",
+                walletId: ""
+            } as WalletEvent;
+            this._events.next(e);
+        });
+
+        this._walletStore.disconnecting$.subscribe(() => {
+            const e = {
+                type: WalletEventType.Disconnected,
+                walletName: "",
+                walletId: ""
+            } as WalletEvent;
+            this._events.next(e);
+        });
     }
 
-    public getWallets(): Observable<BlockChains> {
-        return this.wallets$.pipe(
-            map((wallets: Wallet[]) => {
-                const blockchain: BlockChains = {
-                    chain: {
-                        title: "Solana",
-                        imageUrl: "",
-                        service: this
-                    },
-                    wallets
-                };
-                return blockchain;
-            }),
-            first()
-        );
-    }
-
-    public getPublicKey(): Observable<string | undefined> {
+    public getPublicKey(walletName?: string): Observable<string> {
+        const walletFromLocalStorage = this._lcStorage.retrieve("walletName");
+        this._walletStore.selectWallet((walletName || walletFromLocalStorage) as WalletName);
         return this.publicKey$.pipe(
             filter((data) => data !== null),
             map((data) => {
-                return data?.toString();
+                return data?.toString() || "";
             }),
             take(1)
         );
     }
 
-    public onConnect() {
-        this._walletStore.connect().subscribe();
+    public signMessage(message: string): Observable<string | undefined> {
+        const signMessage$ = this._walletStore.signMessage(new TextEncoder().encode(message));
+
+        if (!signMessage$) {
+            console.error(new Error("Sign message method is not defined"));
+            return of();
+        }
+
+        return signMessage$.pipe(
+            map((signature) => {
+                return base58.encode(signature);
+            }),
+            first()
+        );
     }
 
-    public onDisconnect() {
-        this._walletStore.disconnect().subscribe();
+    public mint(nft: CreateNft): Observable<MintTransaction> {
+        return forkJoin([this.getPublicKey(), this.wallet$]).pipe(
+            switchMap(([publicKey, wallet]) => {
+                const nftInput = {
+                    uri: nft.metadataUri,
+                    name: nft.name,
+                    symbol: nft.symbol,
+                    sellerFeeBasisPoints: nft.resellPercentage,
+                    isMutable: false,
+                    maxSupply: nft.maxSupply,
+                    owner: new PublicKey(publicKey)
+                } as CreateNftInput;
+
+                if (wallet) {
+                    return this._metaplexService.mintNFT(nftInput, wallet);
+                } else {
+                    return throwError(() => {
+                        return new SwanError("Could not found wallet");
+                    });
+                }
+            }),
+
+            switchMap((mintResponse) => {
+                if (mintResponse) {
+                    const mintTransaction = {
+                        transactionId: mintResponse.transactionId,
+                        tokenAddress: mintResponse.associatedToken.toString(),
+                        metadataUri: mintResponse.metadata.toString()
+                    } as MintTransaction;
+                    return of(mintTransaction);
+                } else {
+                    return throwError(() => {
+                        return new SwanError("Could not mint token");
+                    });
+                }
+            })
+        );
+    }
+
+    public getEvents(): Observable<WalletEvent> {
+        return this._events.asObservable();
     }
 
     public onSelectWallet(walletName: WalletName) {
         this._walletStore.selectWallet(walletName);
+        const e = {
+            type: WalletEventType.Selected,
+            walletName: "",
+            walletId: ""
+        } as WalletEvent;
+        this._events.next(e);
     }
 
     public onSendTransaction(fromPubkey: PublicKey) {
@@ -161,60 +234,5 @@ export class SolanaWalletService {
                 next: (v) => console.log(v),
                 error: (e) => console.error(e)
             });
-    }
-
-    public onSignAllTransactions(fromPubkey: PublicKey) {
-        this.connection$
-            .pipe(
-                first(),
-                isNotNull,
-                concatMap((connection) =>
-                    from(defer(() => connection.getRecentBlockhash())).pipe(
-                        map(({ blockhash }) =>
-                            new Array(3).fill(0).map(() =>
-                                new Transaction({
-                                    recentBlockhash: blockhash,
-                                    feePayer: fromPubkey
-                                }).add(
-                                    SystemProgram.transfer({
-                                        fromPubkey,
-                                        toPubkey: new PublicKey(this.recipient),
-                                        lamports: this.lamports
-                                    })
-                                )
-                            )
-                        )
-                    )
-                ),
-                concatMap((transactions) => {
-                    const signAllTransaction$ = this._walletStore.signAllTransactions(transactions);
-
-                    if (!signAllTransaction$) {
-                        return throwError(new Error("Sign all transactions method is not defined"));
-                    }
-
-                    return signAllTransaction$;
-                })
-            )
-            .subscribe({
-                next: (v) => console.log(v),
-                error: (e) => console.error(e)
-            });
-    }
-
-    public onSignMessage(msg: string): Observable<string> | undefined {
-        const signMessage$ = this._walletStore.signMessage(new TextEncoder().encode(msg));
-
-        if (!signMessage$) {
-            console.error(new Error("Sign message method is not defined"));
-            return;
-        }
-
-        return signMessage$.pipe(
-            map((signature) => {
-                return base58.encode(signature);
-            }),
-            first()
-        );
     }
 }

@@ -1,31 +1,19 @@
-import { Test } from "@nestjs/testing";
-import { Blockchains } from "@nft-marketplace/common";
 import { ObjectId } from "mongodb";
 import { CollectionCreatedEvent } from "../../domain/collection/collection-events";
-import { getThrower } from "../../test-utils/mocking";
 import { CollectionLinksView } from "./collection-links-view";
 import { CollectionProjector } from "./collection-projector";
 import { CollectionView } from "./collection-view";
 import { CollectionViewRepository } from "./collection-view-repository";
+import { getUnitTestingModule } from "../../test-utils/test-modules";
 
-const repositoryMock: Partial<CollectionViewRepository> = {
-    save: getThrower()
-};
-
+let repositoryMock: CollectionViewRepository;
 let projector: CollectionProjector;
 
 beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
-        providers: [
-            CollectionProjector,
-            {
-                provide: CollectionViewRepository,
-                useValue: repositoryMock
-            }
-        ]
-    }).compile();
+    const moduleRef = await getUnitTestingModule(CollectionProjector);
 
     projector = moduleRef.get(CollectionProjector);
+    repositoryMock = moduleRef.get(CollectionViewRepository);
 });
 
 test("handle CollectionCreatedEvent - saves new collection view", async () => {
@@ -42,7 +30,7 @@ test("handle CollectionCreatedEvent - saves new collection view", async () => {
         false,
         "img",
         1,
-        Blockchains.SOLANA,
+        "block",
         "token",
         "instaLink",
         "medLink",
@@ -58,7 +46,7 @@ test("handle CollectionCreatedEvent - saves new collection view", async () => {
 
     const expectedSaved = new CollectionView();
     expectedSaved.id = id;
-    expectedSaved.blockchain = event.blockchain;
+    expectedSaved.blockchainId = event.blockchainId;
     expectedSaved.categoryId = event.categoryId;
     expectedSaved.customUrl = event.customUrl;
     expectedSaved.description = event.description;

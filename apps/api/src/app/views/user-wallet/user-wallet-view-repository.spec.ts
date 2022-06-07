@@ -3,23 +3,22 @@ import { Connection } from "typeorm";
 import { Test } from "@nestjs/testing";
 import { instanceToPlain } from "class-transformer";
 import { cleanUpMongo, getCollection, MONGO_MODULE } from "../../test-utils/mongo";
-import { WalletViewRepository } from "./wallet-view-repository";
-import { WalletView } from "./wallet-view";
-import { Blockchains, SupportedWallets } from "@nft-marketplace/common";
+import { UserWalletViewRepository } from "./user-wallet-view-repository";
+import { UserWalletView } from "./user-wallet-view";
 
-let repository: WalletViewRepository;
+let repository: UserWalletViewRepository;
 let collection: Collection<any>;
 let connection: Connection;
 
 beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
         imports: [MONGO_MODULE],
-        providers: [WalletViewRepository]
+        providers: [UserWalletViewRepository]
     }).compile();
 
-    repository = moduleRef.get(WalletViewRepository);
+    repository = moduleRef.get(UserWalletViewRepository);
     connection = moduleRef.get(Connection);
-    collection = getCollection("wallet-views", connection);
+    collection = getCollection("user-wallet-views", connection);
     await collection.deleteMany({});
 });
 
@@ -28,53 +27,53 @@ afterEach(async () => {
 });
 
 test("findByAddressAndBlockchain - returns undefined for no address match", async () => {
-    const view = new WalletView();
+    const view = new UserWalletView();
     view._id = new ObjectId();
     view.address = "ad1";
-    view.name = SupportedWallets.PHANTOM;
-    view.blockchain = Blockchains.SOLANA;
+    view.walletId = "w1";
+    view.blockchainId = "b1";
     view.userId = "u1";
 
     await collection.insertOne(instanceToPlain(view));
 
-    const found = await repository.findByAddressAndBlockchain("ad2", Blockchains.SOLANA);
+    const found = await repository.findByAddressAndBlockchain("ad2", "b1");
     expect(found).toBeUndefined();
 });
 
 test("findByAddressAndBlockchain - returns undefined for no blockchain match", async () => {
-    const view = new WalletView();
+    const view = new UserWalletView();
     view._id = new ObjectId();
     view.address = "ad1";
-    view.name = SupportedWallets.PHANTOM;
-    view.blockchain = Blockchains.SOLANA;
+    view.walletId = "w1";
+    view.blockchainId = "b1";
     view.userId = "u1";
 
     await collection.insertOne(instanceToPlain(view));
 
-    const found = await repository.findByAddressAndBlockchain("ad1", Blockchains.ETHEREUM);
+    const found = await repository.findByAddressAndBlockchain("ad1", "b2");
     expect(found).toBeUndefined();
 });
 
 test("findByAddressAndBlockchain - returns matched wallet", async () => {
-    const view = new WalletView();
+    const view = new UserWalletView();
     view._id = new ObjectId();
     view.address = "ad1";
-    view.name = SupportedWallets.PHANTOM;
-    view.blockchain = Blockchains.SOLANA;
+    view.walletId = "w1";
+    view.blockchainId = "b1";
     view.userId = "u1";
 
     await collection.insertOne(instanceToPlain(view));
 
-    const found = await repository.findByAddressAndBlockchain("ad1", Blockchains.SOLANA);
+    const found = await repository.findByAddressAndBlockchain("ad1", "b1");
     expect(found).toEqual(view);
 });
 
 test("save - persists wallet view", async () => {
-    const view = new WalletView();
+    const view = new UserWalletView();
     view._id = new ObjectId();
     view.address = "ad1";
-    view.name = SupportedWallets.PHANTOM;
-    view.blockchain = Blockchains.SOLANA;
+    view.walletId = "w1";
+    view.blockchainId = "b1";
     view.userId = "u1";
 
     const saved = await repository.save(view);

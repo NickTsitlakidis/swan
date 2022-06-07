@@ -1,13 +1,16 @@
-import { Blockchains, StartSignatureAuthenticationDto, SupportedWallets } from "@nft-marketplace/common";
+import { StartSignatureAuthenticationDto } from "@nft-marketplace/common";
 
 export class StartSignatureAuthenticationCommand {
     address: string;
-    blockchain: Blockchains;
-    wallet: SupportedWallets;
+    blockchainId: string;
+    walletId: string;
+    userId?: string;
 
-    constructor(dto: StartSignatureAuthenticationDto, public userId?: string) {
-        this.address = dto.walletAddress;
-        this.blockchain = dto.blockchain;
-        this.wallet = dto.wallet;
+    static fromDto(dto: StartSignatureAuthenticationDto): StartSignatureAuthenticationCommand {
+        const mapped = new StartSignatureAuthenticationCommand();
+        mapped.address = dto.address;
+        mapped.blockchainId = dto.blockchainId;
+        mapped.walletId = dto.walletId;
+        return mapped;
     }
 }

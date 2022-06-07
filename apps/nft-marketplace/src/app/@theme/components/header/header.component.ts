@@ -1,13 +1,19 @@
-import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
-import { SupportedWallets } from "@nft-marketplace/common";
-import { WalletName } from "@solana/wallet-adapter-base";
-import { BlockChains } from "../../../@core/interfaces/blockchain.interface";
-import { BlockChainService } from "../../../@core/services/blockchain.service";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import {
+    BlockchainWalletDto,
+    StartSignatureAuthenticationDto,
+    SupportedWallets,
+    WalletDto
+} from "@nft-marketplace/common";
 
-import { ImagesService } from "../../../@core/services/images_helper/images.service";
+import { ImagesService } from "../../../@core/services/images/images.service";
 
 import { faPaintBrush } from "@fortawesome/free-solid-svg-icons";
 import { Router } from "@angular/router";
+import { SupportService } from "../../../@core/services/support/support.service";
+import { UserAuthService } from "../../../@core/services/authentication/user_auth.service";
+import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
+import { LocalStorageService } from "ngx-webstorage";
 @Component({
     selector: "nft-marketplace-header",
     styleUrls: ["./header.component.scss"],
@@ -15,31 +21,38 @@ import { Router } from "@angular/router";
     templateUrl: "./header.component.html"
 })
 export class HeaderComponent implements OnInit {
-    public chains: BlockChains[] | undefined = [];
     public walletName: SupportedWallets;
-    public selectedWallet: BlockChains;
+    public selectedWallet: WalletDto | undefined;
     public faPaintBrush = faPaintBrush;
+    public chainsNew: BlockchainWalletDto[];
 
     constructor(
         public imagesService: ImagesService,
-        private _blockChainService: BlockChainService,
-        private _router: Router
+        private _router: Router,
+        private _supportService: SupportService,
+        private _cd: ChangeDetectorRef,
+        private _userAuthService: UserAuthService,
+        private _walletRegistryService: WalletRegistryService,
+        private _lcStorage: LocalStorageService
     ) {}
 
     ngOnInit() {
         this._connectToObservables();
-
-        this.walletName = this._blockChainService.getWalletName();
     }
 
-    public walletSelected(walletName: WalletName) {
-        if (this._blockChainService.getWalletName() !== walletName) {
-            this._blockChainService.setWalletName(walletName);
-        }
-        const chain = this._blockChainService.getWalletServiceByName(walletName, this.chains);
-        this._blockChainService.setBlockchain(chain?.chain.title);
-        chain?.chain.service.onSelectWallet(walletName);
-        this._blockChainService.startChainAuth(chain?.chain.service);
+    public walletSelected(wallet: WalletDto) {
+        this._walletRegistryService
+            .getWalletService(wallet.id)
+            ?.getPublicKey(wallet.name)
+            .subscribe((walletAddress) => {
+                const authBody = new StartSignatureAuthenticationDto();
+                authBody.address = walletAddress;
+                authBody.blockchainId = wallet.chainId;
+                authBody.walletId = wallet.id;
+                this._userAuthService.authenticateWithSignature(authBody).subscribe(() => {
+                    this._lcStorage.store("walletName", wallet.name);
+                });
+            });
     }
 
     public navigateToCreateCollection() {
@@ -55,13 +68,14 @@ export class HeaderComponent implements OnInit {
      *********************************************************/
 
     private _connectToObservables() {
-        const arrOfWalletObservables = this._blockChainService.getWallets();
-        for (const observable of arrOfWalletObservables) {
-            observable.subscribe((data) => {
-                if (data) {
-                    this.chains?.push(data);
-                }
-            });
-        }
+        this._supportService.getBlockchainWallets().subscribe((wallets) => {
+            this.chainsNew = wallets;
+            const walletId = this._lcStorage.retrieve("walletId");
+            const chainId = this._lcStorage.retrieve("chainId");
+            this.selectedWallet = wallets
+                .find((wallet) => wallet.blockchainId === chainId)
+                ?.wallets.find((wallet) => wallet.id === walletId);
+            this._cd.detectChanges();
+        });
     }
 }

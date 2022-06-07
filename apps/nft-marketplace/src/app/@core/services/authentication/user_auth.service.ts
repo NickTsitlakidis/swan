@@ -8,16 +8,22 @@ import {
     TokenDto
 } from "@nft-marketplace/common";
 import { LocalStorageService } from "ngx-webstorage";
-import { Observable } from "rxjs";
+import { Observable, switchMap, throwError } from "rxjs";
 import { plainToClass } from "class-transformer";
 import { map, tap } from "rxjs/operators";
 import moment from "moment";
+import { WalletRegistryService } from "../chains/wallet-registry.service";
+import { isNil } from "lodash";
 
 @Injectable({
     providedIn: "root"
 })
 export class UserAuthService {
-    constructor(private httpClient: HttpClient, private _lcStorage: LocalStorageService) {}
+    constructor(
+        private _httpClient: HttpClient,
+        private _walletRegistry: WalletRegistryService,
+        private _lcStorage: LocalStorageService
+    ) {}
 
     public getUserTokenData(): TokenDto {
         return new TokenDto(
@@ -39,26 +45,45 @@ export class UserAuthService {
 
     public refreshToken(): Observable<TokenDto> {
         const storedRefreshToken = this._lcStorage.retrieve("userRefreshToken");
-        return this.httpClient.post("/user/refresh-token", new RefreshTokenDto(storedRefreshToken)).pipe(
+        return this._httpClient.post("/user/refresh-token", new RefreshTokenDto(storedRefreshToken)).pipe(
             map((httpResult) => plainToClass(TokenDto, httpResult)),
             tap((dto) => this._storeUserData(dto))
         );
     }
 
-    public completeAuthentication(body: CompleteSignatureAuthenticationDto) {
-        return this.httpClient.post("/user/complete-signature-authentication", body).pipe(
+    public authenticateWithSignature(body: StartSignatureAuthenticationDto) {
+        const walletService = this._walletRegistry.getWalletService(body.walletId);
+        if (isNil(walletService)) {
+            return throwError(() => "Unable to match wallet with service");
+        }
+
+        return this._httpClient.post<NonceDto>("/user/start-signature-authentication", body).pipe(
+            switchMap((nonce) => {
+                return walletService.signMessage(nonce.nonce);
+            }),
+            switchMap((signature) => {
+                if (isNil(signature)) {
+                    return throwError(() => "Signature authentication stopped");
+                }
+
+                const completeBody = new CompleteSignatureAuthenticationDto();
+                completeBody.signature = signature;
+                completeBody.blockchainId = body.blockchainId;
+                completeBody.address = body.address;
+                return this._httpClient.post("/user/complete-signature-authentication", completeBody);
+            }),
             map((httpResult) => plainToClass(TokenDto, httpResult)),
-            tap((dto) => this._storeUserData(dto))
+            tap((dto) => this._storeUserData(dto, body))
         );
     }
 
-    public getNonce(body: StartSignatureAuthenticationDto) {
-        return this.httpClient.post<NonceDto>("/user/start-signature-authentication", body);
-    }
-
-    private _storeUserData(userData: TokenDto) {
+    private _storeUserData(userData: TokenDto, authBody?: StartSignatureAuthenticationDto) {
         this._lcStorage.store("userTokenValue", userData.tokenValue);
         this._lcStorage.store("userExpiresAt", userData.expiresAt.toISOString());
         this._lcStorage.store("userRefreshToken", userData.refreshToken);
+        if (authBody) {
+            this._lcStorage.store("walletId", authBody.walletId);
+            this._lcStorage.store("chainId", authBody.blockchainId);
+        }
     }
 }

@@ -1,5 +1,4 @@
 import { EventPayload, SerializedEvent } from "../../infrastructure/serialized-event";
-import { Blockchains } from "@nft-marketplace/common";
 
 @SerializedEvent("collection-created-event")
 export class CollectionCreatedEvent extends EventPayload {
@@ -12,7 +11,7 @@ export class CollectionCreatedEvent extends EventPayload {
         public isExplicit: boolean,
         public imageUrl: string,
         public salePercentage: number,
-        public blockchain: Blockchains,
+        public blockchainId: string,
         public paymentToken: string,
         public instagramLink: string,
         public mediumLink: string,

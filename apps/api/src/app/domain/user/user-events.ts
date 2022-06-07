@@ -1,13 +1,13 @@
 import { EventPayload, SerializedEvent } from "../../infrastructure/serialized-event";
-import { Wallet } from "./wallet";
 import { Type } from "class-transformer";
+import { UserWallet } from "./user-wallet";
 
 @SerializedEvent("user-created-event")
 export class UserCreatedEvent extends EventPayload {
-    @Type(() => Wallet)
-    wallet: Wallet;
+    @Type(() => UserWallet)
+    wallet: UserWallet;
 
-    constructor(wallet: Wallet) {
+    constructor(wallet: UserWallet) {
         super();
         this.wallet = wallet;
     }
@@ -15,10 +15,10 @@ export class UserCreatedEvent extends EventPayload {
 
 @SerializedEvent("added-wallet-event")
 export class WalletAddedEvent extends EventPayload {
-    @Type(() => Wallet)
-    wallet: Wallet;
+    @Type(() => UserWallet)
+    wallet: UserWallet;
 
-    constructor(wallet: Wallet) {
+    constructor(wallet: UserWallet) {
         super();
         this.wallet = wallet;
     }
