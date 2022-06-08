@@ -1,6 +1,5 @@
-import { Injectable } from "@angular/core";
 import { ConnectionStore, WalletStore } from "@heavy-duty/wallet-adapter";
-import { WalletAdapterNetwork, WalletName } from "@solana/wallet-adapter-base";
+import { WalletName } from "@solana/wallet-adapter-base";
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import * as base58 from "bs58";
 import { defer, forkJoin, from, of, Subject, throwError } from "rxjs";
@@ -9,34 +8,22 @@ import { concatMap, first, map, switchMap, take } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { filter } from "rxjs/operators";
 
-import {
-    LedgerWalletAdapter,
-    PhantomWalletAdapter,
-    SlopeWalletAdapter,
-    SolflareWalletAdapter,
-    SolletWalletAdapter,
-    TorusWalletAdapter
-} from "@solana/wallet-adapter-wallets";
-import { environment } from "../../../../environments/environment";
-import { WalletService } from "./wallet-service";
-import { CreateNft, MintTransaction } from "./nft";
-import { WalletEvent, WalletEventType } from "./wallet-event";
+import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
+import { environment } from "../../../../../environments/environment";
+import { WalletService } from "../wallet-service";
+import { CreateNft, MintTransaction } from "../nft";
+import { WalletEvent, WalletEventType } from "../wallet-event";
 import { CreateNftInput } from "@metaplex-foundation/js-next";
 import { MetaplexService } from "./metaplex.service";
-import { SwanError } from "../../interfaces/swan-error";
-import { ChainsModule } from "./chains.module";
-import { LocalStorageService } from "ngx-webstorage";
+import { SwanError } from "../../../interfaces/swan-error";
 
 export const isNotNull = <T>(source: Observable<T | null>) =>
     source.pipe(filter((item: T | null): item is T => item !== null));
 
-@Injectable({
-    providedIn: ChainsModule
-})
 export class SolanaWalletService implements WalletService {
     private readonly connection$ = this._connectionStore.connection$;
-    private readonly wallets$ = this._walletStore.wallets$;
-    public readonly wallet$ = this._walletStore.wallet$;
+    private readonly wallets$ = this.walletStore.wallets$;
+    public readonly wallet$ = this.walletStore.wallet$;
     /* private readonly walletName$ = this.wallet$.pipe(map((wallet: Wallet | null) => wallet?.adapter.name || null));
     private readonly ready$ = this.wallet$.pipe(
         map(
@@ -46,29 +33,21 @@ export class SolanaWalletService implements WalletService {
                     wallet.adapter.readyState === WalletReadyState.Loadable)
         )
     ); */
-    public readonly connected$ = this._walletStore.connected$;
-    public readonly publicKey$ = this._walletStore.publicKey$;
+    public readonly connected$ = this.walletStore.connected$;
+    public readonly publicKey$ = this.walletStore.publicKey$;
     private lamports = 0;
     private recipient = "";
     private _events: Subject<WalletEvent>;
 
     constructor(
         private readonly _connectionStore: ConnectionStore,
-        private readonly _walletStore: WalletStore,
-        private _metaplexService: MetaplexService,
-        private _lcStorage: LocalStorageService
+        public readonly walletStore: WalletStore,
+        private _metaplexService: MetaplexService
     ) {
         this._events = new Subject<WalletEvent>();
         this._connectionStore.setEndpoint(environment.solanaNetwork);
-        this._walletStore.setAdapters([
-            new PhantomWalletAdapter(),
-            new SlopeWalletAdapter(),
-            new SolflareWalletAdapter(),
-            new TorusWalletAdapter(),
-            new LedgerWalletAdapter(),
-            new SolletWalletAdapter({ network: WalletAdapterNetwork.Devnet })
-        ]);
-        this._walletStore.connected$.subscribe(() => {
+        this.walletStore.setAdapters([new PhantomWalletAdapter(), new SolflareWalletAdapter()]);
+        this.walletStore.connected$.subscribe(() => {
             const e = {
                 type: WalletEventType.Connected,
                 walletName: "",
@@ -77,7 +56,7 @@ export class SolanaWalletService implements WalletService {
             this._events.next(e);
         });
 
-        this._walletStore.disconnecting$.subscribe(() => {
+        this.walletStore.disconnecting$.subscribe(() => {
             const e = {
                 type: WalletEventType.Disconnected,
                 walletName: "",
@@ -87,9 +66,7 @@ export class SolanaWalletService implements WalletService {
         });
     }
 
-    public getPublicKey(walletName?: string): Observable<string> {
-        const walletFromLocalStorage = this._lcStorage.retrieve("walletName");
-        this._walletStore.selectWallet((walletName || walletFromLocalStorage) as WalletName);
+    public getPublicKey(): Observable<string> {
         return this.publicKey$.pipe(
             filter((data) => data !== null),
             map((data) => {
@@ -100,7 +77,7 @@ export class SolanaWalletService implements WalletService {
     }
 
     public signMessage(message: string): Observable<string | undefined> {
-        const signMessage$ = this._walletStore.signMessage(new TextEncoder().encode(message));
+        const signMessage$ = this.walletStore.signMessage(new TextEncoder().encode(message));
 
         if (!signMessage$) {
             console.error(new Error("Sign message method is not defined"));
@@ -159,7 +136,7 @@ export class SolanaWalletService implements WalletService {
     }
 
     public onSelectWallet(walletName: WalletName) {
-        this._walletStore.selectWallet(walletName);
+        this.walletStore.selectWallet(walletName);
         const e = {
             type: WalletEventType.Selected,
             walletName: "",
@@ -176,7 +153,7 @@ export class SolanaWalletService implements WalletService {
                 concatMap((connection) =>
                     from(defer(() => connection.getRecentBlockhash())).pipe(
                         concatMap(({ blockhash }) =>
-                            this._walletStore.sendTransaction(
+                            this.walletStore.sendTransaction(
                                 new Transaction({
                                     recentBlockhash: blockhash,
                                     feePayer: fromPubkey
@@ -221,7 +198,7 @@ export class SolanaWalletService implements WalletService {
                     )
                 ),
                 concatMap((transaction) => {
-                    const signTransaction$ = this._walletStore.signTransaction(transaction);
+                    const signTransaction$ = this.walletStore.signTransaction(transaction);
 
                     if (!signTransaction$) {
                         return throwError(new Error("Sign transaction method is not defined"));

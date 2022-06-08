@@ -2,7 +2,8 @@ import { WalletService } from "./wallet-service";
 import { MetamaskService } from "./metamask.service";
 import { Injectable } from "@angular/core";
 import { SupportService } from "../support/support.service";
-import { SolanaWalletService } from "./solana.wallet.service";
+import { SolflareWalletService } from "./solana-services/solflare.wallet.service";
+import { PhantomWalletService } from "./solana-services/phantom.wallet.service";
 
 @Injectable({
     providedIn: "root"
@@ -13,7 +14,8 @@ export class WalletRegistryService {
     constructor(
         private _metamaskService: MetamaskService,
         private _supportService: SupportService,
-        private _solanaWalletService: SolanaWalletService
+        private _solflareService: SolflareWalletService,
+        private _phantomService: PhantomWalletService
     ) {
         this._registry = new Map();
     }
@@ -29,9 +31,10 @@ export class WalletRegistryService {
                     if (!this._registry.has(wallet.id)) {
                         if (wallet.name === "Metamask") {
                             this._registry.set(wallet.id, this._metamaskService);
-                        } else {
-                            // Solana services? we should bullet proof it
-                            this._registry.set(wallet.id, this._solanaWalletService);
+                        } else if (wallet.name === "Phantom") {
+                            this._registry.set(wallet.id, this._phantomService);
+                        } else if (wallet.name === "Solflare") {
+                            this._registry.set(wallet.id, this._solflareService);
                         }
                     }
                 });

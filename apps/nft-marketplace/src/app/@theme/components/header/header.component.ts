@@ -43,7 +43,7 @@ export class HeaderComponent implements OnInit {
     public walletSelected(wallet: WalletDto) {
         this._walletRegistryService
             .getWalletService(wallet.id)
-            ?.getPublicKey(wallet.name)
+            ?.getPublicKey()
             .subscribe((walletAddress) => {
                 const authBody = new StartSignatureAuthenticationDto();
                 authBody.address = walletAddress;
