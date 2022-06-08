@@ -5,7 +5,6 @@ import {
     SupportedWallets,
     WalletDto
 } from "@nft-marketplace/common";
-import { BlockChains } from "../../../@core/interfaces/blockchain.interface";
 
 import { ImagesService } from "../../../@core/services/images/images.service";
 
@@ -22,7 +21,6 @@ import { LocalStorageService } from "ngx-webstorage";
     templateUrl: "./header.component.html"
 })
 export class HeaderComponent implements OnInit {
-    public chains: BlockChains[] | undefined = [];
     public walletName: SupportedWallets;
     public selectedWallet: WalletDto | undefined;
     public faPaintBrush = faPaintBrush;

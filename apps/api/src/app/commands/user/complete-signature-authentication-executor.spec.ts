@@ -68,6 +68,9 @@ test("execute - throws if solana signature is invalid", async () => {
     authentication.address = "auth-address";
     authentication.message = "auth-message";
     authentication.blockchainId = "block";
+    authentication._id = new ObjectId();
+
+    const deleteAuthSpy = jest.spyOn(authenticationRepoMock, "deleteById").mockResolvedValue({ result: {} });
 
     const findAuthenticationSpy = jest
         .spyOn(authenticationRepoMock, "findByAddressAndChain")
@@ -90,6 +93,9 @@ test("execute - throws if solana signature is invalid", async () => {
 
     expect(blockchainSpy).toHaveBeenCalledTimes(1);
     expect(blockchainSpy).toHaveBeenCalledWith("block");
+
+    expect(deleteAuthSpy).toHaveBeenCalledTimes(1);
+    expect(deleteAuthSpy).toHaveBeenCalledWith(authentication.id);
 });
 
 test("execute - throws if ethereum signature is invalid", async () => {
@@ -102,6 +108,9 @@ test("execute - throws if ethereum signature is invalid", async () => {
     authentication.address = "auth-address";
     authentication.message = "auth-message";
     authentication.blockchainId = "block";
+    authentication._id = new ObjectId();
+
+    const deleteAuthSpy = jest.spyOn(authenticationRepoMock, "deleteById").mockResolvedValue({ result: {} });
 
     const findAuthenticationSpy = jest
         .spyOn(authenticationRepoMock, "findByAddressAndChain")
@@ -124,6 +133,9 @@ test("execute - throws if ethereum signature is invalid", async () => {
 
     expect(blockchainSpy).toHaveBeenCalledTimes(1);
     expect(blockchainSpy).toHaveBeenCalledWith("block");
+
+    expect(deleteAuthSpy).toHaveBeenCalledTimes(1);
+    expect(deleteAuthSpy).toHaveBeenCalledWith(authentication.id);
 });
 
 test("execute - returns token of existing user", async () => {

@@ -43,17 +43,20 @@ export class CompleteSignatureAuthenticationExecutor
         const blockchain = await this._blockchainRepository.findById(auth.blockchainId);
 
         if (isNil(blockchain)) {
+            await this._authenticationRepository.deleteById(auth.id);
             throw new InternalServerErrorException(`Can't find blockchain with id : ${auth.blockchainId}`);
         }
 
         if (blockchain.signatureType === SignatureTypes.SOLANA) {
             if (!this._validator.validateSolanaSignature(command.signature, auth.address, auth.message)) {
                 this._logger.error(`Detected unverified Solana signature ${command.signature} for ${command.address}`);
+                await this._authenticationRepository.deleteById(auth.id);
                 throw new UnauthorizedException("Missing or invalid authentication");
             }
         } else {
             if (!this._validator.validateEvmSignature(command.signature, auth.address, auth.message)) {
                 this._logger.error(`Detected unverified EVM signature ${command.signature} for ${command.address}`);
+                await this._authenticationRepository.deleteById(auth.id);
                 throw new UnauthorizedException("Missing or invalid authentication");
             }
         }

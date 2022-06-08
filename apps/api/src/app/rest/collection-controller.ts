@@ -7,7 +7,6 @@ import { RequestUserId } from "../security/request-user-id";
 import { CreateCollectionCommand } from "../commands/collection/create-collection-command";
 import { CommandBus } from "@nestjs/cqrs";
 import { ClientGuard } from "../security/guards/client-guard";
-import { mapObject } from "../infrastructure/object-mapper";
 
 @Controller("collections")
 export class CollectionController {
@@ -31,7 +30,7 @@ export class CollectionController {
     @UseGuards(UserGuard)
     @Post("create-collection")
     create(@RequestUserId() userId: string, @Body() dto: CreateCollectionDto): Promise<EntityDto> {
-        const command = mapObject(dto, CreateCollectionCommand);
+        const command = CreateCollectionCommand.fromDto(dto);
         command.userId = userId;
         return this._commandBus.execute(command);
     }

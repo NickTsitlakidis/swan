@@ -9,15 +9,13 @@ import {
     RefreshTokenDto,
     StartSignatureAuthenticationDto,
     TokenDto,
-    UserWalletDto,
-    WalletDto
+    UserWalletDto
 } from "@nft-marketplace/common";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { UserGuard } from "../security/guards/user-guard";
 import { RequestUserId } from "../security/request-user-id";
 import { CompleteWalletAdditionCommand } from "../commands/user/complete-wallet-addition-command";
 import { UserTokenIssuer } from "../security/user-token-issuer";
-import { mapObject } from "../infrastructure/object-mapper";
 
 @Controller("user")
 export class UserController {
@@ -28,7 +26,7 @@ export class UserController {
     @Post("start-signature-authentication")
     @UseGuards(ClientGuard)
     startAuthentication(@Body() body: StartSignatureAuthenticationDto): Promise<NonceDto> {
-        return this._commandBus.execute(mapObject(body, StartSignatureAuthenticationCommand));
+        return this._commandBus.execute(StartSignatureAuthenticationCommand.fromDto(body));
     }
 
     @ApiOperation({ summary: "Completes the authentication process for a user and returns user token" })
@@ -36,7 +34,7 @@ export class UserController {
     @Post("complete-signature-authentication")
     @UseGuards(ClientGuard)
     completeAuthentication(@Body() body: CompleteSignatureAuthenticationDto): Promise<TokenDto> {
-        return this._commandBus.execute(mapObject(body, CompleteSignatureAuthenticationCommand));
+        return this._commandBus.execute(CompleteSignatureAuthenticationCommand.fromDto(body));
     }
 
     @Post("refresh-token")
@@ -52,7 +50,7 @@ export class UserController {
         @RequestUserId() userId: string,
         @Body() body: StartSignatureAuthenticationDto
     ): Promise<NonceDto> {
-        const mapped = mapObject(body, StartSignatureAuthenticationCommand);
+        const mapped = StartSignatureAuthenticationCommand.fromDto(body);
         mapped.userId = userId;
         return this._commandBus.execute(mapped);
     }
@@ -64,7 +62,7 @@ export class UserController {
         @RequestUserId() userId: string,
         @Body() body: CompleteSignatureAuthenticationDto
     ): Promise<UserWalletDto> {
-        const mapped = mapObject(body, CompleteWalletAdditionCommand);
+        const mapped = CompleteWalletAdditionCommand.fromDto(body);
         mapped.userId = userId;
         return this._commandBus.execute(mapped);
     }
