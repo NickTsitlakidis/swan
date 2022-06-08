@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Wallet } from "@heavy-duty/wallet-adapter";
 import { CreateNftInput, Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js-next";
 import { clusterApiUrl, Connection } from "@solana/web3.js";
-import { ChainsModule } from "./chains.module";
+import { ChainsModule } from "../chains.module";
 
 @Injectable({
     providedIn: ChainsModule

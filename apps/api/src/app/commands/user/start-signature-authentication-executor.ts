@@ -9,6 +9,7 @@ import { BadRequestException } from "@nestjs/common";
 import { WalletRepository } from "../../support/blockchains/wallet-repository";
 import { BlockchainWalletRepository } from "../../support/blockchains/blockchain-wallet-repository";
 import { isNil } from "lodash";
+import { LogAsyncMethod } from "../../infrastructure/logging";
 
 @CommandHandler(StartSignatureAuthenticationCommand)
 export class StartSignatureAuthenticationExecutor implements ICommandHandler<StartSignatureAuthenticationCommand> {
@@ -20,6 +21,7 @@ export class StartSignatureAuthenticationExecutor implements ICommandHandler<Sta
         private readonly _idGenerator: IdGenerator
     ) {}
 
+    @LogAsyncMethod
     async execute(command: StartSignatureAuthenticationCommand): Promise<NonceDto> {
         const pair = await this._chainWalletRepository.findByWalletIdAndBlockchainId(
             command.walletId,
