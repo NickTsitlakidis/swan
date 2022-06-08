@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
+import { LocalStorageService } from "ngx-webstorage";
 import { fade } from "../../../@core/animations/enter-leave.animation";
 import { CreateNft, MetadataAttribute } from "../../../@core/services/chains/nft";
+import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
 
 @Component({
     selector: "nft-marketplace-create-nft-page",
@@ -42,7 +44,12 @@ export class CreateNFTPageComponent implements OnInit {
     public createNFTForm: FormGroup;
     public attributes: MetadataAttribute[] = [];
 
-    constructor(private _fb: FormBuilder, private _cd: ChangeDetectorRef) {}
+    constructor(
+        private _fb: FormBuilder,
+        private _cd: ChangeDetectorRef,
+        private _walletRegistryService: WalletRegistryService,
+        private _lcStorage: LocalStorageService
+    ) {}
 
     ngOnInit(): void {
         this.createNFTForm = this._fb.group({
@@ -74,6 +81,8 @@ export class CreateNFTPageComponent implements OnInit {
     }
 
     public onSubmit() {
+        const walletId = this._lcStorage.retrieve("walletId");
+        const walletService = this._walletRegistryService.getWalletService(walletId);
         const metadata: MetadataAttribute[] = [];
         for (const index in this.attributes) {
             metadata.push({
@@ -92,6 +101,6 @@ export class CreateNFTPageComponent implements OnInit {
             metadata
         } as CreateNft;
 
-        /* this._solanaWalletService.mint(nft); */
+        walletService?.mint(nft).subscribe(() => undefined);
     }
 }

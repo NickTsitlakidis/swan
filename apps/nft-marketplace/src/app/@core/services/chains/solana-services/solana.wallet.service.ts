@@ -1,4 +1,4 @@
-import { ConnectionStore, WalletStore } from "@heavy-duty/wallet-adapter";
+import { ConnectionStore, Wallet, WalletStore } from "@heavy-duty/wallet-adapter";
 import { WalletName } from "@solana/wallet-adapter-base";
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import * as base58 from "bs58";
@@ -21,22 +21,13 @@ export const isNotNull = <T>(source: Observable<T | null>) =>
     source.pipe(filter((item: T | null): item is T => item !== null));
 
 export class SolanaWalletService implements WalletService {
-    private readonly connection$ = this._connectionStore.connection$;
-    private readonly wallets$ = this.walletStore.wallets$;
-    public readonly wallet$ = this.walletStore.wallet$;
-    /* private readonly walletName$ = this.wallet$.pipe(map((wallet: Wallet | null) => wallet?.adapter.name || null));
-    private readonly ready$ = this.wallet$.pipe(
-        map(
-            (wallet) =>
-                wallet &&
-                (wallet.adapter.readyState === WalletReadyState.Installed ||
-                    wallet.adapter.readyState === WalletReadyState.Loadable)
-        )
-    ); */
-    public readonly connected$ = this.walletStore.connected$;
-    public readonly publicKey$ = this.walletStore.publicKey$;
-    private lamports = 0;
-    private recipient = "";
+    private readonly connection$;
+    private readonly wallets$;
+    public readonly wallet$;
+    public readonly connected$;
+    public readonly publicKey$;
+    private lamports;
+    private recipient;
     private _events: Subject<WalletEvent>;
 
     constructor(
@@ -44,6 +35,13 @@ export class SolanaWalletService implements WalletService {
         public readonly walletStore: WalletStore,
         private _metaplexService: MetaplexService
     ) {
+        this.connection$ = this._connectionStore.connection$;
+        this.wallets$ = this.walletStore.wallets$;
+        this.wallet$ = this.walletStore.wallet$;
+        this.connected$ = this.walletStore.connected$;
+        this.publicKey$ = this.walletStore.publicKey$;
+        this.lamports = 0;
+        this.recipient = "";
         this._events = new Subject<WalletEvent>();
         this._connectionStore.setEndpoint(environment.solanaNetwork);
         this.walletStore.setAdapters([new PhantomWalletAdapter(), new SolflareWalletAdapter()]);
@@ -93,7 +91,13 @@ export class SolanaWalletService implements WalletService {
     }
 
     public mint(nft: CreateNft): Observable<MintTransaction> {
-        return forkJoin([this.getPublicKey(), this.wallet$]).pipe(
+        const completeWalletObservable = new Observable<Wallet | null>((subscriber) => {
+            this.wallet$.subscribe((wallet) => {
+                subscriber.next(wallet);
+                subscriber.complete();
+            });
+        });
+        return forkJoin([this.getPublicKey(), completeWalletObservable]).pipe(
             switchMap(([publicKey, wallet]) => {
                 const nftInput = {
                     uri: nft.metadataUri,
@@ -106,7 +110,7 @@ export class SolanaWalletService implements WalletService {
                 } as CreateNftInput;
 
                 if (wallet) {
-                    return this._metaplexService.mintNFT(nftInput, wallet);
+                    return from(this._metaplexService.mintNFT(nftInput, wallet));
                 } else {
                     return throwError(() => {
                         return new SwanError("Could not found wallet");
