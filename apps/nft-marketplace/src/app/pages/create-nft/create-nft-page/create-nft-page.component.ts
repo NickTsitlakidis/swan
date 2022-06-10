@@ -43,6 +43,7 @@ export class CreateNFTPageComponent implements OnInit {
     };
     public createNFTForm: FormGroup;
     public attributes: MetadataAttribute[] = [];
+    public uploadedFile: File;
 
     constructor(
         private _fb: FormBuilder,
@@ -73,11 +74,15 @@ export class CreateNFTPageComponent implements OnInit {
             value: ""
         };
         this.attributes.push(newAttribute);
-        const i = this.attributes.length;
+        const i = this.attributes.length - 1;
         this.createNFTForm.addControl(`attributeTrait${i}`, new FormControl(newAttribute.traitType));
         this.createNFTForm.addControl(`attributeValue${i}`, new FormControl(newAttribute.value, Validators.required));
         this.createNFTForm.addControl(`attributeDisplay${i}`, new FormControl(newAttribute.displayType));
         this._cd.detectChanges();
+    }
+
+    public uploadFiles(files: File[]) {
+        this.uploadedFile = files[0];
     }
 
     public onSubmit() {
@@ -98,7 +103,8 @@ export class CreateNFTPageComponent implements OnInit {
             symbol: this.createNFTForm.get("symbol")?.value,
             resellPercentage: this.createNFTForm.get("royalties")?.value,
             maxSupply: this.createNFTForm.get("maxSupply")?.value,
-            metadata
+            metadata,
+            file: this.uploadedFile
         } as CreateNft;
 
         walletService?.mint(nft).subscribe(() => undefined);

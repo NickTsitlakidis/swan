@@ -16,6 +16,7 @@ import { WalletEvent, WalletEventType } from "../wallet-event";
 import { CreateNftInput } from "@metaplex-foundation/js-next";
 import { MetaplexService } from "./metaplex.service";
 import { SwanError } from "../../../interfaces/swan-error";
+import { NFTStorageMetaplexor, PackagedNFT, prepareMetaplexNFT, ServiceContext } from "@nftstorage/metaplex-auth";
 
 export const isNotNull = <T>(source: Observable<T | null>) =>
     source.pipe(filter((item: T | null): item is T => item !== null));
@@ -97,8 +98,58 @@ export class SolanaWalletService implements WalletService {
                 subscriber.complete();
             });
         });
+
         return forkJoin([this.getPublicKey(), completeWalletObservable]).pipe(
             switchMap(([publicKey, wallet]) => {
+                const metadata = {
+                    name: nft.name,
+                    symbol: nft.symbol,
+                    description: nft.name,
+                    seller_fee_basis_points: nft.resellPercentage,
+                    image: nft.file.name,
+                    attributes: nft.metadata,
+                    collection: {
+                        name: "Swan dummy collection",
+                        family: "Swan"
+                    },
+                    properties: {
+                        files: [
+                            {
+                                uri: nft.file.name,
+                                type: nft.file.type
+                            }
+                        ],
+                        category: "image",
+                        creators: [
+                            {
+                                address: publicKey,
+                                share: nft.maxSupply
+                            }
+                        ]
+                    }
+                };
+                prepareMetaplexNFT(metadata, nft.file)
+                    .then((preparedNFT: PackagedNFT) => {
+                        const signer = () => {
+                            return this.walletStore.signMessage(new TextEncoder().encode("message"))?.toPromise();
+                        };
+
+                        NFTStorageMetaplexor.storePreparedNFT(
+                            {
+                                auth: {
+                                    chain: "solana",
+                                    solanaCluster: "devnet",
+                                    mintingAgent: "swan",
+                                    signMessage: signer,
+                                    publicKey: new TextEncoder().encode(publicKey)
+                                }
+                            } as ServiceContext,
+                            preparedNFT
+                        );
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                    });
                 const nftInput = {
                     uri: nft.metadataUri,
                     name: nft.name,
