@@ -1,16 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { Connection, MongoRepository } from "typeorm";
 import { Client } from "./client";
+import { EntityManager } from "@mikro-orm/mongodb";
 
 @Injectable()
 export class ClientRepository {
-    private _mongoRepo: MongoRepository<Client>;
 
-    constructor(connection: Connection) {
-        this._mongoRepo = connection.getMongoRepository(Client);
+    constructor(private _entityManager: EntityManager) {
     }
 
-    findByApplicationId(id: string): Promise<Client | undefined> {
-        return this._mongoRepo.findOne({ applicationId: id });
+    findByApplicationId(id: string): Promise<Client | null> {
+        return this._entityManager.fork().findOne(Client,{ applicationId: id });
     }
 }

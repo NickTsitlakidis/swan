@@ -1,26 +1,26 @@
-import { MongoDocument } from "../infrastructure/mongo-document";
-import { Column, CreateDateColumn, Entity } from "typeorm";
+import { Entity, Property } from "@mikro-orm/core";
+import { MikroDocument } from "../infrastructure/mikro-document";
 
-@Entity("signature-authentications")
-export class SignatureAuthentication extends MongoDocument {
-    @Column()
+@Entity({collection: "signature-authentications"})
+export class SignatureAuthentication extends MikroDocument {
+    @Property()
     address: string;
 
-    @Column()
+    @Property()
     message: string;
 
-    @Column()
+    @Property()
     blockchainId: string;
 
-    @Column()
+    @Property()
     walletId: string;
 
-    @Column()
+    @Property()
     userId: string;
 
-    @Column()
+    @Property()
     isEvm: boolean;
 
-    @CreateDateColumn()
-    createdAt: Date;
+    @Property({onCreate: () => new Date()})
+    createdAt: Date = new Date();
 }

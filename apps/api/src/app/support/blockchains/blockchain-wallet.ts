@@ -1,12 +1,12 @@
-import { Column, Entity } from "typeorm";
-import { MongoDocument } from "../../infrastructure/mongo-document";
+import { Entity, Property } from "@mikro-orm/core";
+import { MikroDocument } from "../../infrastructure/mikro-document";
 
-@Entity("blockchain-wallets")
-export class BlockchainWallet extends MongoDocument {
+@Entity({collection: "blockchain-wallets"})
+export class BlockchainWallet extends MikroDocument {
 
-    @Column()
+    @Property()
     blockchainId: string;
 
-    @Column()
+    @Property()
     walletId: string;
 }

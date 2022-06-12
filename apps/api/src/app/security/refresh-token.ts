@@ -1,17 +1,17 @@
-import { Column, CreateDateColumn, Entity } from "typeorm";
-import { MongoDocument } from "../infrastructure/mongo-document";
+import { MikroDocument } from "../infrastructure/mikro-document";
+import { Entity, Property } from "@mikro-orm/core";
 
-@Entity("refresh-tokens")
-export class RefreshToken extends MongoDocument {
-    @Column()
+@Entity({collection: "refresh-tokens"})
+export class RefreshToken extends MikroDocument {
+    @Property()
     userId: string;
 
-    @Column()
+    @Property()
     tokenValue: string;
 
-    @Column()
+    @Property()
     isRevoked: boolean;
 
-    @CreateDateColumn()
-    issuedAt: Date;
+    @Property({onCreate: () => new Date()})
+    issuedAt: Date = new Date();
 }

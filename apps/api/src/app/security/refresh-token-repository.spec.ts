@@ -1,33 +1,28 @@
-import { Test } from "@nestjs/testing";
-import { cleanUpMongo, getCollection, MONGO_MODULE } from "../test-utils/mongo";
-import { Connection } from "typeorm";
+import { TestingModule } from "@nestjs/testing";
+import { cleanUpMongo, getCollection, getMongoModule } from "../test-utils/mongo";
 import { Collection, ObjectId } from "mongodb";
 import { RefreshTokenRepository } from "./refresh-token-repository";
 import { RefreshToken } from "./refresh-token";
 
 let repository: RefreshTokenRepository;
 let collection: Collection<any>;
-let connection: Connection;
+let moduleRef: TestingModule;
 
 beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
-        imports: [MONGO_MODULE],
-        providers: [RefreshTokenRepository]
-    }).compile();
+    moduleRef = await getMongoModule(RefreshToken, RefreshTokenRepository);
 
     repository = moduleRef.get(RefreshTokenRepository);
-    connection = moduleRef.get(Connection);
-    collection = getCollection("refresh-tokens", connection);
+    collection = getCollection("refresh-tokens", moduleRef);
     await collection.deleteMany({});
 });
 
 afterEach(async () => {
-    await cleanUpMongo(connection);
+    await cleanUpMongo(moduleRef);
 });
 
 test("save - persists token", async () => {
     const token = new RefreshToken();
-    token.id = new ObjectId().toHexString();
+    token._id = new ObjectId();
     token.userId = "the-user";
     token.tokenValue = "the-token";
     token.isRevoked = true;
@@ -38,10 +33,10 @@ test("save - persists token", async () => {
 
     const found = await collection.find({ _id: token._id }).toArray();
     expect(found.length).toBe(1);
-    expect(found[0]).toEqual(token);
+    expect(found[0]).toMatchObject(token);
 });
 
-test("findByTokenValue - returns undefined for no match", async () => {
+test("findByTokenValue - returns null for no match", async () => {
     const id = new ObjectId();
     await collection.insertOne({
         userId: "the-user",
@@ -54,7 +49,7 @@ test("findByTokenValue - returns undefined for no match", async () => {
     });
 
     const found = await repository.findByTokenValue("other token");
-    expect(found).toBeUndefined();
+    expect(found).toBeNull();
 });
 
 test("findByEmail - returns match", async () => {

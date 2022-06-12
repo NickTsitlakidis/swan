@@ -9,19 +9,28 @@ import { utilities } from "nest-winston";
 import { LoggerOptions } from "winston";
 import { VIEW_DOCUMENTS } from "./views/views.module";
 import { CommandsModule } from "./commands/commands.module";
-import { SECURITY_DOCUMENTS } from "./security/security.module";
 import { RestModule } from "./rest/rest.module";
-import { SUPPORT_DOCUMENTS } from "./support/support.module";
+import { MikroOrmModule, MikroOrmModuleOptions } from "@mikro-orm/nestjs";
 
 const typeOrmFactory = async (configService: ConfigService): Promise<TypeOrmModuleOptions> => {
     return {
         logging: ["log", "info", "query", "error"],
         type: "mongodb",
         url: configService.get<string>("MONGO_URI"),
-        entities: union(INFRASTRUCTURE_DOCUMENTS, VIEW_DOCUMENTS, SECURITY_DOCUMENTS, SUPPORT_DOCUMENTS),
+        entities: union(INFRASTRUCTURE_DOCUMENTS, VIEW_DOCUMENTS),
         useUnifiedTopology: true
     };
 };
+
+const mikroOrmFactory = async (configService: ConfigService): Promise<MikroOrmModuleOptions> => {
+    return {
+        autoLoadEntities: true,
+        type: 'mongo',
+        forceUndefined: true,
+        validateRequired: false,
+        clientUrl: configService.get<string>("MONGO_SAFE_URI"),
+    }
+}
 
 const winstonFactory = async (configService: ConfigService): Promise<LoggerOptions> => {
     return {
@@ -46,6 +55,11 @@ const winstonFactory = async (configService: ConfigService): Promise<LoggerOptio
             imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: typeOrmFactory
+        }),
+        MikroOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: mikroOrmFactory
         }),
         InfrastructureModule,
         CommandsModule,

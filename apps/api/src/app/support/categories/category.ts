@@ -1,11 +1,12 @@
-import { Column, Entity } from "typeorm";
-import { MongoDocument } from "../../infrastructure/mongo-document";
+import { Entity, Property } from "@mikro-orm/core";
+import { MikroDocument } from "../../infrastructure/mikro-document";
 
-@Entity("categories")
-export class Category extends MongoDocument {
-    @Column()
+@Entity({collection:"categories"})
+export class Category extends MikroDocument {
+
+    @Property()
     name: string;
 
-    @Column()
+    @Property()
     imageUrl: string;
 }

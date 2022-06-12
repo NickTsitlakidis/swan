@@ -1,11 +1,11 @@
-import { MongoDocument } from "../../infrastructure/mongo-document";
-import { Column, Entity } from "typeorm";
+import { Entity, Property } from "@mikro-orm/core";
+import { MikroDocument } from "../../infrastructure/mikro-document";
 
-@Entity("wallets")
-export class Wallet extends MongoDocument {
-    @Column()
+@Entity({collection:"wallets"})
+export class Wallet extends MikroDocument {
+    @Property()
     name: string;
 
-    @Column()
+    @Property()
     supportsSignatureAuthentication: boolean;
 }

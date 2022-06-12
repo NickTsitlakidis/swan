@@ -4,40 +4,44 @@ import { Connection } from "typeorm";
 import { Collection, MongoClient } from "mongodb";
 import { INFRASTRUCTURE_DOCUMENTS } from "../infrastructure/infrastructure.module";
 import { VIEW_DOCUMENTS } from "../views/views.module";
-import { SECURITY_DOCUMENTS } from "../security/security.module";
-import { SUPPORT_DOCUMENTS } from "../support/support.module";
+import { MikroOrmModule } from "@mikro-orm/nestjs";
+import { EntityManager } from "@mikro-orm/mongodb";
+import { Test, TestingModule } from "@nestjs/testing";
+import { MikroORM } from "@mikro-orm/core";
 
 export const MONGO_MODULE = TypeOrmModule.forRoot({
-    entities: union(INFRASTRUCTURE_DOCUMENTS, SECURITY_DOCUMENTS, VIEW_DOCUMENTS, SUPPORT_DOCUMENTS),
+    entities: union(INFRASTRUCTURE_DOCUMENTS, VIEW_DOCUMENTS),
     type: "mongodb",
     url: process.env.MONGO_URL,
     synchronize: true,
     useUnifiedTopology: true
 });
 
-export function getCollection(collectionName: string, typeOrmConnection: Connection): Collection<any> {
-    const client: MongoClient = (typeOrmConnection.driver as any).queryRunner.databaseConnection;
+export async function getMongoModule(entityClass, entityRepository): Promise<TestingModule> {
+    return Test.createTestingModule({
+        imports: [MikroOrmModule.forRoot({
+            type: "mongo",
+            validateRequired: false,
+            forceUndefined: true,
+            autoLoadEntities: true,
+            tsNode: true,
+            debug: true,
+            allowGlobalContext: true,
+            clientUrl: process.env.MONGO_URL
+        }), MikroOrmModule.forFeature([entityClass]) ],
+        providers: [entityRepository]
+    }).compile();
+}
+
+export function getCollection(collectionName: string, ormObject: Connection | TestingModule): Collection<any> {
+    if (ormObject instanceof TestingModule) {
+        return ormObject.get(EntityManager).getCollection(collectionName) as any;
+    }
+
+    const client: MongoClient = (ormObject.driver as any).queryRunner.databaseConnection;
     return client.db().collection(collectionName);
 }
 
-export function cleanUpMongo(typeOrmConnection: Connection, purge = false): Promise<void> {
-    if (!typeOrmConnection.isConnected) {
-        return;
-    }
-    const client: MongoClient = (typeOrmConnection.driver as any).queryRunner.databaseConnection;
-
-    if (purge) {
-        return client
-            .db()
-            .collections()
-            .then((existingCollections) => {
-                const deletePromises = existingCollections.map((col) => col.deleteMany({}));
-                return Promise.all(deletePromises);
-            })
-            .then(() => {
-                return typeOrmConnection.close();
-            });
-    } else {
-        return typeOrmConnection.close();
-    }
+export function cleanUpMongo(connectionOrModule: Connection | TestingModule): Promise<void> {
+    return connectionOrModule instanceof TestingModule ? connectionOrModule.get(MikroORM).close(true) : connectionOrModule.close();
 }
