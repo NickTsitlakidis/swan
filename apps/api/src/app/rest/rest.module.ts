@@ -8,10 +8,12 @@ import { SecurityModule } from "../security/security.module";
 import { SupportController } from "./support-controller";
 import { QueriesModule } from "../queries/queries.module";
 import { CollectionController } from "./collection-controller";
+import { NftController } from "./nft-controller";
+import { ConfigModule } from "@nestjs/config";
 
 @Module({
-    controllers: [ClientController, UserController, SupportController, CollectionController],
-    imports: [CqrsModule, ViewsModule, InfrastructureModule, SecurityModule, QueriesModule],
+    controllers: [ClientController, UserController, SupportController, CollectionController, NftController],
+    imports: [CqrsModule, ViewsModule, InfrastructureModule, SecurityModule, QueriesModule, ConfigModule],
     providers: []
 })
 export class RestModule {}
