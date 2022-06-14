@@ -2,7 +2,6 @@ import { union } from "lodash";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Connection } from "typeorm";
 import { Collection, MongoClient } from "mongodb";
-import { INFRASTRUCTURE_DOCUMENTS } from "../infrastructure/infrastructure.module";
 import { VIEW_DOCUMENTS } from "../views/views.module";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { EntityManager } from "@mikro-orm/mongodb";
@@ -10,7 +9,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { MikroORM } from "@mikro-orm/core";
 
 export const MONGO_MODULE = TypeOrmModule.forRoot({
-    entities: union(INFRASTRUCTURE_DOCUMENTS, VIEW_DOCUMENTS),
+    entities: union(VIEW_DOCUMENTS),
     type: "mongodb",
     url: process.env.MONGO_URL,
     synchronize: true,

@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { INFRASTRUCTURE_DOCUMENTS, InfrastructureModule } from "./infrastructure/infrastructure.module";
+import { InfrastructureModule } from "./infrastructure/infrastructure.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { union } from "lodash";
@@ -17,7 +17,7 @@ const typeOrmFactory = async (configService: ConfigService): Promise<TypeOrmModu
         logging: ["log", "info", "query", "error"],
         type: "mongodb",
         url: configService.get<string>("MONGO_URI"),
-        entities: union(INFRASTRUCTURE_DOCUMENTS, VIEW_DOCUMENTS),
+        entities: union(VIEW_DOCUMENTS),
         useUnifiedTopology: true
     };
 };

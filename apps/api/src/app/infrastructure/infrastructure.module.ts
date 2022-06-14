@@ -1,17 +1,13 @@
-import { SourcedEvent } from "./sourced-event";
-import { Aggregate } from "./aggregate";
 import { CqrsModule } from "@nestjs/cqrs";
 import { ExplorerService } from "@nestjs/cqrs/dist/services/explorer.service";
 import { IdGenerator } from "./id-generator";
 import { QueueEventBus } from "./queue-event-bus";
 import { Module, OnApplicationBootstrap } from "@nestjs/common";
 import { EventStore } from "./event-store";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const INFRASTRUCTURE_DOCUMENTS: Array<any> = [SourcedEvent, Aggregate];
+import { ConfigModule } from "@nestjs/config";
 
 @Module({
-    imports: [CqrsModule],
+    imports: [CqrsModule, ConfigModule],
     providers: [EventStore, IdGenerator, QueueEventBus, ExplorerService],
     exports: [EventStore, IdGenerator, QueueEventBus]
 })
