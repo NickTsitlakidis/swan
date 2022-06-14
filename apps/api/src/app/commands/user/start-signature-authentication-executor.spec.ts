@@ -1,5 +1,4 @@
 import { IdGenerator } from "../../infrastructure/id-generator";
-import { Test } from "@nestjs/testing";
 import { SignatureAuthenticationRepository } from "../../security/signature-authentication-repository";
 import { ConfigService } from "@nestjs/config";
 import { StartSignatureAuthenticationExecutor } from "./start-signature-authentication-executor";
@@ -10,7 +9,6 @@ import { WalletRepository } from "../../support/blockchains/wallet-repository";
 import { BlockchainWalletRepository } from "../../support/blockchains/blockchain-wallet-repository";
 import { Wallet } from "../../support/blockchains/wallet";
 import { BlockchainWallet } from "../../support/blockchains/blockchain-wallet";
-import { createMock } from "@golevelup/ts-jest";
 import { getUnitTestingModule } from "../../test-utils/test-modules";
 
 let idGeneratorMock: IdGenerator;
@@ -87,7 +85,7 @@ test("execute - builds and saves authentication after deleting previous", async 
     const configSpy = jest.spyOn(configServiceMock, "get").mockReturnValue("message intro");
     const idSpy = jest.spyOn(idGeneratorMock, "generateUUID").mockReturnValue("the-id");
     const saveSpy = jest.spyOn(authenticationRepoMock, "save").mockImplementation((value) => Promise.resolve(value));
-    const deleteSpy = jest.spyOn(authenticationRepoMock, "deleteByAddressAndChain").mockResolvedValue({ result: {} });
+    const deleteSpy = jest.spyOn(authenticationRepoMock, "deleteByAddressAndChain").mockResolvedValue(1);
 
     const nonce = await executor.execute(command);
     expect(nonce.nonce).toBe("message intro the-id");
@@ -103,9 +101,10 @@ test("execute - builds and saves authentication after deleting previous", async 
     expectedAuthentication.message = "message intro the-id";
     expectedAuthentication.blockchainId = "b-id";
     expectedAuthentication.userId = "the-user";
+    delete expectedAuthentication.createdAt;
 
     expect(saveSpy).toHaveBeenCalledTimes(1);
-    expect(saveSpy).toHaveBeenCalledWith(expectedAuthentication);
+    expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining(expectedAuthentication));
 
     expect(deleteSpy).toHaveBeenCalledTimes(1);
     expect(deleteSpy).toHaveBeenCalledWith("the-address", "b-id");
