@@ -1,9 +1,8 @@
 import { Entity, Property } from "@mikro-orm/core";
-import { MikroDocument } from "../../infrastructure/mikro-document";
+import { MongoDocument } from "../../infrastructure/mongo-document";
 
-@Entity({collection:"categories"})
-export class Category extends MikroDocument {
-
+@Entity({ collection: "categories" })
+export class Category extends MongoDocument {
     @Property()
     name: string;
 

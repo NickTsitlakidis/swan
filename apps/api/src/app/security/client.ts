@@ -1,8 +1,8 @@
 import { Entity, Property } from "@mikro-orm/core";
-import { MikroDocument } from "../infrastructure/mikro-document";
+import { MongoDocument } from "../infrastructure/mongo-document";
 
-@Entity({collection: "clients"})
-export class Client extends MikroDocument {
+@Entity({ collection: "clients" })
+export class Client extends MongoDocument {
     @Property()
     applicationId: string;
 

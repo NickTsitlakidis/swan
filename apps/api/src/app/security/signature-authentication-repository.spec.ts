@@ -1,6 +1,6 @@
 import { Collection, ObjectId } from "mongodb";
 import { TestingModule } from "@nestjs/testing";
-import { cleanUpMongo, getCollection, getMongoModule } from "../test-utils/mongo";
+import { cleanUpMongo, getCollection, getMongoTestingModule } from "../test-utils/test-modules";
 import { SignatureAuthenticationRepository } from "./signature-authentication-repository";
 import { SignatureAuthentication } from "./signature-authentication";
 import { instanceToPlain } from "class-transformer";
@@ -10,7 +10,7 @@ let collection: Collection<any>;
 let moduleRef: TestingModule;
 
 beforeEach(async () => {
-    moduleRef = await getMongoModule(SignatureAuthentication, SignatureAuthenticationRepository);
+    moduleRef = await getMongoTestingModule(SignatureAuthentication, SignatureAuthenticationRepository);
 
     repository = moduleRef.get(SignatureAuthenticationRepository);
     collection = getCollection("signature-authentications", moduleRef);

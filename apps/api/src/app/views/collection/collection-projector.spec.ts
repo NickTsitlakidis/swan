@@ -62,7 +62,8 @@ test("handle CollectionCreatedEvent - saves new collection view", async () => {
     expectedSaved.name = event.name;
     expectedSaved.paymentToken = event.paymentToken;
     expectedSaved.salePercentage = event.salePercentage;
+    delete expectedSaved.createdAt;
 
     expect(saveSpy).toHaveBeenCalledTimes(1);
-    expect(saveSpy).toHaveBeenCalledWith(expectedSaved);
+    expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining(expectedSaved));
 });

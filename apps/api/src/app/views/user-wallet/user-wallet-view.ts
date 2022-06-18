@@ -1,20 +1,20 @@
-import { Column, CreateDateColumn, Entity } from "typeorm";
 import { MongoDocument } from "../../infrastructure/mongo-document";
+import { Entity, Property } from "@mikro-orm/core";
 
-@Entity("user-wallet-views")
+@Entity({ collection: "user-wallet-views" })
 export class UserWalletView extends MongoDocument {
-    @Column()
+    @Property()
     address: string;
 
-    @Column()
+    @Property()
     blockchainId: string;
 
-    @Column()
+    @Property()
     walletId: string;
 
-    @Column()
+    @Property()
     userId: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
+    @Property({ onCreate: () => new Date() })
+    createdAt: Date = new Date();
 }

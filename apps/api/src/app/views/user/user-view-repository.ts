@@ -1,21 +1,16 @@
 import { Injectable } from "@nestjs/common";
-import { Connection, MongoRepository } from "typeorm";
 import { UserView } from "./user-view";
-import { ObjectID } from "mongodb";
+import { EntityManager } from "@mikro-orm/mongodb";
 
 @Injectable()
 export class UserViewRepository {
-    private _mongoRepo: MongoRepository<UserView>;
+    constructor(private _entityManager: EntityManager) {}
 
-    constructor(connection: Connection) {
-        this._mongoRepo = connection.getMongoRepository(UserView);
-    }
-
-    findById(id: string): Promise<UserView | undefined> {
-        return this._mongoRepo.findOne({ _id: new ObjectID(id) });
+    findById(id: string): Promise<UserView | null> {
+        return this._entityManager.fork().findOne(UserView, { id: id });
     }
 
     save(view: UserView): Promise<UserView> {
-        return this._mongoRepo.save(view);
+        return this._entityManager.persistAndFlush(view).then(() => view);
     }
 }

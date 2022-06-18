@@ -1,9 +1,8 @@
 import { Entity, Property } from "@mikro-orm/core";
-import { MikroDocument } from "../../infrastructure/mikro-document";
+import { MongoDocument } from "../../infrastructure/mongo-document";
 
-@Entity({collection: "blockchain-wallets"})
-export class BlockchainWallet extends MikroDocument {
-
+@Entity({ collection: "blockchain-wallets" })
+export class BlockchainWallet extends MongoDocument {
     @Property()
     blockchainId: string;
 

@@ -3,7 +3,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { EventStore } from "./event-store";
 import { Aggregate } from "./aggregate";
 import { InternalServerErrorException } from "@nestjs/common";
-import { cleanUpMongo, getCollection } from "../test-utils/mongo";
+import { cleanUpMongo, getCollection } from "../test-utils/test-modules";
 import { SourcedEvent } from "./sourced-event";
 import { EventPayload, SerializedEvent } from "./serialized-event";
 import { EventSourcedEntity } from "./event-sourced-entity";
@@ -37,17 +37,20 @@ const eventBusMock: Partial<QueueEventBus> = {
 beforeEach(async () => {
     process.env.MONGO_URI = process.env.MONGO_URL;
     testingModule = await Test.createTestingModule({
-        imports: [MikroOrmModule.forRoot({
-            type: "mongo",
-            validateRequired: false,
-            forceUndefined: true,
-            autoLoadEntities: true,
-            tsNode: true,
-            debug: true,
-            allowGlobalContext: true,
-            clientUrl: process.env.MONGO_URL
-        }), MikroOrmModule.forFeature([Aggregate, SourcedEvent]),
-        ConfigModule],
+        imports: [
+            MikroOrmModule.forRoot({
+                type: "mongo",
+                validateRequired: false,
+                forceUndefined: true,
+                autoLoadEntities: true,
+                tsNode: true,
+                debug: true,
+                allowGlobalContext: true,
+                clientUrl: process.env.MONGO_URL
+            }),
+            MikroOrmModule.forFeature([Aggregate, SourcedEvent]),
+            ConfigModule
+        ],
         providers: [
             EventStore,
             {

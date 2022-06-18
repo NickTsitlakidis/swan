@@ -1,7 +1,7 @@
 import { ClassConstructor, instanceToPlain, plainToClass } from "class-transformer";
 import * as moment from "moment";
 import { EventPayload, getEventNameForObject, hasEventName } from "./serialized-event";
-import { MikroDocument } from "./mikro-document";
+import { MongoDocument } from "./mongo-document";
 import { Entity, Property } from "@mikro-orm/core";
 import { ObjectId } from "mongodb";
 
@@ -16,8 +16,8 @@ import { ObjectId } from "mongodb";
  * New fields in this class need to be reflected in event store transaction mappings.
  */
 @Entity({ collection: "events" })
-export class SourcedEvent extends MikroDocument {
-    @Property({onCreate: () => new Date()})
+export class SourcedEvent extends MongoDocument {
+    @Property({ onCreate: () => new Date() })
     public createdAt: Date = new Date();
 
     @Property()

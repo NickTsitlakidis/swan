@@ -1,8 +1,8 @@
-import { MikroDocument } from "../infrastructure/mikro-document";
+import { MongoDocument } from "../infrastructure/mongo-document";
 import { Entity, Property } from "@mikro-orm/core";
 
-@Entity({collection: "refresh-tokens"})
-export class RefreshToken extends MikroDocument {
+@Entity({ collection: "refresh-tokens" })
+export class RefreshToken extends MongoDocument {
     @Property()
     userId: string;
 
@@ -12,6 +12,6 @@ export class RefreshToken extends MikroDocument {
     @Property()
     isRevoked: boolean;
 
-    @Property({onCreate: () => new Date()})
+    @Property({ onCreate: () => new Date() })
     issuedAt: Date = new Date();
 }

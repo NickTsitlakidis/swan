@@ -1,6 +1,6 @@
 import { ClientRepository } from "./client-repository";
 import { Collection } from "mongodb";
-import { cleanUpMongo, getCollection, getMongoModule } from "../test-utils/mongo";
+import { cleanUpMongo, getCollection, getMongoTestingModule } from "../test-utils/test-modules";
 import { TestingModule } from "@nestjs/testing";
 import { Client } from "./client";
 
@@ -9,7 +9,7 @@ let collection: Collection<any>;
 let moduleRef: TestingModule;
 
 beforeEach(async () => {
-    moduleRef = await getMongoModule(Client, ClientRepository);
+    moduleRef = await getMongoTestingModule(Client, ClientRepository);
 
     repository = moduleRef.get(ClientRepository);
     collection = getCollection("clients", moduleRef);

@@ -1,9 +1,9 @@
 import { SignatureTypes } from "./signature-types";
-import { MikroDocument } from "../../infrastructure/mikro-document";
+import { MongoDocument } from "../../infrastructure/mongo-document";
 import { Entity, Property } from "@mikro-orm/core";
 
-@Entity({collection: "blockchains"})
-export class Blockchain extends MikroDocument {
+@Entity({ collection: "blockchains" })
+export class Blockchain extends MongoDocument {
     @Property()
     name: string;
 

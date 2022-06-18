@@ -1,6 +1,6 @@
 import { Collection, ObjectId } from "mongodb";
 import { instanceToPlain } from "class-transformer";
-import { cleanUpMongo, getCollection, getMongoModule } from "../../test-utils/mongo";
+import { cleanUpMongo, getCollection, getMongoTestingModule } from "../../test-utils/test-modules";
 import { CategoryRepository } from "./category-repository";
 import { Category } from "./category";
 import { TestingModule } from "@nestjs/testing";
@@ -10,12 +10,11 @@ let collection: Collection<any>;
 let testingModule: TestingModule;
 
 beforeEach(async () => {
-    testingModule = await getMongoModule(Category, CategoryRepository);
+    testingModule = await getMongoTestingModule(Category, CategoryRepository);
 
     repository = testingModule.get(CategoryRepository);
     collection = getCollection("categories", testingModule);
     await collection.deleteMany({});
-
 });
 
 afterEach(async () => {

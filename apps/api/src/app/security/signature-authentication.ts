@@ -1,8 +1,8 @@
 import { Entity, Property } from "@mikro-orm/core";
-import { MikroDocument } from "../infrastructure/mikro-document";
+import { MongoDocument } from "../infrastructure/mongo-document";
 
-@Entity({collection: "signature-authentications"})
-export class SignatureAuthentication extends MikroDocument {
+@Entity({ collection: "signature-authentications" })
+export class SignatureAuthentication extends MongoDocument {
     @Property()
     address: string;
 
@@ -21,6 +21,6 @@ export class SignatureAuthentication extends MikroDocument {
     @Property()
     isEvm: boolean;
 
-    @Property({onCreate: () => new Date()})
+    @Property({ onCreate: () => new Date() })
     createdAt: Date = new Date();
 }

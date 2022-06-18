@@ -1,5 +1,5 @@
 import { TestingModule } from "@nestjs/testing";
-import { cleanUpMongo, getCollection, getMongoModule } from "../test-utils/mongo";
+import { cleanUpMongo, getCollection, getMongoTestingModule } from "../test-utils/test-modules";
 import { Collection, ObjectId } from "mongodb";
 import { RefreshTokenRepository } from "./refresh-token-repository";
 import { RefreshToken } from "./refresh-token";
@@ -9,7 +9,7 @@ let collection: Collection<any>;
 let moduleRef: TestingModule;
 
 beforeEach(async () => {
-    moduleRef = await getMongoModule(RefreshToken, RefreshTokenRepository);
+    moduleRef = await getMongoTestingModule(RefreshToken, RefreshTokenRepository);
 
     repository = moduleRef.get(RefreshTokenRepository);
     collection = getCollection("refresh-tokens", moduleRef);

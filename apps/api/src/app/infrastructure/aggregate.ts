@@ -1,4 +1,4 @@
-import { MikroDocument } from "./mikro-document";
+import { MongoDocument } from "./mongo-document";
 import { Entity, Property } from "@mikro-orm/core";
 
 /**
@@ -9,7 +9,7 @@ import { Entity, Property } from "@mikro-orm/core";
  * there (EventStore) too.
  */
 @Entity({ collection: "aggregates" })
-export class Aggregate extends MikroDocument {
+export class Aggregate extends MongoDocument {
     @Property()
     version: number;
 

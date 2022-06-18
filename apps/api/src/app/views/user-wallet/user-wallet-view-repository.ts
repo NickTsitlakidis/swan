@@ -1,20 +1,16 @@
 import { Injectable } from "@nestjs/common";
-import { Connection, MongoRepository } from "typeorm";
 import { UserWalletView } from "./user-wallet-view";
+import { EntityManager } from "@mikro-orm/mongodb";
 
 @Injectable()
 export class UserWalletViewRepository {
-    private _mongoRepo: MongoRepository<UserWalletView>;
+    constructor(private _entityManager: EntityManager) {}
 
-    constructor(connection: Connection) {
-        this._mongoRepo = connection.getMongoRepository(UserWalletView);
-    }
-
-    findByAddressAndBlockchain(address: string, blockchainId: string): Promise<UserWalletView | undefined> {
-        return this._mongoRepo.findOne({ address: address, blockchainId: blockchainId });
+    findByAddressAndBlockchain(address: string, blockchainId: string): Promise<UserWalletView | null> {
+        return this._entityManager.fork().findOne(UserWalletView, { address: address, blockchainId: blockchainId });
     }
 
     save(view: UserWalletView): Promise<UserWalletView> {
-        return this._mongoRepo.save(view);
+        return this._entityManager.persistAndFlush(view).then(() => view);
     }
 }

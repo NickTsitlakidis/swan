@@ -9,6 +9,7 @@ import { QueueEventBus } from "./queue-event-bus";
 import { EventPayload } from "./serialized-event";
 import { EntityManager } from "@mikro-orm/mongodb";
 import { ConfigService } from "@nestjs/config";
+import * as moment from "moment";
 
 /**
  * The event store is the main way of saving and reading sourced events. It uses a mongo transaction
@@ -57,7 +58,9 @@ export class EventStore {
      */
     @LogAsyncMethod
     findEventByAggregateId(id: string): Promise<Array<SourcedEvent>> {
-        return this._entityManager.fork().find(SourcedEvent,{aggregateId: id}, {orderBy: { aggregateVersion: "ASC" }});
+        return this._entityManager
+            .fork()
+            .find(SourcedEvent, { aggregateId: id }, { orderBy: { aggregateVersion: "ASC" } });
     }
 
     /**
@@ -79,9 +82,12 @@ export class EventStore {
             id: aggregate.id
         });
 
-        if(!this._mongoClient.isConnected()) {
-            this._logger.debug("Event store Mongo client is not connected. Will connect.")
+        const beforeConnect = moment.utc();
+        if (!this._mongoClient.isConnected()) {
             await this._mongoClient.connect();
+            this._logger.debug(
+                `EventStore Mongo client connected. Duration : ${moment.utc().diff(beforeConnect, "milliseconds")} ms`
+            );
         }
 
         const session = this._mongoClient.startSession();
