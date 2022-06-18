@@ -27,7 +27,7 @@ export class SupportController {
         isArray: true
     })
     @Get("blockchain-wallets")
-    //@UseGuards(ClientGuard)
+    @UseGuards(ClientGuard)
     getBlockchainWallets(): Promise<Array<BlockchainWalletDto>> {
         return this._queryHandler.getBlockchainWallets();
     }
