@@ -33,7 +33,8 @@ test("handle UserCreatedEvent - saves new wallet view", async () => {
     expectedSaved.userId = id;
     expectedSaved.walletId = "wallet";
     expectedSaved.blockchainId = "chain";
+    delete expectedSaved.createdAt;
 
     expect(saveSpy).toHaveBeenCalledTimes(1);
-    expect(saveSpy).toHaveBeenCalledWith(expectedSaved);
+    expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining(expectedSaved));
 });

@@ -1,9 +1,9 @@
-import { Column, Entity } from "typeorm";
 import { ClassConstructor, instanceToPlain, plainToClass } from "class-transformer";
-import { ObjectID as MongoObjectId } from "mongodb";
 import * as moment from "moment";
 import { EventPayload, getEventNameForObject, hasEventName } from "./serialized-event";
 import { MongoDocument } from "./mongo-document";
+import { Entity, Property } from "@mikro-orm/core";
+import { ObjectId } from "mongodb";
 
 /**
  * The main document that's saved as a sourced event in Mongo. It includes basic metadata like creation date, version
@@ -15,21 +15,21 @@ import { MongoDocument } from "./mongo-document";
  *
  * New fields in this class need to be reflected in event store transaction mappings.
  */
-@Entity({ name: "events" })
+@Entity({ collection: "events" })
 export class SourcedEvent extends MongoDocument {
-    @Column()
-    public createdAt: Date;
+    @Property({ onCreate: () => new Date() })
+    public createdAt: Date = new Date();
 
-    @Column()
+    @Property()
     public payload: unknown;
 
-    @Column()
+    @Property()
     public aggregateId: string;
 
-    @Column()
+    @Property()
     public aggregateVersion: number;
 
-    @Column()
+    @Property()
     public eventName: string;
 
     constructor(aggregateId: string, serializable?: EventPayload) {
@@ -39,7 +39,7 @@ export class SourcedEvent extends MongoDocument {
             this.payload = instanceToPlain(serializable, { exposeUnsetFields: false });
             this.eventName = getEventNameForObject(serializable);
         }
-        this._id = new MongoObjectId();
+        this._id = new ObjectId();
         this.createdAt = moment.utc().toDate();
     }
 

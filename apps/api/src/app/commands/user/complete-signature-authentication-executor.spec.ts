@@ -70,7 +70,7 @@ test("execute - throws if solana signature is invalid", async () => {
     authentication.blockchainId = "block";
     authentication._id = new ObjectId();
 
-    const deleteAuthSpy = jest.spyOn(authenticationRepoMock, "deleteById").mockResolvedValue({ result: {} });
+    const deleteAuthSpy = jest.spyOn(authenticationRepoMock, "deleteById").mockResolvedValue(1 );
 
     const findAuthenticationSpy = jest
         .spyOn(authenticationRepoMock, "findByAddressAndChain")
@@ -110,7 +110,7 @@ test("execute - throws if ethereum signature is invalid", async () => {
     authentication.blockchainId = "block";
     authentication._id = new ObjectId();
 
-    const deleteAuthSpy = jest.spyOn(authenticationRepoMock, "deleteById").mockResolvedValue({ result: {} });
+    const deleteAuthSpy = jest.spyOn(authenticationRepoMock, "deleteById").mockResolvedValue(1);
 
     const findAuthenticationSpy = jest
         .spyOn(authenticationRepoMock, "findByAddressAndChain")
@@ -159,7 +159,7 @@ test("execute - returns token of existing user", async () => {
         .spyOn(authenticationRepoMock, "findByAddressAndChain")
         .mockResolvedValue(authentication);
     const validatorSpy = jest.spyOn(validatorMock, "validateSolanaSignature").mockReturnValue(true);
-    const deleteAuthSpy = jest.spyOn(authenticationRepoMock, "deleteById").mockResolvedValue({ result: {} });
+    const deleteAuthSpy = jest.spyOn(authenticationRepoMock, "deleteById").mockResolvedValue(1);
 
     const wallet = new UserWalletView();
     wallet.userId = "user1";
@@ -212,7 +212,7 @@ test("execute - returns token of new user", async () => {
         .spyOn(authenticationRepoMock, "findByAddressAndChain")
         .mockResolvedValue(authentication);
     const validatorSpy = jest.spyOn(validatorMock, "validateSolanaSignature").mockReturnValue(true);
-    const deleteAuthSpy = jest.spyOn(authenticationRepoMock, "deleteById").mockResolvedValue({ result: {} });
+    const deleteAuthSpy = jest.spyOn(authenticationRepoMock, "deleteById").mockResolvedValue(1);
 
     const findWalletSpy = jest.spyOn(walletViewRepoMock, "findByAddressAndBlockchain").mockResolvedValue(undefined);
 

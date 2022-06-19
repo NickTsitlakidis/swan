@@ -1,29 +1,24 @@
 import { Collection, ObjectId } from "mongodb";
-import { Connection } from "typeorm";
-import { Test } from "@nestjs/testing";
 import { instanceToPlain } from "class-transformer";
-import { cleanUpMongo, getCollection, MONGO_MODULE } from "../../test-utils/mongo";
+import { cleanUpMongo, getCollection, getMongoTestingModule } from "../../test-utils/test-modules";
 import { UserWalletViewRepository } from "./user-wallet-view-repository";
 import { UserWalletView } from "./user-wallet-view";
+import { TestingModule } from "@nestjs/testing";
 
 let repository: UserWalletViewRepository;
 let collection: Collection<any>;
-let connection: Connection;
+let moduleRef: TestingModule;
 
 beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
-        imports: [MONGO_MODULE],
-        providers: [UserWalletViewRepository]
-    }).compile();
+    moduleRef = await getMongoTestingModule(UserWalletView, UserWalletViewRepository);
 
     repository = moduleRef.get(UserWalletViewRepository);
-    connection = moduleRef.get(Connection);
-    collection = getCollection("user-wallet-views", connection);
+    collection = getCollection("user-wallet-views", moduleRef);
     await collection.deleteMany({});
 });
 
 afterEach(async () => {
-    await cleanUpMongo(connection);
+    await cleanUpMongo(moduleRef);
 });
 
 test("findByAddressAndBlockchain - returns undefined for no address match", async () => {
@@ -37,7 +32,7 @@ test("findByAddressAndBlockchain - returns undefined for no address match", asyn
     await collection.insertOne(instanceToPlain(view));
 
     const found = await repository.findByAddressAndBlockchain("ad2", "b1");
-    expect(found).toBeUndefined();
+    expect(found).toBeNull();
 });
 
 test("findByAddressAndBlockchain - returns undefined for no blockchain match", async () => {
@@ -51,7 +46,7 @@ test("findByAddressAndBlockchain - returns undefined for no blockchain match", a
     await collection.insertOne(instanceToPlain(view));
 
     const found = await repository.findByAddressAndBlockchain("ad1", "b2");
-    expect(found).toBeUndefined();
+    expect(found).toBeNull();
 });
 
 test("findByAddressAndBlockchain - returns matched wallet", async () => {
@@ -65,7 +60,7 @@ test("findByAddressAndBlockchain - returns matched wallet", async () => {
     await collection.insertOne(instanceToPlain(view));
 
     const found = await repository.findByAddressAndBlockchain("ad1", "b1");
-    expect(found).toEqual(view);
+    expect(found).toMatchObject(view);
 });
 
 test("save - persists wallet view", async () => {
@@ -81,5 +76,5 @@ test("save - persists wallet view", async () => {
 
     const found = await collection.find({ _id: view._id }).toArray();
     expect(found.length).toBe(1);
-    expect(found[0]).toEqual(view);
+    expect(found[0]).toMatchObject(view);
 });

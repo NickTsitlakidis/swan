@@ -1,27 +1,23 @@
 import { ClientRepository } from "./client-repository";
-import { Connection } from "typeorm";
 import { Collection } from "mongodb";
-import { cleanUpMongo, getCollection, MONGO_MODULE } from "../test-utils/mongo";
-import { Test } from "@nestjs/testing";
+import { cleanUpMongo, getCollection, getMongoTestingModule } from "../test-utils/test-modules";
+import { TestingModule } from "@nestjs/testing";
+import { Client } from "./client";
 
 let repository: ClientRepository;
 let collection: Collection<any>;
-let connection: Connection;
+let moduleRef: TestingModule;
 
 beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
-        imports: [MONGO_MODULE],
-        providers: [ClientRepository]
-    }).compile();
+    moduleRef = await getMongoTestingModule(Client, ClientRepository);
 
     repository = moduleRef.get(ClientRepository);
-    connection = moduleRef.get(Connection);
-    collection = getCollection("clients", connection);
+    collection = getCollection("clients", moduleRef);
     await collection.deleteMany({});
 });
 
 afterEach(async () => {
-    await cleanUpMongo(connection);
+    await cleanUpMongo(moduleRef);
 });
 
 test("findByApplicationId - returns undefined for no match", async () => {
@@ -32,7 +28,7 @@ test("findByApplicationId - returns undefined for no match", async () => {
     });
 
     const found = await repository.findByApplicationId("other-id");
-    expect(found).toBeUndefined();
+    expect(found).toBeNull();
 });
 
 test("findByApplicationId - returns client for match", async () => {

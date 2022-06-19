@@ -1,21 +1,22 @@
 import { Collection, ObjectId } from "mongodb";
-import { Connection } from "typeorm";
-import { Test } from "@nestjs/testing";
+import { Test, TestingModule } from "@nestjs/testing";
 import { EventStore } from "./event-store";
 import { Aggregate } from "./aggregate";
 import { InternalServerErrorException } from "@nestjs/common";
-import { cleanUpMongo, getCollection, MONGO_MODULE } from "../test-utils/mongo";
+import { cleanUpMongo, getCollection } from "../test-utils/test-modules";
 import { SourcedEvent } from "./sourced-event";
 import { EventPayload, SerializedEvent } from "./serialized-event";
 import { EventSourcedEntity } from "./event-sourced-entity";
 import { getLogger } from "./logging";
 import { QueueEventBus } from "./queue-event-bus";
 import { instanceToPlain } from "class-transformer";
+import { MikroOrmModule } from "@mikro-orm/nestjs";
+import { ConfigModule } from "@nestjs/config";
 
 let eventStore: EventStore;
 let eventsCollection: Collection<any>;
 let aggregatesCollection: Collection<any>;
-let connection: Connection;
+let testingModule: TestingModule;
 
 @SerializedEvent("test-event-1")
 class TestEvent1 extends EventPayload {}
@@ -34,8 +35,22 @@ const eventBusMock: Partial<QueueEventBus> = {
 };
 
 beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
-        imports: [MONGO_MODULE],
+    process.env.MONGO_URI = process.env.MONGO_URL;
+    testingModule = await Test.createTestingModule({
+        imports: [
+            MikroOrmModule.forRoot({
+                type: "mongo",
+                validateRequired: false,
+                forceUndefined: true,
+                autoLoadEntities: true,
+                tsNode: true,
+                debug: true,
+                allowGlobalContext: true,
+                clientUrl: process.env.MONGO_URL
+            }),
+            MikroOrmModule.forFeature([Aggregate, SourcedEvent]),
+            ConfigModule
+        ],
         providers: [
             EventStore,
             {
@@ -45,16 +60,15 @@ beforeEach(async () => {
         ]
     }).compile();
 
-    eventStore = moduleRef.get(EventStore);
-    connection = moduleRef.get(Connection);
-    eventsCollection = getCollection("events", connection);
-    aggregatesCollection = getCollection("aggregates", connection);
+    eventStore = testingModule.get(EventStore);
+    eventsCollection = getCollection("events", testingModule);
+    aggregatesCollection = getCollection("aggregates", testingModule);
     await eventsCollection.deleteMany({});
     await aggregatesCollection.deleteMany({});
 });
 
 afterEach(async () => {
-    await cleanUpMongo(connection);
+    await cleanUpMongo(testingModule);
 });
 
 test("save - throws for concurrency issue", async () => {
@@ -117,13 +131,13 @@ test("save - increases version and stores events and aggregate", async () => {
     expect(storedEvents[0].aggregateVersion).toBe(6);
     expect(storedEvents[0].payload).toEqual(events[0].payload);
     expect(storedEvents[0].createdAt).toEqual(events[0].createdAt);
-    expect(storedEvents[0]._id.toHexString()).toBe(events[0].id);
+    expect(storedEvents[0]._id.toHexString()).toBe(events[0]._id.toHexString());
 
     expect(storedEvents[1].eventName).toBe("test-event-1");
     expect(storedEvents[1].aggregateVersion).toBe(7);
     expect(storedEvents[1].payload).toEqual(events[1].payload);
     expect(storedEvents[1].createdAt).toEqual(events[1].createdAt);
-    expect(storedEvents[1]._id.toHexString()).toBe(events[1].id);
+    expect(storedEvents[1]._id.toHexString()).toBe(events[1]._id.toHexString());
 
     expect(saved).toEqual(events);
     expect(saved[0].aggregateVersion).toBe(6);
@@ -197,12 +211,12 @@ test("connectEntity - sets a publish that returns for empty events", async () =>
 });
 
 test("connectEntity - sets a publish that stops when save throws", (endTest) => {
-    const publishAllSpy = jest.spyOn(eventBusMock, "publishAll").mockResolvedValue({});
+    const publishAllSpy = jest.spyOn(eventBusMock, "publishAll").mockResolvedValue([]);
     const u = eventStore.connectEntity(new TestEntity(new ObjectId().toHexString()));
 
     const event = new TestEvent1();
 
-    cleanUpMongo(connection).then(() => {
+    cleanUpMongo(testingModule).then(() => {
         u.publish([event]).catch(() => {
             expect(publishAllSpy).toHaveBeenCalledTimes(0);
             endTest();
@@ -211,7 +225,7 @@ test("connectEntity - sets a publish that stops when save throws", (endTest) => 
 });
 
 test("connectEntity - sets a publish that saves and publishes events", async () => {
-    const publishAllSpy = jest.spyOn(eventBusMock, "publishAll").mockResolvedValue({});
+    const publishAllSpy = jest.spyOn(eventBusMock, "publishAll").mockResolvedValue([]);
 
     const u = eventStore.connectEntity(new TestEntity(new ObjectId().toHexString()));
     const event = new TestEvent1();

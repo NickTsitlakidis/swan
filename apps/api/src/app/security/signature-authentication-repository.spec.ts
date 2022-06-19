@@ -1,29 +1,24 @@
 import { Collection, ObjectId } from "mongodb";
-import { Connection } from "typeorm";
-import { Test } from "@nestjs/testing";
-import { cleanUpMongo, getCollection, MONGO_MODULE } from "../test-utils/mongo";
+import { TestingModule } from "@nestjs/testing";
+import { cleanUpMongo, getCollection, getMongoTestingModule } from "../test-utils/test-modules";
 import { SignatureAuthenticationRepository } from "./signature-authentication-repository";
 import { SignatureAuthentication } from "./signature-authentication";
 import { instanceToPlain } from "class-transformer";
 
 let repository: SignatureAuthenticationRepository;
 let collection: Collection<any>;
-let connection: Connection;
+let moduleRef: TestingModule;
 
 beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
-        imports: [MONGO_MODULE],
-        providers: [SignatureAuthenticationRepository]
-    }).compile();
+    moduleRef = await getMongoTestingModule(SignatureAuthentication, SignatureAuthenticationRepository);
 
     repository = moduleRef.get(SignatureAuthenticationRepository);
-    connection = moduleRef.get(Connection);
-    collection = getCollection("signature-authentications", connection);
+    collection = getCollection("signature-authentications", moduleRef);
     await collection.deleteMany({});
 });
 
 afterEach(async () => {
-    await cleanUpMongo(connection);
+    await cleanUpMongo(moduleRef);
 });
 
 test("save - persists authentication", async () => {
@@ -39,7 +34,7 @@ test("save - persists authentication", async () => {
 
     const found = await collection.find({ _id: view._id }).toArray();
     expect(found.length).toBe(1);
-    expect(found[0]).toEqual(view);
+    expect(found[0]).toMatchObject(view);
 });
 
 test("findByAddressAndChain - returns authentication match", async () => {
@@ -53,10 +48,10 @@ test("findByAddressAndChain - returns authentication match", async () => {
     await collection.insertOne(instanceToPlain(view));
 
     const found = await repository.findByAddressAndChain(view.address, "b-id");
-    expect(found).toEqual(view);
+    expect(found).toMatchObject(view);
 });
 
-test("findByAddress - returns undefined for no address match", async () => {
+test("findByAddress - returns null for no address match", async () => {
     const view = new SignatureAuthentication();
     view._id = new ObjectId();
     view.message = "123";
@@ -67,10 +62,10 @@ test("findByAddress - returns undefined for no address match", async () => {
     await collection.insertOne(instanceToPlain(view));
 
     const found = await repository.findByAddressAndChain("nooooop", "b-id");
-    expect(found).toBeUndefined();
+    expect(found).toBeNull();
 });
 
-test("findByAddress - returns undefined for no chain match", async () => {
+test("findByAddress - returns null for no chain match", async () => {
     const view = new SignatureAuthentication();
     view._id = new ObjectId();
     view.message = "123";
@@ -81,7 +76,7 @@ test("findByAddress - returns undefined for no chain match", async () => {
     await collection.insertOne(instanceToPlain(view));
 
     const found = await repository.findByAddressAndChain("addr", "other");
-    expect(found).toBeUndefined();
+    expect(found).toBeNull();
 });
 
 test("deleteById - deletes authentication match", async () => {
@@ -114,8 +109,8 @@ test("deleteById - deletes authentication match", async () => {
 
     const inCollection = await collection.find().toArray();
     expect(inCollection.length).toBe(2);
-    expect(inCollection.find((v) => v._id.toHexString() === view1.id)).toBeDefined();
-    expect(inCollection.find((v) => v._id.toHexString() === view3.id)).toBeDefined();
+    expect(inCollection.find((v) => v._id.toHexString() === view1._id.toHexString())).toBeDefined();
+    expect(inCollection.find((v) => v._id.toHexString() === view3._id.toHexString())).toBeDefined();
 });
 
 test("deleteByAddressAndChain - deletes authentication match", async () => {
@@ -148,6 +143,6 @@ test("deleteByAddressAndChain - deletes authentication match", async () => {
 
     const inCollection = await collection.find().toArray();
     expect(inCollection.length).toBe(2);
-    expect(inCollection.find((v) => v._id.toHexString() === view1.id)).toBeDefined();
-    expect(inCollection.find((v) => v._id.toHexString() === view3.id)).toBeDefined();
+    expect(inCollection.find((v) => v._id.toHexString() === view1._id.toHexString())).toBeDefined();
+    expect(inCollection.find((v) => v._id.toHexString() === view3._id.toHexString())).toBeDefined();
 });

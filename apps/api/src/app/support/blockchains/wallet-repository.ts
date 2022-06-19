@@ -1,21 +1,18 @@
 import { Injectable } from "@nestjs/common";
 import { Wallet } from "./wallet";
-import { Connection, MongoRepository } from "typeorm";
-import { ObjectId } from "mongodb";
+import { EntityManager } from "@mikro-orm/mongodb";
 
 @Injectable()
 export class WalletRepository {
-    private _mongoRepo: MongoRepository<Wallet>;
 
-    constructor(connection: Connection) {
-        this._mongoRepo = connection.getMongoRepository(Wallet);
+    constructor(private entityManager: EntityManager) {
     }
 
     findAll(): Promise<Array<Wallet>> {
-        return this._mongoRepo.find({});
+        return this.entityManager.find(Wallet,{});
     }
 
     findById(id: string): Promise<Wallet | undefined> {
-        return this._mongoRepo.findOne({ _id: new ObjectId(id) });
+        return this.entityManager.findOne(Wallet,{ id: id});
     }
 }

@@ -1,29 +1,24 @@
 import { Collection, ObjectId } from "mongodb";
-import { Connection } from "typeorm";
-import { Test } from "@nestjs/testing";
 import { instanceToPlain } from "class-transformer";
-import { cleanUpMongo, getCollection, MONGO_MODULE } from "../../test-utils/mongo";
+import { cleanUpMongo, getCollection, getMongoTestingModule } from "../../test-utils/test-modules";
 import { CategoryRepository } from "./category-repository";
 import { Category } from "./category";
+import { TestingModule } from "@nestjs/testing";
 
 let repository: CategoryRepository;
 let collection: Collection<any>;
-let connection: Connection;
+let testingModule: TestingModule;
 
 beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
-        imports: [MONGO_MODULE],
-        providers: [CategoryRepository]
-    }).compile();
+    testingModule = await getMongoTestingModule(Category, CategoryRepository);
 
-    repository = moduleRef.get(CategoryRepository);
-    connection = moduleRef.get(Connection);
-    collection = getCollection("categories", connection);
+    repository = testingModule.get(CategoryRepository);
+    collection = getCollection("categories", testingModule);
     await collection.deleteMany({});
 });
 
 afterEach(async () => {
-    await cleanUpMongo(connection);
+    await cleanUpMongo(testingModule);
 });
 
 test("findAll - returns all when they exist", async () => {
@@ -41,7 +36,7 @@ test("findAll - returns all when they exist", async () => {
     await collection.insertOne(instanceToPlain(cat2));
 
     const found = await repository.findAll();
-    expect(found).toEqual([cat1, cat2]);
+    expect(found).toMatchObject([cat1, cat2]);
 });
 
 test("findAll - returns empty array for empty collection", async () => {

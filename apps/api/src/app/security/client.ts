@@ -1,14 +1,14 @@
+import { Entity, Property } from "@mikro-orm/core";
 import { MongoDocument } from "../infrastructure/mongo-document";
-import { Column, Entity } from "typeorm";
 
-@Entity("clients")
+@Entity({ collection: "clients" })
 export class Client extends MongoDocument {
-    @Column()
+    @Property()
     applicationId: string;
 
-    @Column()
+    @Property()
     applicationSecret: string;
 
-    @Column()
+    @Property()
     applicationName: string;
 }

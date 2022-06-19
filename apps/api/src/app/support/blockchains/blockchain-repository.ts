@@ -1,21 +1,18 @@
 import { Injectable } from "@nestjs/common";
 import { Blockchain } from "./blockchain";
-import { Connection, MongoRepository } from "typeorm";
-import { ObjectId } from "mongodb";
+import { EntityManager } from "@mikro-orm/mongodb";
 
 @Injectable()
 export class BlockchainRepository {
-    private _mongoRepo: MongoRepository<Blockchain>;
 
-    constructor(connection: Connection) {
-        this._mongoRepo = connection.getMongoRepository(Blockchain);
+    constructor(private _entityManager: EntityManager) {
     }
 
     findAll(): Promise<Array<Blockchain>> {
-        return this._mongoRepo.find({});
+        return this._entityManager.find(Blockchain, {});
     }
 
     findById(id: string): Promise<Blockchain | undefined> {
-        return this._mongoRepo.findOne({ _id: new ObjectId(id) });
+        return this._entityManager.findOne(Blockchain, {id: id});
     }
 }
