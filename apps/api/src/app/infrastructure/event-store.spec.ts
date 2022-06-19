@@ -211,7 +211,7 @@ test("connectEntity - sets a publish that returns for empty events", async () =>
 });
 
 test("connectEntity - sets a publish that stops when save throws", (endTest) => {
-    const publishAllSpy = jest.spyOn(eventBusMock, "publishAll").mockResolvedValue({});
+    const publishAllSpy = jest.spyOn(eventBusMock, "publishAll").mockResolvedValue([]);
     const u = eventStore.connectEntity(new TestEntity(new ObjectId().toHexString()));
 
     const event = new TestEvent1();
@@ -225,7 +225,7 @@ test("connectEntity - sets a publish that stops when save throws", (endTest) => 
 });
 
 test("connectEntity - sets a publish that saves and publishes events", async () => {
-    const publishAllSpy = jest.spyOn(eventBusMock, "publishAll").mockResolvedValue({});
+    const publishAllSpy = jest.spyOn(eventBusMock, "publishAll").mockResolvedValue([]);
 
     const u = eventStore.connectEntity(new TestEntity(new ObjectId().toHexString()));
     const event = new TestEvent1();

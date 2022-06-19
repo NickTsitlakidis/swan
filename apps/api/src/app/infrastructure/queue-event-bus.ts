@@ -70,7 +70,7 @@ export class QueueEventBus extends EventBus {
         return this._handlerPairs.slice(0);
     }
 
-    private async executeSequentially(promises: Array<() => Promise<any>>): Promise<any> {
+    private async executeSequentially(promises: Array<() => Promise<unknown>>): Promise<unknown[]> {
         const results = [];
         for (let i = 0; i < promises.length; i++) {
             try {

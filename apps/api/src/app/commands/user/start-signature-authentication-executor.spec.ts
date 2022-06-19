@@ -108,4 +108,10 @@ test("execute - builds and saves authentication after deleting previous", async 
 
     expect(deleteSpy).toHaveBeenCalledTimes(1);
     expect(deleteSpy).toHaveBeenCalledWith("the-address", "b-id");
+
+    expect(chainWalletSpy).toHaveBeenCalledTimes(1);
+    expect(chainWalletSpy).toHaveBeenCalledWith("w-id", "b-id");
+
+    expect(walletSpy).toHaveBeenCalledTimes(1);
+    expect(walletSpy).toHaveBeenCalledWith("w-id");
 });
