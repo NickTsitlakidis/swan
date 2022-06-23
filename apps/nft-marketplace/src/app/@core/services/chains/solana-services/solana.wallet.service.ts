@@ -101,12 +101,13 @@ export class SolanaWalletService implements WalletService {
 
         return forkJoin([this.getPublicKey(), completeWalletObservable]).pipe(
             switchMap(([publicKey, wallet]) => {
+                const imageUri = URL.createObjectURL(nft.file);
                 const metadata = {
                     name: nft.name,
                     symbol: nft.symbol,
                     description: nft.name,
                     seller_fee_basis_points: nft.resellPercentage,
-                    image: nft.file.name,
+                    image: imageUri,
                     attributes: nft.metadata,
                     collection: {
                         name: "Swan dummy collection",
@@ -115,7 +116,7 @@ export class SolanaWalletService implements WalletService {
                     properties: {
                         files: [
                             {
-                                uri: nft.file.name,
+                                uri: imageUri,
                                 type: nft.file.type
                             }
                         ],
@@ -128,6 +129,7 @@ export class SolanaWalletService implements WalletService {
                         ]
                     }
                 };
+
                 prepareMetaplexNFT(metadata, nft.file)
                     .then((preparedNFT: PackagedNFT) => {
                         const signer = () => {

@@ -5,7 +5,6 @@ import { ConnectionStore, WalletStore } from "@heavy-duty/wallet-adapter";
 import { MetaplexService } from "./metaplex.service";
 import { Injectable } from "@angular/core";
 import { ChainsModule } from "../chains.module";
-import { SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { Observable } from "rxjs";
 import { WalletName } from "@solana/wallet-adapter-base";
 
@@ -20,7 +19,6 @@ export class SolflareWalletService extends SolanaWalletService {
         metaplexService: MetaplexService
     ) {
         super(connectionStore, walletStore, metaplexService);
-        this.walletStore.setAdapters([new SolflareWalletAdapter()]);
     }
 
     public override getPublicKey(): Observable<string> {

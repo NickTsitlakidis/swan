@@ -74,7 +74,7 @@ export class CreateNFTPageComponent implements OnInit {
             value: ""
         };
         this.attributes.push(newAttribute);
-        const i = this.attributes.length - 1;
+        const i = this.attributes.length;
         this.createNFTForm.addControl(`attributeTrait${i}`, new FormControl(newAttribute.traitType));
         this.createNFTForm.addControl(`attributeValue${i}`, new FormControl(newAttribute.value, Validators.required));
         this.createNFTForm.addControl(`attributeDisplay${i}`, new FormControl(newAttribute.displayType));
@@ -89,7 +89,7 @@ export class CreateNFTPageComponent implements OnInit {
         const walletId = this._lcStorage.retrieve("walletId");
         const walletService = this._walletRegistryService.getWalletService(walletId);
         const metadata: MetadataAttribute[] = [];
-        for (const index in this.attributes) {
+        for (let index = 1; index <= this.attributes.length; index++) {
             metadata.push({
                 traitType: this.createNFTForm.get(`attributeTrait${index}`)?.value,
                 value: this.createNFTForm.get(`attributeValue${index}`)?.value,
