@@ -1,3 +1,4 @@
+import { NftMetadataAttributeDto } from "@nft-marketplace/common";
 import { Collection } from "../collections/collection";
 
 export interface CreateNft {
@@ -8,7 +9,7 @@ export interface CreateNft {
     symbol?: string;
     resellPercentage?: number;
     maxSupply?: number;
-    metadata: Array<MetadataAttribute>;
+    metadata: Array<NftMetadataAttributeDto>;
 }
 
 export interface MintTransaction {
@@ -22,10 +23,4 @@ export interface MintTransaction {
 export interface ErrorMintTransaction {
     success: boolean;
     message: string;
-}
-
-export interface MetadataAttribute {
-    traitType: string;
-    value: string;
-    displayType: string;
 }

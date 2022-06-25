@@ -40,6 +40,9 @@ export class CollectionView extends MongoDocument {
     @Property()
     collectionAddress: string;
 
+    @Property()
+    family: string;
+
     @Property({ onCreate: () => new Date() })
     createdAt: Date = new Date();
 }

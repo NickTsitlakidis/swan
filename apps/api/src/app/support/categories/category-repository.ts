@@ -15,4 +15,8 @@ export class CategoryRepository {
     countById(id: string): Promise<number> {
         return this._manager.fork().count(Category, {id: id});
     }
+
+    findById(id: string): Promise<Category | null> {
+        return this._manager.fork().findOne(Category, {id: id});
+    }
 }
