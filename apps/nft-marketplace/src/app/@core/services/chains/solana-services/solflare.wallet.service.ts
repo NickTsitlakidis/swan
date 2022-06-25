@@ -20,7 +20,6 @@ export class SolflareWalletService extends SolanaWalletService {
         metaplexService: MetaplexService
     ) {
         super(connectionStore, walletStore, metaplexService);
-        this.walletStore.setAdapters([new SolflareWalletAdapter()]);
     }
 
     public override getPublicKey(): Observable<string> {

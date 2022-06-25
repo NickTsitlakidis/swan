@@ -92,8 +92,7 @@ export class CreateNFTPageComponent implements OnInit {
             });
         }
         const nft = {
-            metadataUri:
-                "https://images.unsplash.com/photo-1653387711918-9d36fb815849?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2574&q=80",
+            metadataUri: "https://nftstorage.link/ipfs/bafkreicoxymcbysgqjorbavhwtg53bupyhby36btzx35rjyxjt3mirupze",
             name: this.createNFTForm.get("title")?.value,
             symbol: this.createNFTForm.get("symbol")?.value,
             resellPercentage: this.createNFTForm.get("royalties")?.value,
