@@ -1,6 +1,5 @@
 export enum NftStatus {
-    UPLOADED_METADATA = "UploadedMetadata",
-    UPLOADED_IMAGE = "UploadedImage",
-    MINTED = "Minted",
-    UPLOADED_SWAN = "UploadedSwan"
+    UPLOADED_FILES = "UploadedFiles",
+    CREATED = "Created",
+    MINTED = "Minted"
 }

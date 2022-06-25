@@ -1,16 +1,19 @@
 import { EventProcessor, EventSourcedEntity } from "../../infrastructure/event-sourced-entity";
-import { NftCreated, NftMinted, NftUploadedImage, NftUploadedMetadata } from "./nft-events";
+import { NftCreated, NftMinted, UploadedNftMetadataEvent } from "./nft-events";
 import { NftStatus } from "./nft-status";
 import { BadRequestException } from "@nestjs/common";
 import { getLogger } from "../../infrastructure/logging";
 import { SourcedEvent } from "../../infrastructure/sourced-event";
+import { UploaderService } from "../../support/uploader/uploader-service";
+import { NftMetadata } from "./nft-metadata";
+import { UploadedFiles } from "../../support/uploader/uploaded-files";
 
 export class Nft extends EventSourcedEntity {
 
     private _status: NftStatus;
     private _userId: string;
     private _blockchainId: string;
-    private _metadata: any;
+    private _metadataUri: string;
 
     static fromEvents(id: string, events: Array<SourcedEvent>): Nft {
         const nft = new Nft(id);
@@ -18,11 +21,12 @@ export class Nft extends EventSourcedEntity {
         return nft;
     }
 
-    static create(id: string, userId: string, blockchainId: string ): Nft {
+    static create(id: string, userId: string, blockchainId: string): Nft {
         const nft = new Nft(id);
         nft._blockchainId = blockchainId;
         nft._userId = userId;
-        this.apply(new NftCreated(userId, blockchainId));
+        nft._status = NftStatus.CREATED;
+        nft.apply(new NftCreated(userId, blockchainId));
         return nft;
     }
 
@@ -30,25 +34,32 @@ export class Nft extends EventSourcedEntity {
         super(id, getLogger(Nft));
     }
 
-    uploadImage() {
-        if(this._status !== NftStatus.UPLOADED_METADATA) {
-            throw new BadRequestException(`Wrong nft status : ${this._status}`)
-        }
-
-        this._status = NftStatus.UPLOADED_IMAGE;
-        this.apply(new NftUploadedImage(this._status));
+    get metadataUri(): string {
+        return this._metadataUri;
     }
 
-    uploadMetadata() {
-        if(this._status) {
-            throw new BadRequestException(`Wrong nft status : ${this._status}`)
+    async uploadFiles(metadata: NftMetadata, uploader: UploaderService): Promise<Nft> {
+        if(this._status !== NftStatus.CREATED) {
+            throw new BadRequestException(`Wrong nft status : ${this._status}`);
         }
-        this._status = NftStatus.UPLOADED_METADATA;
-        this.apply(new NftUploadedMetadata(this._status))
+
+        let uploadedFiles: UploadedFiles;
+        if(this._blockchainId === "628e9d126b8991c676c19a47") {
+            uploadedFiles = await uploader.uploadSolanaMetadata(metadata);
+        } else {
+            //this._metadataUri = await uploader.uploadSolanaMetadata(metadata);
+        }
+
+        this._metadataUri = uploadedFiles.metadataIPFSUri;
+        this._status = NftStatus.UPLOADED_FILES;
+        this.apply(new UploadedNftMetadataEvent(this._status, this._metadataUri, uploadedFiles.imageIPFSUri));
+
+        return this;
     }
+
 
     mint() {
-        if(this._status !== NftStatus.UPLOADED_IMAGE) {
+        if(this._status !== NftStatus.UPLOADED_FILES) {
             throw new BadRequestException(`Wrong nft status : ${this._status}`)
         }
         this._status = NftStatus.MINTED;
@@ -59,21 +70,13 @@ export class Nft extends EventSourcedEntity {
     private processNftCreated = (event: NftCreated) => {
         this._userId = event.userId;
         this._blockchainId = event.blockchainId;
-        delete this._status;
+        this._status = NftStatus.CREATED;
     }
 
-    @EventProcessor(NftMinted)
-    private processNftMinted = (event: NftMinted) => {
+    @EventProcessor(UploadedNftMetadataEvent)
+    private processUploadedNftMetadataEvent = (event: UploadedNftMetadataEvent) => {
         this._status = event.status;
+        this._metadataUri = event.metadataUri;
     }
 
-    @EventProcessor(NftUploadedImage)
-    private processNftUploadedImage = (event: NftUploadedImage) => {
-        this._status = event.status;
-    }
-
-    @EventProcessor(NftUploadedMetadata)
-    private processNftUploadedMetadata = (event: NftUploadedMetadata) => {
-        this._status = event.status;
-    }
 }

@@ -5,6 +5,8 @@ import { Blob } from "buffer";
 import { ConfigService } from "@nestjs/config";
 import * as AWS from "aws-sdk";
 import { NftMetadataDto } from "@nft-marketplace/common";
+import { NftMetadata } from "../../domain/nft/nft-metadata";
+import { UploadedFiles } from "./uploaded-files";
 
 @Injectable()
 export class UploaderService {
@@ -25,7 +27,7 @@ export class UploaderService {
         this._s3 = new AWS.S3({ apiVersion: "2006-03-01" });
     }
 
-    async uploadSolanaMetadata(metadata: NftMetadataDto): Promise<string> {
+    async uploadSolanaMetadata(metadata: NftMetadata): Promise<UploadedFiles> {
         const params = {
             Bucket: this._configService.get("S3_BUCKET_UPLOAD"),
             Key: metadata.imageName
@@ -37,10 +39,10 @@ export class UploaderService {
 
         const imageUri = `https://nftstorage.link/ipfs/${imageFileIPFSId}`;
 
-        const category = "image";
-        const walletAddress = "5u9TvzCjPS6QAxodKYsSFrjVAwFA9vefFia2kmm7qWXw";
+        const category = metadata.category;
+        const walletAddress = metadata.address;
         const solanaMetadata: MetaplexMetadata = {
-            collection: { name: metadata.collectionId, family: metadata.collectionId },
+            collection: metadata.collection,
             name: metadata.name,
             attributes: metadata.attributes?.map((data) => {
                 return {
@@ -75,7 +77,10 @@ export class UploaderService {
         const metadataIPFSId = await this._client.storeBlob(blob as any);
 
         const metadataUri = `https://nftstorage.link/ipfs/${metadataIPFSId}`;
-        return metadataUri;
+        return {
+            metadataIPFSUri: metadataUri,
+            imageIPFSUri: imageUri
+        };
     }
 
     /* async uploadEVMMetadata(metadata: NftMetadataDto): Promise<string> {

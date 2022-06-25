@@ -8,9 +8,9 @@ export class NftMinted extends EventPayload {
     }
 }
 
-@SerializedEvent("nft-uploaded-image")
-export class NftUploadedImage extends EventPayload {
-    constructor(public status: NftStatus) {
+@SerializedEvent("uploaded-nft-metadata-event")
+export class UploadedNftMetadataEvent extends EventPayload {
+    constructor(public status: NftStatus, public metadataUri: string, public imageUri: string) {
         super();
     }
 }

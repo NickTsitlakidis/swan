@@ -11,6 +11,8 @@ import { CompleteWalletAdditionCommandExecutor } from "./user/complete-wallet-ad
 import { CollectionModule } from "../domain/collection/collection.module";
 import { CreateCollectionCommandExecutor } from "./collection/create-collection-command-executor";
 import { SupportModule } from "../support/support.module";
+import { CreateNftCommandExecutor } from "./nft/create-nft-command-executor";
+import { NftModule } from "../domain/nft/nft.module";
 
 @Module({
     providers: [
@@ -18,13 +20,15 @@ import { SupportModule } from "../support/support.module";
         CompleteSignatureAuthenticationExecutor,
         SignatureValidator,
         CompleteWalletAdditionCommandExecutor,
-        CreateCollectionCommandExecutor
+        CreateCollectionCommandExecutor,
+        CreateNftCommandExecutor
     ],
     exports: [
         StartSignatureAuthenticationExecutor,
         CompleteSignatureAuthenticationExecutor,
         CompleteWalletAdditionCommandExecutor,
-        CreateCollectionCommandExecutor
+        CreateCollectionCommandExecutor,
+        CreateNftCommandExecutor
     ],
     imports: [
         InfrastructureModule,
@@ -33,7 +37,8 @@ import { SupportModule } from "../support/support.module";
         SecurityModule,
         ConfigModule,
         CollectionModule,
-        SupportModule
+        SupportModule,
+        NftModule
     ]
 })
 export class CommandsModule {}
