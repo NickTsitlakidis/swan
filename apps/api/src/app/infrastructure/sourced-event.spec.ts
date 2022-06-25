@@ -18,7 +18,7 @@ test("constructor - skips serializable", () => {
     const event = new SourcedEvent("agr-id");
 
     expect(event.aggregateId).toBe("agr-id");
-    expect(event.id).toBeDefined();
+    expect(event._id).toBeDefined();
     expect(event.createdAt).toEqual(expectedDate);
 });
 
@@ -34,7 +34,7 @@ test("constructor - handles serializable", () => {
     const event = new SourcedEvent("agr-id", testEvent);
 
     expect(event.aggregateId).toBe("agr-id");
-    expect(event.id).toBeDefined();
+    expect(event._id).toBeDefined();
     expect(event.createdAt).toEqual(expectedDate);
     expect(keys(event.payload).length).toEqual(1);
     expect(event.payload["field1"]).toBe("the-field");

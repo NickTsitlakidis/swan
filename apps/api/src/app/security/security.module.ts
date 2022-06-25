@@ -12,6 +12,7 @@ import { RefreshTokenRepository } from "./refresh-token-repository";
 import { SignatureAuthenticationRepository } from "./signature-authentication-repository";
 import { SignatureAuthentication } from "./signature-authentication";
 import { Client } from "./client";
+import { MikroOrmModule } from "@mikro-orm/nestjs";
 
 const jwtFactory = async (configService: ConfigService): Promise<JwtModuleOptions> => {
     const privateKey = new Buffer(configService.get("ES256_PRIVATE_KEY"), "base64").toString("ascii");
@@ -24,8 +25,6 @@ const jwtFactory = async (configService: ConfigService): Promise<JwtModuleOption
     };
 };
 
-export const SECURITY_DOCUMENTS = [RefreshToken, SignatureAuthentication, Client];
-
 @Module({
     imports: [
         JwtModule.registerAsync({
@@ -35,7 +34,8 @@ export const SECURITY_DOCUMENTS = [RefreshToken, SignatureAuthentication, Client
         }),
         CqrsModule,
         ViewsModule,
-        InfrastructureModule
+        InfrastructureModule,
+        MikroOrmModule.forFeature([Client, RefreshToken, SignatureAuthentication])
     ],
     providers: [
         ClientRepository,

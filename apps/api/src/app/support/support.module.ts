@@ -8,11 +8,10 @@ import { BlockchainWallet } from "./blockchains/blockchain-wallet";
 import { WalletRepository } from "./blockchains/wallet-repository";
 import { BlockchainRepository } from "./blockchains/blockchain-repository";
 import { BlockchainWalletRepository } from "./blockchains/blockchain-wallet-repository";
-
-export const SUPPORT_DOCUMENTS = [Category, Wallet, Blockchain, BlockchainWallet];
+import { MikroOrmModule } from "@mikro-orm/nestjs";
 
 @Module({
-    imports: [InfrastructureModule],
+    imports: [InfrastructureModule, MikroOrmModule.forFeature([Category, Wallet, Blockchain, BlockchainWallet])],
     providers: [CategoryRepository, WalletRepository, BlockchainRepository, BlockchainWalletRepository],
     exports: [CategoryRepository, WalletRepository, BlockchainRepository, BlockchainWalletRepository]
 })

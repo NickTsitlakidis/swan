@@ -1,30 +1,30 @@
-import { MongoDocument } from "../../infrastructure/mongo-document";
-import { Column, Entity } from "typeorm";
 import { SignatureTypes } from "./signature-types";
+import { MongoDocument } from "../../infrastructure/mongo-document";
+import { Entity, Property } from "@mikro-orm/core";
 
-@Entity("blockchains")
+@Entity({ collection: "blockchains" })
 export class Blockchain extends MongoDocument {
-    @Column()
+    @Property()
     name: string;
 
-    @Column()
+    @Property()
     mainTokenName: string;
 
-    @Column()
+    @Property()
     mainTokenSymbol: string;
 
-    @Column()
+    @Property()
     isTestNetwork: boolean;
 
-    @Column()
+    @Property()
     rpcUrl: string;
 
-    @Column()
+    @Property()
     chainId: string;
 
-    @Column()
+    @Property()
     scanSiteUrl: string;
 
-    @Column()
+    @Property()
     signatureType: SignatureTypes;
 }

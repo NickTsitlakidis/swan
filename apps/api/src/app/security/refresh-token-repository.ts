@@ -1,20 +1,18 @@
 import { Injectable } from "@nestjs/common";
 import { RefreshToken } from "./refresh-token";
-import { Connection, MongoRepository } from "typeorm";
+import { EntityManager } from "@mikro-orm/mongodb";
 
 @Injectable()
 export class RefreshTokenRepository {
-    private _mongoRepo: MongoRepository<RefreshToken>;
 
-    constructor(connection: Connection) {
-        this._mongoRepo = connection.getMongoRepository(RefreshToken);
+    constructor(private _entityManager: EntityManager) {
     }
 
-    save(token: RefreshToken): Promise<RefreshToken> {
-        return this._mongoRepo.save(token);
+    async save(token: RefreshToken): Promise<RefreshToken> {
+        return this._entityManager.fork().persistAndFlush([token]).then(() => token);
     }
 
-    findByTokenValue(tokenValue: string): Promise<RefreshToken | undefined> {
-        return this._mongoRepo.findOne({ where: { tokenValue: tokenValue } });
+    findByTokenValue(tokenValue: string): Promise<RefreshToken | null> {
+        return this._entityManager.fork().findOne(RefreshToken, { tokenValue: tokenValue });
     }
 }

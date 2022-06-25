@@ -1,31 +1,26 @@
 import { Collection, ObjectId } from "mongodb";
-import { Connection } from "typeorm";
-import { Test } from "@nestjs/testing";
-import { cleanUpMongo, getCollection, MONGO_MODULE } from "../../test-utils/mongo";
+import { TestingModule } from "@nestjs/testing";
 import { CollectionViewRepository } from "./collection-view-repository";
 import { CollectionView } from "./collection-view";
 import { CollectionLinksView } from "./collection-links-view";
 import { instanceToPlain } from "class-transformer";
 import { cloneDeep } from "lodash";
+import { cleanUpMongo, getCollection, getMongoTestingModule } from "../../test-utils/test-modules";
 
 let repository: CollectionViewRepository;
 let collection: Collection<any>;
-let connection: Connection;
+let testModule: TestingModule;
 
 beforeEach(async () => {
-    const testModule = await Test.createTestingModule({
-        imports: [MONGO_MODULE],
-        providers: [CollectionViewRepository]
-    }).compile();
+    testModule = await getMongoTestingModule(CollectionView, CollectionViewRepository);
 
     repository = testModule.get(CollectionViewRepository);
-    connection = testModule.get(Connection);
-    collection = getCollection("collection-views", connection);
+    collection = getCollection("collection-views", testModule);
     await collection.deleteMany({});
 });
 
 afterEach(async () => {
-    await cleanUpMongo(connection);
+    await cleanUpMongo(testModule);
 });
 
 test("save - persists collection view", async () => {
@@ -47,7 +42,7 @@ test("save - persists collection view", async () => {
 
     const found = await collection.find({ _id: view._id }).toArray();
     expect(found.length).toBe(1);
-    expect(found[0]).toEqual(view);
+    expect(found[0]).toMatchObject(view);
     expect(found[0].createdAt).toBeInstanceOf(Date);
 });
 

@@ -1,33 +1,28 @@
 import { Injectable } from "@nestjs/common";
-import { Connection, MongoRepository } from "typeorm";
 import { CollectionView } from "./collection-view";
-import {ObjectID as MongoObjectId} from "mongodb";
+import { EntityManager } from "@mikro-orm/mongodb";
 
 @Injectable()
 export class CollectionViewRepository {
-    private _mongoRepo: MongoRepository<CollectionView>;
-
-    constructor(connection: Connection) {
-        this._mongoRepo = connection.getMongoRepository(CollectionView);
-    }
+    constructor(private _entityManager: EntityManager) {}
 
     countByName(name: string): Promise<number> {
-        return this._mongoRepo.count({ name: name });
+        return this._entityManager.fork().count(CollectionView, { name: name });
     }
 
     countByCustomUrl(url: string): Promise<number> {
-        return this._mongoRepo.count({ customUrl: url });
+        return this._entityManager.fork().count(CollectionView, { customUrl: url });
     }
 
     save(view: CollectionView): Promise<CollectionView> {
-        return this._mongoRepo.save(view);
+        return this._entityManager.persistAndFlush(view).then(() => view);
     }
 
     findAll(): Promise<Array<CollectionView>> {
-        return this._mongoRepo.find({});
+        return this._entityManager.fork().find(CollectionView, {});
     }
 
     findOne(id: string): Promise<CollectionView> {
-        return this._mongoRepo.findOne({_id: new MongoObjectId(id)});
+        return this._entityManager.fork().findOne(CollectionView, { id: id });
     }
 }

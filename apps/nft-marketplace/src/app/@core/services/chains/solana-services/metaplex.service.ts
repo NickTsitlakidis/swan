@@ -8,18 +8,23 @@ import { ChainsModule } from "../chains.module";
     providedIn: ChainsModule
 })
 export class MetaplexService {
-    public async mintNFT(nftInput: CreateNftInput, wallet: Wallet) {
-        const connection = new Connection(clusterApiUrl("devnet"));
-        const metaplex = Metaplex.make(connection);
+    private _metaplex: Metaplex;
+    private _connection: Connection;
 
+    constructor() {
+        this._connection = new Connection(clusterApiUrl("devnet"));
+        this._metaplex = Metaplex.make(this._connection);
+    }
+
+    public async mintNFT(nftInput: CreateNftInput, wallet: Wallet) {
         const pubKey = nftInput.owner;
-        metaplex.use(walletAdapterIdentity(wallet.adapter));
+        this._metaplex.use(walletAdapterIdentity(wallet.adapter));
         let account;
         if (pubKey) {
-            account = await connection.getAccountInfo(pubKey);
+            account = await this._connection.getAccountInfo(pubKey);
         }
         if (account?.owner) {
-            return await metaplex.nfts().create(nftInput);
+            return await this._metaplex.nfts().create(nftInput);
         } else {
             return;
         }

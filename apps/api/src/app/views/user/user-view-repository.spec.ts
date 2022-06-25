@@ -1,29 +1,24 @@
 import { Collection, ObjectId } from "mongodb";
-import { Connection } from "typeorm";
-import { Test } from "@nestjs/testing";
+import { TestingModule } from "@nestjs/testing";
 import { UserViewRepository } from "./user-view-repository";
 import { instanceToPlain } from "class-transformer";
 import { UserView } from "./user-view";
-import { cleanUpMongo, getCollection, MONGO_MODULE } from "../../test-utils/mongo";
+import { cleanUpMongo, getCollection, getMongoTestingModule } from "../../test-utils/test-modules";
 
 let repository: UserViewRepository;
 let collection: Collection<any>;
-let connection: Connection;
+let moduleRef: TestingModule;
 
 beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
-        imports: [MONGO_MODULE],
-        providers: [UserViewRepository]
-    }).compile();
+    moduleRef = await getMongoTestingModule(UserView, UserViewRepository);
 
     repository = moduleRef.get(UserViewRepository);
-    connection = moduleRef.get(Connection);
-    collection = getCollection("user-views", connection);
+    collection = getCollection("user-views", moduleRef);
     await collection.deleteMany({});
 });
 
 afterEach(async () => {
-    await cleanUpMongo(connection);
+    await cleanUpMongo(moduleRef);
 });
 
 test("findById - returns match", async () => {
@@ -33,7 +28,7 @@ test("findById - returns match", async () => {
     await collection.insertOne(instanceToPlain(view));
 
     const found = await repository.findById(view.id);
-    expect(found).toEqual(view);
+    expect(found).toMatchObject(view);
 });
 
 test("findById - returns undefined for no match", async () => {
@@ -43,7 +38,7 @@ test("findById - returns undefined for no match", async () => {
     await collection.insertOne(instanceToPlain(view));
 
     const found = await repository.findById(new ObjectId().toHexString());
-    expect(found).toBeUndefined();
+    expect(found).toBeNull();
 });
 
 test("save - persists view", async () => {
@@ -55,5 +50,5 @@ test("save - persists view", async () => {
 
     const found = await collection.find({ _id: view._id }).toArray();
     expect(found.length).toBe(1);
-    expect(found[0]).toEqual(view);
+    expect(found[0]).toMatchObject(view);
 });
