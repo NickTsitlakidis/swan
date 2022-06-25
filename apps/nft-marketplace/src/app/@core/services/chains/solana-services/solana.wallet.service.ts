@@ -97,6 +97,7 @@ export class SolanaWalletService implements WalletService {
                 subscriber.complete();
             });
         });
+
         return forkJoin([this.getPublicKey(), completeWalletObservable]).pipe(
             switchMap(([publicKey, wallet]) => {
                 const nftInput = {

@@ -1,5 +1,5 @@
 <div class="col-md-6 col-12 offset-md-3 offset-1">
-    <nft-marketplace-upload></nft-marketplace-upload>
+    <nft-marketplace-upload (uploadFiles)="uploadFiles($event)"></nft-marketplace-upload>
     <form class="row" [formGroup]="createNFTForm">
         <!-- NFT's title -->
         <div class="col-12 mt-4">
