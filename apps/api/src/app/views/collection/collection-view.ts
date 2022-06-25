@@ -1,45 +1,45 @@
-import { MongoDocument } from "../../infrastructure/mongo-document";
-import { Column, CreateDateColumn, Entity } from "typeorm";
 import { CollectionLinksView } from "./collection-links-view";
+import { MongoDocument } from "../../infrastructure/mongo-document";
+import { Embedded, Entity, Property } from "@mikro-orm/core";
 
-@Entity("collection-views")
+@Entity({ collection: "collection-views" })
 export class CollectionView extends MongoDocument {
-    @Column()
+    @Property()
     name: string;
 
-    @Column()
+    @Property()
     categoryId: string;
 
-    @Column()
+    @Property()
     customUrl: string;
 
-    @Column()
+    @Property()
     description: string;
 
-    @Column()
+    @Property()
     isExplicit: boolean;
 
-    @Column()
+    @Property()
     imageUrl: string;
 
-    @Column(() => CollectionLinksView)
+    @Embedded(() => CollectionLinksView, { object: true, nullable: true })
     links: CollectionLinksView;
 
-    @Column()
+    @Property()
     salePercentage: number;
 
-    @Column()
+    @Property()
     blockchainId: string;
 
-    @Column()
+    @Property()
     paymentToken: string;
 
-    @Column()
+    @Property()
     userId: string;
 
-    @Column()
+    @Property()
     collectionAddress: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
+    @Property({ onCreate: () => new Date() })
+    createdAt: Date = new Date();
 }

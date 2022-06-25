@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
 import { LocalStorageService } from "ngx-webstorage";
 import { fade } from "../../../@core/animations/enter-leave.animation";
 import { CreateNft, MetadataAttribute } from "../../../@core/services/chains/nft";
@@ -41,12 +41,12 @@ export class CreateNFTPageComponent implements OnInit {
         attributeValue: "Value",
         attributeDisplay: "Display type (Optional)"
     };
-    public createNFTForm: FormGroup;
+    public createNFTForm: UntypedFormGroup;
     public attributes: MetadataAttribute[] = [];
     public uploadedFile: File;
 
     constructor(
-        private _fb: FormBuilder,
+        private _fb: UntypedFormBuilder,
         private _cd: ChangeDetectorRef,
         private _walletRegistryService: WalletRegistryService,
         private _lcStorage: LocalStorageService
@@ -75,9 +75,9 @@ export class CreateNFTPageComponent implements OnInit {
         };
         this.attributes.push(newAttribute);
         const i = this.attributes.length;
-        this.createNFTForm.addControl(`attributeTrait${i}`, new FormControl(newAttribute.traitType));
-        this.createNFTForm.addControl(`attributeValue${i}`, new FormControl(newAttribute.value, Validators.required));
-        this.createNFTForm.addControl(`attributeDisplay${i}`, new FormControl(newAttribute.displayType));
+        this.createNFTForm.addControl(`attributeTrait${i}`, new UntypedFormControl(newAttribute.traitType));
+        this.createNFTForm.addControl(`attributeValue${i}`, new UntypedFormControl(newAttribute.value, Validators.required));
+        this.createNFTForm.addControl(`attributeDisplay${i}`, new UntypedFormControl(newAttribute.displayType));
         this._cd.detectChanges();
     }
 

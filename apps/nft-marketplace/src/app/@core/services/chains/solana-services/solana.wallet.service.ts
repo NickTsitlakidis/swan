@@ -13,7 +13,7 @@ import { environment } from "../../../../../environments/environment";
 import { WalletService } from "../wallet-service";
 import { CreateNft, MintTransaction } from "../nft";
 import { WalletEvent, WalletEventType } from "../wallet-event";
-import { CreateNftInput } from "@metaplex-foundation/js-next";
+import { CreateNftInput } from "@metaplex-foundation/js";
 import { MetaplexService } from "./metaplex.service";
 import { SwanError } from "../../../interfaces/swan-error";
 import { NFTStorageMetaplexor, PackagedNFT, prepareMetaplexNFT, ServiceContext } from "@nftstorage/metaplex-auth";

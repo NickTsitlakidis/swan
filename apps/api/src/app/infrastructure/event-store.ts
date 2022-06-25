@@ -1,13 +1,15 @@
 import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
-import { Connection, MongoRepository } from "typeorm";
 import { Aggregate } from "./aggregate";
-import { MongoClient, ObjectID as MongoObjectId } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import { isNil } from "lodash";
 import { getLogger, LogAsyncMethod } from "./logging";
 import { SourcedEvent } from "./sourced-event";
 import { EventSourcedEntity } from "./event-sourced-entity";
 import { QueueEventBus } from "./queue-event-bus";
 import { EventPayload } from "./serialized-event";
+import { EntityManager } from "@mikro-orm/mongodb";
+import { ConfigService } from "@nestjs/config";
+import * as moment from "moment";
 
 /**
  * The event store is the main way of saving and reading sourced events. It uses a mongo transaction
@@ -17,16 +19,11 @@ import { EventPayload } from "./serialized-event";
  */
 @Injectable()
 export class EventStore {
-    private eventRepository: MongoRepository<SourcedEvent>;
-    private aggregateRepository: MongoRepository<Aggregate>;
-    private mongoClient: MongoClient;
+    private _mongoClient: MongoClient;
     private _logger: Logger;
 
-    constructor(databaseConnection: Connection, private _eventBus: QueueEventBus) {
-        this.eventRepository = databaseConnection.getMongoRepository(SourcedEvent);
-        this.aggregateRepository = databaseConnection.getMongoRepository(Aggregate);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        this.mongoClient = (databaseConnection.driver as any).queryRunner.databaseConnection;
+    constructor(private _entityManager: EntityManager, configService: ConfigService, private _eventBus: QueueEventBus) {
+        this._mongoClient = new MongoClient(configService.get("MONGO_URI"));
         this._logger = getLogger(EventStore);
     }
 
@@ -61,10 +58,9 @@ export class EventStore {
      */
     @LogAsyncMethod
     findEventByAggregateId(id: string): Promise<Array<SourcedEvent>> {
-        return this.eventRepository.find({
-            where: { aggregateId: id },
-            order: { aggregateVersion: "ASC" }
-        });
+        return this._entityManager
+            .fork()
+            .find(SourcedEvent, { aggregateId: id }, { orderBy: { aggregateVersion: "ASC" } });
     }
 
     /**
@@ -82,19 +78,27 @@ export class EventStore {
         let incrementedVersion = 0;
         let finalAggregate: Aggregate;
 
-        let foundAggregate = await this.aggregateRepository.findOne({
-            _id: new MongoObjectId(aggregate.id)
+        let foundAggregate = await this._entityManager.fork().findOne(Aggregate, {
+            id: aggregate.id
         });
 
-        const session = this.mongoClient.startSession();
+        const beforeConnect = moment.utc();
+        if (!this._mongoClient.isConnected()) {
+            await this._mongoClient.connect();
+            this._logger.debug(
+                `EventStore Mongo client connected. Duration : ${moment.utc().diff(beforeConnect, "milliseconds")} ms`
+            );
+        }
+
+        const session = this._mongoClient.startSession();
         await session.withTransaction(async () => {
-            const eventsCollection = this.mongoClient.db().collection("events");
-            const aggregatesCollection = this.mongoClient.db().collection("aggregates");
+            const eventsCollection = this._mongoClient.db().collection("events");
+            const aggregatesCollection = this._mongoClient.db().collection("aggregates");
 
             if (isNil(foundAggregate)) {
                 aggregate.version = 0;
                 this._logger.debug(`Aggregate ${aggregate.id} does not exist. Will save it`);
-                const mapped = { _id: new MongoObjectId(aggregate.id), version: aggregate.version };
+                const mapped = { _id: new ObjectId(aggregate.id), version: aggregate.version };
                 await aggregatesCollection.insertOne(mapped);
                 foundAggregate = aggregate;
             }
@@ -115,7 +119,7 @@ export class EventStore {
             this._logger.debug(`Saving ${events.length} events for aggregate ${aggregate.id}`);
             const mapped = events.map((ev) => {
                 return {
-                    _id: new MongoObjectId(ev.id),
+                    _id: new ObjectId(ev.id),
                     createdAt: ev.createdAt,
                     aggregateId: ev.aggregateId,
                     aggregateVersion: ev.aggregateVersion,
@@ -126,7 +130,7 @@ export class EventStore {
             await eventsCollection.insertMany(mapped);
             await aggregatesCollection.findOneAndUpdate(
                 {
-                    _id: new MongoObjectId(finalAggregate.id)
+                    _id: new ObjectId(finalAggregate.id)
                 },
                 {
                     $set: { version: finalAggregate.version }

@@ -1,33 +1,30 @@
 import { Injectable } from "@nestjs/common";
-import { Connection, MongoRepository } from "typeorm";
 import { SignatureAuthentication } from "./signature-authentication";
-import { DeleteWriteOpResultObject, ObjectId } from "mongodb";
+import { EntityManager } from "@mikro-orm/mongodb";
 
 @Injectable()
 export class SignatureAuthenticationRepository {
-    private _mongoRepo: MongoRepository<SignatureAuthentication>;
 
-    constructor(connection: Connection) {
-        this._mongoRepo = connection.getMongoRepository(SignatureAuthentication);
+    constructor(private _entityManager: EntityManager) {
     }
 
     save(authentication: SignatureAuthentication): Promise<SignatureAuthentication> {
-        return this._mongoRepo.save(authentication);
+        return this._entityManager.fork().persistAndFlush([authentication]).then(() => authentication);
     }
 
-    findByAddressAndChain(address: string, chainId: string): Promise<SignatureAuthentication> {
-        return this._mongoRepo.findOne({ address: address, blockchainId: chainId });
+    findByAddressAndChain(address: string, chainId: string): Promise<SignatureAuthentication | null> {
+        return this._entityManager.fork().findOne(SignatureAuthentication, { address: address, blockchainId: chainId });
     }
 
-    findByAddressAndChainAndUserId(address: string, chainId: string, userId: string): Promise<SignatureAuthentication> {
-        return this._mongoRepo.findOne({ address: address, blockchainId: chainId, userId: userId });
+    findByAddressAndChainAndUserId(address: string, chainId: string, userId: string): Promise<SignatureAuthentication | null> {
+        return this._entityManager.fork().findOne(SignatureAuthentication, { address: address, blockchainId: chainId, userId: userId });
     }
 
-    deleteById(id: string): Promise<DeleteWriteOpResultObject> {
-        return this._mongoRepo.deleteOne({ _id: new ObjectId(id) });
+    deleteById(id: string): Promise<number> {
+        return this._entityManager.fork().nativeDelete(SignatureAuthentication, { id: id });
     }
 
-    deleteByAddressAndChain(address: string, chainId: string): Promise<DeleteWriteOpResultObject> {
-        return this._mongoRepo.deleteOne({ address: address, blockchainId: chainId });
+    deleteByAddressAndChain(address: string, chainId: string): Promise<number> {
+        return this._entityManager.fork().nativeDelete(SignatureAuthentication, { address: address, blockchainId: chainId });
     }
 }

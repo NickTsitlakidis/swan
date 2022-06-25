@@ -1,8 +1,8 @@
 import { MongoDocument } from "../../infrastructure/mongo-document";
-import { CreateDateColumn, Entity } from "typeorm";
+import { Entity, Property } from "@mikro-orm/core";
 
-@Entity("user-views")
+@Entity({ collection: "user-views" })
 export class UserView extends MongoDocument {
-    @CreateDateColumn()
-    memberSince: Date;
+    @Property({ onCreate: () => new Date() })
+    memberSince: Date = new Date();
 }

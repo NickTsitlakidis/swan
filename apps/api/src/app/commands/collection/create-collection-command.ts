@@ -1,5 +1,4 @@
 import { CollectionLinksDto, CreateCollectionDto } from "@nft-marketplace/common";
-import { Type } from "class-transformer";
 
 export class CreateCollectionCommand {
     userId: string;

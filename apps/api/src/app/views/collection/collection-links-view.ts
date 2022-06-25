@@ -1,15 +1,16 @@
-import { Column } from "typeorm";
+import { Embeddable, Property } from "@mikro-orm/core";
 
+@Embeddable()
 export class CollectionLinksView {
-    @Column()
+    @Property()
     instagram: string;
-    @Column()
+    @Property()
     discord: string;
-    @Column()
+    @Property()
     telegram: string;
-    @Column()
+    @Property()
     website: string;
-    @Column()
+    @Property()
     medium: string;
 
     constructor(instagram: string, discord: string, telegram: string, website: string, medium: string) {

@@ -15,7 +15,7 @@ contract SwanNft is ERC721URIStorage, Ownable  {
 
     }
 
-    function createItem(address receiver, string memory tokenURI) public onlyOwner returns(uint256) {
+    function createItem(address receiver, string memory tokenURI) public returns(uint256) {
         tokenIds.increment();
         uint256 newItemId = tokenIds.current();
         _safeMint(receiver, newItemId);

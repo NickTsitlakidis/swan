@@ -1,21 +1,18 @@
 import { Injectable } from "@nestjs/common";
 import { Category } from "./category";
-import { Connection, MongoRepository } from "typeorm";
-import { ObjectID } from "mongodb";
+import { EntityManager } from "@mikro-orm/mongodb";
 
 @Injectable()
 export class CategoryRepository {
-    private _mongoRepo: MongoRepository<Category>;
 
-    constructor(connection: Connection) {
-        this._mongoRepo = connection.getMongoRepository(Category);
+    constructor(private _manager: EntityManager) {
     }
 
     findAll(): Promise<Array<Category>> {
-        return this._mongoRepo.find({});
+        return this._manager.fork().find(Category, {})
     }
 
     countById(id: string): Promise<number> {
-        return this._mongoRepo.count({ _id: new ObjectID(id) });
+        return this._manager.fork().count(Category, {id: id});
     }
 }
