@@ -32,22 +32,4 @@ export class MetaplexService {
         }
     }
 
-    /* public async uploadFile(fileName: string, file: File) {
-        const { uri, metadata } = await this._metaplex.nfts().uploadMetadata({
-            name: fileName,
-            image: await useMetaplexFileFromBrowser(file),
-            properties: {
-                files: [
-                    {
-                        type: file.type,
-                        uri: await useMetaplexFileFromBrowser(file)
-                    }
-                ]
-            }
-        });
-
-        console.log(metadata.image); // https://arweave.net/123
-        console.log(metadata?.properties?.files && metadata?.properties?.files[0]?.uri); // https://arweave.net/456
-        console.log(uri); // https://arweave.net/789
-    } */
 }
