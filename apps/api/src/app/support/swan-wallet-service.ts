@@ -1,17 +1,13 @@
 import { Keypair } from "@solana/web3.js";
-import { CommandBus } from "@nestjs/cqrs";
 import { ConfigService } from "@nestjs/config";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class SwanWalletService {
-    constructor(private _configService: ConfigService) {
-
-    }
+    constructor(private _configService: ConfigService) {}
 
     getSolanaWallet(): Keypair {
         const ar = this._configService.get("SOLANA_SWAN_SECRET_KEY");
-        console.log(ar);
         return Keypair.fromSecretKey(new Uint8Array(ar.split(",")));
     }
 }

@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
+import { NftMetadataAttributeDto } from "@nft-marketplace/common";
 import { LocalStorageService } from "ngx-webstorage";
 import { fade } from "../../../@core/animations/enter-leave.animation";
-import { CreateNft, MetadataAttribute } from "../../../@core/services/chains/nft";
+import { CreateNft } from "../../../@core/services/chains/nft";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
 
 @Component({
@@ -42,7 +43,7 @@ export class CreateNFTPageComponent implements OnInit {
         attributeDisplay: "Display type (Optional)"
     };
     public createNFTForm: UntypedFormGroup;
-    public attributes: MetadataAttribute[] = [];
+    public attributes: NftMetadataAttributeDto[] = [];
     public uploadedFile: File;
 
     constructor(
@@ -68,7 +69,7 @@ export class CreateNFTPageComponent implements OnInit {
     }
 
     public addAtrribute() {
-        const newAttribute: MetadataAttribute = {
+        const newAttribute: NftMetadataAttributeDto = {
             traitType: "",
             displayType: "",
             value: ""
@@ -76,7 +77,10 @@ export class CreateNFTPageComponent implements OnInit {
         this.attributes.push(newAttribute);
         const i = this.attributes.length;
         this.createNFTForm.addControl(`attributeTrait${i}`, new UntypedFormControl(newAttribute.traitType));
-        this.createNFTForm.addControl(`attributeValue${i}`, new UntypedFormControl(newAttribute.value, Validators.required));
+        this.createNFTForm.addControl(
+            `attributeValue${i}`,
+            new UntypedFormControl(newAttribute.value, Validators.required)
+        );
         this.createNFTForm.addControl(`attributeDisplay${i}`, new UntypedFormControl(newAttribute.displayType));
         this._cd.detectChanges();
     }
@@ -88,7 +92,7 @@ export class CreateNFTPageComponent implements OnInit {
     public onSubmit() {
         const walletId = this._lcStorage.retrieve("walletId");
         const walletService = this._walletRegistryService.getWalletService(walletId);
-        const metadata: MetadataAttribute[] = [];
+        const metadata: NftMetadataAttributeDto[] = [];
         for (let index = 1; index <= this.attributes.length; index++) {
             metadata.push({
                 traitType: this.createNFTForm.get(`attributeTrait${index}`)?.value,

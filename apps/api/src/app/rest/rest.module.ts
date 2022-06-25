@@ -10,10 +10,19 @@ import { QueriesModule } from "../queries/queries.module";
 import { CollectionController } from "./collection-controller";
 import { NftController } from "./nft-controller";
 import { ConfigModule } from "@nestjs/config";
+import { SupportModule } from "../support/support.module";
 
 @Module({
     controllers: [ClientController, UserController, SupportController, CollectionController, NftController],
-    imports: [CqrsModule, ViewsModule, InfrastructureModule, SecurityModule, QueriesModule, ConfigModule],
+    imports: [
+        CqrsModule,
+        ViewsModule,
+        InfrastructureModule,
+        SecurityModule,
+        QueriesModule,
+        ConfigModule,
+        SupportModule
+    ],
     providers: []
 })
 export class RestModule {}
