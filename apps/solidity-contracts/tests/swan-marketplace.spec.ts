@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SwanMarketplace, SwanNft } from "../typechain";
 
-describe("SwanNft", function () {
+describe("SwanMarketplace", function () {
     let deployedMarketplace: SwanMarketplace;
     let deployedNft: SwanNft;
 
