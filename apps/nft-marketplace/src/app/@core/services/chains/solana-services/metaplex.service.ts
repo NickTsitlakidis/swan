@@ -9,13 +9,11 @@ import { ChainsModule } from "../chains.module";
 })
 export class MetaplexService {
     private _metaplex: Metaplex;
-    private _storage: StorageDriver;
     private _connection: Connection;
 
     constructor() {
         this._connection = new Connection(clusterApiUrl("devnet"));
         this._metaplex = Metaplex.make(this._connection);
-        this._storage = this._metaplex.storage();
     }
 
     public async mintNFT(nftInput: CreateNftInput, wallet: Wallet) {
@@ -31,5 +29,4 @@ export class MetaplexService {
             return;
         }
     }
-
 }
