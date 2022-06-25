@@ -5,6 +5,7 @@
     "scripts": {
         "ng": "nx",
         "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2020 browser module main",
+        "install": "npm ci --legacy-peer-deps",
         "start": "nx serve",
         "start-api": "nx serve api",
         "build": "nx build",
