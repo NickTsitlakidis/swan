@@ -7,6 +7,7 @@ import * as AWS from "aws-sdk";
 import { NftMetadataDto } from "@nft-marketplace/common";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
 import { UploadedFiles } from "./uploaded-files";
+import { LogAsyncMethod } from "../../infrastructure/logging";
 
 @Injectable()
 export class UploaderService {
@@ -27,6 +28,7 @@ export class UploaderService {
         this._s3 = new AWS.S3({ apiVersion: "2006-03-01" });
     }
 
+    @LogAsyncMethod
     async uploadSolanaMetadata(metadata: NftMetadata): Promise<UploadedFiles> {
         const params = {
             Bucket: this._configService.get("S3_BUCKET_UPLOAD"),

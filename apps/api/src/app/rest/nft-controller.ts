@@ -11,9 +11,9 @@ export class NftController {
     constructor(private _uploaderService: UploaderService,
                 private _commandBus: CommandBus) {}
 
-    @Post("/upload/metadata/")
+    @Post("/create")
     @UseGuards(UserGuard)
-    async uploadFile(@RequestUserId() userId: string, @Body() dto: NftMetadataDto): Promise<NftDto> {
+    async create(@RequestUserId() userId: string, @Body() dto: NftMetadataDto): Promise<NftDto> {
         const command = CreateNftCommand.fromDto(dto, userId);
         return this._commandBus.execute(command);
     }

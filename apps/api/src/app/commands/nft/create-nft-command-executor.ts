@@ -1,6 +1,5 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateNftCommand } from "./create-nft-command";
-import { EventStore } from "../../infrastructure/event-store";
 import { NftFactory } from "../../domain/nft/nft-factory";
 import { UploaderService } from "../../support/uploader/uploader-service";
 import { CategoryRepository } from "../../support/categories/category-repository";
@@ -9,10 +8,9 @@ import { UserWalletViewRepository } from "../../views/user-wallet/user-wallet-vi
 import { BadRequestException } from "@nestjs/common";
 import { BlockchainRepository } from "../../support/blockchains/blockchain-repository";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
-import { UserWalletView } from "../../views/user-wallet/user-wallet-view";
-import { CollectionView } from "../../views/collection/collection-view";
-import { Category } from "../../support/categories/category";
 import { NftDto } from "@nft-marketplace/common";
+import { isNil } from "lodash";
+import { LogAsyncMethod } from "../../infrastructure/logging";
 
 @CommandHandler(CreateNftCommand)
 export class CreateNftCommandExecutor implements ICommandHandler<CreateNftCommand> {
@@ -22,37 +20,33 @@ export class CreateNftCommandExecutor implements ICommandHandler<CreateNftComman
                 private _collectionRepository: CollectionViewRepository,
                 private _walletRepository: UserWalletViewRepository,
                 private _uploader: UploaderService,
-                private _factory: NftFactory,
-                private _eventStore: EventStore) {
+                private _factory: NftFactory) {
     }
 
+    @LogAsyncMethod
     async execute(command: CreateNftCommand): Promise<NftDto> {
-        const promises = [
+        const [category, wallet, blockchain, collection] = await Promise.all([
             this._categoryRepository.findById(command.categoryId),
             this._walletRepository.findByUserIdAndWalletIdAndChainId(command.userId, command.walletId, command.chainId),
-            this._blockchainRepository.findById(command.chainId)
-        ]
-        if(command.collectionId) {
-            promises.push(this._collectionRepository.findByUserIdAndId(command.userId, command.collectionId));
-        }
+            this._blockchainRepository.findById(command.chainId),
+            isNil(command.collectionId) ? Promise.resolve(null) : this._collectionRepository.findByUserIdAndId(command.userId, command.collectionId)
+        ]);
 
-        const [category, wallet, blockchain, collection] = await Promise.all(promises);
-
-        if(!category || !wallet || !blockchain || (command.collectionId && !collection)) {
+        if(isNil(category) || isNil(wallet) || isNil(blockchain) || (!isNil(command.collectionId) && isNil(collection))) {
             throw new BadRequestException("Missing category, wallet, blockchain or collection");
         }
 
         const metadata = new NftMetadata();
         metadata.resellPercentage = command.resellPercentage;
-        metadata.address = (wallet as UserWalletView).address;
+        metadata.address = wallet.address;
         if(collection) {
             metadata.collection = {
-                name: (collection as CollectionView).name,
-                family: (collection as CollectionView).family,
+                name: collection.name,
+                family: collection.family,
             };
         }
         metadata.description = command.description;
-        metadata.category = (category as Category).name;
+        metadata.category = category.name;
         metadata.attributes = command.attributes;
         metadata.imageType = command.imageType;
         metadata.imageName = command.imageName;
