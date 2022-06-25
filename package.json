@@ -57,7 +57,7 @@
         "@solana/wallet-adapter-wallets": "0.16.1",
         "@solana/web3.js": "1.44.2",
         "assert": "2.0.0",
-        "aws-sdk": "^2.1161.0",
+        "aws-sdk": "2.1162.0",
         "bcrypt": "5.0.1",
         "bootstrap": "4.3.1",
         "bs58": "5.0.0",
