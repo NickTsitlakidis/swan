@@ -140,3 +140,66 @@ test("countByCustomUrl - returns 1 for match", async () => {
     const count = await repository.countByCustomUrl("some-url");
     expect(count).toEqual(1);
 });
+
+test("findByUserIdAndId - returns match", async () => {
+    const view1 = new CollectionView();
+    view1._id = new ObjectId();
+    view1.categoryId = "cat-id";
+    view1.name = "the-collection";
+    view1.blockchainId = "block";
+    view1.customUrl = "some-url";
+    view1.salePercentage = 45;
+    view1.description = "a description";
+    view1.imageUrl = "collection-image";
+    view1.isExplicit = false;
+    view1.paymentToken = "ETH";
+    view1.userId = "the-user";
+    view1.links = new CollectionLinksView("ins", "dis", "tel", "web", "med");
+
+    await collection.insertOne(instanceToPlain(view1));
+
+    const count = await repository.findByUserIdAndId("the-user", view1.id);
+    expect(count).toMatchObject(view1);
+});
+
+test("findByUserIdAndId - returns null for no user id match", async () => {
+    const view1 = new CollectionView();
+    view1._id = new ObjectId();
+    view1.categoryId = "cat-id";
+    view1.name = "the-collection";
+    view1.blockchainId = "block";
+    view1.customUrl = "some-url";
+    view1.salePercentage = 45;
+    view1.description = "a description";
+    view1.imageUrl = "collection-image";
+    view1.isExplicit = false;
+    view1.paymentToken = "ETH";
+    view1.userId = "the-user";
+    view1.links = new CollectionLinksView("ins", "dis", "tel", "web", "med");
+
+    await collection.insertOne(instanceToPlain(view1));
+
+    const count = await repository.findByUserIdAndId("the-other-user", view1.id);
+    expect(count).toBeNull();
+});
+
+test("findByUserIdAndId - returns null for no user id match", async () => {
+    const view1 = new CollectionView();
+    view1._id = new ObjectId();
+    view1.categoryId = "cat-id";
+    view1.name = "the-collection";
+    view1.blockchainId = "block";
+    view1.customUrl = "some-url";
+    view1.salePercentage = 45;
+    view1.description = "a description";
+    view1.imageUrl = "collection-image";
+    view1.isExplicit = false;
+    view1.paymentToken = "ETH";
+    view1.userId = "the-user";
+    view1.links = new CollectionLinksView("ins", "dis", "tel", "web", "med");
+
+    await collection.insertOne(instanceToPlain(view1));
+
+    const count = await repository.findByUserIdAndId("the-user", new ObjectId().toHexString());
+    expect(count).toBeNull();
+});
