@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { EventStore } from "../../infrastructure/event-store";
 import { IdGenerator } from "../../infrastructure/id-generator";
 import { SourcedEvent } from "../../infrastructure/sourced-event";
-import { Nft } from "../../domain/nft/nft";
+import { Nft } from "./nft";
 
 @Injectable()
 export class NftFactory {

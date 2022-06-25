@@ -1,7 +1,7 @@
-import { Entity } from "typeorm";
 import { MongoDocument } from "../../infrastructure/mongo-document";
+import { Entity } from "@mikro-orm/core";
 
-@Entity("nft-views")
+@Entity({collection:"nft-views"})
 export class NftView extends MongoDocument {
     userId: string;
 }

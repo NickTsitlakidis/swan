@@ -4,7 +4,7 @@ import { NftViewRepository } from "../../views/nft/nft-view-repository";
 import { BadRequestException } from "@nestjs/common";
 import { EventStore } from "../../infrastructure/event-store";
 import { Nft } from "../../domain/nft/nft";
-import { NftFactory } from "../../views/nft/nft-factory";
+import { NftFactory } from "../../domain/nft/nft-factory";
 
 @CommandHandler(UploadNftImageCommand)
 export class UploadNftImageCommandExecutor implements ICommandHandler<UploadNftImageCommand> {
