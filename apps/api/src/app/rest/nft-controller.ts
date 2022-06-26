@@ -8,13 +8,13 @@ import { CommandBus } from "@nestjs/cqrs";
 
 @Controller("nft")
 export class NftController {
-    constructor(private _uploaderService: UploaderService,
-                private _commandBus: CommandBus) {}
+    constructor(private _uploaderService: UploaderService, private _commandBus: CommandBus) {}
 
     @Post("/create")
     @UseGuards(UserGuard)
     async create(@RequestUserId() userId: string, @Body() dto: NftMetadataDto): Promise<NftDto> {
-        const command = CreateNftCommand.fromDto(dto, userId);
+        const command = CreateNftCommand.fromDto(dto);
+        command.userId = userId;
         return this._commandBus.execute(command);
     }
 }

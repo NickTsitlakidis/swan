@@ -18,10 +18,6 @@ export class CollectionViewRepository {
         return this._entityManager.persistAndFlush(view).then(() => view);
     }
 
-    findAll(): Promise<Array<CollectionView>> {
-        return this._entityManager.fork().find(CollectionView, {});
-    }
-
     findOne(id: string): Promise<CollectionView> {
         return this._entityManager.fork().findOne(CollectionView, { id: id });
     }

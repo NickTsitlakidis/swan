@@ -15,10 +15,9 @@ export class CreateNftCommand {
     attributes: Array<NftMetadataAttributeDto>;
     userId: string;
 
-    static fromDto(dto: NftMetadataDto, userId: string): CreateNftCommand {
+    static fromDto(dto: NftMetadataDto): CreateNftCommand {
         const command = new CreateNftCommand();
 
-        command.userId = userId;
         command.collectionId = dto.collectionId;
         command.imageType = dto.imageType;
         command.imageName = dto.imageName;
