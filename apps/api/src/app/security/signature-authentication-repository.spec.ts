@@ -79,6 +79,66 @@ test("findByAddress - returns null for no chain match", async () => {
     expect(found).toBeNull();
 });
 
+test("findByAddressAndChainAndUserId - returns null for no user id match", async () => {
+    const view = new SignatureAuthentication();
+    view._id = new ObjectId();
+    view.message = "123";
+    view.address = "addr";
+    view.walletId = "w-id";
+    view.blockchainId = "b-id";
+    view.userId = "u-id";
+
+    await collection.insertOne(instanceToPlain(view));
+
+    const found = await repository.findByAddressAndChainAndUserId("addr", "b-id", "other");
+    expect(found).toBeNull();
+});
+
+test("findByAddressAndChainAndUserId - returns null for no chain id match", async () => {
+    const view = new SignatureAuthentication();
+    view._id = new ObjectId();
+    view.message = "123";
+    view.address = "addr";
+    view.walletId = "w-id";
+    view.blockchainId = "b-id";
+    view.userId = "u-id";
+
+    await collection.insertOne(instanceToPlain(view));
+
+    const found = await repository.findByAddressAndChainAndUserId("addr", "other", "u-id");
+    expect(found).toBeNull();
+});
+
+test("findByAddressAndChainAndUserId - returns null for no address match", async () => {
+    const view = new SignatureAuthentication();
+    view._id = new ObjectId();
+    view.message = "123";
+    view.address = "addr";
+    view.walletId = "w-id";
+    view.blockchainId = "b-id";
+    view.userId = "u-id";
+
+    await collection.insertOne(instanceToPlain(view));
+
+    const found = await repository.findByAddressAndChainAndUserId("other", "b-id", "u-id");
+    expect(found).toBeNull();
+});
+
+test("findByAddressAndChainAndUserId - returns match", async () => {
+    const view = new SignatureAuthentication();
+    view._id = new ObjectId();
+    view.message = "123";
+    view.address = "addr";
+    view.walletId = "w-id";
+    view.blockchainId = "b-id";
+    view.userId = "u-id";
+
+    await collection.insertOne(instanceToPlain(view));
+
+    const found = await repository.findByAddressAndChainAndUserId("addr", "b-id", "u-id");
+    expect(found).toMatchObject(view);
+});
+
 test("deleteById - deletes authentication match", async () => {
     const view1 = new SignatureAuthentication();
     view1._id = new ObjectId();
