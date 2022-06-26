@@ -25,6 +25,10 @@ export class User extends EventSourcedEntity {
         super(id, getLogger(User));
     }
 
+    get wallets(): Array<UserWallet> {
+        return this._wallets.slice(0);
+    }
+
     addWallet(wallet: UserWallet) {
         if (this._wallets.some((w) => w.address === wallet.address && w.blockchainId === wallet.blockchainId)) {
             throw new BadRequestException("Wallet is already added for this user");

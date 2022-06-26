@@ -14,7 +14,7 @@ export default {
     moduleFileExtensions: ["ts", "js", "html"],
     coverageDirectory: "../../coverage/apps/api",
     collectCoverage: true,
-    collectCoverageFrom: ['src/**/*.ts', '!src/app/test-utils/*.ts'],
+    collectCoverageFrom: ['src/**/*.ts', '!src/app/test-utils/*.ts', '!src/**/*.module.ts'],
     maxConcurrency: 10,
     resetMocks: true,
     verbose: true,
