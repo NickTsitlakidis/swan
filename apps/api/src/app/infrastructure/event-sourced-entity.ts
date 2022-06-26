@@ -90,7 +90,7 @@ export abstract class EventSourcedEntity {
 
     /**
      * Adds an event to the currently applied events of the entity. This will not publish the event. Use the commit
-     * method once all the events you want are appliec.
+     * method once all the events you want are applied.
      * @param event The event to be applied
      */
     apply(event: EventPayload) {

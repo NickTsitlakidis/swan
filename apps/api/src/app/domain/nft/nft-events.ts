@@ -15,13 +15,6 @@ export class UploadedNftMetadataEvent extends EventPayload {
     }
 }
 
-@SerializedEvent("nft-uploaded-metadata")
-export class NftUploadedMetadata extends EventPayload {
-    constructor(public status: NftStatus) {
-        super();
-    }
-}
-
 @SerializedEvent("nft-created")
 export class NftCreated extends EventPayload {
 
