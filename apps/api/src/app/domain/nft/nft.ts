@@ -1,5 +1,5 @@
 import { EventProcessor, EventSourcedEntity } from "../../infrastructure/event-sourced-entity";
-import { NftCreated, NftMinted, UploadedNftMetadataEvent } from "./nft-events";
+import { NftCreatedEvent, NftMintedEvent, UploadedNftMetadataEvent } from "./nft-events";
 import { NftStatus } from "./nft-status";
 import { BadRequestException } from "@nestjs/common";
 import { getLogger } from "../../infrastructure/logging";
@@ -9,7 +9,6 @@ import { NftMetadata } from "./nft-metadata";
 import { UploadedFiles } from "../../support/uploader/uploaded-files";
 
 export class Nft extends EventSourcedEntity {
-
     private _status: NftStatus;
     private _userId: string;
     private _blockchainId: string;
@@ -26,7 +25,7 @@ export class Nft extends EventSourcedEntity {
         nft._blockchainId = blockchainId;
         nft._userId = userId;
         nft._status = NftStatus.CREATED;
-        nft.apply(new NftCreated(userId, blockchainId));
+        nft.apply(new NftCreatedEvent(userId, blockchainId));
         return nft;
     }
 
@@ -38,13 +37,25 @@ export class Nft extends EventSourcedEntity {
         return this._metadataUri;
     }
 
+    get status(): NftStatus {
+        return this._status;
+    }
+
+    get blockchainId(): string {
+        return this._blockchainId;
+    }
+
+    get userId(): string {
+        return this._userId;
+    }
+
     async uploadFiles(metadata: NftMetadata, uploader: UploaderService): Promise<Nft> {
-        if(this._status !== NftStatus.CREATED) {
+        if (this._status !== NftStatus.CREATED) {
             throw new BadRequestException(`Wrong nft status : ${this._status}`);
         }
 
         let uploadedFiles: UploadedFiles;
-        if(this._blockchainId === "628e9d126b8991c676c19a47") {
+        if (this._blockchainId === "628e9d126b8991c676c19a47") {
             uploadedFiles = await uploader.uploadSolanaMetadata(metadata);
         } else {
             //this._metadataUri = await uploader.uploadSolanaMetadata(metadata);
@@ -57,26 +68,24 @@ export class Nft extends EventSourcedEntity {
         return this;
     }
 
-
     mint() {
-        if(this._status !== NftStatus.UPLOADED_FILES) {
-            throw new BadRequestException(`Wrong nft status : ${this._status}`)
+        if (this._status !== NftStatus.UPLOADED_FILES) {
+            throw new BadRequestException(`Wrong nft status : ${this._status}`);
         }
         this._status = NftStatus.MINTED;
-        this.apply(new NftMinted(this._status));
+        this.apply(new NftMintedEvent(this._status));
     }
 
-    @EventProcessor(NftCreated)
-    private processNftCreated = (event: NftCreated) => {
+    @EventProcessor(NftCreatedEvent)
+    private processNftCreated = (event: NftCreatedEvent) => {
         this._userId = event.userId;
         this._blockchainId = event.blockchainId;
         this._status = NftStatus.CREATED;
-    }
+    };
 
     @EventProcessor(UploadedNftMetadataEvent)
     private processUploadedNftMetadataEvent = (event: UploadedNftMetadataEvent) => {
         this._status = event.status;
         this._metadataUri = event.metadataUri;
-    }
-
+    };
 }

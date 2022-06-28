@@ -1,8 +1,8 @@
 import { EventPayload, SerializedEvent } from "../../infrastructure/serialized-event";
 import { NftStatus } from "./nft-status";
 
-@SerializedEvent("nft-minted")
-export class NftMinted extends EventPayload {
+@SerializedEvent("nft-minted-event")
+export class NftMintedEvent extends EventPayload {
     constructor(public status: NftStatus) {
         super();
     }
@@ -15,9 +15,8 @@ export class UploadedNftMetadataEvent extends EventPayload {
     }
 }
 
-@SerializedEvent("nft-created")
-export class NftCreated extends EventPayload {
-
+@SerializedEvent("nft-created-event")
+export class NftCreatedEvent extends EventPayload {
     constructor(public userId: string, public blockchainId: string) {
         super();
     }
