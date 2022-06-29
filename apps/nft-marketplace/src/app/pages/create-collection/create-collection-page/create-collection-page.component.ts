@@ -1,34 +1,22 @@
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { CategoryDto, CollectionLinksDto, CreateCollectionDto } from "@nft-marketplace/common";
 import { CollectionsService } from "../../../@core/services/collections/collections.service";
 import { ValidateName, ValidateUrl } from "./create-collection-page.validator";
 import { SupportService } from "../../../@core/services/support/support.service";
+import { DisplayedBlockchains, DisplayPaymentTokens } from "./create-collection";
 
 @Component({
     selector: "nft-marketplace-create-collection-page",
     templateUrl: "./create-collection-page.component.html",
-    styleUrls: ["./create-collection-page.component.scss"]
+    styleUrls: ["./create-collection-page.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CreateCollectionPageComponent implements OnInit {
     public createCollectionForm: UntypedFormGroup;
     public categories: CategoryDto[];
-    public blockchains = [
-        {
-            name: "Ethereum"
-        },
-        {
-            name: "Solana"
-        }
-    ];
-    public paymentTokens = [
-        {
-            name: "ETH"
-        },
-        {
-            name: "WETH"
-        }
-    ];
+    public blockchains: DisplayedBlockchains[];
+    public paymentTokens: DisplayPaymentTokens[];
     public labelsAndPlaceholders = {
         logoImage: {
             subtitle: "This image will also be used for navigation. 350 x 350 recommended.",
@@ -93,10 +81,26 @@ export class CreateCollectionPageComponent implements OnInit {
     constructor(
         private _fb: UntypedFormBuilder,
         private _collectionsService: CollectionsService,
-        private _supportService: SupportService
+        private _supportService: SupportService,
+        private _cd: ChangeDetectorRef
     ) {
         this._supportService.getCategories().subscribe((categories) => {
             this.categories = categories;
+        });
+        this._supportService.getBlockchainWallets().subscribe((chains) => {
+            console.log(chains);
+            this.blockchains = chains.map((chain) => {
+                return {
+                    name: chain.name,
+                    id: chain.blockchainId
+                };
+            });
+            this.paymentTokens = chains.map((chain) => {
+                return {
+                    name: chain.mainTokenSymbol
+                };
+            });
+            this._cd.detectChanges();
         });
     }
 
@@ -140,13 +144,6 @@ export class CreateCollectionPageComponent implements OnInit {
         socialLinks.telegram = socialFormVal?.telegram;
         socialLinks.website = socialFormVal?.customUrl;
         body.links = socialLinks;
-
-        // const blockChainFormVal =
-        //     this.createCollectionForm.get("chain")?.value === Blockchains.ETHEREUM
-        //         ? Blockchains.ETHEREUM
-        //         : Blockchains.SOLANA;
-
-        //todo set blockchain id here
         body.name = this.createCollectionForm.get("collectionName")?.value;
         body.categoryId = this.createCollectionForm.get("category")?.value;
         body.customUrl = this.createCollectionForm.get("marketPlaceUrl")?.value;
@@ -154,10 +151,9 @@ export class CreateCollectionPageComponent implements OnInit {
         body.isExplicit = this.createCollectionForm.get("sensitiveContent")?.value;
         body.imageUrl = this.createCollectionForm.get("logoImage")?.value;
         body.salePercentage = this.createCollectionForm.get("percentageFee")?.value;
-        body.paymentToken = this.createCollectionForm.get("paymentToken")?.value;
+        body.paymentToken = this.createCollectionForm.get("paymentToken")?.value?.name;
+        body.blockchainId = this.createCollectionForm.get("chain")?.value?.id;
 
-        this._collectionsService.createCollection(body).subscribe((data) => {
-            console.log(data);
-        });
+        this._collectionsService.createCollection(body).subscribe(() => undefined);
     }
 }
