@@ -18,7 +18,8 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
         "/user/refresh-token"
     ];
     public clientLogin = "/client/login";
-    public userRequests = ["/collections"];
+    public userRequests = ["/collections", "/nft"];
+    public withoutPrefix = ["lambda"];
 
     constructor(private _clientAuthService: ClientAuthService, private _userAuthService: UserAuthService) {}
 
@@ -38,9 +39,15 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
             req = this._addBearerToken(req, userData.tokenValue);
         }
 
-        const httpsReq: HttpRequest<unknown> = req.clone({
+        let httpsReq: HttpRequest<unknown> = req.clone({
             url: environment.serverUrl + url
         });
+
+        if (this.withoutPrefix.some((requestString) => url.includes(requestString))) {
+            httpsReq = req.clone({
+                url
+            });
+        }
 
         const retryable = httpsReq.clone();
         return next.handle(httpsReq).pipe(

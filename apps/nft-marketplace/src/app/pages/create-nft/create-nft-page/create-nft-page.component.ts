@@ -5,6 +5,9 @@ import { LocalStorageService } from "ngx-webstorage";
 import { fade } from "../../../@core/animations/enter-leave.animation";
 import { CreateNft } from "../../../@core/services/chains/nft";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
+import { SupportService } from "../../../@core/services/support/support.service";
+import { of, switchMap } from "rxjs";
+import { NftService } from "../../../@core/services/chains/nfts/nft.service";
 
 @Component({
     selector: "nft-marketplace-create-nft-page",
@@ -50,7 +53,9 @@ export class CreateNFTPageComponent implements OnInit {
         private _fb: UntypedFormBuilder,
         private _cd: ChangeDetectorRef,
         private _walletRegistryService: WalletRegistryService,
-        private _lcStorage: LocalStorageService
+        private _lcStorage: LocalStorageService,
+        private _supportService: SupportService,
+        private _nftService: NftService
     ) {}
 
     ngOnInit(): void {
@@ -100,16 +105,42 @@ export class CreateNFTPageComponent implements OnInit {
                 displayType: this.createNFTForm.get(`attributeDisplay${index}`)?.value
             });
         }
-        const nft = {
-            metadataUri: "https://nftstorage.link/ipfs/bafkreicoxymcbysgqjorbavhwtg53bupyhby36btzx35rjyxjt3mirupze",
-            name: this.createNFTForm.get("title")?.value,
-            symbol: this.createNFTForm.get("symbol")?.value,
-            resellPercentage: this.createNFTForm.get("royalties")?.value,
-            maxSupply: this.createNFTForm.get("maxSupply")?.value,
-            metadata,
-            file: this.uploadedFile
-        } as CreateNft;
 
-        walletService?.mint(nft).subscribe(() => undefined);
+        this._supportService
+            .uploadFileToS3(this.uploadedFile)
+            .pipe(
+                switchMap((signedUriResponse) => {
+                    const nftMetadataDto = {
+                        imageType: this.uploadedFile.type,
+                        imageName: this.uploadedFile.name,
+                        categoryId: "628ea0716b8991c676c19a4a",
+                        s3uri: signedUriResponse,
+                        name: this.createNFTForm.get("title")?.value,
+                        description: this.createNFTForm.get("description")?.value,
+                        resellPercentage: this.createNFTForm.get("royalties")?.value,
+                        maxSupply: this.createNFTForm.get("maxSupply")?.value,
+                        chainId: "628e9d126b8991c676c19a47",
+                        walletId: this._lcStorage.retrieve("walletId"),
+                        attributes: metadata
+                    };
+                    return this._nftService.createNft(nftMetadataDto);
+                }),
+                switchMap((nftResponse) => {
+                    const nft = {
+                        metadataUri: nftResponse.metadataUri,
+                        name: this.createNFTForm.get("title")?.value,
+                        symbol: this.createNFTForm.get("symbol")?.value,
+                        resellPercentage: this.createNFTForm.get("royalties")?.value,
+                        maxSupply: this.createNFTForm.get("maxSupply")?.value,
+                        metadata
+                    } as CreateNft;
+                    if (walletService) {
+                        return walletService.mint(nft);
+                    } else {
+                        return of();
+                    }
+                })
+            )
+            .subscribe(console.log);
     }
 }

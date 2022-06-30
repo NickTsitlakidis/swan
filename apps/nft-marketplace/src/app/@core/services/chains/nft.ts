@@ -2,7 +2,6 @@ import { NftMetadataAttributeDto } from "@nft-marketplace/common";
 import { Collection } from "../collections/collection";
 
 export interface CreateNft {
-    file: File;
     metadataUri: string;
     collection?: Collection;
     name: string;

@@ -3,8 +3,11 @@ import { BlockchainWalletDto, CategoryDto, UserWalletDto } from "@nft-marketplac
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { plainToInstance } from "class-transformer";
-import { map } from "rxjs/operators";
+import { map, switchMap } from "rxjs/operators";
 import { SupportModule } from "./support.module";
+import { environment } from "../../../../environments/environment";
+import { SignS3URIResponse } from "./support";
+import { v4 as uuidv4 } from "uuid";
 
 @Injectable({
     providedIn: SupportModule
@@ -38,5 +41,22 @@ export class SupportService {
 
     getSelectedChain(): Observable<any> {
         return EMPTY;
+    }
+
+    uploadFileToS3(file: File): Observable<string> {
+        return this._httpClient
+            .post<SignS3URIResponse>(environment.lambdaS3Uri, { key: uuidv4(), contentType: file.type })
+            .pipe(
+                switchMap((response) => {
+                    const formData = new FormData();
+                    formData.append("data", file);
+
+                    return this._httpClient.put(response.uploadURL, formData).pipe(
+                        map(() => {
+                            return response.s3Uri;
+                        })
+                    );
+                })
+            );
     }
 }
