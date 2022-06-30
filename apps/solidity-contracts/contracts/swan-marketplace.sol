@@ -2,11 +2,14 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 contract SwanMarketplace is ReentrancyGuard {
 
-    enum ListingStatus {LISTED, SOLD, CANCELLED}
+    using ERC165Checker for address;
+    enum ListingStatus {DEFAULT, LISTED, SOLD, CANCELLED}
 
     struct TokenListing {
         uint price;
@@ -41,12 +44,13 @@ contract SwanMarketplace is ReentrancyGuard {
         uint listingId
     );
 
-    //todo check if mapping or other structure is cheaper
-    TokenListing[] private listings;
     address public immutable swanWallet;
     uint idCounter;
     uint public immutable feePercentage;
-    //mapping(uint => TokenListing) public listings;
+
+    /// @notice NftAddress -> Token ID -> Listing item
+    mapping(address => mapping(uint256 => TokenListing)) private listings;
+    bytes4 private constant INTERFACE_ID_ERC721 = 0x80ac58cd;
 
     constructor() {
         idCounter = 1;
@@ -57,17 +61,18 @@ contract SwanMarketplace is ReentrancyGuard {
     function createListing(address tokenContractAddress, uint tokenId, uint price) external nonReentrant {
         require(price > 0, "Price must be greater than 0");
 
-        int foundAt = - 1;
-        for (uint i = 0; i < listings.length; i++) {
-            if (listings[i].tokenContractAddress == tokenContractAddress
-            && keccak256(abi.encodePacked(tokenId)) == keccak256(abi.encodePacked(listings[i].tokenId))
-                && listings[i].status == ListingStatus.LISTED) {
-                foundAt = int(i);
-            }
-        }
-        require(foundAt == - 1, "Token is already listed");
+        TokenListing memory found = listings[tokenContractAddress][tokenId];
+        require(found.status == ListingStatus.DEFAULT, "Token is already listed");
 
-        ERC721(tokenContractAddress).transferFrom(msg.sender, address(this), tokenId);
+
+        bool isSupportedNft = tokenContractAddress.supportsERC165() && IERC165(tokenContractAddress).supportsInterface(INTERFACE_ID_ERC721);
+        require(isSupportedNft == true, "Contract is currently not supported");
+
+        IERC721 nft = IERC721(tokenContractAddress);
+        require(nft.ownerOf(tokenId) == msg.sender, "Incorrect owner of token");
+
+        nft.transferFrom(msg.sender, address(this), tokenId);
+
         idCounter++;
         TokenListing memory newListing = TokenListing(
             price,
@@ -77,7 +82,7 @@ contract SwanMarketplace is ReentrancyGuard {
             payable(msg.sender),
             ListingStatus.LISTED
         );
-        listings.push(newListing);
+        listings[tokenContractAddress][tokenId] = newListing;
 
         emit ListingCreated(
             newListing.seller,
@@ -88,55 +93,42 @@ contract SwanMarketplace is ReentrancyGuard {
         );
     }
 
-    function buyToken(uint listingId) external payable {
-        int foundAt = - 1;
-        for (uint i = 0; i < listings.length; i++) {
-            if (listings[i].listingId == listingId && listings[i].status == ListingStatus.LISTED) {
-                foundAt = int(i);
-            }
-        }
-        require(foundAt > - 1, "Listing id does not exist");
-        require(listings[uint(foundAt)].seller != msg.sender, "You can't buy your own token");
-        require(listings[uint(foundAt)].price == msg.value, "Price doesn't match");
+    function buyToken(address tokenContractAddress, uint tokenId) external payable {
+        TokenListing memory found = listings[tokenContractAddress][tokenId];
+        require(found.status == ListingStatus.LISTED, "Listing does not exist");
 
-        listings[uint(foundAt)].status = ListingStatus.SOLD;
+        require(found.seller != msg.sender, "You can't buy your own token");
+        require(found.price == msg.value, "Price doesn't match");
 
-        ERC721(listings[uint(foundAt)].tokenContractAddress).transferFrom(address(this), msg.sender, listings[uint(foundAt)].tokenId);
+        found.status = ListingStatus.SOLD;
+
+        IERC721(found.tokenContractAddress).transferFrom(address(this), msg.sender, found.tokenId);
 
         //todo: use openzeppelin payment splitter here
-        uint serviceFee = ((listings[uint(foundAt)].price * 2) / 100);
-        uint sellerFee = listings[uint(foundAt)].price - serviceFee;
-        payable(listings[uint(foundAt)].seller).transfer(sellerFee);
+        uint serviceFee = ((found.price * 2) / 100);
+        uint sellerFee = found.price - serviceFee;
+        payable(found.seller).transfer(sellerFee);
         payable(swanWallet).transfer(serviceFee);
 
         emit TokenSold(
-            listings[uint(foundAt)].seller,
+            found.seller,
             msg.sender,
-            listings[uint(foundAt)].tokenContractAddress,
-            listings[uint(foundAt)].tokenId,
-            listings[uint(foundAt)].price,
-            listings[uint(foundAt)].listingId
+            found.tokenContractAddress,
+            found.tokenId,
+            found.price,
+            found.listingId
         );
     }
 
-    function cancelListing(uint listingId) external {
-        int foundAt = - 1;
-        for (uint i = 0; i < listings.length; i++) {
-            if (listings[i].listingId == listingId && listings[i].status == ListingStatus.LISTED) {
-                foundAt = int(i);
-            }
-        }
-        require(foundAt > - 1, "Listing does not exist");
-        require(listings[uint(foundAt)].seller == msg.sender, "Invalid listing owner");
+    function cancelListing(address tokenContractAddress, uint tokenId) external {
+        TokenListing memory found = listings[tokenContractAddress][tokenId];
+        require(found.status == ListingStatus.LISTED, "Listing does not exist");
 
-        listings[uint(foundAt)].status = ListingStatus.CANCELLED;
-        ERC721(listings[uint(foundAt)].tokenContractAddress).transferFrom(address(this), msg.sender, listings[uint(foundAt)].tokenId);
+        require(found.seller == msg.sender, "Invalid listing owner");
 
-        emit ListingCancelled(
-            listings[uint(foundAt)].seller,
-            listings[uint(foundAt)].tokenContractAddress,
-            listings[uint(foundAt)].tokenId,
-            listings[uint(foundAt)].listingId
-        );
+        found.status = ListingStatus.CANCELLED;
+        IERC721(found.tokenContractAddress).transferFrom(address(this), msg.sender, found.tokenId);
+
+        emit ListingCancelled(found.seller, found.tokenContractAddress,found.tokenId,found.listingId);
     }
 }

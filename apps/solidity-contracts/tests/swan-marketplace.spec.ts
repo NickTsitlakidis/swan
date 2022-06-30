@@ -1,10 +1,11 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { SwanMarketplace, SwanNft } from "../typechain";
+import { SwanMarketplace, SwanNft, TestToken } from "../typechain";
 
-describe("SwanMarketplace", function () {
+describe("SwanMarketplace", () => {
     let deployedMarketplace: SwanMarketplace;
     let deployedNft: SwanNft;
+    let deployedTestToken: TestToken;
 
     beforeEach(async () => {
         await ethers
@@ -18,6 +19,12 @@ describe("SwanMarketplace", function () {
             .then((factory) => factory.deploy())
             .then((deployed) => {
                 deployedMarketplace = deployed;
+                return deployed.deployed();
+            })
+            .then(() => ethers.getContractFactory("TestToken"))
+            .then((factory) => factory.deploy())
+            .then((deployed) => {
+                deployedTestToken = deployed;
                 return deployed.deployed();
             });
     });
@@ -49,13 +56,9 @@ describe("SwanMarketplace", function () {
             .connect(seller)
             .createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
 
-        expect(result).to.emit(deployedMarketplace, "ListingCreated").withArgs(
-            seller.address,
-            deployedNft.address,
-            2,
-            ethers.utils.parseEther("0.5"),
-            1
-        );
+        expect(result)
+            .to.emit(deployedMarketplace, "ListingCreated")
+            .withArgs(seller.address, deployedNft.address, 2, ethers.utils.parseEther("0.5"), 1);
         expect(await deployedNft.ownerOf(1)).to.equal(deployedMarketplace.address);
     });
 
@@ -65,15 +68,35 @@ describe("SwanMarketplace", function () {
         await deployedNft.createItem(seller.address, "the-uri");
         await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
 
-        await deployedMarketplace
-            .connect(seller)
-            .createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
 
-        await expect(deployedMarketplace
-            .connect(seller)
-            .createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"))).to.be.revertedWith(
-                "Token is already listed"
-        );
+        await expect(
+            deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"))
+        ).to.be.revertedWith("Token is already listed");
+    });
+
+    it("createListing - reverts if token belongs to other user", async () => {
+        const [deployer, seller, third] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+
+        await expect(
+            deployedMarketplace.connect(third).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"))
+        ).to.be.revertedWith("Incorrect owner of token");
+    });
+
+    it("createListing - reverts if contract is unsupported", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedTestToken.connect(deployer).mint(seller.address, 10);
+        await deployedTestToken.connect(seller).approve(deployedMarketplace.address, 1);
+
+        await expect(
+            deployedMarketplace
+                .connect(seller)
+                .createListing(deployedTestToken.address, 1, ethers.utils.parseEther("0.5"))
+        ).to.be.revertedWith("Contract is currently not supported");
     });
 
     it("cancelListing - reverts if listing doesn't exist", async () => {
@@ -82,13 +105,9 @@ describe("SwanMarketplace", function () {
         await deployedNft.createItem(seller.address, "the-uri");
         await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
 
-        await deployedMarketplace
-            .connect(seller)
-            .createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
 
-        await expect(deployedMarketplace
-            .connect(seller)
-            .cancelListing( 122)).to.be.revertedWith(
+        await expect(deployedMarketplace.connect(seller).cancelListing(deployedNft.address, 2)).to.be.revertedWith(
             "Listing does not exist"
         );
     });
