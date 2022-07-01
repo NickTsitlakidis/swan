@@ -60,6 +60,10 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         listingIds.increment();
     }
 
+    function isTokenListed(address tokenContractAddress, uint tokenId) external view returns (bool) {
+        TokenListing memory found = listings[tokenContractAddress][tokenId];
+        return found.listingId > 0;
+    }
 
     function getFeePercentage() external view returns (uint) {
         return feePercentage;
@@ -86,7 +90,6 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         nft.transferFrom(msg.sender, address(this), tokenId);
 
         listingIds.increment();
-
         TokenListing memory newListing = TokenListing(
             price,
             tokenContractAddress,
@@ -105,7 +108,7 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         );
     }
 
-    function buyToken(address tokenContractAddress, uint tokenId) external payable {
+    function buyToken(address tokenContractAddress, uint tokenId) external payable nonReentrant {
         TokenListing memory found = listings[tokenContractAddress][tokenId];
         require(found.listingId > 0, "Listing does not exist");
 
@@ -120,7 +123,7 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         payable(found.seller).transfer(sellerFee);
         payable(swanWallet).transfer(serviceFee);
 
-        delete listings[tokenContractAddress][tokenId];
+        delete (listings[tokenContractAddress][tokenId]);
 
         emit TokenSold(
             found.seller,
@@ -132,16 +135,14 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         );
     }
 
-    function cancelListing(address tokenContractAddress, uint tokenId) external {
+    function cancelListing(address tokenContractAddress, uint tokenId) external nonReentrant {
         TokenListing memory found = listings[tokenContractAddress][tokenId];
         require(found.listingId > 0, "Listing does not exist");
 
         require(found.seller == msg.sender, "Incorrect owner of listing");
 
         IERC721(found.tokenContractAddress).transferFrom(address(this), msg.sender, found.tokenId);
-
-        delete listings[tokenContractAddress][tokenId];
-
+        delete (listings[tokenContractAddress][tokenId]);
         emit ListingCancelled(found.seller, found.tokenContractAddress, found.tokenId, found.listingId);
     }
 }

@@ -40,10 +40,12 @@ describe("SwanMarketplace", () => {
         await expect(deployedMarketplace.createListing(deployedNft.address, 1, 0)).to.be.revertedWith(
             "Price must be greater than 0"
         );
+        expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(false);
     });
 
     it("createListing - reverts if price is negative", async () => {
         await expect(deployedMarketplace.createListing(deployedNft.address, 1, -30)).to.be.reverted;
+        expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(false);
     });
 
     it("createListing - creates listing, transfers nft and emits event", async () => {
@@ -60,6 +62,7 @@ describe("SwanMarketplace", () => {
             .to.emit(deployedMarketplace, "ListingCreated")
             .withArgs(seller.address, deployedNft.address, 2, ethers.utils.parseEther("0.5"), 1);
         expect(await deployedNft.ownerOf(1)).to.equal(deployedMarketplace.address);
+        expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(true);
     });
 
     it("createListing - reverts if listing exists", async () => {
@@ -84,6 +87,7 @@ describe("SwanMarketplace", () => {
         await expect(
             deployedMarketplace.connect(third).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"))
         ).to.be.revertedWith("Incorrect owner of token");
+        expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(false);
     });
 
     it("createListing - reverts if contract is unsupported", async () => {
@@ -97,6 +101,7 @@ describe("SwanMarketplace", () => {
                 .connect(seller)
                 .createListing(deployedTestToken.address, 1, ethers.utils.parseEther("0.5"))
         ).to.be.revertedWith("Contract is currently not supported");
+        expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(false);
     });
 
     it("cancelListing - reverts if listing doesn't exist", async () => {
@@ -110,6 +115,7 @@ describe("SwanMarketplace", () => {
         await expect(deployedMarketplace.connect(seller).cancelListing(deployedNft.address, 2)).to.be.revertedWith(
             "Listing does not exist"
         );
+        expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(true);
     });
 
     it("cancelListing - reverts if owner is incorrect", async () => {
@@ -123,9 +129,27 @@ describe("SwanMarketplace", () => {
         await expect(deployedMarketplace.connect(third).cancelListing(deployedNft.address, 1)).to.be.revertedWith(
             "Incorrect owner of listing"
         );
+        expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(true);
     });
 
-    it("updateSwanFee - reverts if fee is 0", async () => {
+    it("cancelListing - sends back token and removes listing", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        const result = deployedMarketplace.connect(seller).cancelListing(deployedNft.address, 1);
+
+        await expect(result)
+            .to.emit(deployedMarketplace, "ListingCancelled")
+            .withArgs(seller.address, deployedNft.address, 1, 2);
+        expect(await deployedNft.ownerOf(1)).to.equal(seller.address);
+        expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(false);
+    });
+
+    it("updateFeePercentage - reverts if fee is 0", async () => {
         const [deployer, other] = await ethers.getSigners();
 
         await expect(deployedMarketplace.connect(deployer).updateFeePercentage(0)).to.be.reverted;
@@ -133,7 +157,7 @@ describe("SwanMarketplace", () => {
         expect(newFee.toNumber()).to.eq(1);
     });
 
-    it("updateSwanFee - reverts if called by non-deployer", async () => {
+    it("updateFeePercentage - reverts if called by non-owner", async () => {
         const [deployer, other] = await ethers.getSigners();
 
         await expect(deployedMarketplace.connect(other).updateFeePercentage(10)).to.be.reverted;
@@ -141,7 +165,7 @@ describe("SwanMarketplace", () => {
         expect(newFee.toNumber()).to.eq(1);
     });
 
-    it("updateSwanFee - sets new fee percentage", async () => {
+    it("updateFeePercentage - sets new fee percentage", async () => {
         const [deployer, other] = await ethers.getSigners();
 
         await deployedMarketplace.connect(deployer).updateFeePercentage(10);
