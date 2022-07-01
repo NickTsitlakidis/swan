@@ -5,10 +5,14 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract SwanMarketplace is ReentrancyGuard {
+contract SwanMarketplace is ReentrancyGuard, Ownable  {
 
     using ERC165Checker for address;
+    using Counters for Counters.Counter;
+
     enum ListingStatus {DEFAULT, LISTED, SOLD, CANCELLED}
 
     struct TokenListing {
@@ -45,17 +49,27 @@ contract SwanMarketplace is ReentrancyGuard {
     );
 
     address public immutable swanWallet;
-    uint idCounter;
-    uint public immutable feePercentage;
+
+    bytes4 private constant INTERFACE_ID_ERC721 = 0x80ac58cd;
+    Counters.Counter private listingIds;
+    uint private feePercentage;
 
     /// @notice NftAddress -> Token ID -> Listing item
     mapping(address => mapping(uint256 => TokenListing)) private listings;
-    bytes4 private constant INTERFACE_ID_ERC721 = 0x80ac58cd;
 
     constructor() {
-        idCounter = 1;
         swanWallet = msg.sender;
         feePercentage = 1;
+    }
+
+
+    function getFeePercentage() external view returns (uint) {
+        return feePercentage;
+    }
+
+    function updateFeePercentage(uint newFeePercentage) external onlyOwner {
+        require(newFeePercentage > 0, "Fee value should be greater than 0");
+        feePercentage = newFeePercentage;
     }
 
     function createListing(address tokenContractAddress, uint tokenId, uint price) external nonReentrant {
@@ -73,12 +87,13 @@ contract SwanMarketplace is ReentrancyGuard {
 
         nft.transferFrom(msg.sender, address(this), tokenId);
 
-        idCounter++;
+        listingIds.increment();
+
         TokenListing memory newListing = TokenListing(
             price,
             tokenContractAddress,
             tokenId,
-            idCounter,
+            listingIds.current(),
             payable(msg.sender),
             ListingStatus.LISTED
         );
@@ -124,11 +139,11 @@ contract SwanMarketplace is ReentrancyGuard {
         TokenListing memory found = listings[tokenContractAddress][tokenId];
         require(found.status == ListingStatus.LISTED, "Listing does not exist");
 
-        require(found.seller == msg.sender, "Invalid listing owner");
+        require(found.seller == msg.sender, "Incorrect owner of listing");
 
         found.status = ListingStatus.CANCELLED;
         IERC721(found.tokenContractAddress).transferFrom(address(this), msg.sender, found.tokenId);
 
-        emit ListingCancelled(found.seller, found.tokenContractAddress,found.tokenId,found.listingId);
+        emit ListingCancelled(found.seller, found.tokenContractAddress, found.tokenId, found.listingId);
     }
 }

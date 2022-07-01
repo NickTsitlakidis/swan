@@ -33,7 +33,7 @@ describe("SwanMarketplace", () => {
         const [deployer] = await ethers.getSigners();
 
         expect(await deployedMarketplace.swanWallet()).to.equal(deployer.address);
-        expect(await deployedMarketplace.feePercentage()).to.equal(1);
+        expect(await deployedMarketplace.getFeePercentage()).to.equal(1);
     });
 
     it("createListing - reverts if price is 0", async () => {
@@ -110,5 +110,42 @@ describe("SwanMarketplace", () => {
         await expect(deployedMarketplace.connect(seller).cancelListing(deployedNft.address, 2)).to.be.revertedWith(
             "Listing does not exist"
         );
+    });
+
+    it("cancelListing - reverts if owner is incorrect", async () => {
+        const [deployer, seller, third] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        await expect(deployedMarketplace.connect(third).cancelListing(deployedNft.address, 1)).to.be.revertedWith(
+            "Incorrect owner of listing"
+        );
+    });
+
+    it("updateSwanFee - reverts if fee is 0", async () => {
+        const [deployer, other] = await ethers.getSigners();
+
+        await expect(deployedMarketplace.connect(deployer).updateFeePercentage(0)).to.be.reverted;
+        const newFee = await deployedMarketplace.getFeePercentage();
+        expect(newFee.toNumber()).to.eq(1);
+    });
+
+    it("updateSwanFee - reverts if called by non-deployer", async () => {
+        const [deployer, other] = await ethers.getSigners();
+
+        await expect(deployedMarketplace.connect(other).updateFeePercentage(10)).to.be.reverted;
+        const newFee = await deployedMarketplace.getFeePercentage();
+        expect(newFee.toNumber()).to.eq(1);
+    });
+
+    it("updateSwanFee - sets new fee percentage", async () => {
+        const [deployer, other] = await ethers.getSigners();
+
+        await deployedMarketplace.connect(deployer).updateFeePercentage(10);
+        const newFee = await deployedMarketplace.getFeePercentage();
+        expect(newFee.toNumber()).to.eq(10);
     });
 });
