@@ -13,17 +13,6 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
     using ERC165Checker for address;
     using Counters for Counters.Counter;
 
-    enum ListingStatus {DEFAULT, LISTED, SOLD, CANCELLED}
-
-    struct TokenListing {
-        uint price;
-        address tokenContractAddress;
-        uint tokenId;
-        uint listingId;
-        address payable seller;
-        ListingStatus status;
-    }
-
     event ListingCreated(
         address seller,
         address tokenContractAddress,
@@ -48,6 +37,14 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         uint listingId
     );
 
+    struct TokenListing {
+        uint price;
+        address tokenContractAddress;
+        uint tokenId;
+        uint listingId;
+        address payable seller;
+    }
+
     address public immutable swanWallet;
 
     bytes4 private constant INTERFACE_ID_ERC721 = 0x80ac58cd;
@@ -60,6 +57,7 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
     constructor() {
         swanWallet = msg.sender;
         feePercentage = 1;
+        listingIds.increment();
     }
 
 
@@ -76,7 +74,7 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         require(price > 0, "Price must be greater than 0");
 
         TokenListing memory found = listings[tokenContractAddress][tokenId];
-        require(found.status == ListingStatus.DEFAULT, "Token is already listed");
+        require(found.listingId == 0, "Token is already listed");
 
 
         bool isSupportedNft = tokenContractAddress.supportsERC165() && IERC165(tokenContractAddress).supportsInterface(INTERFACE_ID_ERC721);
@@ -94,8 +92,7 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
             tokenContractAddress,
             tokenId,
             listingIds.current(),
-            payable(msg.sender),
-            ListingStatus.LISTED
+            payable(msg.sender)
         );
         listings[tokenContractAddress][tokenId] = newListing;
 
@@ -110,12 +107,10 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
 
     function buyToken(address tokenContractAddress, uint tokenId) external payable {
         TokenListing memory found = listings[tokenContractAddress][tokenId];
-        require(found.status == ListingStatus.LISTED, "Listing does not exist");
+        require(found.listingId > 0, "Listing does not exist");
 
         require(found.seller != msg.sender, "You can't buy your own token");
         require(found.price == msg.value, "Price doesn't match");
-
-        found.status = ListingStatus.SOLD;
 
         IERC721(found.tokenContractAddress).transferFrom(address(this), msg.sender, found.tokenId);
 
@@ -124,6 +119,8 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         uint sellerFee = found.price - serviceFee;
         payable(found.seller).transfer(sellerFee);
         payable(swanWallet).transfer(serviceFee);
+
+        delete listings[tokenContractAddress][tokenId];
 
         emit TokenSold(
             found.seller,
@@ -137,12 +134,13 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
 
     function cancelListing(address tokenContractAddress, uint tokenId) external {
         TokenListing memory found = listings[tokenContractAddress][tokenId];
-        require(found.status == ListingStatus.LISTED, "Listing does not exist");
+        require(found.listingId > 0, "Listing does not exist");
 
         require(found.seller == msg.sender, "Incorrect owner of listing");
 
-        found.status = ListingStatus.CANCELLED;
         IERC721(found.tokenContractAddress).transferFrom(address(this), msg.sender, found.tokenId);
+
+        delete listings[tokenContractAddress][tokenId];
 
         emit ListingCancelled(found.seller, found.tokenContractAddress, found.tokenId, found.listingId);
     }
