@@ -44,7 +44,7 @@ export class NftMetadataDto {
 
     @IsString()
     @IsOptional()
-    collectionId: string;
+    collectionId?: string;
 
     @Type(() => NftMetadataAttributeDto)
     attributes: Array<NftMetadataAttributeDto>;
