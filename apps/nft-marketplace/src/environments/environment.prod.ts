@@ -4,5 +4,5 @@ export const environment = {
     applicationSecret: "NkxsnKEnkBjUs7JGBy5k",
     serverUrl: "http://localhost:3310/api",
     solanaNetwork: "https://api.mainnet-beta.solana.com",
-    lambdaS3Uri: "https://z573biuq3vdddumqxsiexcsuty0kjnzx.lambda-url.eu-central-1.on.aws/"
+    lambdaS3Uri: "https://tv9z1bfxrb.execute-api.eu-central-1.amazonaws.com/dev/test-presignedUrl"
 };

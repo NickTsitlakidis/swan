@@ -19,7 +19,7 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
     ];
     public clientLogin = "/client/login";
     public userRequests = ["/collections", "/nft"];
-    public withoutPrefix = ["lambda"];
+    public withoutPrefix = ["amazonaws"];
 
     constructor(private _clientAuthService: ClientAuthService, private _userAuthService: UserAuthService) {}
 

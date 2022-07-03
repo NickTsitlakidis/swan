@@ -32,7 +32,7 @@ export class UploaderService {
     async uploadSolanaMetadata(metadata: NftMetadata): Promise<UploadedFiles> {
         const params = {
             Bucket: this._configService.get("S3_BUCKET_UPLOAD"),
-            Key: metadata.imageName
+            Key: metadata.s3uri.split("/").pop()
         };
         const file = await this._s3.getObject(params).promise();
         let blob = new Blob([file.Body as Buffer]);
