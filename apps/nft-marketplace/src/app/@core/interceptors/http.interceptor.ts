@@ -17,9 +17,6 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
         "/user/complete-signature-authentication",
         "/user/refresh-token"
     ];
-    public clientLogin = "/client/login";
-    public userRequests = ["/collections", "/nft"];
-    public withoutPrefix = ["amazonaws"];
 
     constructor(private _clientAuthService: ClientAuthService, private _userAuthService: UserAuthService) {}
 
@@ -28,8 +25,8 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
         const clientData = this._clientAuthService.getClientTokenData();
         const userData = this._userAuthService.getUserTokenData();
 
-        const isUserRequest = this.userRequests.some((requestString) => url.includes(requestString));
         const isClientRequest = this.clientRequests.some((requestString) => url.includes(requestString));
+        const isUserRequest = !req.url.includes("http") && this.clientRequests.every((requestString) => !url.includes(requestString));
 
         if (clientData.tokenValue && isClientRequest) {
             req = this._addBearerToken(req, clientData.tokenValue);
@@ -39,18 +36,16 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
             req = this._addBearerToken(req, userData.tokenValue);
         }
 
-        let httpsReq: HttpRequest<unknown> = req.clone({
-            url: environment.serverUrl + url
-        });
+        let fullUrlReq: HttpRequest<unknown> = req.clone();
 
-        if (this.withoutPrefix.some((requestString) => url.includes(requestString))) {
-            httpsReq = req.clone({
-                url
+        if(!fullUrlReq.url.includes("http")) {
+            fullUrlReq = req.clone({
+                url: environment.serverUrl + url
             });
         }
 
-        const retryable = httpsReq.clone();
-        return next.handle(httpsReq).pipe(
+        const retryable = fullUrlReq.clone();
+        return next.handle(fullUrlReq).pipe(
             tap({
                 // Succeeds when there is a response; ignore other events
                 /* next: (event) => (ok = event instanceof HttpResponse ? "succeeded" : "") */
