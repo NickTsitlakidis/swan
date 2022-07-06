@@ -88,7 +88,6 @@ export class CreateCollectionPageComponent implements OnInit {
             this.categories = categories;
         });
         this._supportService.getBlockchainWallets().subscribe((chains) => {
-            console.log(chains);
             this.blockchains = chains.map((chain) => {
                 return {
                     name: chain.name,

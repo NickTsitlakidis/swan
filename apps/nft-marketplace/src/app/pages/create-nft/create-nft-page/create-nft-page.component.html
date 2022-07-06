@@ -75,6 +75,92 @@
             </div>
         </div>
 
+        <!-- NFT's Collection -->
+        <div class="col-12 mt-4">
+            <div *ngIf="collections?.length">
+                <nft-marketplace-title-subtitle
+                    [title]="labelsAndPlaceholders.collection.title"
+                    [subtitle]="labelsAndPlaceholders.collection.subtitle"
+                ></nft-marketplace-title-subtitle>
+                <div class="d-flex align-items-center">
+                    <nb-select
+                        #collectionSelect
+                        shape="semi-round"
+                        formControlName="collection"
+                        (selectedChange)="collectionSelected($event)"
+                    >
+                        <nb-option *ngFor="let collection of collections" [value]="collection">{{
+                            collection.name
+                        }}</nb-option>
+                    </nb-select>
+                    <button
+                        class="ml-2"
+                        nbButton
+                        hero
+                        shape="semi-round"
+                        status="primary"
+                        (click)="resetSelectionOfCollection()"
+                    >
+                        Clear
+                    </button>
+                </div>
+            </div>
+            <div *ngIf="!collections?.length">
+                <nft-marketplace-title-subtitle
+                    [title]="labelsAndPlaceholders.collection.title"
+                    [subtitle]="labelsAndPlaceholders.collection.emptyCategory"
+                ></nft-marketplace-title-subtitle>
+                <a href="./create-collection">Create</a>
+            </div>
+        </div>
+
+        <!-- NFT's Chain -->
+        <div class="col-12 mt-4" *ngIf="blockchains?.length">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.chain.title"
+                [subtitle]="labelsAndPlaceholders.chain.subtitle"
+            ></nft-marketplace-title-subtitle>
+            <nb-select shape="semi-round" formControlName="blockchain" [ngModel]="blockchains[0]">
+                <nb-option *ngFor="let blockchain of blockchains" [value]="blockchain">{{ blockchain.name }}</nb-option>
+            </nb-select>
+            <div
+                class="text-danger mt-2 mb-2"
+                *ngIf="
+                    createNFTForm.get('blockchain')?.invalid &&
+                    createNFTForm.get('blockchain')?.hasError('required') &&
+                    (createNFTForm.get('blockchain')?.dirty || createNFTForm.get('blockchain')?.touched)
+                "
+            >
+                This field is required *
+            </div>
+        </div>
+
+        <!-- NFT's Category -->
+        <div class="col-12 mt-4" *ngIf="categories?.length">
+            <nft-marketplace-title-subtitle
+                [title]="labelsAndPlaceholders.category.title"
+                [subtitle]="labelsAndPlaceholders.category.subtitle"
+            ></nft-marketplace-title-subtitle>
+            <nb-select
+                placeholder="Add category"
+                shape="semi-round"
+                formControlName="category"
+                [ngModel]="categories[0]"
+            >
+                <nb-option *ngFor="let category of categories" [value]="category">{{ category.name }}</nb-option>
+            </nb-select>
+            <div
+                class="text-danger mt-2 mb-2"
+                *ngIf="
+                    createNFTForm.get('category')?.invalid &&
+                    createNFTForm.get('category')?.hasError('required') &&
+                    (createNFTForm.get('category')?.dirty || createNFTForm.get('category')?.touched)
+                "
+            >
+                This field is required *
+            </div>
+        </div>
+
         <!-- NFT's max supply -->
         <div class="col-12 mt-4">
             <nft-marketplace-title-subtitle
