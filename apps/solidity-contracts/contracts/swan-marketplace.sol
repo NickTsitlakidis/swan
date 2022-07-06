@@ -112,7 +112,7 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         TokenListing memory found = listings[tokenContractAddress][tokenId];
         require(found.listingId > 0, "Listing does not exist");
 
-        require(found.seller != msg.sender, "You can't buy your own token");
+        require(found.seller != msg.sender, "Token is listed by the buyer");
         require(found.price == msg.value, "Price doesn't match");
 
         IERC721(found.tokenContractAddress).transferFrom(address(this), msg.sender, found.tokenId);

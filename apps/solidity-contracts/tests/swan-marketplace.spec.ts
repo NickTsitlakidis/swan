@@ -172,4 +172,63 @@ describe("SwanMarketplace", () => {
         const newFee = await deployedMarketplace.getFeePercentage();
         expect(newFee.toNumber()).to.eq(10);
     });
+
+    it("buyToken - reverts if price is less than required", async () => {
+        const [deployer, seller, third] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        await expect(
+            deployedMarketplace
+                .connect(third)
+                .buyToken(deployedNft.address, 1, { value: ethers.utils.parseEther("0.3") })
+        ).to.be.revertedWith("Price doesn't match");
+    });
+
+    it("buyToken - reverts if price is more than required", async () => {
+        const [deployer, seller, third] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        await expect(
+            deployedMarketplace.connect(third).buyToken(deployedNft.address, 1, { value: ethers.utils.parseEther("1") })
+        ).to.be.revertedWith("Price doesn't match");
+    });
+
+    it("buyToken - reverts if token is not listed", async () => {
+        const [deployer, seller, third] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        await expect(
+            deployedMarketplace
+                .connect(third)
+                .buyToken(deployedNft.address, 2, { value: ethers.utils.parseEther("0.5") })
+        ).to.be.revertedWith("Listing does not exist");
+    });
+
+    it("buyToken - reverts if token is listed by the buyer", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        await expect(
+            deployedMarketplace
+                .connect(seller)
+                .buyToken(deployedNft.address, 1, { value: ethers.utils.parseEther("0.5") })
+        ).to.be.revertedWith("Token is listed by the buyer");
+    });
 });
