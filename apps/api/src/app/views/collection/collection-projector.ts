@@ -29,6 +29,7 @@ export class CollectionProjector implements IEventHandler<CollectionCreatedEvent
         view.name = event.name;
         view.paymentToken = event.paymentToken;
         view.salePercentage = event.salePercentage;
+        view.userId = event.userId;
 
         return this._repository.save(view);
     }

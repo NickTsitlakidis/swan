@@ -46,6 +46,7 @@ test("handle CollectionCreatedEvent - saves new collection view", async () => {
 
     const expectedSaved = new CollectionView();
     expectedSaved.id = id;
+    expectedSaved.userId = "user";
     expectedSaved.blockchainId = event.blockchainId;
     expectedSaved.categoryId = event.categoryId;
     expectedSaved.customUrl = event.customUrl;
