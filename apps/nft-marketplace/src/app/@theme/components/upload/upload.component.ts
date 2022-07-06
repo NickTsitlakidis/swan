@@ -9,7 +9,7 @@ import { BehaviorSubject } from "rxjs";
 })
 export class UploadComponent {
     @Input() multiple = false;
-    @Input() fileType = "image/*";
+    @Input() fileType = "*";
     @Input() disabled = false;
     @Input() hoverAnimation = false;
     @Input() hideBorder = false;

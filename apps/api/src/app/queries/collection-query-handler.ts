@@ -16,6 +16,21 @@ export class CollectionQueryHandler {
     }
 
     @LogAsyncMethod
+    async getCollectionByUserId(userId: string): Promise<CollectionDto[]> {
+        const views = await this._collectionRepository.findByUserId(userId);
+        const collections = [];
+        for (const view of views) {
+            const cto = new CollectionDto();
+            cto.id = view.id;
+            cto.name = view.name;
+            cto.blockchainId = view.blockchainId;
+            cto.categoryId = view.categoryId;
+            collections.push(cto);
+        }
+        return collections;
+    }
+
+    @LogAsyncMethod
     async fetchOneCollection(id: string): Promise<CollectionDto> {
         const view = await this._collectionRepository.findOne(id);
         const cto = new CollectionDto();

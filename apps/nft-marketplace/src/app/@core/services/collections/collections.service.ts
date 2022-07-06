@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { AvailabilityDto, CreateCollectionDto, EntityDto } from "@nft-marketplace/common";
+import { AvailabilityDto, CollectionDto, CreateCollectionDto, EntityDto } from "@nft-marketplace/common";
 import { CoreModule } from "../../core.module";
 
 @Injectable({
@@ -19,5 +19,9 @@ export class CollectionsService {
 
     public createCollection(body: CreateCollectionDto) {
         return this._httpClient.post<EntityDto>("/collections/create-collection", body);
+    }
+
+    public getCollectionByUserId() {
+        return this._httpClient.get<CollectionDto[]>("/collections/get-user-collection");
     }
 }

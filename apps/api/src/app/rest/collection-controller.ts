@@ -35,6 +35,13 @@ export class CollectionController {
         return this._commandBus.execute(command);
     }
 
+    @ApiOkResponse({ type: EntityDto })
+    @UseGuards(UserGuard)
+    @Get("get-user-collection")
+    fetchUserCollection(@RequestUserId() userId: string): Promise<CollectionDto[]> {
+        return this._collectionQueryHandler.getCollectionByUserId(userId);
+    }
+
     @ApiOperation({ summary: "Fetch a collection using it's own id" })
     @Get("/")
     @ApiOkResponse({

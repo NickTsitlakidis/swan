@@ -1,6 +1,13 @@
 import { NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
-import { NbButtonModule, NbFormFieldModule, NbInputModule, NbToggleModule } from "@nebular/theme";
+import {
+    NbButtonModule,
+    NbFormFieldModule,
+    NbInputModule,
+    NbOptionModule,
+    NbSelectModule,
+    NbToggleModule
+} from "@nebular/theme";
 import { TitleSubTitleModule } from "../../@theme/components/title-subtitle/title-subtitle.module";
 import { UploadModule } from "../../@theme/components/upload/upload.module";
 
@@ -18,8 +25,10 @@ import { ChainsModule } from "../../@core/services/chains/chains.module";
         NbInputModule,
         NbButtonModule,
         NbToggleModule,
+        NbOptionModule,
         UploadModule,
         NbFormFieldModule,
+        NbSelectModule,
         TitleSubTitleModule,
         ChainsModule
     ],

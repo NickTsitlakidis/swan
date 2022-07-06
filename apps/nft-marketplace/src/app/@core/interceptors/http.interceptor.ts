@@ -18,6 +18,8 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
         "/user/refresh-token"
     ];
 
+    public clientLogin = "/client/login";
+
     constructor(private _clientAuthService: ClientAuthService, private _userAuthService: UserAuthService) {}
 
     intercept(req: HttpRequest<unknown>, next: HttpHandler) {
@@ -26,7 +28,10 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
         const userData = this._userAuthService.getUserTokenData();
 
         const isClientRequest = this.clientRequests.some((requestString) => url.includes(requestString));
-        const isUserRequest = !req.url.includes("http") && this.clientRequests.every((requestString) => !url.includes(requestString));
+        const isUserRequest =
+            !req.url.includes("http") &&
+            !req.url.includes(this.clientLogin) &&
+            this.clientRequests.every((requestString) => !url.includes(requestString));
 
         if (clientData.tokenValue && isClientRequest) {
             req = this._addBearerToken(req, clientData.tokenValue);
@@ -38,7 +43,7 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
 
         let fullUrlReq: HttpRequest<unknown> = req.clone();
 
-        if(!fullUrlReq.url.includes("http")) {
+        if (!fullUrlReq.url.includes("http")) {
             fullUrlReq = req.clone({
                 url: environment.serverUrl + url
             });

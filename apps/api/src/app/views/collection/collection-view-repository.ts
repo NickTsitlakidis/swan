@@ -25,4 +25,8 @@ export class CollectionViewRepository {
     findByUserIdAndId(userId: string, id: string): Promise<CollectionView | null> {
         return this._entityManager.fork().findOne(CollectionView, { id: id, userId: userId });
     }
+
+    findByUserId(userId: string): Promise<CollectionView[]> {
+        return this._entityManager.fork().find(CollectionView, { userId: userId });
+    }
 }
