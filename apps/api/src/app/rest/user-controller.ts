@@ -1,10 +1,11 @@
-import { Body, Controller, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { ClientGuard } from "../security/guards/client-guard";
 import { StartSignatureAuthenticationCommand } from "../commands/user/start-signature-authentication-command";
 import { CompleteSignatureAuthenticationCommand } from "../commands/user/complete-signature-authentication-command";
 import {
     CompleteSignatureAuthenticationDto,
+    EntityDto,
     NonceDto,
     RefreshTokenDto,
     StartSignatureAuthenticationDto,
@@ -16,10 +17,15 @@ import { UserGuard } from "../security/guards/user-guard";
 import { RequestUserId } from "../security/request-user-id";
 import { CompleteWalletAdditionCommand } from "../commands/user/complete-wallet-addition-command";
 import { UserTokenIssuer } from "../security/user-token-issuer";
+import { UserQueryHandler } from "../queries/user-query-handler";
 
 @Controller("user")
 export class UserController {
-    constructor(private readonly _commandBus: CommandBus, private readonly _tokenIssuer: UserTokenIssuer) {}
+    constructor(
+        private readonly _commandBus: CommandBus,
+        private readonly _userQueryHandler: UserQueryHandler,
+        private readonly _tokenIssuer: UserTokenIssuer
+    ) {}
 
     @ApiOperation({ summary: "Starts the signature authentication process for a user by generating a nonce" })
     @ApiOkResponse({ description: "The generated nonce", type: NonceDto })
@@ -61,9 +67,15 @@ export class UserController {
     completeWalletAddition(
         @RequestUserId() userId: string,
         @Body() body: CompleteSignatureAuthenticationDto
-    ): Promise<UserWalletDto> {
+    ): Promise<EntityDto> {
         const mapped = CompleteWalletAdditionCommand.fromDto(body);
         mapped.userId = userId;
         return this._commandBus.execute(mapped);
+    }
+
+    @Get("user-wallets")
+    @UseGuards(UserGuard)
+    getUserWallets(@RequestUserId() userId: string): Promise<Array<UserWalletDto>> {
+        return this._userQueryHandler.getUserWallets(userId);
     }
 }

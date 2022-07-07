@@ -134,3 +134,88 @@ test("findByUserIdAndWalletIdAndChainId - returns null for no matching user id",
     const found = await repository.findByUserIdAndWalletIdAndChainId("u11", "w1", "b1");
     expect(found).toBeNull();
 });
+
+test("findByUserId - returns single match view", async () => {
+    const view1 = new UserWalletView();
+    view1._id = new ObjectId();
+    view1.address = "ad1";
+    view1.walletId = "w1";
+    view1.blockchainId = "b1";
+    view1.userId = "u1";
+
+    const view2 = new UserWalletView();
+    view2._id = new ObjectId();
+    view2.address = "ad1";
+    view2.walletId = "w1";
+    view2.blockchainId = "b1";
+    view2.userId = "other-user";
+
+    const view3 = new UserWalletView();
+    view3._id = new ObjectId();
+    view3.address = "ad3";
+    view3.walletId = "w3";
+    view3.blockchainId = "b3";
+    view3.userId = "u1";
+
+    await collection.insertOne(instanceToPlain(view1));
+    await collection.insertOne(instanceToPlain(view2));
+    await collection.insertOne(instanceToPlain(view3));
+
+    const found = await repository.findByUserId("other-user");
+    expect(found.length).toBe(1);
+    expect(found[0]).toMatchObject(view2);
+});
+
+test("findByUserId - returns multiple matches", async () => {
+    const view1 = new UserWalletView();
+    view1._id = new ObjectId();
+    view1.address = "ad1";
+    view1.walletId = "w1";
+    view1.blockchainId = "b1";
+    view1.userId = "u1";
+
+    const view2 = new UserWalletView();
+    view2._id = new ObjectId();
+    view2.address = "ad1";
+    view2.walletId = "w1";
+    view2.blockchainId = "b1";
+    view2.userId = "other-user";
+
+    const view3 = new UserWalletView();
+    view3._id = new ObjectId();
+    view3.address = "ad3";
+    view3.walletId = "w3";
+    view3.blockchainId = "b3";
+    view3.userId = "u1";
+
+    await collection.insertOne(instanceToPlain(view1));
+    await collection.insertOne(instanceToPlain(view2));
+    await collection.insertOne(instanceToPlain(view3));
+
+    const found = await repository.findByUserId("u1");
+    expect(found.length).toBe(2);
+    expect(found[0]).toMatchObject(view1);
+    expect(found[1]).toMatchObject(view3);
+});
+
+test("findByUserId - returns empty array for no match", async () => {
+    const view1 = new UserWalletView();
+    view1._id = new ObjectId();
+    view1.address = "ad1";
+    view1.walletId = "w1";
+    view1.blockchainId = "b1";
+    view1.userId = "u1";
+
+    const view2 = new UserWalletView();
+    view2._id = new ObjectId();
+    view2.address = "ad1";
+    view2.walletId = "w1";
+    view2.blockchainId = "b1";
+    view2.userId = "other-user";
+
+    await collection.insertOne(instanceToPlain(view1));
+    await collection.insertOne(instanceToPlain(view2));
+
+    const found = await repository.findByUserId("something-else");
+    expect(found.length).toBe(0);
+});
