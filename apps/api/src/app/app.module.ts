@@ -8,6 +8,7 @@ import { LoggerOptions } from "winston";
 import { CommandsModule } from "./commands/commands.module";
 import { RestModule } from "./rest/rest.module";
 import { MikroOrmModule, MikroOrmModuleOptions } from "@mikro-orm/nestjs";
+import { MongoOrmSubscriber } from "./infrastructure/mongo-orm-subscriber";
 
 const mikroOrmFactory = async (configService: ConfigService): Promise<MikroOrmModuleOptions> => {
     return {
@@ -16,7 +17,8 @@ const mikroOrmFactory = async (configService: ConfigService): Promise<MikroOrmMo
         forceUndefined: true,
         validateRequired: false,
         debug: false,
-        clientUrl: configService.get<string>("MONGO_SAFE_URI")
+        clientUrl: configService.get<string>("MONGO_SAFE_URI"),
+        subscribers: [new MongoOrmSubscriber()]
     };
 };
 

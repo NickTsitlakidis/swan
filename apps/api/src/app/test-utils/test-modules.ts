@@ -4,6 +4,7 @@ import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { Collection } from "mongodb";
 import { EntityManager } from "@mikro-orm/mongodb";
 import { MikroORM } from "@mikro-orm/core";
+import { MongoOrmSubscriber } from "../infrastructure/mongo-orm-subscriber";
 
 export function getUnitTestingModule(testClass): Promise<TestingModule> {
     return Test.createTestingModule({ providers: [testClass] })
@@ -26,7 +27,8 @@ export async function getMongoTestingModule(entityClass, entityRepository): Prom
                 tsNode: true,
                 debug: true,
                 allowGlobalContext: true,
-                clientUrl: process.env.MONGO_URL
+                clientUrl: process.env.MONGO_URL,
+                subscribers: [new MongoOrmSubscriber()]
             }),
             MikroOrmModule.forFeature([entityClass])
         ],
