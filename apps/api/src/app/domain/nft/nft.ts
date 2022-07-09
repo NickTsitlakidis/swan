@@ -58,7 +58,7 @@ export class Nft extends EventSourcedEntity {
         if (this._blockchainId === "628e9d126b8991c676c19a47") {
             uploadedFiles = await uploader.uploadSolanaMetadata(metadata);
         } else {
-            //this._metadataUri = await uploader.uploadSolanaMetadata(metadata);
+            uploadedFiles = await uploader.uploadEvmMetadata(metadata);
         }
 
         this._metadataUri = uploadedFiles.metadataIPFSUri;
