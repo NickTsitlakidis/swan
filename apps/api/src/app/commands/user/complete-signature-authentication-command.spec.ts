@@ -1,5 +1,4 @@
-import { CompleteSignatureAuthenticationDto, StartSignatureAuthenticationDto } from "@nft-marketplace/common";
-import { StartSignatureAuthenticationCommand } from "./start-signature-authentication-command";
+import { CompleteSignatureAuthenticationDto } from "@nft-marketplace/common";
 import { CompleteSignatureAuthenticationCommand } from "./complete-signature-authentication-command";
 
 test("fromDto - maps properties to new CompleteSignatureAuthenticationCommand command", () => {
@@ -13,4 +12,4 @@ test("fromDto - maps properties to new CompleteSignatureAuthenticationCommand co
     expect(command.address).toBe(dto.address);
     expect(command.blockchainId).toBe(dto.blockchainId);
     expect(command.signature).toBe(dto.signature);
-})
+});

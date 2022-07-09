@@ -1,5 +1,5 @@
-import { EMPTY, Observable, of } from "rxjs";
-import { BlockchainWalletDto, CategoryDto, UserWalletDto } from "@nft-marketplace/common";
+import { Observable } from "rxjs";
+import { BlockchainWalletDto, CategoryDto } from "@nft-marketplace/common";
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { plainToInstance } from "class-transformer";
@@ -29,18 +29,6 @@ export class SupportService {
                 return plainToInstance(CategoryDto, categories);
             })
         );
-    }
-
-    filterBlockchainWallets(walletId: string): Observable<Array<BlockchainWalletDto>> {
-        return of([]);
-    }
-
-    getSelectedWallet(): Observable<UserWalletDto> {
-        return EMPTY;
-    }
-
-    getSelectedChain(): Observable<any> {
-        return EMPTY;
     }
 
     uploadFileToS3(file: File): Observable<string> {

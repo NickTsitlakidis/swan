@@ -4,7 +4,6 @@ import { SwanWalletService } from "../swan-wallet-service";
 import { Blob } from "buffer";
 import { ConfigService } from "@nestjs/config";
 import * as AWS from "aws-sdk";
-import { NftMetadataDto } from "@nft-marketplace/common";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
 import { UploadedFiles } from "./uploaded-files";
 import { LogAsyncMethod } from "../../infrastructure/logging";
