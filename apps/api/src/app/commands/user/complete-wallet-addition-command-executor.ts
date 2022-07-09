@@ -8,7 +8,7 @@ import { UserFactory } from "../../domain/user/user-factory";
 import { getLogger } from "../../infrastructure/logging";
 import { InternalServerErrorException, Logger, UnauthorizedException } from "@nestjs/common";
 import { isNil } from "lodash";
-import { UserWalletDto } from "@nft-marketplace/common";
+import { EntityDto } from "@nft-marketplace/common";
 import { EventStore } from "../../infrastructure/event-store";
 import { BlockchainRepository } from "../../support/blockchains/blockchain-repository";
 import { SignatureTypes } from "../../support/blockchains/signature-types";
@@ -30,7 +30,7 @@ export class CompleteWalletAdditionCommandExecutor implements ICommandHandler<Co
         this._logger = getLogger(CompleteWalletAdditionCommandExecutor);
     }
 
-    async execute(command: CompleteWalletAdditionCommand): Promise<UserWalletDto> {
+    async execute(command: CompleteWalletAdditionCommand): Promise<EntityDto> {
         const auth = await this._authenticationRepository.findByAddressAndChainAndUserId(
             command.address,
             command.blockchainId,
@@ -74,6 +74,6 @@ export class CompleteWalletAdditionCommandExecutor implements ICommandHandler<Co
 
         await this._authenticationRepository.deleteById(auth.id);
 
-        return new UserWalletDto(user.id, wallet.walletId, wallet.id);
+        return new EntityDto(wallet.id);
     }
 }

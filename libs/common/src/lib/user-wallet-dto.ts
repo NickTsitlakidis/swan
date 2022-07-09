@@ -1,13 +1,18 @@
+import { WalletDto } from "./wallet-dto";
+import { Type } from "class-transformer";
+
 export class UserWalletDto {
     userId: string;
-    walletId: string;
     userWalletId: string;
     address: string;
-    blockchainId: string;
 
-    constructor(userId: string, walletId: string, userWalletId: string) {
+    @Type(() => WalletDto)
+    wallet: WalletDto;
+
+    constructor(userId: string, userWalletId: string, address: string, wallet: WalletDto) {
         this.userId = userId;
-        this.walletId = walletId;
         this.userWalletId = userWalletId;
+        this.address = address;
+        this.wallet = wallet;
     }
 }
