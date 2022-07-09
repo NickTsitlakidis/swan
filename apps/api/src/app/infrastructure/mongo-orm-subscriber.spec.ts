@@ -39,7 +39,6 @@ beforeEach(async () => {
                 forceUndefined: true,
                 autoLoadEntities: true,
                 tsNode: true,
-                debug: true,
                 allowGlobalContext: true,
                 clientUrl: process.env.MONGO_URL,
                 subscribers: [new MongoOrmSubscriber()]

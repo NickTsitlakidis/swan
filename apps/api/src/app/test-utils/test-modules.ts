@@ -25,7 +25,6 @@ export async function getMongoTestingModule(entityClass, entityRepository): Prom
                 forceUndefined: true,
                 autoLoadEntities: true,
                 tsNode: true,
-                debug: true,
                 allowGlobalContext: true,
                 clientUrl: process.env.MONGO_URL,
                 subscribers: [new MongoOrmSubscriber()]
