@@ -32,18 +32,22 @@ export class SupportService {
     }
 
     uploadFileToS3(file: File): Observable<string> {
+        const s3FileName = uuidv4();
         return this._httpClient
-            .post<SignS3URIResponse>(environment.lambdaS3Uri, { key: uuidv4(), contentType: file.type })
+            .post<SignS3URIResponse>(environment.lambdaS3Uri, { key: s3FileName, contentType: file.type })
             .pipe(
                 switchMap((response) => {
-                    const formData = new FormData();
-                    formData.append("data", file);
-
-                    return this._httpClient.put(response.uploadURL, formData).pipe(
-                        map(() => {
-                            return response.s3Uri;
+                    return this._httpClient
+                        .put(response.uploadURL, file, {
+                            headers: {
+                                "Content-Type": file.type
+                            }
                         })
-                    );
+                        .pipe(
+                            map(() => {
+                                return response.s3Uri;
+                            })
+                        );
                 })
             );
     }

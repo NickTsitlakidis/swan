@@ -1,7 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import * as AWS from "aws-sdk";
-import { isNil } from "lodash";
 import { ConfigService } from "@nestjs/config";
+import { PromiseResult } from "aws-sdk/lib/request";
+import { AWSError } from "aws-sdk";
+import { DeleteObjectOutput } from "aws-sdk/clients/s3";
 
 @Injectable()
 export class AwsService {
@@ -15,13 +17,18 @@ export class AwsService {
 
         const config = new AWS.Config({ credentials, region: this._configService.get("AWS_REGION") });
         AWS.config.update(config);
+        this._s3 = new AWS.S3({ apiVersion: "2006-03-01" });
     }
 
-    getS3(): AWS.S3 {
-        if (isNil(this._s3)) {
-            this._s3 = new AWS.S3({ apiVersion: "2006-03-01" });
-        }
+    async getObjectFromS3(
+        params: AWS.S3.Types.GetObjectRequest
+    ): Promise<PromiseResult<AWS.S3.GetObjectOutput, AWS.AWSError>> {
+        return await this._s3.getObject(params).promise();
+    }
 
-        return this._s3;
+    async deleteObjectFromS3(
+        params: AWS.S3.Types.DeleteObjectRequest
+    ): Promise<PromiseResult<DeleteObjectOutput, AWSError>> {
+        return await this._s3.deleteObject(params).promise();
     }
 }

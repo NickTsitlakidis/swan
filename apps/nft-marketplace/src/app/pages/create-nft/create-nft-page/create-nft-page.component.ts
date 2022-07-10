@@ -126,7 +126,7 @@ export class CreateNFTPageComponent implements OnInit {
         }
     }
 
-    public collectionSelected(collection: any) {
+    public collectionSelected(collection: CollectionDto) {
         if (!collection) {
             this.blockchains = [...this.allBlockchains];
             this.categories = [...this.allCategories];
@@ -156,7 +156,6 @@ export class CreateNFTPageComponent implements OnInit {
 
     public uploadFiles(files: File[]) {
         this.uploadedFile = files[0];
-        console.log(this.uploadedFile);
     }
 
     public onSubmit() {
