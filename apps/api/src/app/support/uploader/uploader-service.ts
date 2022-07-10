@@ -53,7 +53,7 @@ export class UploaderService {
             }
         };
 
-        const metadataUri = await this.uploadMetadata(JSON.stringify(solanaMetadata));
+        const metadataUri = await this.uploadMetadata(JSON.stringify(solanaMetadata), metadata.s3uri);
         return {
             metadataIPFSUri: metadataUri,
             imageIPFSUri: imageUri
@@ -75,32 +75,38 @@ export class UploaderService {
                 };
             })
         };
-        const metadataUri = await this.uploadMetadata(JSON.stringify(mapped));
+        const metadataUri = await this.uploadMetadata(JSON.stringify(mapped), metadata.s3uri);
         return {
             metadataIPFSUri: metadataUri,
             imageIPFSUri: imageUri
         };
     }
 
-    private async uploadMetadata(metadataJson: string): Promise<string> {
+    private async uploadMetadata(metadataJson: string, s3Uri: string): Promise<string> {
         const data = Buffer.from(metadataJson);
         const blob = new Blob([data as Buffer]);
 
         const metadataIPFSId = await this._metaplexService.getMetaplexor().storeBlob(blob as any);
+        const params = this.getS3ParamsFromMetadataURI(s3Uri);
+        await this._awsService.deleteObjectFromS3(params);
 
         return `https://nftstorage.link/ipfs/${metadataIPFSId}`;
     }
 
     private async uploadImage(s3Uri: string): Promise<string> {
-        const params = {
-            Bucket: this._configService.get("S3_BUCKET_UPLOAD"),
-            Key: s3Uri.split("/").pop()
-        };
-        const file = await this._awsService.getS3().getObject(params).promise();
+        const params = this.getS3ParamsFromMetadataURI(s3Uri);
+        const file = await this._awsService.getObjectFromS3(params);
         const blob = new Blob([file.Body as Buffer]);
 
         const imageFileIPFSId = await this._metaplexService.getMetaplexor().storeBlob(blob as any);
 
         return `https://nftstorage.link/ipfs/${imageFileIPFSId}`;
+    }
+
+    private getS3ParamsFromMetadataURI(s3Uri: string) {
+        return {
+            Bucket: this._configService.get("S3_BUCKET_UPLOAD"),
+            Key: s3Uri.split("/").pop()
+        };
     }
 }
