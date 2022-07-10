@@ -54,7 +54,7 @@ test("getUrlAvailability - returns false when url is found", async () => {
     expect(countSpy).toHaveBeenCalledTimes(1);
 });
 
-test("getCollectionByUserId - returns false when collection is found", async () => {
+test("getCollectionByUserId - returns empty array when no collections are found", async () => {
     const countSpy = jest.spyOn(repoMock, "findByUserId").mockResolvedValue([]);
 
     const result = await handler.getCollectionByUserId("user");
@@ -86,10 +86,12 @@ test("getCollectionByUserId - returns false when collections is not found", asyn
     expect(result[0].blockchainId).toBe("block1");
     expect(result[0].categoryId).toBe("cat1");
     expect(result[0].name).toBe("collection1");
+    expect(result[0].id).toBe(collectionViews[0].id);
 
     expect(result[1].blockchainId).toBe("block2");
     expect(result[1].categoryId).toBe("cat2");
     expect(result[1].name).toBe("collection2");
+    expect(result[1].id).toBe(collectionViews[1].id);
 
     expect(countSpy).toHaveBeenCalledTimes(1);
 
