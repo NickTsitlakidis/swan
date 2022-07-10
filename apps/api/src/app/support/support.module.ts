@@ -12,6 +12,8 @@ import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { UploaderService } from "./uploader/uploader-service";
 import { SwanWalletService } from "./swan-wallet-service";
 import { ConfigModule } from "@nestjs/config";
+import { AwsService } from "./aws/aws-service";
+import { MetaplexService } from "./metaplex/metaplex-service";
 
 @Module({
     imports: [
@@ -25,7 +27,9 @@ import { ConfigModule } from "@nestjs/config";
         UploaderService,
         BlockchainRepository,
         BlockchainWalletRepository,
-        SwanWalletService
+        SwanWalletService,
+        AwsService,
+        MetaplexService
     ],
     exports: [
         CategoryRepository,
@@ -33,7 +37,9 @@ import { ConfigModule } from "@nestjs/config";
         SwanWalletService,
         WalletRepository,
         BlockchainRepository,
-        BlockchainWalletRepository
+        BlockchainWalletRepository,
+        AwsService,
+        MetaplexService
     ]
 })
 export class SupportModule {}

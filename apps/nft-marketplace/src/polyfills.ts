@@ -50,7 +50,9 @@ import "reflect-metadata";
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (window as any).global = window;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (window as any).process = {
     env: { DEBUG: undefined }
 };

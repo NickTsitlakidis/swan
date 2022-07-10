@@ -7,6 +7,7 @@ import { CreateNft, MintTransaction } from "./nft";
 import { Injectable } from "@angular/core";
 import fantomSwanNft from "../../../../assets/evm-abi/fantom-swan-nft.json";
 import { ChainsModule } from "./chains.module";
+import { TransactionResponse } from "@ethersproject/abstract-provider/src.ts";
 
 @Injectable({
     providedIn: ChainsModule
@@ -45,7 +46,7 @@ export class MetamaskService implements WalletService {
 
                 return new Observable<MintTransaction>((subscriber) => {
                     contract.on(filter, (from, to, amount, event) => {
-                        if (event.transactionHash === (createItemResult as any).hash) {
+                        if (event.transactionHash === (createItemResult as TransactionResponse).hash) {
                             const mintTransaction: MintTransaction = {
                                 tokenId: ethers.BigNumber.from(event.args[2]).toNumber().toString(),
                                 transactionId: event.transactionHash,
@@ -73,6 +74,7 @@ export class MetamaskService implements WalletService {
     }
 
     private getEthersProvider(): Observable<ethers.providers.Web3Provider> {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const externalProvider = (window as any).ethereum;
         if (!isNil(externalProvider)) {
             if (!isNil(this._ethersProvider)) {
