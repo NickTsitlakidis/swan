@@ -48,7 +48,7 @@ describe("SwanMarketplace", () => {
         expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(false);
     });
 
-    it("createListing - creates listing, transfers nft and emits event", async () => {
+    it("createListing - creates listing, and emits event when approved", async () => {
         const [deployer, seller] = await ethers.getSigners();
 
         await deployedNft.createItem(seller.address, "the-uri");
@@ -61,8 +61,22 @@ describe("SwanMarketplace", () => {
         expect(result)
             .to.emit(deployedMarketplace, "ListingCreated")
             .withArgs(seller.address, deployedNft.address, 2, ethers.utils.parseEther("0.5"), 1);
-        expect(await deployedNft.ownerOf(1)).to.equal(deployedMarketplace.address);
+
         expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(true);
+        expect(await deployedNft.ownerOf(1)).to.equal(seller.address);
+    });
+
+    it("createListing - reverts when contract is not approved", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+
+        await expect(
+            deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"))
+        ).to.be.revertedWith("Contract is not approved");
+
+        expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(false);
+        expect(await deployedNft.ownerOf(1)).to.equal(seller.address);
     });
 
     it("createListing - reverts if listing exists", async () => {
@@ -132,7 +146,7 @@ describe("SwanMarketplace", () => {
         expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(true);
     });
 
-    it("cancelListing - sends back token and removes listing", async () => {
+    it("cancelListing - removes listing", async () => {
         const [deployer, seller] = await ethers.getSigners();
 
         await deployedNft.createItem(seller.address, "the-uri");

@@ -87,7 +87,7 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         IERC721 nft = IERC721(tokenContractAddress);
         require(nft.ownerOf(tokenId) == msg.sender, "Incorrect owner of token");
 
-        nft.transferFrom(msg.sender, address(this), tokenId);
+        require(nft.getApproved(tokenId) == address(this), "Contract is not approved");
 
         listingIds.increment();
         TokenListing memory newListing = TokenListing(
@@ -115,7 +115,7 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         require(found.seller != msg.sender, "Token is listed by the buyer");
         require(found.price == msg.value, "Price doesn't match");
 
-        IERC721(found.tokenContractAddress).transferFrom(address(this), msg.sender, found.tokenId);
+        IERC721(found.tokenContractAddress).transferFrom(found.seller, msg.sender, found.tokenId);
 
         //todo: use openzeppelin payment splitter here
         uint serviceFee = ((found.price * 2) / 100);
@@ -141,7 +141,6 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
 
         require(found.seller == msg.sender, "Incorrect owner of listing");
 
-        IERC721(found.tokenContractAddress).transferFrom(address(this), msg.sender, found.tokenId);
         delete (listings[tokenContractAddress][tokenId]);
         emit ListingCancelled(found.seller, found.tokenContractAddress, found.tokenId, found.listingId);
     }
