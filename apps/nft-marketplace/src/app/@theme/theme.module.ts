@@ -2,6 +2,8 @@ import { ModuleWithProviders, NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 
+import { MatMenuModule } from "@angular/material/menu";
+
 import {
     NbActionsModule,
     NbLayoutModule,
@@ -36,11 +38,13 @@ const NB_MODULES = [
     NbIconModule,
     NbEvaIconsModule
 ];
+
+const MATERIAL_MODULES = [MatMenuModule];
 const COMPONENTS = [HeaderComponent, FooterComponent, OneColumnLayoutComponent];
 const PIPES = [CapitalizePipe, PluralPipe, RoundPipe, TimingPipe, NumberWithCommasPipe];
 
 @NgModule({
-    imports: [CommonModule, FormsModule, FontAwesomeModule, ImagesModule, ...NB_MODULES],
+    imports: [CommonModule, FormsModule, FontAwesomeModule, ImagesModule, ...NB_MODULES, ...MATERIAL_MODULES],
     exports: [CommonModule, ...PIPES, ...COMPONENTS],
     declarations: [...COMPONENTS, ...PIPES]
 })

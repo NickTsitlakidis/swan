@@ -13,7 +13,7 @@ import { environment } from "../../../../../environments/environment";
 import { WalletService } from "../wallet-service";
 import { CreateNft, MintTransaction } from "../nft";
 import { WalletEvent, WalletEventType } from "../wallet-event";
-import { CreateNftInput } from "@metaplex-foundation/js";
+import { CreateNftInput, Nft } from "@metaplex-foundation/js";
 import { MetaplexService } from "./metaplex.service";
 import { SwanError } from "../../../interfaces/swan-error";
 
@@ -138,6 +138,14 @@ export class SolanaWalletService implements WalletService {
 
     public getEvents(): Observable<WalletEvent> {
         return this._events.asObservable();
+    }
+
+    public getUserNFTs(): Observable<Nft[]> {
+        return this.getPublicKey().pipe(
+            switchMap((pubKey) => {
+                return this._metaplexService.getUserNFTs(pubKey);
+            })
+        );
     }
 
     public onSelectWallet(walletName: WalletName) {

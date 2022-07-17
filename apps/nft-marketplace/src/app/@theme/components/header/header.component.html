@@ -11,10 +11,10 @@
                 <fa-icon class="mr-2" [icon]="faPaintBrush"></fa-icon>Create nft
             </button>
         </div>
-        <div class="col">
+        <div class="col d-flex justify-content-end align-items-center">
             <nb-select
                 (selectedChange)="walletSelected($event)"
-                class="float-right"
+                class="mr-4"
                 hero
                 placeholder="Select your wallet"
                 shape="semi-round"
@@ -26,6 +26,24 @@
                     <nb-option *ngFor="let wallet of chain.wallets" [value]="wallet">{{ wallet.name }}</nb-option>
                 </nb-option-group>
             </nb-select>
+            <i [matMenuTriggerFor]="menu" class="fa-solid fa-user profile-thumb"></i>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item>
+                    <span>Profile</span>
+                </button>
+                <button mat-menu-item disabled>
+                    <span>Favorites</span>
+                </button>
+                <button mat-menu-item>
+                    <span>Watchlist</span>
+                </button>
+                <button mat-menu-item>
+                    <span>My collections</span>
+                </button>
+                <button mat-menu-item>
+                    <span>Settings</span>
+                </button>
+            </mat-menu>
         </div>
     </div>
 </div>

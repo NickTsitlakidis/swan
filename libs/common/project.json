@@ -1,15 +1,19 @@
 {
-    "$schema": "..\\..\\node_modules\\nx\\schemas\\project-schema.json",
-    "sourceRoot": "libs/common/src",
-    "projectType": "library",
-    "targets": {
-        "lint": {
-            "executor": "@nrwl/linter:eslint",
-            "outputs": ["{options.outputFile}"],
-            "options": {
-                "lintFilePatterns": ["libs/common/**/*.ts"]
-            }
-        }
-    },
-    "tags": []
+  "$schema": "..\\..\\node_modules\\nx\\schemas\\project-schema.json",
+  "sourceRoot": "libs/common/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "libs/common/**/*.ts"
+        ]
+      }
+    }
+  },
+  "tags": []
 }

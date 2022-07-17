@@ -1,95 +1,111 @@
 {
-    "$schema": "..\\..\\node_modules\\nx\\schemas\\project-schema.json",
-    "projectType": "application",
-    "sourceRoot": "apps/nft-marketplace/src",
-    "prefix": "nft-marketplace",
-    "targets": {
-        "build": {
-            "executor": "@angular-devkit/build-angular:browser",
-            "outputs": ["{options.outputPath}"],
-            "options": {
-                "outputPath": "dist/apps/nft-marketplace",
-                "index": "apps/nft-marketplace/src/index.html",
-                "main": "apps/nft-marketplace/src/main.ts",
-                "polyfills": "apps/nft-marketplace/src/polyfills.ts",
-                "tsConfig": "apps/nft-marketplace/tsconfig.app.json",
-                "inlineStyleLanguage": "scss",
-                "assets": ["apps/nft-marketplace/src/favicon.ico", "apps/nft-marketplace/src/assets"],
-                "styles": [
-                    "apps/nft-marketplace/src/app/@theme/styles/styles.scss",
-                    "node_modules/bootstrap/dist/css/bootstrap.css"
-                ],
-                "scripts": [],
-                "allowedCommonJsDependencies": ["validator", "bs58", "buffer", "tweetnacl"]
+  "$schema": "..\\..\\node_modules\\nx\\schemas\\project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/nft-marketplace/src",
+  "prefix": "nft-marketplace",
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:browser",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/apps/nft-marketplace",
+        "index": "apps/nft-marketplace/src/index.html",
+        "main": "apps/nft-marketplace/src/main.ts",
+        "polyfills": "apps/nft-marketplace/src/polyfills.ts",
+        "tsConfig": "apps/nft-marketplace/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          "apps/nft-marketplace/src/favicon.ico",
+          "apps/nft-marketplace/src/assets"
+        ],
+        "styles": [
+          "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+          "apps/nft-marketplace/src/app/@theme/styles/styles.scss",
+          "node_modules/bootstrap/dist/css/bootstrap.css"
+        ],
+        "scripts": [],
+        "allowedCommonJsDependencies": [
+          "validator",
+          "bs58",
+          "buffer",
+          "tweetnacl"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "2mb",
+              "maximumError": "6mb"
             },
-            "configurations": {
-                "production": {
-                    "budgets": [
-                        {
-                            "type": "initial",
-                            "maximumWarning": "2mb",
-                            "maximumError": "6mb"
-                        },
-                        {
-                            "type": "anyComponentStyle",
-                            "maximumWarning": "2kb",
-                            "maximumError": "6mb"
-                        }
-                    ],
-                    "fileReplacements": [
-                        {
-                            "replace": "apps/nft-marketplace/src/environments/environment.ts",
-                            "with": "apps/nft-marketplace/src/environments/environment.prod.ts"
-                        }
-                    ],
-                    "outputHashing": "all"
-                },
-                "development": {
-                    "buildOptimizer": false,
-                    "optimization": false,
-                    "vendorChunk": true,
-                    "extractLicenses": false,
-                    "sourceMap": true,
-                    "namedChunks": true
-                }
-            },
-            "defaultConfiguration": "production"
-        },
-        "serve": {
-            "executor": "@angular-devkit/build-angular:dev-server",
-            "configurations": {
-                "production": {
-                    "browserTarget": "nft-marketplace:build:production"
-                },
-                "development": {
-                    "browserTarget": "nft-marketplace:build:development"
-                }
-            },
-            "defaultConfiguration": "development",
-            "options": {
-                "proxyConfig": "apps/nft-marketplace/proxy.conf.json"
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "6mb"
             }
-        },
-        "extract-i18n": {
-            "executor": "@angular-devkit/build-angular:extract-i18n",
-            "options": {
-                "browserTarget": "nft-marketplace:build"
+          ],
+          "fileReplacements": [
+            {
+              "replace": "apps/nft-marketplace/src/environments/environment.ts",
+              "with": "apps/nft-marketplace/src/environments/environment.prod.ts"
             }
+          ],
+          "outputHashing": "all"
         },
-        "lint": {
-            "executor": "@nrwl/linter:eslint",
-            "options": {
-                "lintFilePatterns": ["apps/nft-marketplace/src/**/*.ts", "apps/nft-marketplace/src/**/*.html"]
-            }
-        },
-        "test": {
-            "executor": "@nrwl/jest:jest",
-            "outputs": ["coverage/apps/nft-marketplace"],
-            "options": {
-                "jestConfig": "apps/nft-marketplace/jest.config.ts",
-                "passWithNoTests": true
-            }
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
         }
+      },
+      "defaultConfiguration": "production"
     },
-    "tags": []
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "browserTarget": "nft-marketplace:build:production"
+        },
+        "development": {
+          "browserTarget": "nft-marketplace:build:development"
+        }
+      },
+      "defaultConfiguration": "development",
+      "options": {
+        "proxyConfig": "apps/nft-marketplace/proxy.conf.json"
+      }
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "nft-marketplace:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/nft-marketplace/src/**/*.ts",
+          "apps/nft-marketplace/src/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/apps/nft-marketplace"
+      ],
+      "options": {
+        "jestConfig": "apps/nft-marketplace/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
 }

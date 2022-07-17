@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Wallet } from "@heavy-duty/wallet-adapter";
-import { CreateNftInput, Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js";
-import { clusterApiUrl, Connection } from "@solana/web3.js";
+import { CreateNftInput, Metaplex, Nft, walletAdapterIdentity } from "@metaplex-foundation/js";
+import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
+import { from, Observable } from "rxjs";
 import { ChainsModule } from "../chains.module";
 
 @Injectable({
@@ -28,5 +29,10 @@ export class MetaplexService {
         } else {
             return;
         }
+    }
+
+    public getUserNFTs(pubKey: string): Observable<Nft[]> {
+        console.log(pubKey);
+        return from(this._metaplex.nfts().findAllByOwner(new PublicKey(pubKey)));
     }
 }

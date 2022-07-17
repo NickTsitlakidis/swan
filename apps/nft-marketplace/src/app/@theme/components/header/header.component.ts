@@ -41,10 +41,8 @@ export class HeaderComponent implements OnInit {
     }
 
     public walletSelected(wallet: WalletDto) {
-        this._walletRegistryService
-            .getWalletService(wallet.id)
-            ?.getPublicKey()
-            .subscribe((walletAddress) => {
+        this._walletRegistryService.getWalletService(wallet.id).subscribe((service) => {
+            service?.getPublicKey().subscribe((walletAddress) => {
                 const authBody = new StartSignatureAuthenticationDto();
                 authBody.address = walletAddress;
                 authBody.blockchainId = wallet.chainId;
@@ -53,6 +51,7 @@ export class HeaderComponent implements OnInit {
                     this._lcStorage.store("walletName", wallet.name);
                 });
             });
+        });
     }
 
     public navigateToCreateCollection() {
