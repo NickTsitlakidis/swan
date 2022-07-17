@@ -73,7 +73,7 @@ describe("SwanMarketplace", () => {
 
         await expect(
             deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"))
-        ).to.be.revertedWith("Contract is not approved");
+        ).to.be.revertedWith("Token is not approved for transfer");
 
         expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(false);
         expect(await deployedNft.ownerOf(1)).to.equal(seller.address);
@@ -245,4 +245,8 @@ describe("SwanMarketplace", () => {
                 .buyToken(deployedNft.address, 1, { value: ethers.utils.parseEther("0.5") })
         ).to.be.revertedWith("Token is listed by the buyer");
     });
+
+    it("buyToken - reverts if owner removed approval", async () => {});
+
+    it("buyToken - reverts if owner no longer has token", async () => {});
 });
