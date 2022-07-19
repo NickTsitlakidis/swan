@@ -26,6 +26,33 @@ export class HeaderComponent implements OnInit {
     public faPaintBrush = faPaintBrush;
     public chainsNew: BlockchainWalletDto[];
 
+    public menuitems = [
+        {
+            label: "Profile",
+            link: "/profile"
+        },
+        {
+            label: "Favorites",
+            link: "/favorites",
+            disabled: true
+        },
+        {
+            label: "Watchlist",
+            link: "/watchlist",
+            disabled: true
+        },
+        {
+            label: "My collections",
+            link: "/collections",
+            disabled: true
+        },
+        {
+            label: "Settings",
+            link: "/settings",
+            disabled: true
+        }
+    ];
+
     constructor(
         public imagesService: ImagesService,
         private _router: Router,
@@ -54,12 +81,8 @@ export class HeaderComponent implements OnInit {
         });
     }
 
-    public navigateToCreateCollection() {
-        this._router.navigate(["/create-collection"]);
-    }
-
-    public navigateToCreateNFT() {
-        this._router.navigate(["/create-nft"]);
+    public navigateTo(link: string) {
+        this._router.navigate([link]);
     }
 
     /*********************************************************

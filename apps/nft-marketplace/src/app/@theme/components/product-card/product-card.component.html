@@ -1,0 +1,11 @@
+<div class="product-card mb-4">
+    <img [src]="productType.includes('image') ? imageUrl : 'assets/images/sound.jpg'" />
+    <div class="middle-container">
+        <div class="product-title">{{ productTitle }}</div>
+    </div>
+    <div class="price-container d-flex justify-content-between">
+        <div class="button-container">
+            <button>Buy now</button>
+        </div>
+    </div>
+</div>

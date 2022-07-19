@@ -13,6 +13,7 @@ import { CreateCollectionCommandExecutor } from "./collection/create-collection-
 import { SupportModule } from "../support/support.module";
 import { CreateNftCommandExecutor } from "./nft/create-nft-command-executor";
 import { NftModule } from "../domain/nft/nft.module";
+import { MintNftCommandExecutor } from "./nft/mint-nft-command-executor";
 
 @Module({
     providers: [
@@ -21,14 +22,16 @@ import { NftModule } from "../domain/nft/nft.module";
         SignatureValidator,
         CompleteWalletAdditionCommandExecutor,
         CreateCollectionCommandExecutor,
-        CreateNftCommandExecutor
+        CreateNftCommandExecutor,
+        MintNftCommandExecutor
     ],
     exports: [
         StartSignatureAuthenticationExecutor,
         CompleteSignatureAuthenticationExecutor,
         CompleteWalletAdditionCommandExecutor,
         CreateCollectionCommandExecutor,
-        CreateNftCommandExecutor
+        CreateNftCommandExecutor,
+        MintNftCommandExecutor
     ],
     imports: [
         InfrastructureModule,

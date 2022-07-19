@@ -3,11 +3,12 @@ import { EMPTY, from, map, Observable, of, Subject, switchMap, throwError, zip }
 import { WalletEvent } from "./wallet-event";
 import { ethers } from "ethers";
 import { isNil } from "lodash";
-import { CreateNft, MintTransaction } from "./nft";
+import { CreateNft } from "./nft";
 import { Injectable } from "@angular/core";
 import fantomSwanNft from "../../../../assets/evm-abi/fantom-swan-nft.json";
 import { ChainsModule } from "./chains.module";
 import { TransactionResponse } from "@ethersproject/abstract-provider/src.ts";
+import { NftMintTransactionDto } from "@nft-marketplace/common";
 
 @Injectable({
     providedIn: ChainsModule
@@ -32,7 +33,7 @@ export class MetamaskService implements WalletService {
         );
     }
 
-    mint(nft: CreateNft): Observable<MintTransaction> {
+    mint(nft: CreateNft): Observable<NftMintTransactionDto> {
         return this.getPublicKey().pipe(
             switchMap((publicKey) => {
                 const contract = new ethers.Contract(fantomSwanNft.address, fantomSwanNft.abi, this._ethersProvider);
@@ -44,15 +45,14 @@ export class MetamaskService implements WalletService {
             switchMap(([contract, publicKey, createItemResult]) => {
                 const filter = contract.filters["Transfer"](null, publicKey);
 
-                return new Observable<MintTransaction>((subscriber) => {
+                return new Observable<NftMintTransactionDto>((subscriber) => {
                     contract.on(filter, (from, to, amount, event) => {
                         if (event.transactionHash === (createItemResult as TransactionResponse).hash) {
-                            const mintTransaction: MintTransaction = {
+                            const mintTransaction: NftMintTransactionDto = {
                                 tokenId: ethers.BigNumber.from(event.args[2]).toNumber().toString(),
                                 transactionId: event.transactionHash,
                                 tokenAddress: fantomSwanNft.address,
-                                metadataUri: nft.metadataUri,
-                                imageUri: ""
+                                id: nft.id
                             };
                             subscriber.next(mintTransaction);
                             contract.removeAllListeners();

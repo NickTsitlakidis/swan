@@ -3,7 +3,12 @@ import { NftStatus } from "./nft-status";
 
 @SerializedEvent("nft-minted-event")
 export class NftMintedEvent extends EventPayload {
-    constructor(public status: NftStatus) {
+    constructor(
+        public status: NftStatus,
+        public transactionId: string,
+        public tokenAddress: string,
+        public tokenId: string
+    ) {
         super();
     }
 }

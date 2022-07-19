@@ -1,13 +1,13 @@
 <div class="header-container w-100">
     <div class="row w-100">
-        <div class="col-2 d-flex align-items-center">
+        <div class="col-2 d-flex align-items-center" (click)="navigateTo('home')">
             <span class="header-title">NFT Marketplace</span>
         </div>
         <div class="col">
-            <button nbButton hero shape="semi-round" status="primary" (click)="navigateToCreateCollection()">
+            <button nbButton hero shape="semi-round" status="primary" (click)="navigateTo('/create-collection')">
                 <fa-icon class="mr-2" [icon]="faPaintBrush"></fa-icon>Create collection
             </button>
-            <button class="ml-4" nbButton hero shape="semi-round" status="primary" (click)="navigateToCreateNFT()">
+            <button class="ml-4" nbButton hero shape="semi-round" status="primary" (click)="navigateTo('/create-nft')">
                 <fa-icon class="mr-2" [icon]="faPaintBrush"></fa-icon>Create nft
             </button>
         </div>
@@ -28,20 +28,13 @@
             </nb-select>
             <i [matMenuTriggerFor]="menu" class="fa-solid fa-user profile-thumb"></i>
             <mat-menu #menu="matMenu">
-                <button mat-menu-item>
-                    <span>Profile</span>
-                </button>
-                <button mat-menu-item disabled>
-                    <span>Favorites</span>
-                </button>
-                <button mat-menu-item>
-                    <span>Watchlist</span>
-                </button>
-                <button mat-menu-item>
-                    <span>My collections</span>
-                </button>
-                <button mat-menu-item>
-                    <span>Settings</span>
+                <button
+                    mat-menu-item
+                    *ngFor="let item of menuitems"
+                    [disabled]="item.disabled"
+                    (click)="navigateTo(item.link)"
+                >
+                    <span>{{ item.label }}</span>
                 </button>
             </mat-menu>
         </div>

@@ -192,6 +192,7 @@ export class CreateNFTPageComponent implements OnInit {
                 }),
                 switchMap((nftResponse) => {
                     const nft = {
+                        id: nftResponse.id,
                         metadataUri: nftResponse.metadataUri,
                         name: this.createNFTForm.get("title")?.value,
                         symbol: this.createNFTForm.get("symbol")?.value,
