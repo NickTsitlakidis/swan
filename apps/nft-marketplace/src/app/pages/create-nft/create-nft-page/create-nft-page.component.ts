@@ -205,6 +205,9 @@ export class CreateNFTPageComponent implements OnInit {
                     } else {
                         return of();
                     }
+                }),
+                switchMap((mintResponse) => {
+                    return this._nftService.mintNft(mintResponse);
                 })
             )
             .subscribe(console.log);

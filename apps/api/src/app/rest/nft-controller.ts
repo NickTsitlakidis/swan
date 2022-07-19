@@ -18,7 +18,7 @@ export class NftController {
         return this._commandBus.execute(command);
     }
 
-    @Post("/nft-minted")
+    @Post("/mint")
     @UseGuards(UserGuard)
     async nftMinted(@RequestUserId() userId: string, @Body() dto: NftMintTransactionDto): Promise<EntityDto> {
         const command = MintNftCommand.fromDto(userId, dto);
