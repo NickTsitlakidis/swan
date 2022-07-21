@@ -28,6 +28,12 @@ import { NftView } from "./nft/nft-view";
         NftViewRepository,
         NftProjector
     ],
-    exports: [UserViewRepository, CategoryRepository, UserWalletViewRepository, CollectionViewRepository]
+    exports: [
+        UserViewRepository,
+        CategoryRepository,
+        UserWalletViewRepository,
+        CollectionViewRepository,
+        NftViewRepository
+    ]
 })
 export class ViewsModule {}
