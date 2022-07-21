@@ -17,3 +17,5 @@ export * from "./lib/nft-metadata-attribute-dto";
 export * from "./lib/nft-metadata-dto";
 export * from "./lib/nft-dto";
 export * from "./lib/nft-mint-transaction-dto";
+export * from "./lib/profile-nft-dto";
+export * from "./lib/blockchain-dto";

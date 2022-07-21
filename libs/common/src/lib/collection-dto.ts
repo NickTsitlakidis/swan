@@ -1,3 +1,4 @@
+import { Type } from "class-transformer";
 import { CollectionLinksDto } from "./collection-links-dto";
 
 export class CollectionDto {
@@ -15,6 +16,7 @@ export class CollectionDto {
 
     imageUrl: string;
 
+    @Type(() => CollectionLinksDto)
     links: CollectionLinksDto;
 
     salePercentage: number;
