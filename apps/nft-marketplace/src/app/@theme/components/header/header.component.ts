@@ -26,6 +26,33 @@ export class HeaderComponent implements OnInit {
     public faPaintBrush = faPaintBrush;
     public chainsNew: BlockchainWalletDto[];
 
+    public menuitems = [
+        {
+            label: "Profile",
+            link: "/profile"
+        },
+        {
+            label: "Favorites",
+            link: "/favorites",
+            disabled: true
+        },
+        {
+            label: "Watchlist",
+            link: "/watchlist",
+            disabled: true
+        },
+        {
+            label: "My collections",
+            link: "/collections",
+            disabled: true
+        },
+        {
+            label: "Settings",
+            link: "/settings",
+            disabled: true
+        }
+    ];
+
     constructor(
         public imagesService: ImagesService,
         private _router: Router,
@@ -41,10 +68,8 @@ export class HeaderComponent implements OnInit {
     }
 
     public walletSelected(wallet: WalletDto) {
-        this._walletRegistryService
-            .getWalletService(wallet.id)
-            ?.getPublicKey()
-            .subscribe((walletAddress) => {
+        this._walletRegistryService.getWalletService(wallet.id).subscribe((service) => {
+            service?.getPublicKey().subscribe((walletAddress) => {
                 const authBody = new StartSignatureAuthenticationDto();
                 authBody.address = walletAddress;
                 authBody.blockchainId = wallet.chainId;
@@ -53,14 +78,11 @@ export class HeaderComponent implements OnInit {
                     this._lcStorage.store("walletName", wallet.name);
                 });
             });
+        });
     }
 
-    public navigateToCreateCollection() {
-        this._router.navigate(["/create-collection"]);
-    }
-
-    public navigateToCreateNFT() {
-        this._router.navigate(["/create-nft"]);
+    public navigateTo(link: string) {
+        this._router.navigate([link]);
     }
 
     /*********************************************************

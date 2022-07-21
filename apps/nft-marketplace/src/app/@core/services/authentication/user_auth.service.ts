@@ -8,7 +8,7 @@ import {
     TokenDto
 } from "@nft-marketplace/common";
 import { LocalStorageService } from "ngx-webstorage";
-import { Observable, switchMap, throwError } from "rxjs";
+import { Observable, of, switchMap, throwError, zip } from "rxjs";
 import { plainToClass } from "class-transformer";
 import { map, tap } from "rxjs/operators";
 import moment from "moment";
@@ -52,13 +52,20 @@ export class UserAuthService {
     }
 
     public authenticateWithSignature(body: StartSignatureAuthenticationDto) {
-        const walletService = this._walletRegistry.getWalletService(body.walletId);
-        if (isNil(walletService)) {
-            return throwError(() => "Unable to match wallet with service");
-        }
+        return this._walletRegistry.getWalletService(body.walletId).pipe(
+            switchMap((walletService) => {
+                if (isNil(walletService)) {
+                    return throwError(() => "Unable to match wallet with service");
+                }
+                return zip(
+                    of(walletService),
+                    this._httpClient.post<NonceDto>("/user/start-signature-authentication", body)
+                );
+            }),
 
-        return this._httpClient.post<NonceDto>("/user/start-signature-authentication", body).pipe(
-            switchMap((nonce) => {
+            switchMap((service) => {
+                const walletService = service[0];
+                const nonce = service[1];
                 return walletService.signMessage(nonce.nonce);
             }),
             switchMap((signature) => {

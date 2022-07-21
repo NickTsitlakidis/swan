@@ -1,28 +1,34 @@
 {
-    "$schema": "..\\..\\node_modules\\nx\\schemas\\project-schema.json",
-    "sourceRoot": "apps/nft-marketplace-e2e/src",
-    "projectType": "application",
-    "targets": {
-        "e2e": {
-            "executor": "@nrwl/cypress:cypress",
-            "options": {
-                "cypressConfig": "apps/nft-marketplace-e2e/cypress.json",
-                "devServerTarget": "nft-marketplace:serve:development"
-            },
-            "configurations": {
-                "production": {
-                    "devServerTarget": "nft-marketplace:serve:production"
-                }
-            }
-        },
-        "lint": {
-            "executor": "@nrwl/linter:eslint",
-            "outputs": ["{options.outputFile}"],
-            "options": {
-                "lintFilePatterns": ["apps/nft-marketplace-e2e/**/*.{js,ts}"]
-            }
+  "$schema": "..\\..\\node_modules\\nx\\schemas\\project-schema.json",
+  "sourceRoot": "apps/nft-marketplace-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "e2e": {
+      "executor": "@nrwl/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/nft-marketplace-e2e/cypress.json",
+        "devServerTarget": "nft-marketplace:serve:development"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "nft-marketplace:serve:production"
         }
+      }
     },
-    "tags": [],
-    "implicitDependencies": ["nft-marketplace"]
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "apps/nft-marketplace-e2e/**/*.{js,ts}"
+        ]
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": [
+    "nft-marketplace"
+  ]
 }

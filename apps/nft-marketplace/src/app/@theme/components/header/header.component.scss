@@ -15,6 +15,14 @@
         .header-title {
             font-weight: 700;
             font-size: 20px;
+            cursor: pointer;
+        }
+
+        .profile-thumb {
+            padding: 10px;
+            border: 2px solid white;
+            border-radius: 50%;
+            cursor: pointer;
         }
     }
 

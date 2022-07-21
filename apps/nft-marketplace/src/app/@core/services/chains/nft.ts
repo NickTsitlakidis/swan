@@ -2,6 +2,7 @@ import { NftMetadataAttributeDto } from "@nft-marketplace/common";
 import { Collection } from "../collections/collection";
 
 export interface CreateNft {
+    id: string;
     metadataUri: string;
     collection?: Collection;
     name: string;
@@ -9,14 +10,6 @@ export interface CreateNft {
     resellPercentage?: number;
     maxSupply?: number;
     metadata: Array<NftMetadataAttributeDto>;
-}
-
-export interface MintTransaction {
-    transactionId: string;
-    tokenAddress: string;
-    tokenId?: string;
-    metadataUri: string;
-    imageUri?: string;
 }
 
 export interface ErrorMintTransaction {

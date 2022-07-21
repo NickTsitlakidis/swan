@@ -6,7 +6,7 @@ import { fade } from "../../../@core/animations/enter-leave.animation";
 import { CreateNft } from "../../../@core/services/chains/nft";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
 import { SupportService } from "../../../@core/services/support/support.service";
-import { of, switchMap } from "rxjs";
+import { firstValueFrom, of, switchMap } from "rxjs";
 import { NftService } from "../../../@core/services/chains/nfts/nft.service";
 import { CollectionsService } from "../../../@core/services/collections/collections.service";
 
@@ -158,9 +158,9 @@ export class CreateNFTPageComponent implements OnInit {
         this.uploadedFile = files[0];
     }
 
-    public onSubmit() {
+    public async onSubmit() {
         const walletId = this._lcStorage.retrieve("walletId");
-        const walletService = this._walletRegistryService.getWalletService(walletId);
+        const walletService = await firstValueFrom(this._walletRegistryService.getWalletService(walletId));
         const metadata: NftMetadataAttributeDto[] = [];
         for (let index = 1; index <= this.attributes.length; index++) {
             metadata.push({
@@ -192,6 +192,7 @@ export class CreateNFTPageComponent implements OnInit {
                 }),
                 switchMap((nftResponse) => {
                     const nft = {
+                        id: nftResponse.id,
                         metadataUri: nftResponse.metadataUri,
                         name: this.createNFTForm.get("title")?.value,
                         symbol: this.createNFTForm.get("symbol")?.value,
@@ -204,6 +205,9 @@ export class CreateNFTPageComponent implements OnInit {
                     } else {
                         return of();
                     }
+                }),
+                switchMap((mintResponse) => {
+                    return this._nftService.mintNft(mintResponse);
                 })
             )
             .subscribe(console.log);

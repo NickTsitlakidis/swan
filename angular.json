@@ -1,9 +1,9 @@
 {
-    "version": 2,
-    "projects": {
-        "api": "apps/api",
-        "common": "libs/common",
-        "nft-marketplace": "apps/nft-marketplace",
-        "nft-marketplace-e2e": "apps/nft-marketplace-e2e"
-    }
+  "version": 2,
+  "projects": {
+    "api": "apps/api",
+    "common": "libs/common",
+    "nft-marketplace": "apps/nft-marketplace",
+    "nft-marketplace-e2e": "apps/nft-marketplace-e2e"
+  }
 }

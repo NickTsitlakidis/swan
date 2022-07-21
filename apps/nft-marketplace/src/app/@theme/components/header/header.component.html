@@ -1,20 +1,20 @@
 <div class="header-container w-100">
     <div class="row w-100">
-        <div class="col-2 d-flex align-items-center">
+        <div class="col-2 d-flex align-items-center" (click)="navigateTo('home')">
             <span class="header-title">NFT Marketplace</span>
         </div>
         <div class="col">
-            <button nbButton hero shape="semi-round" status="primary" (click)="navigateToCreateCollection()">
+            <button nbButton hero shape="semi-round" status="primary" (click)="navigateTo('/create-collection')">
                 <fa-icon class="mr-2" [icon]="faPaintBrush"></fa-icon>Create collection
             </button>
-            <button class="ml-4" nbButton hero shape="semi-round" status="primary" (click)="navigateToCreateNFT()">
+            <button class="ml-4" nbButton hero shape="semi-round" status="primary" (click)="navigateTo('/create-nft')">
                 <fa-icon class="mr-2" [icon]="faPaintBrush"></fa-icon>Create nft
             </button>
         </div>
-        <div class="col">
+        <div class="col d-flex justify-content-end align-items-center">
             <nb-select
                 (selectedChange)="walletSelected($event)"
-                class="float-right"
+                class="mr-4"
                 hero
                 placeholder="Select your wallet"
                 shape="semi-round"
@@ -26,6 +26,17 @@
                     <nb-option *ngFor="let wallet of chain.wallets" [value]="wallet">{{ wallet.name }}</nb-option>
                 </nb-option-group>
             </nb-select>
+            <i [matMenuTriggerFor]="menu" class="fa-solid fa-user profile-thumb"></i>
+            <mat-menu #menu="matMenu">
+                <button
+                    mat-menu-item
+                    *ngFor="let item of menuitems"
+                    [disabled]="item.disabled"
+                    (click)="navigateTo(item.link)"
+                >
+                    <span>{{ item.label }}</span>
+                </button>
+            </mat-menu>
         </div>
     </div>
 </div>

@@ -11,11 +11,13 @@ import { filter } from "rxjs/operators";
 import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { environment } from "../../../../../environments/environment";
 import { WalletService } from "../wallet-service";
-import { CreateNft, MintTransaction } from "../nft";
+import { CreateNft } from "../nft";
 import { WalletEvent, WalletEventType } from "../wallet-event";
 import { CreateNftInput } from "@metaplex-foundation/js";
 import { MetaplexService } from "./metaplex.service";
 import { SwanError } from "../../../interfaces/swan-error";
+import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
+import { NftMintTransactionDto } from "@nft-marketplace/common";
 
 export const isNotNull = <T>(source: Observable<T | null>) =>
     source.pipe(filter((item: T | null): item is T => item !== null));
@@ -90,7 +92,7 @@ export class SolanaWalletService implements WalletService {
         );
     }
 
-    public mint(nft: CreateNft): Observable<MintTransaction> {
+    public mint(nft: CreateNft): Observable<NftMintTransactionDto> {
         const completeWalletObservable = new Observable<Wallet | null>((subscriber) => {
             this.wallet$.subscribe((wallet) => {
                 subscriber.next(wallet);
@@ -122,10 +124,10 @@ export class SolanaWalletService implements WalletService {
             switchMap((mintResponse) => {
                 if (mintResponse) {
                     const mintTransaction = {
-                        transactionId: mintResponse.transactionId,
-                        tokenAddress: mintResponse.associatedToken.toString(),
-                        metadataUri: mintResponse.metadata.toString()
-                    } as MintTransaction;
+                        transactionId: mintResponse.response.signature,
+                        tokenAddress: mintResponse.tokenAddress.toString(),
+                        id: nft.id
+                    } as NftMintTransactionDto;
                     return of(mintTransaction);
                 } else {
                     return throwError(() => {
@@ -138,6 +140,14 @@ export class SolanaWalletService implements WalletService {
 
     public getEvents(): Observable<WalletEvent> {
         return this._events.asObservable();
+    }
+
+    public getUserNFTs(): Observable<MetaplexMetadata[]> {
+        return this.getPublicKey().pipe(
+            switchMap((pubKey) => {
+                return this._metaplexService.getUserNFTs(pubKey);
+            })
+        );
     }
 
     public onSelectWallet(walletName: WalletName) {

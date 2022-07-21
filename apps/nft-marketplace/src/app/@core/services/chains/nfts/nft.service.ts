@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { NftDto, NftMetadataDto } from "@nft-marketplace/common";
+import { EntityDto, NftDto, NftMetadataDto, NftMintTransactionDto } from "@nft-marketplace/common";
 import { Observable } from "rxjs";
 import { CoreModule } from "../../../core.module";
 
@@ -12,5 +12,9 @@ export class NftService {
 
     public createNft(body: NftMetadataDto): Observable<NftDto> {
         return this._httpClient.post<NftDto>("/nft/create", body);
+    }
+
+    public mintNft(body: NftMintTransactionDto): Observable<EntityDto> {
+        return this._httpClient.post<EntityDto>("/nft/mint", body);
     }
 }

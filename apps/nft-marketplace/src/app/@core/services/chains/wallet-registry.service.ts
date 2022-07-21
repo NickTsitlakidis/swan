@@ -4,12 +4,14 @@ import { Injectable } from "@angular/core";
 import { SupportService } from "../support/support.service";
 import { SolflareWalletService } from "./solana-services/solflare.wallet.service";
 import { PhantomWalletService } from "./solana-services/phantom.wallet.service";
+import { map, Observable, of, Subject } from "rxjs";
 
 @Injectable({
     providedIn: "root"
 })
 export class WalletRegistryService {
     private _registry: Map<string, WalletService>;
+    private _registryPopulated: Subject<boolean>;
 
     constructor(
         private _metamaskService: MetamaskService,
@@ -18,10 +20,19 @@ export class WalletRegistryService {
         private _phantomService: PhantomWalletService
     ) {
         this._registry = new Map();
+        this._registryPopulated = new Subject<boolean>();
     }
 
-    getWalletService(walletId: string): WalletService | undefined {
-        return this._registry.get(walletId);
+    getWalletService(walletId: string): Observable<WalletService | undefined> {
+        if (this._registry.size > 0) {
+            return of(this._registry.get(walletId));
+        }
+
+        return this._registryPopulated.pipe(
+            map(() => {
+                return this._registry.get(walletId);
+            })
+        );
     }
 
     populateRegistry() {
@@ -39,6 +50,7 @@ export class WalletRegistryService {
                     }
                 });
             });
+            this._registryPopulated.next(true);
         });
     }
 }

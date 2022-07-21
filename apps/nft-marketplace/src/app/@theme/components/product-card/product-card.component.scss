@@ -1,0 +1,89 @@
+@import '../../styles/themes';
+@import '~@nebular/theme/styles/global/breakpoints';
+@import '~bootstrap/scss/mixins/breakpoints';
+
+@include nb-install-component() {
+
+    .product-card {
+        width: 100%;
+        max-width: 250px;
+        height: 330px;
+        border: 1px solid #E5E5EA;
+        box-sizing: border-box;
+        border-radius: 12px;
+        position: relative;
+        cursor: pointer;
+
+        img {
+            width: 100%;
+            border-top-right-radius: 12px;
+            border-top-left-radius: 12px;
+            height: 195px;
+            object-fit: contain;
+            padding: 10px;
+            background-color: #fff;
+        }
+
+        .middle-container {
+            padding: 10px;
+            height: 70px;
+
+            .product-title {
+                font-size: 12.5px;
+                max-height: 55px;
+                display: block;
+                max-width: 100%;
+                line-height: 1.4;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                margin: 0 auto;
+            }
+        }
+
+        .price-container {
+            align-items: center;
+            display: flex;
+            font-weight: 500;
+            padding: 0px;
+            height: 20px;
+            width: 100%;
+            margin-top: 4px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            justify-content: space-between;
+            color: rgb(32, 129, 226);
+            text-decoration: none;
+            &:hover {
+                color: rgb(24, 104, 183);
+            }
+
+            .button-container {
+                left: 0px;
+                width: 100%;
+                height: 36px;
+                position: absolute;
+                bottom: 0px;
+                transition: bottom 0.25s ease-in-out 0s;
+
+                button {
+                    border-radius: 0px 0px 10px 10px;
+                    height: 36px;
+                    width: 100%;
+                    display: inline-flex;
+                    flex-direction: row;
+                    align-items: center;
+                    border-radius: 12px;
+                    justify-content: center;
+                    font-size: 16px;
+                    font-weight: 600;
+                    line-height: 22px;
+                    letter-spacing: 0.01em;
+                    padding: 17px 24px;
+                    background-color: rgb(32, 129, 226);
+                    border: 2px solid transparent;
+                    color: rgb(255, 255, 255);
+                }
+            }
+        }
+    }
+}

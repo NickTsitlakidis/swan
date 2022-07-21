@@ -7,6 +7,7 @@ import { SourcedEvent } from "../../infrastructure/sourced-event";
 import { UploaderService } from "../../support/uploader/uploader-service";
 import { NftMetadata } from "./nft-metadata";
 import { UploadedFiles } from "../../support/uploader/uploaded-files";
+import { MintNftCommand } from "../../commands/nft/mint-nft-command";
 
 export class Nft extends EventSourcedEntity {
     private _status: NftStatus;
@@ -29,7 +30,7 @@ export class Nft extends EventSourcedEntity {
         return nft;
     }
 
-    constructor(id: string) {
+    private constructor(id: string) {
         super(id, getLogger(Nft));
     }
 
@@ -68,12 +69,19 @@ export class Nft extends EventSourcedEntity {
         return this;
     }
 
-    mint() {
+    mint(mintTransaction: MintNftCommand) {
         if (this._status !== NftStatus.UPLOADED_FILES) {
             throw new BadRequestException(`Wrong nft status : ${this._status}`);
         }
         this._status = NftStatus.MINTED;
-        this.apply(new NftMintedEvent(this._status));
+        this.apply(
+            new NftMintedEvent(
+                this._status,
+                mintTransaction.transactionId,
+                mintTransaction.tokenAddress,
+                mintTransaction.tokenId
+            )
+        );
     }
 
     @EventProcessor(NftCreatedEvent)
@@ -87,5 +95,10 @@ export class Nft extends EventSourcedEntity {
     private processUploadedNftMetadataEvent = (event: UploadedNftMetadataEvent) => {
         this._status = event.status;
         this._metadataUri = event.metadataUri;
+    };
+
+    @EventProcessor(NftMintedEvent)
+    private processNftMintedEvent = (event: NftMintedEvent) => {
+        this._status = event.status;
     };
 }
