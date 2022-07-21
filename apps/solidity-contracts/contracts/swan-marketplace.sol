@@ -60,6 +60,15 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         listingIds.increment();
     }
 
+    modifier listedToken(
+        address tokenContractAddress,
+        uint256 tokenId
+    ) {
+        TokenListing memory found = listings[tokenContractAddress][tokenId];
+        require(found.listingId > 0, "Listing does not exist");
+        _;
+    }
+
     function isTokenListed(address tokenContractAddress, uint tokenId) external view returns (bool) {
         TokenListing memory found = listings[tokenContractAddress][tokenId];
         return found.listingId > 0;
@@ -87,7 +96,7 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         IERC721 nft = IERC721(tokenContractAddress);
         require(nft.ownerOf(tokenId) == msg.sender, "Incorrect owner of token");
 
-        require(nft.getApproved(tokenId) == address(this), "Contract is not approved");
+        require(nft.getApproved(tokenId) == address(this), "Token is not approved for transfer");
 
         listingIds.increment();
         TokenListing memory newListing = TokenListing(
@@ -108,20 +117,25 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         );
     }
 
-    function buyToken(address tokenContractAddress, uint tokenId) external payable nonReentrant {
+    function buyToken(address tokenContractAddress, uint tokenId) external payable listedToken(tokenContractAddress, tokenId) nonReentrant {
         TokenListing memory found = listings[tokenContractAddress][tokenId];
-        require(found.listingId > 0, "Listing does not exist");
 
         require(found.seller != msg.sender, "Token is listed by the buyer");
         require(found.price == msg.value, "Price doesn't match");
 
-        IERC721(found.tokenContractAddress).transferFrom(found.seller, msg.sender, found.tokenId);
+        IERC721 nft = IERC721(tokenContractAddress);
+        require(nft.ownerOf(tokenId) == found.seller, "Incorrect owner of token");
+
+        require(nft.getApproved(tokenId) == address(this), "Token is not approved for transfer");
 
         //todo: use openzeppelin payment splitter here
-        uint serviceFee = ((found.price * 2) / 100);
-        uint sellerFee = found.price - serviceFee;
+        uint swanFee = ((found.price * feePercentage) / 100);
+        uint sellerFee = found.price - swanFee;
+
         payable(found.seller).transfer(sellerFee);
-        payable(swanWallet).transfer(serviceFee);
+        payable(swanWallet).transfer(swanFee);
+
+        IERC721(found.tokenContractAddress).transferFrom(found.seller, msg.sender, found.tokenId);
 
         delete (listings[tokenContractAddress][tokenId]);
 
@@ -135,9 +149,8 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         );
     }
 
-    function cancelListing(address tokenContractAddress, uint tokenId) external nonReentrant {
+    function cancelListing(address tokenContractAddress, uint tokenId) external listedToken(tokenContractAddress, tokenId) nonReentrant {
         TokenListing memory found = listings[tokenContractAddress][tokenId];
-        require(found.listingId > 0, "Listing does not exist");
 
         require(found.seller == msg.sender, "Incorrect owner of listing");
 

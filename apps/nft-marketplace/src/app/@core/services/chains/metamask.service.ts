@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 import { isNil } from "lodash";
 import { CreateNft } from "./nft";
 import { Injectable } from "@angular/core";
-import fantomSwanNft from "../../../../assets/evm-abi/fantom-swan-nft.json";
+import fantomSwanNft from "../../../../assets/evm-abi/fantom-mainnet-swan-nft.json";
 import { ChainsModule } from "./chains.module";
 import { TransactionResponse } from "@ethersproject/abstract-provider/src.ts";
 import { NftMintTransactionDto } from "@nft-marketplace/common";
