@@ -74,6 +74,11 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         return found.listingId > 0;
     }
 
+    function getListing(address tokenContractAddress, uint tokenId) external view returns (TokenListing memory) {
+        TokenListing memory found = listings[tokenContractAddress][tokenId];
+        return found;
+    }
+
     function getFeePercentage() external view returns (uint) {
         return feePercentage;
     }
@@ -84,8 +89,6 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
     }
 
     function createListing(address tokenContractAddress, uint tokenId, uint price) external nonReentrant {
-        require(price > 0, "Price must be greater than 0");
-
         TokenListing memory found = listings[tokenContractAddress][tokenId];
         require(found.listingId == 0, "Token is already listed");
 
@@ -115,6 +118,26 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
             newListing.price,
             newListing.listingId
         );
+    }
+
+    function updateListingPrice(address tokenContractAddress, uint tokenId, uint newPrice) external listedToken(tokenContractAddress, tokenId) nonReentrant {
+        TokenListing memory found = listings[tokenContractAddress][tokenId];
+        require(found.seller == msg.sender, "Sender is not the owner of listing");
+
+
+        uint previousPrice = found.price;
+
+        listings[tokenContractAddress][tokenId].price = newPrice; //todo
+
+        emit ListingUpdated(
+            found.seller,
+            found.tokenContractAddress,
+            found.tokenId,
+            newPrice,
+            previousPrice,
+            found.listingId
+        );
+
     }
 
     function buyToken(address tokenContractAddress, uint tokenId) external payable listedToken(tokenContractAddress, tokenId) nonReentrant {
