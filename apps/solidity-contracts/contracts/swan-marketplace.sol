@@ -21,6 +21,15 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         uint listingId
     );
 
+    event ListingUpdated(
+        address seller,
+        address tokenContractAddress,
+        uint tokenId,
+        uint currentPrice,
+        uint previousPrice,
+        uint listingId
+    );
+
     event TokenSold(
         address seller,
         address buyer,
@@ -91,7 +100,6 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
     function createListing(address tokenContractAddress, uint tokenId, uint price) external nonReentrant {
         TokenListing memory found = listings[tokenContractAddress][tokenId];
         require(found.listingId == 0, "Token is already listed");
-
 
         bool isSupportedNft = tokenContractAddress.supportsERC165() && IERC165(tokenContractAddress).supportsInterface(INTERFACE_ID_ERC721);
         require(isSupportedNft == true, "Contract is currently not supported");
