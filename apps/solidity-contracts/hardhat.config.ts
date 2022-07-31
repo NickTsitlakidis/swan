@@ -30,16 +30,16 @@ const config: HardhatUserConfig = {
         artifacts: "./artifacts"
     },
     networks: {
-        fantomTestNet: {
-            url: `https://rpc.testnet.fantom.network`,
-            chainId: 4002,
-            accounts: ["key"]
-        },
-        fantomMainNet: {
-            url: `https://rpc.ankr.com/fantom/`,
-            chainId: 250,
-            accounts: ["key"]
-        }
+        // fantomTestNet: {
+        //     url: `https://rpc.testnet.fantom.network`,
+        //     chainId: 4002,
+        //     accounts: ["key"]
+        // },
+        // fantomMainNet: {
+        //     url: `https://rpc.ankr.com/fantom/`,
+        //     chainId: 250,
+        //     accounts: ["key"]
+        // }
     }
 };
 

@@ -36,11 +36,22 @@ describe("SwanMarketplace", () => {
         expect(await deployedMarketplace.getFeePercentage()).to.equal(1);
     });
 
-    it("createListing - reverts if price is 0", async () => {
-        await expect(deployedMarketplace.createListing(deployedNft.address, 1, 0)).to.be.revertedWith(
-            "Price must be greater than 0"
-        );
-        expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(false);
+    it("createListing - accepts 0 for price", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+
+        const result = await deployedMarketplace
+            .connect(seller)
+            .createListing(deployedNft.address, 1, ethers.utils.parseEther("0"));
+
+        expect(result)
+            .to.emit(deployedMarketplace, "ListingCreated")
+            .withArgs(seller.address, deployedNft.address, 2, ethers.utils.parseEther("0"), 1);
+
+        expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(true);
+        expect(await deployedNft.ownerOf(1)).to.equal(seller.address);
     });
 
     it("createListing - reverts if price is negative", async () => {
@@ -246,7 +257,148 @@ describe("SwanMarketplace", () => {
         ).to.be.revertedWith("Token is listed by the buyer");
     });
 
-    it("buyToken - reverts if owner removed approval", async () => {});
+    it("buyToken - reverts if owner removed approval", async () => {
+        const [deployer, seller, third] = await ethers.getSigners();
 
-    it("buyToken - reverts if owner no longer has token", async () => {});
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.connect(seller).approve(ethers.constants.AddressZero, 1);
+
+        await expect(deployedNft.connect(seller).getApproved(1))
+            .to.not.be.equal(deployedMarketplace.address)
+            .to.be.equal(ethers.constants.AddressZero);
+
+        await expect(
+            deployedMarketplace
+                .connect(third)
+                .buyToken(deployedNft.address, 1, { value: ethers.utils.parseEther("0.5") })
+        ).to.be.revertedWith("Token is not approved for transfer");
+    });
+
+    it("buyToken - reverts if owner no longer has token", async () => {
+        const [deployer, seller, third, fourth] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.connect(seller).transferFrom(seller.address, fourth.address, 1);
+
+        // const val = await deployedNft.ownerOf(1);
+
+        await expect(
+            deployedMarketplace
+                .connect(third)
+                .buyToken(deployedNft.address, 1, { value: ethers.utils.parseEther("0.5") })
+        ).to.be.revertedWith("Incorrect owner of token");
+    });
+
+    it("updateListingPrice - reverts if sender is not owner", async () => {
+        const [deployer, seller, third] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        await expect(
+            deployedMarketplace
+                .connect(third)
+                .updateListingPrice(deployedNft.address, 1, ethers.utils.parseEther("0.7"))
+        ).to.be.revertedWith("Sender is not the owner of listing");
+
+        const found = await deployedMarketplace.getListing(deployedNft.address, 1);
+        expect(found.price).to.equal(ethers.utils.parseEther("0.5"));
+    });
+
+    it("updateListingPrice - reverts if listing doesn't exist", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        await expect(
+            deployedMarketplace
+                .connect(seller)
+                .updateListingPrice(deployedNft.address, 666, ethers.utils.parseEther("0.7"))
+        ).to.be.revertedWith("Listing does not exist");
+
+        const found = await deployedMarketplace.getListing(deployedNft.address, 1);
+        expect(found.price).to.equal(ethers.utils.parseEther("0.5"));
+    });
+
+    it("updateListingPrice - reverts if price is negative", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        await expect(deployedMarketplace.connect(seller).updateListingPrice(deployedNft.address, 1, -90)).to.be
+            .reverted;
+
+        const found = await deployedMarketplace.getListing(deployedNft.address, 1);
+        expect(found.price).to.equal(ethers.utils.parseEther("0.5"));
+    });
+
+    it("updateListingPrice - accepts zero price", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        const result = deployedMarketplace
+            .connect(seller)
+            .updateListingPrice(deployedNft.address, 1, ethers.utils.parseEther("0"));
+
+        await expect(result)
+            .to.emit(deployedMarketplace, "ListingUpdated")
+            .withArgs(
+                seller.address,
+                deployedNft.address,
+                1,
+                ethers.utils.parseEther("0"),
+                ethers.utils.parseEther("0.5"),
+                2
+            );
+
+        const found = await deployedMarketplace.getListing(deployedNft.address, 1);
+        expect(found.price).to.equal(ethers.utils.parseEther("0"));
+    });
+
+    it("updateListingPrice - updates price and emits event", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        const result = deployedMarketplace
+            .connect(seller)
+            .updateListingPrice(deployedNft.address, 1, ethers.utils.parseEther("0.7"));
+
+        await expect(result)
+            .to.emit(deployedMarketplace, "ListingUpdated")
+            .withArgs(
+                seller.address,
+                deployedNft.address,
+                1,
+                ethers.utils.parseEther("0.7"),
+                ethers.utils.parseEther("0.5"),
+                2
+            );
+
+        const found = await deployedMarketplace.getListing(deployedNft.address, 1);
+        expect(found.price).to.equal(ethers.utils.parseEther("0.7"));
+    });
 });
