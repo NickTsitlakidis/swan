@@ -14,12 +14,10 @@ export class NftFactory {
     ) {}
 
     createFromEvents(id: string, events: Array<SourcedEvent>): Nft {
-        return this._store.connectEntity(Nft.fromEvents(this._blockchainActionsService, id, events));
+        return this._store.connectEntity(Nft.fromEvents(id, events));
     }
 
     createNew(userId: string, blockchainId: string): Nft {
-        return this._store.connectEntity(
-            Nft.create(this._blockchainActionsService, this._idGenerator.generateEntityId(), userId, blockchainId)
-        );
+        return this._store.connectEntity(Nft.create(this._idGenerator.generateEntityId(), userId, blockchainId));
     }
 }

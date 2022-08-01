@@ -14,14 +14,14 @@ export class Nft extends EventSourcedEntity {
     private _blockchainId: string;
     private _metadataUri: string;
 
-    static fromEvents(service: BlockchainActionsService, id: string, events: Array<SourcedEvent>): Nft {
-        const nft = new Nft(service, id);
+    static fromEvents(id: string, events: Array<SourcedEvent>): Nft {
+        const nft = new Nft(id);
         nft.processEvents(events);
         return nft;
     }
 
-    static create(service: BlockchainActionsService, id: string, userId: string, blockchainId: string): Nft {
-        const nft = new Nft(service, id);
+    static create(id: string, userId: string, blockchainId: string): Nft {
+        const nft = new Nft(id);
         nft._blockchainId = blockchainId;
         nft._userId = userId;
         nft._status = NftStatus.CREATED;
@@ -29,7 +29,7 @@ export class Nft extends EventSourcedEntity {
         return nft;
     }
 
-    private constructor(private _blockchainActionsService: BlockchainActionsService, id: string) {
+    private constructor(id: string) {
         super(id, getLogger(Nft));
     }
 
@@ -49,12 +49,12 @@ export class Nft extends EventSourcedEntity {
         return this._userId;
     }
 
-    async uploadFiles(metadata: NftMetadata): Promise<Nft> {
+    async uploadFiles(blockchainActionsService: BlockchainActionsService, metadata: NftMetadata): Promise<Nft> {
         if (this._status !== NftStatus.CREATED) {
             throw new BadRequestException(`Wrong nft status : ${this._status}`);
         }
 
-        const service = await this._blockchainActionsService.getService(this._blockchainId);
+        const service = await blockchainActionsService.getService(this._blockchainId);
         const uploadedFiles = await service.uploadMetadata(metadata);
 
         this._metadataUri = uploadedFiles.metadataIPFSUri;
