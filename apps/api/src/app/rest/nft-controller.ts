@@ -27,9 +27,9 @@ export class NftController {
         return this._commandBus.execute(command);
     }
 
-    @Get("/user")
+    /* @Get("/user")
     @UseGuards(UserGuard)
     async getByUserId(@RequestUserId() userId: string): Promise<Array<ProfileNftDto>> {
         return this._nftQueryHandler.getByUserId(userId);
-    }
+    } */
 }

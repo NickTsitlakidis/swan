@@ -14,6 +14,9 @@ import { SwanWalletService } from "./swan-wallet-service";
 import { ConfigModule } from "@nestjs/config";
 import { AwsService } from "./aws/aws-service";
 import { MetaplexService } from "./metaplex/metaplex-service";
+import { EvmActionsService } from "./blockchains/evm-actions-service";
+import { SolanaActionsService } from "./blockchains/solana-actions-service";
+import { BlockchainActionsService } from "./blockchains/blockchain-actions-service";
 
 @Module({
     imports: [
@@ -29,7 +32,10 @@ import { MetaplexService } from "./metaplex/metaplex-service";
         BlockchainWalletRepository,
         SwanWalletService,
         AwsService,
-        MetaplexService
+        MetaplexService,
+        EvmActionsService,
+        BlockchainActionsService,
+        SolanaActionsService
     ],
     exports: [
         CategoryRepository,
@@ -39,7 +45,10 @@ import { MetaplexService } from "./metaplex/metaplex-service";
         BlockchainRepository,
         BlockchainWalletRepository,
         AwsService,
-        MetaplexService
+        MetaplexService,
+        EvmActionsService,
+        BlockchainActionsService,
+        SolanaActionsService
     ]
 })
 export class SupportModule {}

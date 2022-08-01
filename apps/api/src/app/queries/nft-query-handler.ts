@@ -10,9 +10,9 @@ export class NftQueryHandler {
         private _blockchainRepository: BlockchainRepository
     ) {}
 
-    async getByUserId(userId: string): Promise<Array<ProfileNftDto>> {
+    /* async getByUserId(userId: string): Promise<Array<ProfileNftDto>> {
         const userWallets = await this._userWalletRepository.findByUserId(userId);
 
         const chains = await this._blockchainRepository.findByIds(userWallets.map((wallet) => wallet.blockchainId));
-    }
+    } */
 }

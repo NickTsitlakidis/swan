@@ -2,17 +2,24 @@ import { Injectable } from "@nestjs/common";
 import { EventStore } from "../../infrastructure/event-store";
 import { IdGenerator } from "../../infrastructure/id-generator";
 import { SourcedEvent } from "../../infrastructure/sourced-event";
+import { BlockchainActionsService } from "../../support/blockchains/blockchain-actions-service";
 import { Nft } from "./nft";
 
 @Injectable()
 export class NftFactory {
-    constructor(private _store: EventStore, private _idGenerator: IdGenerator) {}
+    constructor(
+        private _store: EventStore,
+        private _blockchainActionsService: BlockchainActionsService,
+        private _idGenerator: IdGenerator
+    ) {}
 
     createFromEvents(id: string, events: Array<SourcedEvent>): Nft {
-        return this._store.connectEntity(Nft.fromEvents(id, events));
+        return this._store.connectEntity(Nft.fromEvents(this._blockchainActionsService, id, events));
     }
 
     createNew(userId: string, blockchainId: string): Nft {
-        return this._store.connectEntity(Nft.create(this._idGenerator.generateEntityId(), userId, blockchainId));
+        return this._store.connectEntity(
+            Nft.create(this._blockchainActionsService, this._idGenerator.generateEntityId(), userId, blockchainId)
+        );
     }
 }

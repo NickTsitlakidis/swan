@@ -4,10 +4,9 @@ import { NftStatus } from "./nft-status";
 import { BadRequestException } from "@nestjs/common";
 import { getLogger } from "../../infrastructure/logging";
 import { SourcedEvent } from "../../infrastructure/sourced-event";
-import { UploaderService } from "../../support/uploader/uploader-service";
 import { NftMetadata } from "./nft-metadata";
-import { UploadedFiles } from "../../support/uploader/uploaded-files";
 import { MintNftCommand } from "../../commands/nft/mint-nft-command";
+import { BlockchainActionsService } from "../../support/blockchains/blockchain-actions-service";
 
 export class Nft extends EventSourcedEntity {
     private _status: NftStatus;
@@ -15,14 +14,14 @@ export class Nft extends EventSourcedEntity {
     private _blockchainId: string;
     private _metadataUri: string;
 
-    static fromEvents(id: string, events: Array<SourcedEvent>): Nft {
-        const nft = new Nft(id);
+    static fromEvents(service: BlockchainActionsService, id: string, events: Array<SourcedEvent>): Nft {
+        const nft = new Nft(service, id);
         nft.processEvents(events);
         return nft;
     }
 
-    static create(id: string, userId: string, blockchainId: string): Nft {
-        const nft = new Nft(id);
+    static create(service: BlockchainActionsService, id: string, userId: string, blockchainId: string): Nft {
+        const nft = new Nft(service, id);
         nft._blockchainId = blockchainId;
         nft._userId = userId;
         nft._status = NftStatus.CREATED;
@@ -30,7 +29,7 @@ export class Nft extends EventSourcedEntity {
         return nft;
     }
 
-    private constructor(id: string) {
+    private constructor(private _blockchainActionsService: BlockchainActionsService, id: string) {
         super(id, getLogger(Nft));
     }
 
@@ -50,17 +49,13 @@ export class Nft extends EventSourcedEntity {
         return this._userId;
     }
 
-    async uploadFiles(metadata: NftMetadata, uploader: UploaderService): Promise<Nft> {
+    async uploadFiles(metadata: NftMetadata): Promise<Nft> {
         if (this._status !== NftStatus.CREATED) {
             throw new BadRequestException(`Wrong nft status : ${this._status}`);
         }
 
-        let uploadedFiles: UploadedFiles;
-        if (this._blockchainId === "628e9d126b8991c676c19a47") {
-            uploadedFiles = await uploader.uploadSolanaMetadata(metadata);
-        } else {
-            uploadedFiles = await uploader.uploadEvmMetadata(metadata);
-        }
+        const service = await this._blockchainActionsService.getService(this._blockchainId);
+        const uploadedFiles = await service.uploadMetadata(metadata);
 
         this._metadataUri = uploadedFiles.metadataIPFSUri;
         this._status = NftStatus.UPLOADED_FILES;

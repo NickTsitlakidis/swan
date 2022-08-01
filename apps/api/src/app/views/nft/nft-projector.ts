@@ -5,8 +5,8 @@ import { getLogger, LogAsyncMethod } from "../../infrastructure/logging";
 import { NftView } from "./nft-view";
 import { NftViewRepository } from "./nft-view-repository";
 
-@EventsHandler([NftCreatedEvent, NftMintedEvent, UploadedNftMetadataEvent])
-export class NftProjector implements IEventHandler<NftCreatedEvent> {
+@EventsHandler(NftCreatedEvent, NftMintedEvent, UploadedNftMetadataEvent)
+export class NftProjector implements IEventHandler<NftCreatedEvent | NftMintedEvent | UploadedNftMetadataEvent> {
     private _logger: Logger;
 
     constructor(private readonly _repository: NftViewRepository) {
