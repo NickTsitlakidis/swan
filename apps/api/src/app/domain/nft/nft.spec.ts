@@ -1,12 +1,21 @@
+import { BlockchainActionsService } from "./../../support/blockchains/blockchain-actions-service";
 import { Nft } from "./nft";
 import { NftCreatedEvent, NftMintedEvent, UploadedNftMetadataEvent } from "./nft-events";
 import { NftStatus } from "./nft-status";
 import { SourcedEvent } from "../../infrastructure/sourced-event";
 import { MintNftCommand } from "../../commands/nft/mint-nft-command";
 import { BadRequestException } from "@nestjs/common";
+import { getUnitTestingModule } from "../../test-utils/test-modules";
+
+let blockchainActionsMock: BlockchainActionsService;
+
+beforeEach(async () => {
+    const moduleRef = await getUnitTestingModule(BlockchainActionsService);
+    blockchainActionsMock = moduleRef.get(BlockchainActionsService);
+});
 
 test("create - sets properties and applies NftCreatedEvent", () => {
-    const nft = Nft.create("the-id", "the-user", "the-chain");
+    const nft = Nft.create(blockchainActionsMock, "the-id", "the-user", "the-chain");
 
     expect(nft.appliedEvents.length).toBe(1);
     expect(nft.appliedEvents[0]).toBeInstanceOf(NftCreatedEvent);
@@ -22,7 +31,7 @@ test("create - sets properties and applies NftCreatedEvent", () => {
 
 test("fromEvents - can process NftCreatedEvent", () => {
     const event = new NftCreatedEvent("the-user", "the-chain");
-    const nft = Nft.fromEvents("the-id", [new SourcedEvent("the-id", event)]);
+    const nft = Nft.fromEvents(blockchainActionsMock, "the-id", [new SourcedEvent("the-id", event)]);
 
     expect(nft.userId).toBe("the-user");
     expect(nft.blockchainId).toBe("the-chain");
@@ -32,14 +41,14 @@ test("fromEvents - can process NftCreatedEvent", () => {
 
 test("fromEvents - can process NftMintedEvent", () => {
     const event = new NftMintedEvent(NftStatus.MINTED, "transaction-1", "adress-1", "token-1");
-    const nft = Nft.fromEvents("the-id", [new SourcedEvent("the-id", event)]);
+    const nft = Nft.fromEvents(blockchainActionsMock, "the-id", [new SourcedEvent("the-id", event)]);
 
     expect(nft.status).toBe(NftStatus.MINTED);
     expect(nft.id).toBe("the-id");
 });
 
 test("mint - returns bad request when status is not UPLOADED_FILES", () => {
-    const nft = Nft.create("the-id", "the-user", "the-chain");
+    const nft = Nft.create(blockchainActionsMock, "the-id", "the-user", "the-chain");
     const command = new MintNftCommand();
     command.id = "id";
     command.tokenAddress = "tokenAddress";
@@ -55,7 +64,7 @@ test("mint - successfully aplies the event to the store", () => {
         new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id")),
         new SourcedEvent("nft-id", new UploadedNftMetadataEvent(NftStatus.UPLOADED_FILES, "metadata-uri", "image-uri"))
     ];
-    const nft = Nft.fromEvents("nft-id", sourcedEvents);
+    const nft = Nft.fromEvents(blockchainActionsMock, "nft-id", sourcedEvents);
 
     const command = new MintNftCommand();
     command.id = "nft-id";

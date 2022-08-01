@@ -11,19 +11,23 @@ import { SourcedEvent } from "../../infrastructure/sourced-event";
 import { NftCreatedEvent } from "../../domain/nft/nft-events";
 import { Nft } from "../../domain/nft/nft";
 import { ObjectId } from "mongodb";
+import { BlockchainActionsService } from "../../support/blockchains/blockchain-actions-service";
 
 let testModule: TestingModule;
 let executor: MintNftCommandExecutor;
 let viewRepository: NftViewRepository;
 let eventStore: EventStore;
 let nftFactory: NftFactory;
+let blockchainActionsMock: BlockchainActionsService;
 
 beforeEach(async () => {
     testModule = await getUnitTestingModule(MintNftCommandExecutor);
+    const moduleRef = await getUnitTestingModule(BlockchainActionsService);
     executor = testModule.get(MintNftCommandExecutor);
     viewRepository = testModule.get(NftViewRepository);
     eventStore = testModule.get(EventStore);
     nftFactory = testModule.get(NftFactory);
+    blockchainActionsMock = moduleRef.get(BlockchainActionsService);
 });
 
 test("execute - throws not found exception in case the Nft does not exist on the DB", async () => {
@@ -42,7 +46,7 @@ test("execute - throws not found exception in case the Nft does not exist on the
     expect(viewRepositorySpy).toHaveBeenCalledWith(command.id, command.userId);
 });
 
-test("execute - throws not found exception in case the Nft does not exist on the DB", async () => {
+test("execute - create nft functionality", async () => {
     const command = new MintNftCommand();
     command.id = "id";
     command.tokenAddress = "tokenAddress";
@@ -53,7 +57,7 @@ test("execute - throws not found exception in case the Nft does not exist on the
     const nftView = new NftView();
     nftView.id = new ObjectId().toHexString();
 
-    const nft = Nft.create(command.id, command.userId, "chain-1");
+    const nft = Nft.create(blockchainActionsMock, command.id, command.userId, "chain-1");
 
     const sourcedEvents = [new SourcedEvent(command.id, new NftCreatedEvent(command.userId, "chain-id"))];
 
