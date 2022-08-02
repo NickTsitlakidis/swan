@@ -1,4 +1,4 @@
-import { BlockchainActionsService } from "./../support/blockchains/blockchain-actions-service";
+import { BlockchainActionsRegistryService } from "../support/blockchains/blockchain-actions-registry-service";
 import { Injectable } from "@nestjs/common";
 import { ProfileNftDto } from "@nft-marketplace/common";
 import { UserWalletViewRepository } from "../views/user-wallet/user-wallet-view-repository";
@@ -9,7 +9,7 @@ export class NftQueryHandler {
     constructor(
         private _userWalletRepository: UserWalletViewRepository,
         private _blockchainRepository: BlockchainRepository,
-        private _blockchainActions: BlockchainActionsService
+        private _blockchainActions: BlockchainActionsRegistryService
     ) {}
 
     async getByUserId(userId: string): Promise<Array<ProfileNftDto>> {

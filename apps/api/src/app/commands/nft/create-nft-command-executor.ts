@@ -1,4 +1,4 @@
-import { BlockchainActionsService } from "./../../support/blockchains/blockchain-actions-service";
+import { BlockchainActionsRegistryService } from "../../support/blockchains/blockchain-actions-registry-service";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateNftCommand } from "./create-nft-command";
 import { NftFactory } from "../../domain/nft/nft-factory";
@@ -20,7 +20,7 @@ export class CreateNftCommandExecutor implements ICommandHandler<CreateNftComman
         private _collectionRepository: CollectionViewRepository,
         private _walletRepository: UserWalletViewRepository,
         private _factory: NftFactory,
-        private _blockchainActionsService: BlockchainActionsService
+        private _blockchainActionsService: BlockchainActionsRegistryService
     ) {}
 
     @LogAsyncMethod

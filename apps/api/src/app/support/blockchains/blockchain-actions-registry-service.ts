@@ -6,7 +6,7 @@ import { EvmActionsService } from "./evm-actions-service";
 import { SolanaActionsService } from "./solana-actions-service";
 
 @Injectable()
-export class BlockchainActionsService {
+export class BlockchainActionsRegistryService {
     private _blockchains: Blockchain[];
 
     constructor(

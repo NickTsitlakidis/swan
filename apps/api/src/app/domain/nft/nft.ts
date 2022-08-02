@@ -6,7 +6,7 @@ import { getLogger } from "../../infrastructure/logging";
 import { SourcedEvent } from "../../infrastructure/sourced-event";
 import { NftMetadata } from "./nft-metadata";
 import { MintNftCommand } from "../../commands/nft/mint-nft-command";
-import { BlockchainActionsService } from "../../support/blockchains/blockchain-actions-service";
+import { BlockchainActionsRegistryService } from "../../support/blockchains/blockchain-actions-registry-service";
 
 export class Nft extends EventSourcedEntity {
     private _status: NftStatus;
@@ -49,7 +49,7 @@ export class Nft extends EventSourcedEntity {
         return this._userId;
     }
 
-    async uploadFiles(blockchainActionsService: BlockchainActionsService, metadata: NftMetadata): Promise<Nft> {
+    async uploadFiles(blockchainActionsService: BlockchainActionsRegistryService, metadata: NftMetadata): Promise<Nft> {
         if (this._status !== NftStatus.CREATED) {
             throw new BadRequestException(`Wrong nft status : ${this._status}`);
         }

@@ -16,7 +16,7 @@ import { AwsService } from "./aws/aws-service";
 import { MetaplexService } from "./metaplex/metaplex-service";
 import { EvmActionsService } from "./blockchains/evm-actions-service";
 import { SolanaActionsService } from "./blockchains/solana-actions-service";
-import { BlockchainActionsService } from "./blockchains/blockchain-actions-service";
+import { BlockchainActionsRegistryService } from "./blockchains/blockchain-actions-registry-service";
 
 @Module({
     imports: [
@@ -34,7 +34,7 @@ import { BlockchainActionsService } from "./blockchains/blockchain-actions-servi
         AwsService,
         MetaplexService,
         EvmActionsService,
-        BlockchainActionsService,
+        BlockchainActionsRegistryService,
         SolanaActionsService
     ],
     exports: [
@@ -47,7 +47,7 @@ import { BlockchainActionsService } from "./blockchains/blockchain-actions-servi
         AwsService,
         MetaplexService,
         EvmActionsService,
-        BlockchainActionsService,
+        BlockchainActionsRegistryService,
         SolanaActionsService
     ]
 })
