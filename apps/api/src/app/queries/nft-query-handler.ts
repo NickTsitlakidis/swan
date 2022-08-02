@@ -20,7 +20,7 @@ export class NftQueryHandler {
         let profileNfts = [];
         for (const wallet of userWallets) {
             const service = await this._blockchainActions.getService(wallet.blockchainId);
-            const nfts = await service.getUserNfts(wallet.address);
+            const nfts = await service.getUserNfts(wallet.address, wallet.blockchainId);
             const chain = chains.find((c) => c.id === wallet.blockchainId);
             profileNfts = profileNfts.concat(
                 nfts.map((nft) => {

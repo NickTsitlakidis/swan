@@ -15,7 +15,7 @@ export abstract class BlockchainActions {
 
     abstract uploadMetadata(metadata: NftMetadata): Promise<UploadedFiles>;
 
-    abstract getUserNfts(pubKey: string): Promise<MetaplexMetadata[]>;
+    abstract getUserNfts(pubKey: string, blockchainId?: string): Promise<MetaplexMetadata[]>;
 
     protected async uploadImage(s3Uri: string): Promise<string> {
         const params = this.getS3ParamsFromMetadataURI(s3Uri);

@@ -17,12 +17,14 @@ import { MetaplexService } from "./metaplex/metaplex-service";
 import { EvmActionsService } from "./blockchains/evm-actions-service";
 import { SolanaActionsService } from "./blockchains/solana-actions-service";
 import { BlockchainActionsRegistryService } from "./blockchains/blockchain-actions-registry-service";
+import { EvmNftContract } from "./evm-nft-contracts/evm-nft-contract";
+import { EvmNftContractRepository } from "./evm-nft-contracts/evm-nft-contract-repository";
 
 @Module({
     imports: [
         InfrastructureModule,
         ConfigModule,
-        MikroOrmModule.forFeature([Category, Wallet, Blockchain, BlockchainWallet])
+        MikroOrmModule.forFeature([Category, Wallet, Blockchain, BlockchainWallet, EvmNftContract])
     ],
     providers: [
         CategoryRepository,
@@ -35,7 +37,8 @@ import { BlockchainActionsRegistryService } from "./blockchains/blockchain-actio
         MetaplexService,
         EvmActionsService,
         BlockchainActionsRegistryService,
-        SolanaActionsService
+        SolanaActionsService,
+        EvmNftContractRepository
     ],
     exports: [
         CategoryRepository,
@@ -48,7 +51,8 @@ import { BlockchainActionsRegistryService } from "./blockchains/blockchain-actio
         MetaplexService,
         EvmActionsService,
         BlockchainActionsRegistryService,
-        SolanaActionsService
+        SolanaActionsService,
+        EvmNftContractRepository
     ]
 })
 export class SupportModule {}
