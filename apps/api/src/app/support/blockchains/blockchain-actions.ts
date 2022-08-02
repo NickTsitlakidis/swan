@@ -3,11 +3,9 @@ import { MetaplexService } from "./../metaplex/metaplex-service";
 import { AwsService } from "./../aws/aws-service";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
 import { UploadedFiles } from "../uploader/uploaded-files";
-import { Injectable } from "@nestjs/common";
 import { Blob } from "buffer";
 import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
 
-@Injectable()
 export abstract class BlockchainActions {
     constructor(
         private _awsService: AwsService,
