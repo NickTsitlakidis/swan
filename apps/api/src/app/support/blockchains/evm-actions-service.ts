@@ -4,9 +4,16 @@ import { NftMetadata } from "../../domain/nft/nft-metadata";
 import { EvmMetadata } from "../uploader/evm-metadata";
 import { UploadedFiles } from "../uploader/uploaded-files";
 import { BlockchainActions } from "./blockchain-actions";
+import { ConfigService } from "@nestjs/config";
+import { AwsService } from "./../aws/aws-service";
+import { MetaplexService } from "../metaplex/metaplex-service";
 
 @Injectable()
 export class EvmActionsService extends BlockchainActions {
+    constructor(awsService: AwsService, configService: ConfigService, metaplexService: MetaplexService) {
+        super(awsService, configService, metaplexService);
+    }
+
     async uploadMetadata(metadata: NftMetadata): Promise<UploadedFiles> {
         const imageUri = await this.uploadImage(metadata.s3uri);
 

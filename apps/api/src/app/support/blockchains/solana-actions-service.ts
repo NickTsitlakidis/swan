@@ -1,11 +1,18 @@
 import { Injectable } from "@nestjs/common";
 import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
+import { ConfigService } from "@nestjs/config";
+import { AwsService } from "./../aws/aws-service";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
+import { MetaplexService } from "../metaplex/metaplex-service";
 import { UploadedFiles } from "../uploader/uploaded-files";
 import { BlockchainActions } from "./blockchain-actions";
 
 @Injectable()
 export class SolanaActionsService extends BlockchainActions {
+    constructor(awsService: AwsService, configService: ConfigService, metaplexService: MetaplexService) {
+        super(awsService, configService, metaplexService);
+    }
+
     async getUserNfts(pubKey: string): Promise<MetaplexMetadata[]> {
         return this.metaplexService.getUserNFTs(pubKey);
     }
