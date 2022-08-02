@@ -142,14 +142,6 @@ export class SolanaWalletService implements WalletService {
         return this._events.asObservable();
     }
 
-    public getUserNFTs(): Observable<MetaplexMetadata[]> {
-        return this.getPublicKey().pipe(
-            switchMap((pubKey) => {
-                return this._metaplexService.getUserNFTs(pubKey);
-            })
-        );
-    }
-
     public onSelectWallet(walletName: WalletName) {
         this.walletStore.selectWallet(walletName);
         const e = {

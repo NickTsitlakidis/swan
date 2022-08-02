@@ -6,6 +6,10 @@ import { BlockchainActions } from "./blockchain-actions";
 
 @Injectable()
 export class SolanaActionsService extends BlockchainActions {
+    async getUserNfts(pubKey: string): Promise<MetaplexMetadata[]> {
+        return this.metaplexService.getUserNFTs(pubKey);
+    }
+
     async uploadMetadata(metadata: NftMetadata): Promise<UploadedFiles> {
         const imageUri = await this.uploadImage(metadata.s3uri);
 

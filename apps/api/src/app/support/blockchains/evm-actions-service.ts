@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
 import { EvmMetadata } from "../uploader/evm-metadata";
 import { UploadedFiles } from "../uploader/uploaded-files";
@@ -26,5 +27,9 @@ export class EvmActionsService extends BlockchainActions {
             metadataIPFSUri: metadataUri,
             imageIPFSUri: imageUri
         };
+    }
+
+    getUserNfts(pubKey: string): Promise<MetaplexMetadata[]> {
+        throw new Error("Method not implemented.");
     }
 }

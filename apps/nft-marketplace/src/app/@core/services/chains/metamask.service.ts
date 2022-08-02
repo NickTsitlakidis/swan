@@ -1,5 +1,5 @@
 import { WalletService } from "./wallet-service";
-import { EMPTY, from, map, Observable, of, Subject, switchMap, throwError, zip } from "rxjs";
+import { from, map, Observable, of, Subject, switchMap, throwError, zip } from "rxjs";
 import { WalletEvent } from "./wallet-event";
 import { ethers } from "ethers";
 import { isNil } from "lodash";
@@ -71,10 +71,6 @@ export class MetamaskService implements WalletService {
                 return from(signer.signMessage(message));
             })
         );
-    }
-
-    getUserNFTs() {
-        return EMPTY;
     }
 
     private getEthersProvider(): Observable<ethers.providers.Web3Provider> {

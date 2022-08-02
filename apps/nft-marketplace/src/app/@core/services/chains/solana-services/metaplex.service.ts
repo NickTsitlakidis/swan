@@ -32,15 +32,4 @@ export class MetaplexService {
             return;
         }
     }
-
-    public getUserNFTs(pubKey: string): Observable<MetaplexMetadata[]> {
-        return from(this._metaplex.nfts().findAllByOwner(new PublicKey(pubKey)).run()).pipe(
-            switchMap((lazyNfts) => {
-                return zip(lazyNfts.map((lazyNft) => this._httpClient.get<MetaplexMetadata>(lazyNft.uri)));
-            }),
-            map((nfts) => {
-                return nfts;
-            })
-        );
-    }
 }

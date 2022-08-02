@@ -15,6 +15,11 @@ const routes: Routes = [
                 loadChildren: () => import("./home/home.module").then((m) => m.HomeModule)
             },
             {
+                path: "profile",
+                canActivate: [AuthGuard],
+                loadChildren: () => import("./profile/profile.module").then((m) => m.ProfileModule)
+            },
+            {
                 path: "create-collection",
                 canActivate: [AuthGuard],
                 loadChildren: () =>
