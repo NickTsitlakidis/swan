@@ -6,6 +6,7 @@ import { isNil } from "lodash";
 import { CreateNft } from "./nft";
 import { Injectable } from "@angular/core";
 import fantomSwanNft from "../../../../assets/evm-abi/fantom-mainnet-swan-nft.json";
+import fantomSwanTestNetNft from "../../../../assets/evm-abi/fantom-testnet-swan-nft.json";
 import { ChainsModule } from "./chains.module";
 import { TransactionResponse } from "@ethersproject/abstract-provider/src.ts";
 import { NftMintTransactionDto } from "@nft-marketplace/common";
@@ -36,7 +37,11 @@ export class MetamaskService implements WalletService {
     mint(nft: CreateNft): Observable<NftMintTransactionDto> {
         return this.getPublicKey().pipe(
             switchMap((publicKey) => {
-                const contract = new ethers.Contract(fantomSwanNft.address, fantomSwanNft.abi, this._ethersProvider);
+                const contract = new ethers.Contract(
+                    fantomSwanTestNetNft.address,
+                    fantomSwanTestNetNft.abi,
+                    this._ethersProvider
+                );
                 return zip(of(contract.connect(this._ethersProvider.getSigner())), of(publicKey));
             }),
             switchMap(([contract, publicKey]) => {
