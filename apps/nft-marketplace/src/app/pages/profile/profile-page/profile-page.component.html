@@ -3,8 +3,8 @@
         <nft-marketplace-product-card
             class="col"
             *ngFor="let prod of userNfts"
-            [imageUrl]="prod.fileUri"
-            [productType]="prod.fileType"
+            [imageUrl]="prod.imageUri"
+            [animationUrl]="prod.animationUri"
             [productTitle]="prod.name"
         ></nft-marketplace-product-card>
     </div>

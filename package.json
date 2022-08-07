@@ -72,7 +72,6 @@
     "ethers": "5.6.8",
     "eva-icons": "1.1.2",
     "helmet": "5.1.1",
-    "ipfs-http-client": "57.0.4-a05695fc.0",
     "joi": "17.6.0",
     "lodash": "4.17.21",
     "moment": "2.29.2",

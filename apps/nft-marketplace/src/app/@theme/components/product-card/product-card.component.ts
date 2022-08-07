@@ -9,5 +9,5 @@ import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
 export class ProductCardComponent {
     @Input() imageUrl: string;
     @Input() productTitle: string;
-    @Input() productType: string;
+    @Input() animationUrl: string | undefined;
 }

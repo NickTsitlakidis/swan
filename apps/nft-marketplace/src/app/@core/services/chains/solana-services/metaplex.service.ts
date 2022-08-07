@@ -1,11 +1,8 @@
-import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Wallet } from "@heavy-duty/wallet-adapter";
 import { CreateNftInput, Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js";
-import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
-import { from, map, Observable, switchMap, zip } from "rxjs";
+import { clusterApiUrl, Connection } from "@solana/web3.js";
 import { ChainsModule } from "../chains.module";
-import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
 
 @Injectable({
     providedIn: ChainsModule
@@ -14,13 +11,13 @@ export class MetaplexService {
     private _metaplex: Metaplex;
     private _connection: Connection;
 
-    constructor(private _httpClient: HttpClient) {
+    constructor() {
         this._connection = new Connection(clusterApiUrl("devnet"));
         this._metaplex = Metaplex.make(this._connection);
     }
 
     public async mintNFT(nftInput: CreateNftInput, wallet: Wallet) {
-        const pubKey = nftInput.owner;
+        const pubKey = nftInput.tokenOwner;
         this._metaplex.use(walletAdapterIdentity(wallet.adapter));
         let account;
         if (pubKey) {
