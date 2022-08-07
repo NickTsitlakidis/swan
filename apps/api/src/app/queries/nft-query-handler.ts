@@ -32,8 +32,8 @@ export class NftQueryHandler {
                     /* profileNftDto.collection = {
                         name: nft.collection.name
                     }; */
-                    profileNftDto.fileType = nft.properties.files.at(0).type;
-                    profileNftDto.fileUri = nft.properties.files.at(0).uri;
+                    profileNftDto.animationUri = nft.animation_url;
+                    profileNftDto.imageUri = nft.image;
                     // TODO
                     profileNftDto.isListed = false;
                     return profileNftDto;

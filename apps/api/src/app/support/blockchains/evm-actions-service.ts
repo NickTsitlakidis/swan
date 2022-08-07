@@ -11,6 +11,8 @@ import { EvmNftContractRepository } from "../evm-nft-contracts/evm-nft-contract-
 import { BigNumber, ethers } from "ethers";
 import { BlockchainRepository } from "./blockchain-repository";
 import axios from "axios";
+//import fantomSwanNft from "../../../assets/evm-abi/fantom-mainnet-swan-nft.json";
+import { EvmMetadataValidator } from "./evm-metadata-validator";
 
 const abi = [
     {
@@ -488,6 +490,7 @@ export class EvmActionsService extends BlockchainActions {
         awsService: AwsService,
         configService: ConfigService,
         metaplexService: MetaplexService,
+        private _validator: EvmMetadataValidator,
         private _blockchainRepository: BlockchainRepository,
         private _contractsRepository: EvmNftContractRepository
     ) {
@@ -548,7 +551,23 @@ export class EvmActionsService extends BlockchainActions {
             promises.push(axios.get(url));
         }
 
-        const nfts = await Promise.all(promises).then((nfts) => nfts.map((nft) => nft.data));
-        return [];
+        const nfts = await Promise.all(promises).then((nfts) =>
+            nfts.map((nft) => nft.data).filter((mapped) => this._validator.validate(mapped))
+        );
+
+        return nfts.map((nft) => {
+            const metaplex: MetaplexMetadata = {
+                name: nft.name,
+                image: nft.image,
+                attributes: nft.attributes,
+                description: nft.description,
+                animation_url: nft.animation_url,
+                external_url: nft.external_url,
+                properties: {
+                    files: []
+                }
+            };
+            return metaplex;
+        });
     }
 }

@@ -19,6 +19,7 @@ import { SolanaActionsService } from "./blockchains/solana-actions-service";
 import { BlockchainActionsRegistryService } from "./blockchains/blockchain-actions-registry-service";
 import { EvmNftContract } from "./evm-nft-contracts/evm-nft-contract";
 import { EvmNftContractRepository } from "./evm-nft-contracts/evm-nft-contract-repository";
+import { EvmMetadataValidator } from "./blockchains/evm-metadata-validator";
 
 @Module({
     imports: [
@@ -38,7 +39,8 @@ import { EvmNftContractRepository } from "./evm-nft-contracts/evm-nft-contract-r
         EvmActionsService,
         BlockchainActionsRegistryService,
         SolanaActionsService,
-        EvmNftContractRepository
+        EvmNftContractRepository,
+        EvmMetadataValidator
     ],
     exports: [
         CategoryRepository,
@@ -52,7 +54,8 @@ import { EvmNftContractRepository } from "./evm-nft-contracts/evm-nft-contract-r
         EvmActionsService,
         BlockchainActionsRegistryService,
         SolanaActionsService,
-        EvmNftContractRepository
+        EvmNftContractRepository,
+        EvmMetadataValidator
     ]
 })
 export class SupportModule {}

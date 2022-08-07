@@ -1,13 +1,13 @@
 import { ConfigService } from "@nestjs/config";
-import { MetaplexService } from "./../metaplex/metaplex-service";
-import { AwsService } from "./../aws/aws-service";
+import { MetaplexService } from "../metaplex/metaplex-service";
+import { AwsService } from "../aws/aws-service";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
 import { UploadedFiles } from "../uploader/uploaded-files";
 import { Blob } from "buffer";
 import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
 
 export abstract class BlockchainActions {
-    constructor(
+    protected constructor(
         private _awsService: AwsService,
         private _configService: ConfigService,
         protected metaplexService: MetaplexService

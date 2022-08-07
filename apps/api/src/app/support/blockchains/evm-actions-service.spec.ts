@@ -25,18 +25,20 @@ beforeEach(async () => {
     awsService = testModule.get(AwsService);
 });
 
-test("something", async () => {
+test("something", (endTest) => {
     const blockchain = new Blockchain();
-    blockchain.chainId = "250";
-    blockchain.name = "Fantom Opera";
-    blockchain.rpcUrl = "https://rpc.ankr.com/fantom/";
+    blockchain.chainId = "0x1";
+    blockchain.name = "Ethereum";
+    blockchain.rpcUrl = "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161";
 
     const contract = new EvmNftContract();
-    contract.address = "0xAB00af3cB05E3acd9E6a32783b583507b7634e00";
-    contract.blockchainId = "250";
+    contract.address = "0x52E66cA968010d064938A8099a172CBAaf08c125";
+    contract.blockchainId = "0x1";
 
     jest.spyOn(blockchainRepo, "findById").mockResolvedValue(blockchain);
     jest.spyOn(contractsRepository, "findByBlockchainId").mockResolvedValue([contract]);
 
-    const result = await service.getUserNfts("0xe1e040ba7b34d882c422de852cdfe4dd7fa5398f", "250");
-});
+    service.getUserNfts("0xfd35356dcd225bbc7e8f1fde622bfbf5af105fe6", "0x1").then((results) => {
+        endTest();
+    });
+}, 60000);
