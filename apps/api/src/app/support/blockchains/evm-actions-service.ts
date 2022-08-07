@@ -10,7 +10,7 @@ import { MetaplexService } from "../metaplex/metaplex-service";
 import { EvmNftContractRepository } from "../evm-nft-contracts/evm-nft-contract-repository";
 import { BigNumber, ethers } from "ethers";
 import { BlockchainRepository } from "./blockchain-repository";
-import { create } from "ipfs-http-client";
+import axios from "axios";
 
 const abi = [
     {
@@ -535,33 +535,20 @@ export class EvmActionsService extends BlockchainActions {
         const contract = new ethers.Contract(addresses[0], abi, provider);
         const howMany: number = await contract["balanceOf"](pubKey);
 
-        const client = create();
-
         const nftIds: number[] = [];
         for (let i = 0; i < howMany; i++) {
             const nftId: BigNumber = await contract["tokenOfOwnerByIndex"](pubKey, i);
             nftIds.push(nftId.toNumber());
         }
 
-        const jsons: string[] = [];
-
+        const promises = [];
         for (let i = 0; i < nftIds.length; i++) {
             const uri: string = await contract["tokenURI"](nftIds[i]);
-
-            const result = await client.get(uri.replace("ipfs://", ""));
-            let contents = "";
-
-            // loop over incoming data
-            for await (const item of result) {
-                // turn string buffer to string and append to contents
-                contents += new TextDecoder().decode(item);
-            }
-
-            // remove null characters
-            contents = contents.replace(/\0/g, "");
-            jsons.push(contents);
+            const url = uri.replace("ipfs://", "https://cloudflare-ipfs.com/ipfs/");
+            promises.push(axios.get(url));
         }
 
+        const nfts = await Promise.all(promises).then((nfts) => nfts.map((nft) => nft.data));
         return [];
     }
 }

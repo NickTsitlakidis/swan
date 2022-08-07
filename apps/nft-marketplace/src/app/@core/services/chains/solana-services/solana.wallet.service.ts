@@ -16,7 +16,6 @@ import { WalletEvent, WalletEventType } from "../wallet-event";
 import { CreateNftInput } from "@metaplex-foundation/js";
 import { MetaplexService } from "./metaplex.service";
 import { SwanError } from "../../../interfaces/swan-error";
-import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
 import { NftMintTransactionDto } from "@nft-marketplace/common";
 
 export const isNotNull = <T>(source: Observable<T | null>) =>
