@@ -20,11 +20,13 @@ import { BlockchainActionsRegistryService } from "./blockchains/blockchain-actio
 import { EvmNftContract } from "./evm-nft-contracts/evm-nft-contract";
 import { EvmNftContractRepository } from "./evm-nft-contracts/evm-nft-contract-repository";
 import { EvmMetadataValidator } from "./blockchains/evm-metadata-validator";
+import { HttpModule } from "@nestjs/axios";
 
 @Module({
     imports: [
         InfrastructureModule,
         ConfigModule,
+        HttpModule,
         MikroOrmModule.forFeature([Category, Wallet, Blockchain, BlockchainWallet, EvmNftContract])
     ],
     providers: [
