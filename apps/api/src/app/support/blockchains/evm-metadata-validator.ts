@@ -12,6 +12,7 @@ export class EvmMetadataValidator {
             animation_url: Joi.string().uri(),
             external_url: Joi.string().uri(),
             attributes: Joi.array()
+                .min(0)
                 .items(
                     Joi.object({
                         trait_type: Joi.string().required(),
