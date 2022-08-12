@@ -7,7 +7,7 @@ import { CreateNft } from "./nft";
 import { Injectable } from "@angular/core";
 import { ChainsModule } from "./chains.module";
 import { NftMintTransactionDto } from "@nft-marketplace/common";
-import { EvmChains, SwanNft } from "@swan/contracts";
+import { EvmChains, SwanNftFactory } from "@swan/contracts";
 
 @Injectable({
     providedIn: ChainsModule
@@ -16,7 +16,7 @@ export class MetamaskService implements WalletService {
     private _events: Subject<WalletEvent>;
     private _ethersProvider: ethers.providers.Web3Provider;
 
-    constructor() {
+    constructor(private _swanNftFactory: SwanNftFactory) {
         this._events = new Subject<WalletEvent>();
     }
 
@@ -33,7 +33,7 @@ export class MetamaskService implements WalletService {
     }
 
     mint(nft: CreateNft): Observable<NftMintTransactionDto> {
-        const contract = new SwanNft(this._ethersProvider, EvmChains.FANTOM, true);
+        const contract = this._swanNftFactory.create(this._ethersProvider, EvmChains.FANTOM, true);
 
         return this.getPublicKey().pipe(
             switchMap((publicKey) => contract.createItem(publicKey, nft.metadataUri)),

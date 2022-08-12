@@ -11,7 +11,7 @@ import { EvmNftContractRepository } from "../evm-nft-contracts/evm-nft-contract-
 import { ethers } from "ethers";
 import { BlockchainRepository } from "./blockchain-repository";
 import { EvmMetadataValidator } from "./evm-metadata-validator";
-import { Erc721 } from "@swan/contracts";
+import { Erc721Factory } from "@swan/contracts";
 import { HttpService } from "@nestjs/axios";
 
 @Injectable()
@@ -20,6 +20,7 @@ export class EvmActionsService extends BlockchainActions {
         awsService: AwsService,
         configService: ConfigService,
         metaplexService: MetaplexService,
+        private readonly _erc721Factory: Erc721Factory,
         private readonly _httpService: HttpService,
         private readonly _validator: EvmMetadataValidator,
         private readonly _blockchainRepository: BlockchainRepository,
@@ -66,7 +67,7 @@ export class EvmActionsService extends BlockchainActions {
         const contracts = await this._contractsRepository.findByBlockchainId(blockchainId);
         const addresses = contracts.map((contract) => contract.address);
 
-        const erc721Contract = new Erc721(provider, addresses[0]);
+        const erc721Contract = this._erc721Factory.create(provider, addresses[0]);
 
         const howMany: number = await erc721Contract.balanceOf(pubKey);
 
