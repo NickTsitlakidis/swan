@@ -44,7 +44,7 @@ export class SupportQueryHandler {
                 chain.isTestNetwork,
                 chain.rpcUrl,
                 chain.scanSiteUrl,
-                chain.chainId,
+                chain.chainIdHex,
                 finalWallets
             );
         });

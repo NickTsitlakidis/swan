@@ -9,7 +9,7 @@ import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
 export abstract class BlockchainActions {
     protected constructor(
         private _awsService: AwsService,
-        private _configService: ConfigService,
+        protected _configService: ConfigService,
         protected metaplexService: MetaplexService
     ) {}
 
