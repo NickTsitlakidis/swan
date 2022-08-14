@@ -1,14 +1,15 @@
-import { Body, Controller, Post, UseGuards } from "@nestjs/common";
-import { EntityDto, NftDto, NftMetadataDto, NftMintTransactionDto } from "@nft-marketplace/common";
+import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
+import { EntityDto, NftDto, NftMetadataDto, NftMintTransactionDto, ProfileNftDto } from "@nft-marketplace/common";
 import { UserGuard } from "../security/guards/user-guard";
 import { RequestUserId } from "../security/request-user-id";
 import { CreateNftCommand } from "../commands/nft/create-nft-command";
 import { CommandBus } from "@nestjs/cqrs";
 import { MintNftCommand } from "../commands/nft/mint-nft-command";
+import { NftQueryHandler } from "../queries/nft-query-handler";
 
 @Controller("nft")
 export class NftController {
-    constructor(private _commandBus: CommandBus) {}
+    constructor(private _commandBus: CommandBus, private _nftQueryHandler: NftQueryHandler) {}
 
     @Post("/create")
     @UseGuards(UserGuard)
@@ -24,5 +25,11 @@ export class NftController {
         const command = MintNftCommand.fromDto(userId, dto);
         command.userId = userId;
         return this._commandBus.execute(command);
+    }
+
+    @Get("/user")
+    @UseGuards(UserGuard)
+    async getByUserId(@RequestUserId() userId: string): Promise<Array<ProfileNftDto>> {
+        return this._nftQueryHandler.getByUserId(userId);
     }
 }

@@ -42,7 +42,7 @@ test("execute - throws not found exception in case the Nft does not exist on the
     expect(viewRepositorySpy).toHaveBeenCalledWith(command.id, command.userId);
 });
 
-test("execute - throws not found exception in case the Nft does not exist on the DB", async () => {
+test("execute - create nft functionality", async () => {
     const command = new MintNftCommand();
     command.id = "id";
     command.tokenAddress = "tokenAddress";

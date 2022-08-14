@@ -15,6 +15,7 @@ import { NgxWebstorageModule } from "ngx-webstorage";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { ChainsModule } from "./@core/services/chains/chains.module";
 import { SupportModule } from "./@core/services/support/support.module";
+import { ContractsModule } from "./@core/contracts.module";
 
 @NgModule({
     declarations: [AppComponent],
@@ -33,7 +34,8 @@ import { SupportModule } from "./@core/services/support/support.module";
         HttpClientModule,
         FontAwesomeModule,
         ChainsModule,
-        SupportModule
+        SupportModule,
+        ContractsModule
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true },

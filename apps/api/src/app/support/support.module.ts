@@ -14,12 +14,22 @@ import { SwanWalletService } from "./swan-wallet-service";
 import { ConfigModule } from "@nestjs/config";
 import { AwsService } from "./aws/aws-service";
 import { MetaplexService } from "./metaplex/metaplex-service";
+import { EvmActionsService } from "./blockchains/evm-actions-service";
+import { SolanaActionsService } from "./blockchains/solana-actions-service";
+import { BlockchainActionsRegistryService } from "./blockchains/blockchain-actions-registry-service";
+import { EvmNftContract } from "./evm-nft-contracts/evm-nft-contract";
+import { EvmNftContractRepository } from "./evm-nft-contracts/evm-nft-contract-repository";
+import { EvmMetadataValidator } from "./blockchains/evm-metadata-validator";
+import { HttpModule } from "@nestjs/axios";
+import { ContractsModule } from "../contracts.module";
 
 @Module({
     imports: [
         InfrastructureModule,
         ConfigModule,
-        MikroOrmModule.forFeature([Category, Wallet, Blockchain, BlockchainWallet])
+        HttpModule,
+        ContractsModule,
+        MikroOrmModule.forFeature([Category, Wallet, Blockchain, BlockchainWallet, EvmNftContract])
     ],
     providers: [
         CategoryRepository,
@@ -29,7 +39,12 @@ import { MetaplexService } from "./metaplex/metaplex-service";
         BlockchainWalletRepository,
         SwanWalletService,
         AwsService,
-        MetaplexService
+        MetaplexService,
+        EvmActionsService,
+        BlockchainActionsRegistryService,
+        SolanaActionsService,
+        EvmNftContractRepository,
+        EvmMetadataValidator
     ],
     exports: [
         CategoryRepository,
@@ -39,7 +54,12 @@ import { MetaplexService } from "./metaplex/metaplex-service";
         BlockchainRepository,
         BlockchainWalletRepository,
         AwsService,
-        MetaplexService
+        MetaplexService,
+        EvmActionsService,
+        BlockchainActionsRegistryService,
+        SolanaActionsService,
+        EvmNftContractRepository,
+        EvmMetadataValidator
     ]
 })
 export class SupportModule {}

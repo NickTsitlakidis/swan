@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { SwanMarketplace, SwanNft, TestToken } from "../typechain";
+import { SwanMarketplace, SwanNft, TestToken } from "../typechain-types";
 
 describe("SwanMarketplace", () => {
     let deployedMarketplace: SwanMarketplace;

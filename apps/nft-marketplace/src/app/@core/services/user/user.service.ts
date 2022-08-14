@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { UserWalletDto } from "@nft-marketplace/common";
+import { ProfileNftDto, UserWalletDto } from "@nft-marketplace/common";
 import { map } from "rxjs/operators";
 import { plainToInstance } from "class-transformer";
 
@@ -15,6 +15,14 @@ export class UserService {
         return this._httpClient.get<Array<unknown>>("/user/user-wallets").pipe(
             map((results) => {
                 return plainToInstance(UserWalletDto, results);
+            })
+        );
+    }
+
+    getUserNfts(): Observable<Array<ProfileNftDto>> {
+        return this._httpClient.get<Array<ProfileNftDto>>("/nft/user").pipe(
+            map((results) => {
+                return plainToInstance(ProfileNftDto, results);
             })
         );
     }

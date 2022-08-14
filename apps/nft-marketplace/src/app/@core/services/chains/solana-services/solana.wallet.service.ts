@@ -1,6 +1,6 @@
 import { ConnectionStore, Wallet, WalletStore } from "@heavy-duty/wallet-adapter";
-import { WalletName } from "@solana/wallet-adapter-base";
-import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import { WalletAdapterNetwork, WalletName } from "@solana/wallet-adapter-base";
+import { clusterApiUrl, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import * as base58 from "bs58";
 import { defer, forkJoin, from, of, Subject, throwError } from "rxjs";
 import { concatMap, first, map, switchMap, take } from "rxjs/operators";
@@ -16,7 +16,6 @@ import { WalletEvent, WalletEventType } from "../wallet-event";
 import { CreateNftInput } from "@metaplex-foundation/js";
 import { MetaplexService } from "./metaplex.service";
 import { SwanError } from "../../../interfaces/swan-error";
-import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
 import { NftMintTransactionDto } from "@nft-marketplace/common";
 
 export const isNotNull = <T>(source: Observable<T | null>) =>
@@ -45,7 +44,9 @@ export class SolanaWalletService implements WalletService {
         this.lamports = 0;
         this.recipient = "";
         this._events = new Subject<WalletEvent>();
-        this._connectionStore.setEndpoint(environment.solanaNetwork);
+        const network = environment.production ? WalletAdapterNetwork.Mainnet : WalletAdapterNetwork.Devnet;
+        const endpoint = clusterApiUrl(network);
+        this.changeNetwork(endpoint);
         this.walletStore.setAdapters([new PhantomWalletAdapter(), new SolflareWalletAdapter()]);
         this.walletStore.connected$.subscribe(() => {
             const e = {
@@ -74,6 +75,10 @@ export class SolanaWalletService implements WalletService {
             }),
             take(1)
         );
+    }
+
+    public changeNetwork(endpoint: string): void {
+        this._connectionStore.setEndpoint(endpoint);
     }
 
     public signMessage(message: string): Observable<string | undefined> {
@@ -140,14 +145,6 @@ export class SolanaWalletService implements WalletService {
 
     public getEvents(): Observable<WalletEvent> {
         return this._events.asObservable();
-    }
-
-    public getUserNFTs(): Observable<MetaplexMetadata[]> {
-        return this.getPublicKey().pipe(
-            switchMap((pubKey) => {
-                return this._metaplexService.getUserNFTs(pubKey);
-            })
-        );
     }
 
     public onSelectWallet(walletName: WalletName) {
