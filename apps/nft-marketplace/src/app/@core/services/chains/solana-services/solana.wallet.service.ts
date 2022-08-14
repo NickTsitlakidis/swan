@@ -77,6 +77,10 @@ export class SolanaWalletService implements WalletService {
         );
     }
 
+    public changeNetwork(endpoint: string): void {
+        this._connectionStore.setEndpoint(endpoint);
+    }
+
     public signMessage(message: string): Observable<string | undefined> {
         const signMessage$ = this.walletStore.signMessage(new TextEncoder().encode(message));
 
