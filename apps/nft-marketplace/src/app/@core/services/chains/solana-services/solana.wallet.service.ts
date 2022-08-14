@@ -1,6 +1,6 @@
 import { ConnectionStore, Wallet, WalletStore } from "@heavy-duty/wallet-adapter";
-import { WalletName } from "@solana/wallet-adapter-base";
-import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import { WalletAdapterNetwork, WalletName } from "@solana/wallet-adapter-base";
+import { clusterApiUrl, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import * as base58 from "bs58";
 import { defer, forkJoin, from, of, Subject, throwError } from "rxjs";
 import { concatMap, first, map, switchMap, take } from "rxjs/operators";
@@ -44,7 +44,9 @@ export class SolanaWalletService implements WalletService {
         this.lamports = 0;
         this.recipient = "";
         this._events = new Subject<WalletEvent>();
-        this._connectionStore.setEndpoint(environment.solanaNetwork);
+        const network = environment.production ? WalletAdapterNetwork.Mainnet : WalletAdapterNetwork.Devnet;
+        const endpoint = clusterApiUrl(network);
+        this.changeNetwork(endpoint);
         this.walletStore.setAdapters([new PhantomWalletAdapter(), new SolflareWalletAdapter()]);
         this.walletStore.connected$.subscribe(() => {
             const e = {
