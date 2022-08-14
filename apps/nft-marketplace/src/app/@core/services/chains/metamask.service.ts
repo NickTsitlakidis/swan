@@ -1,15 +1,13 @@
 import { WalletService } from "./wallet-service";
-import { from, map, Observable, of, Subject, switchMap, throwError, zip } from "rxjs";
+import { from, map, Observable, of, Subject, switchMap, throwError } from "rxjs";
 import { WalletEvent } from "./wallet-event";
 import { ethers } from "ethers";
 import { isNil } from "lodash";
 import { CreateNft } from "./nft";
 import { Injectable } from "@angular/core";
-import fantomSwanNft from "../../../../assets/evm-abi/fantom-mainnet-swan-nft.json";
-import fantomSwanTestNetNft from "../../../../assets/evm-abi/fantom-testnet-swan-nft.json";
 import { ChainsModule } from "./chains.module";
-import { TransactionResponse } from "@ethersproject/abstract-provider/src.ts";
 import { NftMintTransactionDto } from "@nft-marketplace/common";
+import { EvmChains, SwanNftFactory } from "@swan/contracts";
 
 @Injectable({
     providedIn: ChainsModule
@@ -18,7 +16,7 @@ export class MetamaskService implements WalletService {
     private _events: Subject<WalletEvent>;
     private _ethersProvider: ethers.providers.Web3Provider;
 
-    constructor() {
+    constructor(private _swanNftFactory: SwanNftFactory) {
         this._events = new Subject<WalletEvent>();
     }
 
@@ -35,36 +33,17 @@ export class MetamaskService implements WalletService {
     }
 
     mint(nft: CreateNft): Observable<NftMintTransactionDto> {
-        return this.getPublicKey().pipe(
-            switchMap((publicKey) => {
-                const contract = new ethers.Contract(
-                    fantomSwanTestNetNft.address,
-                    fantomSwanTestNetNft.abi,
-                    this._ethersProvider
-                );
-                return zip(of(contract.connect(this._ethersProvider.getSigner())), of(publicKey));
-            }),
-            switchMap(([contract, publicKey]) => {
-                return zip(of(contract), of(publicKey), from(contract["createItem"](publicKey, nft.metadataUri)));
-            }),
-            switchMap(([contract, publicKey, createItemResult]) => {
-                const filter = contract.filters["Transfer"](null, publicKey);
+        const contract = this._swanNftFactory.create(this._ethersProvider, EvmChains.FANTOM, true);
 
-                return new Observable<NftMintTransactionDto>((subscriber) => {
-                    contract.on(filter, (from, to, amount, event) => {
-                        if (event.transactionHash === (createItemResult as TransactionResponse).hash) {
-                            const mintTransaction: NftMintTransactionDto = {
-                                tokenId: ethers.BigNumber.from(event.args[2]).toNumber().toString(),
-                                transactionId: event.transactionHash,
-                                tokenAddress: fantomSwanNft.address,
-                                id: nft.id
-                            };
-                            subscriber.next(mintTransaction);
-                            contract.removeAllListeners();
-                            subscriber.complete();
-                        }
-                    });
-                });
+        return this.getPublicKey().pipe(
+            switchMap((publicKey) => contract.createItem(publicKey, nft.metadataUri)),
+            map((result) => {
+                return new NftMintTransactionDto(
+                    nft.id,
+                    result.transactionId,
+                    contract.address,
+                    result.tokenId.toString()
+                );
             })
         );
     }

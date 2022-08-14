@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { SwanNft } from "../typechain";
+import { SwanNft } from "../typechain-types";
 
 describe("SwanNft", function () {
     let deployedNft: SwanNft;
