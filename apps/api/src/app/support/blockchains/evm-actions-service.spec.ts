@@ -4,16 +4,157 @@ import { EvmActionsService } from "./evm-actions-service";
 import { AwsService } from "../aws/aws-service";
 import { ConfigService } from "@nestjs/config";
 import { MetaplexService } from "../metaplex/metaplex-service";
-import { EvmNftContractRepository } from "../evm-nft-contracts/evm-nft-contract-repository";
-import { EvmNftContract } from "../evm-nft-contracts/evm-nft-contract";
+import { HttpService } from "@nestjs/axios";
+import { EvmMetadataValidator } from "./evm-metadata-validator";
+import { InternalServerErrorException } from "@nestjs/common";
+import { of } from "rxjs";
+import { AxiosResponse } from "axios";
 import { Blockchain } from "./blockchain";
+import { CovalentHqResponse } from "./covalent-hq-response";
+import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
+import { cloneDeep } from "lodash";
 
 let service: EvmActionsService;
 let awsService: AwsService;
 let configService: ConfigService;
 let metaplexService: MetaplexService;
 let blockchainRepo: BlockchainRepository;
-let contractsRepository: EvmNftContractRepository;
+let httpService: HttpService;
+let validator: EvmMetadataValidator;
+
+const covalentResponse: CovalentHqResponse = {
+    error: false,
+    error_message: null,
+    error_code: null,
+    data: {
+        address: "0x8438a93e0d2c5986bc9336490add3961fd127782",
+        updated_at: "2022-08-14T19:06:38.128993333Z",
+        next_update_at: "2022-08-14T19:11:38.128993463Z",
+        quote_currency: "USD",
+        chain_id: 250,
+        items: [
+            {
+                contract_decimals: 0,
+                contract_name: "Artion",
+                contract_ticker_symbol: "ART",
+                contract_address: "0x61af4d29f672e27a097291f72fc571304bc93521",
+                supports_erc: ["erc20", "erc721"],
+                logo_url: "https://logos.covalenthq.com/tokens/250/0x61af4d29f672e27a097291f72fc571304bc93521.png",
+                last_transferred_at: "2022-07-16T18:35:07Z",
+                native_token: false,
+                type: "nft",
+                balance: "1",
+                balance_24h: null,
+                quote_rate: 0.0,
+                quote_rate_24h: null,
+                quote: 0.0,
+                quote_24h: null,
+                nft_data: [
+                    {
+                        token_id: "11001",
+                        token_balance: "1",
+                        token_url: "https://artion1.mypinata.cloud/ipfs/QmRZGMTyrLfPna9WiKRLw5iXdP1VT6jUAKi8CZkRUnr32G",
+                        supports_erc: ["erc20", "erc721"],
+                        token_price_wei: null,
+                        token_quote_rate_eth: null,
+                        original_owner: "0xe5dfee9b72dcb2e3aca9895bc8dec15b3e8b74dc",
+                        external_data: {
+                            name: "night123",
+                            description: "",
+                            image: "https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
+                            image_256:
+                                "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=256,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
+                            image_512:
+                                "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=512,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
+                            image_1024:
+                                "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=1024,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
+                            animation_url: null,
+                            external_url: null,
+                            attributes: [],
+                            owner: null
+                        },
+                        owner: "0x8438a93e0d2c5986bc9336490add3961fd127782",
+                        owner_address: null,
+                        burned: null
+                    }
+                ]
+            },
+            {
+                contract_decimals: 0,
+                contract_name: "Artion",
+                contract_ticker_symbol: "ART",
+                contract_address: "0x61af4d29f672e27a097291f72fc571304bc93521",
+                supports_erc: ["erc20", "erc721"],
+                logo_url: "https://logos.covalenthq.com/tokens/250/0x61af4d29f672e27a097291f72fc571304bc93521.png",
+                last_transferred_at: "2022-07-16T18:35:07Z",
+                native_token: false,
+                type: "nft",
+                balance: "1",
+                balance_24h: null,
+                quote_rate: 0.0,
+                quote_rate_24h: null,
+                quote: 0.0,
+                quote_24h: null,
+                nft_data: [
+                    {
+                        token_id: "11001",
+                        token_balance: "1",
+                        token_url: "https://artion1.mypinata.cloud/ipfs/QmRZGMTyrLfPna9WiKRLw5iXdP1VT6jUAKi8CZkRUnr32G",
+                        supports_erc: ["erc20", "erc721"],
+                        token_price_wei: null,
+                        token_quote_rate_eth: null,
+                        original_owner: "0xe5dfee9b72dcb2e3aca9895bc8dec15b3e8b74dc",
+                        external_data: {
+                            name: "night123",
+                            description: "",
+                            image: "https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
+                            image_256:
+                                "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=256,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
+                            image_512:
+                                "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=512,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
+                            image_1024:
+                                "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=1024,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
+                            animation_url: null,
+                            external_url: null,
+                            attributes: [],
+                            owner: null
+                        },
+                        owner: "0x8438a93e0d2c5986bc9336490add3961fd127782",
+                        owner_address: null,
+                        burned: null
+                    },
+                    {
+                        token_id: "2",
+                        token_balance: "1",
+                        token_url: "https://artion1.mypinata.cloud/ipfs/QmRZGMTyrLfPna9WiKRLw5iXdP1VT6jUAKi8CZkRUnr32G",
+                        supports_erc: ["erc20", "erc721"],
+                        token_price_wei: null,
+                        token_quote_rate_eth: null,
+                        original_owner: "0xe5dfee9b72dcb2e3aca9895bc8dec15b3e8b74dc",
+                        external_data: {
+                            name: "night123",
+                            description: "",
+                            image: "https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
+                            image_256:
+                                "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=256,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
+                            image_512:
+                                "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=512,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
+                            image_1024:
+                                "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=1024,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
+                            animation_url: null,
+                            external_url: null,
+                            attributes: [],
+                            owner: null
+                        },
+                        owner: "0x8438a93e0d2c5986bc9336490add3961fd127782",
+                        owner_address: null,
+                        burned: null
+                    }
+                ]
+            }
+        ]
+    }
+};
 
 beforeEach(async () => {
     const testModule = await getUnitTestingModule(EvmActionsService);
@@ -21,24 +162,232 @@ beforeEach(async () => {
     configService = testModule.get(ConfigService);
     metaplexService = testModule.get(MetaplexService);
     blockchainRepo = testModule.get(BlockchainRepository);
-    contractsRepository = testModule.get(EvmNftContractRepository);
     awsService = testModule.get(AwsService);
+    httpService = testModule.get(HttpService);
+    validator = testModule.get(EvmMetadataValidator);
 });
 
-test("something", (endTest) => {
+test("getUserNfts - throws if blockchainId parameter is missing", async () => {
+    await expect(service.getUserNfts("otinanai")).rejects.toThrow(InternalServerErrorException);
+});
+
+test("getUserNfts - throws if blockchain is missing from db", async () => {
+    const blockchainRepoSpy = jest.spyOn(blockchainRepo, "findById").mockResolvedValue(null);
+
+    await expect(service.getUserNfts("otinanai", "the-chain-id")).rejects.toThrow(InternalServerErrorException);
+
+    expect(blockchainRepoSpy).toHaveBeenCalledTimes(1);
+    expect(blockchainRepoSpy).toHaveBeenCalledWith("the-chain-id");
+});
+
+test("getUserNfts - throws if covalent response is not 200 OK", async () => {
     const blockchain = new Blockchain();
-    blockchain.chainId = "0x1";
-    blockchain.name = "Ethereum";
-    blockchain.rpcUrl = "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161";
+    blockchain.chainIdDecimal = 1000;
 
-    const contract = new EvmNftContract();
-    contract.address = "0x52E66cA968010d064938A8099a172CBAaf08c125";
-    contract.blockchainId = "0x1";
+    const blockchainRepoSpy = jest.spyOn(blockchainRepo, "findById").mockResolvedValue(blockchain);
+    const fakeResponse: AxiosResponse = {
+        status: 507,
+        data: {},
+        config: {},
+        headers: {},
+        request: {},
+        statusText: ""
+    };
+    const httpServiceSpy = jest.spyOn(httpService, "get").mockReturnValue(of(fakeResponse));
+    const configSpy = jest.spyOn(configService, "get").mockReturnValue("api-key");
 
-    jest.spyOn(blockchainRepo, "findById").mockResolvedValue(blockchain);
-    jest.spyOn(contractsRepository, "findByBlockchainId").mockResolvedValue([contract]);
+    await expect(service.getUserNfts("otinanai", "the-chain-id")).rejects.toThrow(InternalServerErrorException);
 
-    service.getUserNfts("0xfd35356dcd225bbc7e8f1fde622bfbf5af105fe6", "0x1").then((results) => {
-        endTest();
+    expect(blockchainRepoSpy).toHaveBeenCalledTimes(1);
+    expect(blockchainRepoSpy).toHaveBeenCalledWith("the-chain-id");
+
+    expect(configSpy).toHaveBeenCalledTimes(1);
+    expect(configSpy).toHaveBeenCalledWith("COVALENTHQ_KEY");
+
+    const expectedUrl = `https://api.covalenthq.com/v1/1000/address/otinanai/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=api-key`;
+    expect(httpServiceSpy).toHaveBeenCalledTimes(1);
+    expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
+});
+
+test("getUserNfts - returns empty array if all nfts are invalid", async () => {
+    const blockchain = new Blockchain();
+    blockchain.chainIdDecimal = 1000;
+
+    const blockchainRepoSpy = jest.spyOn(blockchainRepo, "findById").mockResolvedValue(blockchain);
+
+    const fakeResponse: AxiosResponse = {
+        status: 200,
+        data: covalentResponse,
+        config: {},
+        headers: {},
+        request: {},
+        statusText: ""
+    };
+    const httpServiceSpy = jest.spyOn(httpService, "get").mockReturnValue(of(fakeResponse));
+    const configSpy = jest.spyOn(configService, "get").mockReturnValue("api-key");
+
+    const validatorSpy = jest.spyOn(validator, "validate").mockReturnValue(false);
+
+    const returned = await service.getUserNfts("otinanai", "the-chain-id");
+    expect(returned.length).toBe(0);
+
+    expect(blockchainRepoSpy).toHaveBeenCalledTimes(1);
+    expect(blockchainRepoSpy).toHaveBeenCalledWith("the-chain-id");
+
+    expect(configSpy).toHaveBeenCalledTimes(1);
+    expect(configSpy).toHaveBeenCalledWith("COVALENTHQ_KEY");
+
+    const expectedUrl = `https://api.covalenthq.com/v1/1000/address/otinanai/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=api-key`;
+    expect(httpServiceSpy).toHaveBeenCalledTimes(1);
+    expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
+
+    expect(validatorSpy).toHaveBeenCalledTimes(3);
+    expect(validatorSpy).nthCalledWith(1, covalentResponse.data.items.at(0).nft_data.at(0).external_data);
+    expect(validatorSpy).nthCalledWith(2, covalentResponse.data.items.at(1).nft_data.at(0).external_data);
+    expect(validatorSpy).nthCalledWith(3, covalentResponse.data.items.at(1).nft_data.at(1).external_data);
+});
+
+test("getUserNfts - returns empty array if all nfts are erc20", async () => {
+    const blockchain = new Blockchain();
+    blockchain.chainIdDecimal = 1000;
+
+    const blockchainRepoSpy = jest.spyOn(blockchainRepo, "findById").mockResolvedValue(blockchain);
+
+    const clonedResponse = cloneDeep(covalentResponse);
+    clonedResponse.data.items.forEach((item) => {
+        item.supports_erc = ["erc20"];
     });
-}, 60000);
+
+    const fakeResponse: AxiosResponse = {
+        status: 200,
+        data: clonedResponse,
+        config: {},
+        headers: {},
+        request: {},
+        statusText: ""
+    };
+    const httpServiceSpy = jest.spyOn(httpService, "get").mockReturnValue(of(fakeResponse));
+    const configSpy = jest.spyOn(configService, "get").mockReturnValue("api-key");
+
+    const validatorSpy = jest.spyOn(validator, "validate").mockReturnValue(false);
+
+    const returned = await service.getUserNfts("otinanai", "the-chain-id");
+    expect(returned.length).toBe(0);
+
+    expect(blockchainRepoSpy).toHaveBeenCalledTimes(1);
+    expect(blockchainRepoSpy).toHaveBeenCalledWith("the-chain-id");
+
+    expect(configSpy).toHaveBeenCalledTimes(1);
+    expect(configSpy).toHaveBeenCalledWith("COVALENTHQ_KEY");
+
+    const expectedUrl = `https://api.covalenthq.com/v1/1000/address/otinanai/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=api-key`;
+    expect(httpServiceSpy).toHaveBeenCalledTimes(1);
+    expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
+
+    expect(validatorSpy).toHaveBeenCalledTimes(0);
+});
+
+test("getUserNfts - returns empty array if user has no items", async () => {
+    const blockchain = new Blockchain();
+    blockchain.chainIdDecimal = 1000;
+
+    const blockchainRepoSpy = jest.spyOn(blockchainRepo, "findById").mockResolvedValue(blockchain);
+
+    const clonedResponse = cloneDeep(covalentResponse);
+    clonedResponse.data.items = [];
+
+    const fakeResponse: AxiosResponse = {
+        status: 200,
+        data: clonedResponse,
+        config: {},
+        headers: {},
+        request: {},
+        statusText: ""
+    };
+    const httpServiceSpy = jest.spyOn(httpService, "get").mockReturnValue(of(fakeResponse));
+    const configSpy = jest.spyOn(configService, "get").mockReturnValue("api-key");
+
+    const validatorSpy = jest.spyOn(validator, "validate").mockReturnValue(false);
+
+    const returned = await service.getUserNfts("otinanai", "the-chain-id");
+    expect(returned.length).toBe(0);
+
+    expect(blockchainRepoSpy).toHaveBeenCalledTimes(1);
+    expect(blockchainRepoSpy).toHaveBeenCalledWith("the-chain-id");
+
+    expect(configSpy).toHaveBeenCalledTimes(1);
+    expect(configSpy).toHaveBeenCalledWith("COVALENTHQ_KEY");
+
+    const expectedUrl = `https://api.covalenthq.com/v1/1000/address/otinanai/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=api-key`;
+    expect(httpServiceSpy).toHaveBeenCalledTimes(1);
+    expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
+
+    expect(validatorSpy).toHaveBeenCalledTimes(0);
+});
+
+test("getUserNfts - returns array of valid erc721 or valid erc1155", async () => {
+    const blockchain = new Blockchain();
+    blockchain.chainIdDecimal = 1000;
+
+    const blockchainRepoSpy = jest.spyOn(blockchainRepo, "findById").mockResolvedValue(blockchain);
+
+    const clonesResponse = cloneDeep(covalentResponse);
+    clonesResponse.data.items[0].supports_erc = ["erc20"];
+
+    const fakeResponse: AxiosResponse = {
+        status: 200,
+        data: clonesResponse,
+        config: {},
+        headers: {},
+        request: {},
+        statusText: ""
+    };
+    const httpServiceSpy = jest.spyOn(httpService, "get").mockReturnValue(of(fakeResponse));
+    const configSpy = jest.spyOn(configService, "get").mockReturnValue("api-key");
+
+    const validatorSpy = jest.spyOn(validator, "validate").mockReturnValue(true);
+
+    const returned = await service.getUserNfts("otinanai", "the-chain-id");
+
+    expect(returned.length).toBe(2);
+
+    const expectedNft1: MetaplexMetadata = {
+        name: covalentResponse.data.items[1].nft_data[0].external_data.name,
+        image: covalentResponse.data.items[1].nft_data[0].external_data.image,
+        attributes: covalentResponse.data.items[1].nft_data[0].external_data.attributes,
+        description: covalentResponse.data.items[1].nft_data[0].external_data.description,
+        animation_url: covalentResponse.data.items[1].nft_data[0].external_data.animation_url,
+        external_url: covalentResponse.data.items[1].nft_data[0].external_data.external_url,
+        properties: {
+            files: []
+        }
+    };
+
+    const expectedNft2: MetaplexMetadata = {
+        name: covalentResponse.data.items[1].nft_data[1].external_data.name,
+        image: covalentResponse.data.items[1].nft_data[1].external_data.image,
+        attributes: covalentResponse.data.items[1].nft_data[1].external_data.attributes,
+        description: covalentResponse.data.items[1].nft_data[1].external_data.description,
+        animation_url: covalentResponse.data.items[1].nft_data[1].external_data.animation_url,
+        external_url: covalentResponse.data.items[1].nft_data[1].external_data.external_url,
+        properties: {
+            files: []
+        }
+    };
+    expect(returned[0]).toEqual(expectedNft1);
+    expect(returned[1]).toEqual(expectedNft2);
+
+    expect(blockchainRepoSpy).toHaveBeenCalledTimes(1);
+    expect(blockchainRepoSpy).toHaveBeenCalledWith("the-chain-id");
+
+    expect(configSpy).toHaveBeenCalledTimes(1);
+    expect(configSpy).toHaveBeenCalledWith("COVALENTHQ_KEY");
+
+    const expectedUrl = `https://api.covalenthq.com/v1/1000/address/otinanai/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=api-key`;
+    expect(httpServiceSpy).toHaveBeenCalledTimes(1);
+    expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
+
+    expect(validatorSpy).toHaveBeenCalledTimes(2);
+    expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items.at(1).nft_data.at(0).external_data);
+    expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items.at(1).nft_data.at(1).external_data);
+});

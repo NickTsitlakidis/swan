@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
 import { EvmMetadata } from "../uploader/evm-metadata";
@@ -11,11 +11,13 @@ import { BlockchainRepository } from "./blockchain-repository";
 import { EvmMetadataValidator } from "./evm-metadata-validator";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
-import { CovalentHQResponse } from "./covalentHQ-interface";
-import { LogAsyncMethod } from "../../infrastructure/logging";
+import { CovalentHqResponse } from "./covalent-hq-response";
+import { getLogger, LogAsyncMethod } from "../../infrastructure/logging";
 
 @Injectable()
 export class EvmActionsService extends BlockchainActions {
+    private _logger: Logger;
+
     constructor(
         awsService: AwsService,
         configService: ConfigService,
@@ -25,6 +27,7 @@ export class EvmActionsService extends BlockchainActions {
         private readonly _blockchainRepository: BlockchainRepository
     ) {
         super(awsService, configService, metaplexService);
+        this._logger = getLogger(EvmActionsService);
     }
 
     async uploadMetadata(metadata: NftMetadata): Promise<UploadedFiles> {
@@ -67,21 +70,23 @@ export class EvmActionsService extends BlockchainActions {
             "COVALENTHQ_KEY"
         )}`;
 
-        const nfts = await firstValueFrom(this._httpService.get<CovalentHQResponse>(url));
+        const nfts = await firstValueFrom(this._httpService.get<CovalentHqResponse>(url));
 
         if (nfts.status !== 200) {
+            this._logger.error(`Got error response from CovalentHQ API. Status : ${nfts.status}`);
             throw new InternalServerErrorException("Could not retrieve nfts from covalentHQ");
         }
 
         return nfts.data.data.items
+            .filter(
+                (contract) => contract.supports_erc?.includes("erc721") || contract.supports_erc?.includes("erc1155")
+            )
+            .flatMap((contract) => contract.nft_data)
             .filter((nft) => {
-                return (
-                    (nft.supports_erc?.includes("erc721") || nft.supports_erc?.includes("erc1155")) &&
-                    this._validator.validate(nft.nft_data.at(0).external_data)
-                );
+                return this._validator.validate(nft.external_data);
             })
             .map((nft) => {
-                const metadataNft = nft.nft_data.at(0).external_data;
+                const metadataNft = nft.external_data;
                 const metaplex: MetaplexMetadata = {
                     name: metadataNft.name,
                     image: metadataNft.image,

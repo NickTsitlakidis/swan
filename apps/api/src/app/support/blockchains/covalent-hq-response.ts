@@ -7,7 +7,7 @@ export interface ExternalData {
     image_1024: string;
     animation_url?: string;
     external_url?: string;
-    attributes: any[];
+    attributes?: any[];
     owner?: string;
 }
 
@@ -32,7 +32,7 @@ export interface Item {
     contract_address: string;
     supports_erc: string[];
     logo_url: string;
-    last_transferred_at?: Date;
+    last_transferred_at?: string;
     native_token: boolean;
     type: string;
     balance: string;
@@ -54,7 +54,7 @@ export interface Data {
     pagination?: any;
 }
 
-export interface CovalentHQResponse {
+export interface CovalentHqResponse {
     data: Data;
     error: boolean;
     error_message?: string;
