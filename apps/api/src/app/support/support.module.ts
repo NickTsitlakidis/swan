@@ -17,8 +17,6 @@ import { MetaplexService } from "./metaplex/metaplex-service";
 import { EvmActionsService } from "./blockchains/evm-actions-service";
 import { SolanaActionsService } from "./blockchains/solana-actions-service";
 import { BlockchainActionsRegistryService } from "./blockchains/blockchain-actions-registry-service";
-import { EvmNftContract } from "./evm-nft-contracts/evm-nft-contract";
-import { EvmNftContractRepository } from "./evm-nft-contracts/evm-nft-contract-repository";
 import { EvmMetadataValidator } from "./blockchains/evm-metadata-validator";
 import { HttpModule } from "@nestjs/axios";
 import { ContractsModule } from "../contracts.module";
@@ -29,7 +27,7 @@ import { ContractsModule } from "../contracts.module";
         ConfigModule,
         HttpModule,
         ContractsModule,
-        MikroOrmModule.forFeature([Category, Wallet, Blockchain, BlockchainWallet, EvmNftContract])
+        MikroOrmModule.forFeature([Category, Wallet, Blockchain, BlockchainWallet])
     ],
     providers: [
         CategoryRepository,
@@ -43,7 +41,6 @@ import { ContractsModule } from "../contracts.module";
         EvmActionsService,
         BlockchainActionsRegistryService,
         SolanaActionsService,
-        EvmNftContractRepository,
         EvmMetadataValidator
     ],
     exports: [
@@ -58,7 +55,6 @@ import { ContractsModule } from "../contracts.module";
         EvmActionsService,
         BlockchainActionsRegistryService,
         SolanaActionsService,
-        EvmNftContractRepository,
         EvmMetadataValidator
     ]
 })

@@ -20,7 +20,10 @@ export class Blockchain extends MongoDocument {
     rpcUrl: string;
 
     @Property()
-    chainId: string;
+    chainIdHex: string;
+
+    @Property()
+    chainIdDecimal: number;
 
     @Property()
     scanSiteUrl: string;
