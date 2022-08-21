@@ -11,9 +11,17 @@ import { CollectionController } from "./collection-controller";
 import { NftController } from "./nft-controller";
 import { ConfigModule } from "@nestjs/config";
 import { SupportModule } from "../support/support.module";
+import { ListingController } from "./listing-controller";
 
 @Module({
-    controllers: [ClientController, UserController, SupportController, CollectionController, NftController],
+    controllers: [
+        ClientController,
+        UserController,
+        SupportController,
+        CollectionController,
+        NftController,
+        ListingController
+    ],
     imports: [
         CqrsModule,
         ViewsModule,

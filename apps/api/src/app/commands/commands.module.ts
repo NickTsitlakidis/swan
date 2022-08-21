@@ -14,6 +14,9 @@ import { SupportModule } from "../support/support.module";
 import { CreateNftCommandExecutor } from "./nft/create-nft-command-executor";
 import { NftModule } from "../domain/nft/nft.module";
 import { MintNftCommandExecutor } from "./nft/mint-nft-command-executor";
+import { ListingModule } from "../domain/listing/listing.module";
+import { CreateListingCommandExecutor } from "./listing/create-listing-command-executor";
+import { SubmitListingCommandExecutor } from "./listing/submit-listing-command-executor";
 
 @Module({
     providers: [
@@ -23,7 +26,9 @@ import { MintNftCommandExecutor } from "./nft/mint-nft-command-executor";
         CompleteWalletAdditionCommandExecutor,
         CreateCollectionCommandExecutor,
         CreateNftCommandExecutor,
-        MintNftCommandExecutor
+        MintNftCommandExecutor,
+        CreateListingCommandExecutor,
+        SubmitListingCommandExecutor
     ],
     exports: [
         StartSignatureAuthenticationExecutor,
@@ -31,7 +36,9 @@ import { MintNftCommandExecutor } from "./nft/mint-nft-command-executor";
         CompleteWalletAdditionCommandExecutor,
         CreateCollectionCommandExecutor,
         CreateNftCommandExecutor,
-        MintNftCommandExecutor
+        MintNftCommandExecutor,
+        CreateListingCommandExecutor,
+        SubmitListingCommandExecutor
     ],
     imports: [
         InfrastructureModule,
@@ -41,7 +48,8 @@ import { MintNftCommandExecutor } from "./nft/mint-nft-command-executor";
         ConfigModule,
         CollectionModule,
         SupportModule,
-        NftModule
+        NftModule,
+        ListingModule
     ]
 })
 export class CommandsModule {}

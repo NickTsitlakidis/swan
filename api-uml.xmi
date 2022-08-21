@@ -61,7 +61,6 @@
         </ownedOperation>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="uR4yv5Qq2gDyl" name="Listing">
-        <ownedAttribute xmi:type="uml:Property" xmi:id="uW55HY9fy3aXY" name="transactionId" visibility="private" type="ui6NZWaiC2tZF"/>
         <ownedAttribute xmi:type="uml:Property" xmi:id="uevq3pbfh4JAN" name="price" visibility="private" type="uMK4DLQwX4pC3"/>
         <ownedAttribute xmi:type="uml:Property" xmi:id="uHpXRjNdnRq6U" name="chainListingId" visibility="private" type="ui6NZWaiC2tZF"/>
         <ownedAttribute xmi:type="uml:Property" xmi:id="uHRlGdyOKE1TZ" name="tokenContractAddress" visibility="private" type="ui6NZWaiC2tZF"/>
@@ -171,7 +170,7 @@
               <classwidget xmi.id="uPBNm42h9VsAJ" localid="ul9bucAvtxFYU" textcolor="#000000" linecolor="#ff0000" linewidth="0" usefillcolor="1" usesdiagramfillcolor="0" usesdiagramusefillcolor="0" fillcolor="#aaffff" font="Ubuntu,10,-1,5,50,0,0,0,0,0" autoresize="1" x="375" y="175" width="143" height="150" isinstance="0" showstereotype="1" showoperations="1" showpubliconly="0" showopsigs="601" showpackage="1" showscope="1" showattributes="1" showattsigs="601"/>
               <classwidget xmi.id="umEs0VuGfV0fJ" localid="uithD3fF01rLx" textcolor="#000000" linecolor="#ff0000" linewidth="0" usefillcolor="1" usesdiagramfillcolor="0" usesdiagramusefillcolor="0" fillcolor="#aaffff" font="Ubuntu,10,-1,5,50,0,0,0,0,0" autoresize="0" x="300" y="675" width="470" height="146" isinstance="0" showstereotype="1" showoperations="1" showpubliconly="0" showopsigs="601" showpackage="1" showscope="1" showattributes="1" showattsigs="601"/>
               <classwidget xmi.id="uQVfM0yeNyxjc" localid="uluTmRvy9ZcVs" textcolor="#000000" linecolor="#ff0000" linewidth="0" usefillcolor="1" usesdiagramfillcolor="0" usesdiagramusefillcolor="0" fillcolor="#ffff00" font="Ubuntu,10,-1,5,50,0,0,0,0,0" autoresize="1" x="250" y="450" width="104" height="52" isinstance="0" showstereotype="1" showoperations="1" showpubliconly="0" showopsigs="601" showpackage="1" showscope="1" showattributes="1" showattsigs="601"/>
-              <classwidget xmi.id="uR4yv5Qq2gDyl" localid="uMqY2Bmpy4Vcf" textcolor="#000000" linecolor="#ff0000" linewidth="0" usefillcolor="1" usesdiagramfillcolor="0" usesdiagramusefillcolor="0" fillcolor="#aaffff" font="Ubuntu,10,-1,5,50,0,0,0,0,0,Regular" autoresize="1" x="575" y="-25" width="857" height="300" isinstance="0" showstereotype="1" showoperations="1" showpubliconly="0" showopsigs="601" showpackage="1" showscope="1" showattributes="1" showattsigs="601"/>
+              <classwidget xmi.id="uR4yv5Qq2gDyl" localid="uMqY2Bmpy4Vcf" textcolor="#000000" linecolor="#ff0000" linewidth="0" usefillcolor="1" usesdiagramfillcolor="0" usesdiagramusefillcolor="0" fillcolor="#aaffff" font="Ubuntu,10,-1,5,50,0,0,0,0,0,Regular" autoresize="1" x="575" y="0" width="857" height="285" isinstance="0" showstereotype="1" showoperations="1" showpubliconly="0" showopsigs="601" showpackage="1" showscope="1" showattributes="1" showattsigs="601"/>
               <enumwidget xmi.id="umyDDz4IsglbU" localid="uGBved1ORQnV0" textcolor="#000000" linecolor="#ff0000" linewidth="0" usefillcolor="1" usesdiagramfillcolor="0" usesdiagramusefillcolor="0" fillcolor="#ffff00" font="Ubuntu,10,-1,5,50,0,0,0,0,0" autoresize="1" x="50" y="625" width="115" height="75" isinstance="0" showstereotype="1" showpackage="1"/>
               <notewidget xmi.id="uMWsCwn9NLDC8" localid="uKTWxwXTzfKX9" textcolor="none" linecolor="#ff0000" linewidth="0" usefillcolor="1" usesdiagramfillcolor="0" usesdiagramusefillcolor="1" fillcolor="#aaffff" font="Ubuntu,10,-1,5,50,0,0,0,0,0" autoresize="0" x="-200" y="0" width="479" height="32" isinstance="0" showstereotype="1" text="Classes with this color are the main domain models which will produce events." noteType="0"/>
               <classwidget xmi.id="ukeTnE3MLeHrm" localid="uJn4wV1X4A5zW" textcolor="#000000" linecolor="#ff0000" linewidth="0" usefillcolor="1" usesdiagramfillcolor="0" usesdiagramusefillcolor="0" fillcolor="#ffff00" font="Ubuntu,10,-1,5,50,0,0,0,0,0" autoresize="1" x="1200" y="300" width="138" height="82" isinstance="0" showstereotype="1" showoperations="1" showpubliconly="0" showopsigs="601" showpackage="1" showscope="1" showattributes="1" showattsigs="601"/>
@@ -238,10 +237,10 @@
                 </linepath>
               </assocwidget>
               <assocwidget xmi.id="uO4jllJkg9TkA" localid="uqEy2gfFn4fBd" textcolor="none" linecolor="#ff0000" linewidth="0" usefillcolor="1" usesdiagramfillcolor="1" usesdiagramusefillcolor="1" fillcolor="none" font="Ubuntu,10,-1,5,50,0,0,0,0,0" autoresize="1" seqnum="" type="510" visibilityA="1" visibilityB="1" changeabilityA="900" changeabilityB="900" widgetaid="uR4yv5Qq2gDyl" widgetbid="uYkCOtQOSt2LA" indexa="0" totalcounta="0" indexb="0" totalcountb="0">
-                <floatingtext xmi.id="uS3N6GTJFqkPW" localid="uGSkZ9iXMdUde" textcolor="none" linecolor="#ff0000" linewidth="0" usefillcolor="1" usesdiagramfillcolor="1" usesdiagramusefillcolor="1" fillcolor="none" font="Sans Serif,9,-1,5,50,0,0,0,0,0" autoresize="1" x="455" y="71" width="44" height="18" isinstance="0" showstereotype="1" text="status" pretext="-" posttext="" role="710"/>
+                <floatingtext xmi.id="uS3N6GTJFqkPW" localid="uGSkZ9iXMdUde" textcolor="none" linecolor="#ff0000" linewidth="0" usefillcolor="1" usesdiagramfillcolor="1" usesdiagramusefillcolor="1" fillcolor="none" font="Sans Serif,9,-1,5,50,0,0,0,0,0" autoresize="1" x="455" y="70" width="44" height="18" isinstance="0" showstereotype="1" text="status" pretext="-" posttext="" role="710"/>
                 <linepath layout="Direct">
-                  <startpoint startx="575" starty="91.2459"/>
-                  <endpoint endx="451" endy="81.478"/>
+                  <startpoint startx="575" starty="96.3101"/>
+                  <endpoint endx="451" endy="82.9436"/>
                 </linepath>
               </assocwidget>
             </associations>
@@ -321,7 +320,6 @@
             <listitem id="uO4jllJkg9TkA" type="814" open="0"/>
             <listitem id="ux8nRUbUzcEKm" type="815" open="0"/>
             <listitem id="uHRlGdyOKE1TZ" type="814" open="0"/>
-            <listitem id="uW55HY9fy3aXY" type="814" open="0"/>
             <listitem id="uggBFxeLGXr1w" type="815" open="0"/>
             <listitem id="uOSP7kFOef2Iu" type="814" open="0"/>
           </listitem>
