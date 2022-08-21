@@ -1,7 +1,14 @@
+import { BlockchainWalletDto } from "@nft-marketplace/common";
+import { UserAuthService } from "./../../../@core/services/authentication/user_auth.service";
+import { UserService } from "./../../../@core/services/user/user.service";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
-import { CategoryDto, CollectionDto, NftMetadataAttributeDto } from "@nft-marketplace/common";
-import { LocalStorageService } from "ngx-webstorage";
+import {
+    CategoryDto,
+    CollectionDto,
+    NftMetadataAttributeDto,
+    StartSignatureAuthenticationDto
+} from "@nft-marketplace/common";
 import { fade } from "../../../@core/animations/enter-leave.animation";
 import { CreateNft } from "../../../@core/services/chains/nft";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
@@ -9,6 +16,8 @@ import { SupportService } from "../../../@core/services/support/support.service"
 import { firstValueFrom, of, switchMap } from "rxjs";
 import { NftService } from "../../../@core/services/chains/nfts/nft.service";
 import { CollectionsService } from "../../../@core/services/collections/collections.service";
+import { MatDialog } from "@angular/material/dialog";
+import { SelectWalletDialogComponent } from "../../../@theme/components/select-wallet-dialog/select-wallet-dialog.component";
 
 @Component({
     selector: "nft-marketplace-create-nft-page",
@@ -73,10 +82,12 @@ export class CreateNFTPageComponent implements OnInit {
         private _fb: UntypedFormBuilder,
         private _cd: ChangeDetectorRef,
         private _walletRegistryService: WalletRegistryService,
-        private _lcStorage: LocalStorageService,
+        private _userService: UserService,
         private _supportService: SupportService,
         private _nftService: NftService,
-        private _collectionsService: CollectionsService
+        private _collectionsService: CollectionsService,
+        private _userAuthService: UserAuthService,
+        private _dialog: MatDialog
     ) {}
 
     ngOnInit(): void {
@@ -159,7 +170,8 @@ export class CreateNFTPageComponent implements OnInit {
     }
 
     public async onSubmit() {
-        const walletId = this._lcStorage.retrieve("walletId");
+        const chainId = this.createNFTForm.get("blockchain")?.value.id;
+        const walletId = await this._findAvailableWallet(chainId);
         const walletService = await firstValueFrom(this._walletRegistryService.getWalletService(walletId));
         const metadata: NftMetadataAttributeDto[] = [];
         for (let index = 1; index <= this.attributes.length; index++) {
@@ -183,8 +195,8 @@ export class CreateNFTPageComponent implements OnInit {
                         description: this.createNFTForm.get("description")?.value,
                         resellPercentage: this.createNFTForm.get("royalties")?.value,
                         maxSupply: this.createNFTForm.get("maxSupply")?.value,
-                        chainId: this.createNFTForm.get("blockchain")?.value.id,
-                        walletId: this._lcStorage.retrieve("walletId"),
+                        chainId,
+                        walletId: walletId,
                         attributes: metadata,
                         collectionId: this.createNFTForm.get("collection")?.value?.id || undefined
                     };
@@ -211,5 +223,78 @@ export class CreateNFTPageComponent implements OnInit {
                 })
             )
             .subscribe(console.log);
+    }
+    private async _findAvailableWallet(chainId: string): Promise<string> {
+        let walletId: string | undefined;
+        const userWallets = (await firstValueFrom(this._userService.getUserWallets())).filter(
+            (wallet) => wallet.wallet.chainId === chainId
+        );
+
+        if (userWallets.length === 1) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore: Object is possibly 'undefined'
+            walletId = userWallets.at(0).wallet.id;
+        } else if (userWallets.length > 1) {
+            let allWallets = await firstValueFrom(this._supportService.getBlockchainWallets());
+            allWallets = allWallets
+                .filter((wal) => wal.chainId === chainId)
+                .filter((wal) => {
+                    wal.wallets = wal.wallets.filter((w) =>
+                        userWallets.find((userWallet) => userWallet.wallet.id === w.id)
+                    );
+                    return wal;
+                });
+            walletId = await this._getWallet(chainId, allWallets);
+        }
+
+        if (!walletId) {
+            // TODO Handle
+            return "";
+        }
+
+        return walletId;
+    }
+
+    private async _getWallet(chainId: string, wallets: BlockchainWalletDto[]): Promise<string | undefined> {
+        const selectWalletsInput = wallets
+            .filter((wallet) => wallet.blockchainId === chainId)
+            .flatMap((wallet) => wallet.wallets)
+            .map((wallet) => {
+                return {
+                    img: `assets/images/${wallet.name}.png`,
+                    title: wallet.name,
+                    chain: this.blockchains.find((chain) => chain.id === wallet.chainId)?.name || ""
+                };
+            });
+        const dialogRef = this._openDialog(selectWalletsInput);
+        const walletName = await firstValueFrom(dialogRef.afterClosed());
+        const wallet = wallets
+            .filter((wallet) => wallet.blockchainId === chainId)
+            .flatMap((wallet) => wallet.wallets)
+            .find((wallet) => wallet.name === walletName);
+
+        if (wallet) {
+            const service = await firstValueFrom(this._walletRegistryService.getWalletService(wallet.id));
+            const walletAddress = service && (await firstValueFrom(service.getPublicKey()));
+            if (!walletAddress) {
+                return;
+            }
+            const authBody = new StartSignatureAuthenticationDto();
+            authBody.address = walletAddress;
+            authBody.blockchainId = wallet.chainId;
+            authBody.walletId = wallet.id;
+            await firstValueFrom(this._userAuthService.authenticateWithSignature(authBody));
+            this._userAuthService.authenticateWithSignature(authBody);
+        }
+        return wallet?.id;
+    }
+
+    private _openDialog(wallets: { img: string; title: string; chain: string }[]) {
+        return this._dialog.open(SelectWalletDialogComponent, {
+            width: "500px",
+            data: {
+                wallets
+            }
+        });
     }
 }

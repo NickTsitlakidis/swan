@@ -1,3 +1,4 @@
+import { UserService } from "./../../../@core/services/user/user.service";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import {
     BlockchainWalletDto,
@@ -13,7 +14,7 @@ import { Router } from "@angular/router";
 import { SupportService } from "../../../@core/services/support/support.service";
 import { UserAuthService } from "../../../@core/services/authentication/user_auth.service";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
-import { LocalStorageService } from "ngx-webstorage";
+import { firstValueFrom, of } from "rxjs";
 @Component({
     selector: "nft-marketplace-header",
     styleUrls: ["./header.component.scss"],
@@ -22,7 +23,7 @@ import { LocalStorageService } from "ngx-webstorage";
 })
 export class HeaderComponent implements OnInit {
     public walletName: SupportedWallets;
-    public selectedWallet: WalletDto | undefined;
+    public selectedWallets: WalletDto[] | undefined;
     public faPaintBrush = faPaintBrush;
     public chainsNew: BlockchainWalletDto[];
 
@@ -52,6 +53,7 @@ export class HeaderComponent implements OnInit {
             disabled: true
         }
     ];
+    public isSelected: { [name: string]: { [name: string]: boolean } } = {};
 
     constructor(
         public imagesService: ImagesService,
@@ -60,25 +62,26 @@ export class HeaderComponent implements OnInit {
         private _cd: ChangeDetectorRef,
         private _userAuthService: UserAuthService,
         private _walletRegistryService: WalletRegistryService,
-        private _lcStorage: LocalStorageService
+        private _userService: UserService
     ) {}
 
     ngOnInit() {
         this._connectToObservables();
     }
 
-    public walletSelected(wallet: WalletDto) {
-        this._walletRegistryService.getWalletService(wallet.id).subscribe((service) => {
-            service?.getPublicKey().subscribe((walletAddress) => {
-                const authBody = new StartSignatureAuthenticationDto();
-                authBody.address = walletAddress;
-                authBody.blockchainId = wallet.chainId;
-                authBody.walletId = wallet.id;
-                this._userAuthService.authenticateWithSignature(authBody).subscribe(() => {
-                    this._lcStorage.store("walletName", wallet.name);
-                });
-            });
-        });
+    public async walletSelected(wallets: WalletDto[]) {
+        const wallet = wallets.pop();
+        if (!wallet) {
+            // TODO handle it
+            return;
+        }
+        const service = await firstValueFrom(this._walletRegistryService.getWalletService(wallet.id));
+        const walletAddress = await firstValueFrom(service?.getPublicKey() || of());
+        const authBody = new StartSignatureAuthenticationDto();
+        authBody.address = walletAddress;
+        authBody.blockchainId = wallet.chainId;
+        authBody.walletId = wallet.id;
+        this._userAuthService.authenticateWithSignature(authBody).subscribe();
     }
 
     public navigateTo(link: string) {
@@ -90,13 +93,20 @@ export class HeaderComponent implements OnInit {
      *********************************************************/
 
     private _connectToObservables() {
-        this._supportService.getBlockchainWallets().subscribe((wallets) => {
+        this._supportService.getBlockchainWallets().subscribe(async (wallets) => {
             this.chainsNew = wallets;
-            const walletId = this._lcStorage.retrieve("walletId");
-            const chainId = this._lcStorage.retrieve("chainId");
-            this.selectedWallet = wallets
-                .find((wallet) => wallet.blockchainId === chainId)
-                ?.wallets.find((wallet) => wallet.id === walletId);
+            const userWallets = await firstValueFrom(this._userService.getUserWallets());
+            this.selectedWallets = wallets
+                .flatMap((w) => w.wallets)
+                .filter((wallet) =>
+                    userWallets.find((w) => w.wallet.chainId === wallet.chainId && w.wallet.id === wallet.id)
+                );
+            this.selectedWallets.forEach((wal) => {
+                if (!this.isSelected[wal.chainId]) {
+                    this.isSelected[wal.chainId] = {};
+                }
+                this.isSelected[wal.chainId][wal.name] = true;
+            });
             this._cd.detectChanges();
         });
     }

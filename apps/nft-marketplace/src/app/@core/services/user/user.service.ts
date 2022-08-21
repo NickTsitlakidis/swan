@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Observable } from "rxjs";
+import { Observable, of, Subject } from "rxjs";
 import { ProfileNftDto, UserWalletDto } from "@nft-marketplace/common";
 import { map } from "rxjs/operators";
 import { plainToInstance } from "class-transformer";
@@ -9,12 +9,25 @@ import { plainToInstance } from "class-transformer";
     providedIn: "root"
 })
 export class UserService {
-    constructor(private readonly _httpClient: HttpClient) {}
+    public wallets: UserWalletDto[] = [];
+    private _walletPopulated: Subject<boolean>;
+
+    constructor(private readonly _httpClient: HttpClient) {
+        this._walletPopulated = new Subject<boolean>();
+        this._retrieveUserWallets().subscribe((wallets) => {
+            this.wallets = wallets;
+            this._walletPopulated.next(true);
+        });
+    }
 
     getUserWallets(): Observable<Array<UserWalletDto>> {
-        return this._httpClient.get<Array<unknown>>("/user/user-wallets").pipe(
-            map((results) => {
-                return plainToInstance(UserWalletDto, results);
+        if (this.wallets.length > 0) {
+            return of(this.wallets);
+        }
+
+        return this._walletPopulated.pipe(
+            map(() => {
+                return this.wallets;
             })
         );
     }
@@ -23,6 +36,14 @@ export class UserService {
         return this._httpClient.get<Array<ProfileNftDto>>("/nft/user").pipe(
             map((results) => {
                 return plainToInstance(ProfileNftDto, results);
+            })
+        );
+    }
+
+    private _retrieveUserWallets(): Observable<Array<UserWalletDto>> {
+        return this._httpClient.get<Array<unknown>>("/user/user-wallets").pipe(
+            map((results) => {
+                return plainToInstance(UserWalletDto, results);
             })
         );
     }

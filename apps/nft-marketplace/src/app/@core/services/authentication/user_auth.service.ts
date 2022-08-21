@@ -84,6 +84,36 @@ export class UserAuthService {
         );
     }
 
+    public addUserWallet(body: StartSignatureAuthenticationDto) {
+        return this._walletRegistry.getWalletService(body.walletId).pipe(
+            switchMap((walletService) => {
+                if (isNil(walletService)) {
+                    return throwError(() => "Unable to match wallet with service");
+                }
+                return zip(of(walletService), this._httpClient.post<NonceDto>("/user/start-wallet-addition", body));
+            }),
+
+            switchMap((service) => {
+                const walletService = service[0];
+                const nonce = service[1];
+                return walletService.signMessage(nonce.nonce);
+            }),
+            switchMap((signature) => {
+                if (isNil(signature)) {
+                    return throwError(() => "Signature authentication stopped");
+                }
+
+                const completeBody = new CompleteSignatureAuthenticationDto();
+                completeBody.signature = signature;
+                completeBody.blockchainId = body.blockchainId;
+                completeBody.address = body.address;
+                return this._httpClient.post("/user/complete-wallet-addition", completeBody);
+            }),
+            map((httpResult) => plainToClass(TokenDto, httpResult)),
+            tap((dto) => this._storeUserData(dto, body))
+        );
+    }
+
     private _storeUserData(userData: TokenDto, authBody?: StartSignatureAuthenticationDto) {
         this._lcStorage.store("userTokenValue", userData.tokenValue);
         this._lcStorage.store("userExpiresAt", userData.expiresAt.toISOString());

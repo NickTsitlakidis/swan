@@ -22,8 +22,7 @@ export class PhantomWalletService extends SolanaWalletService {
     }
 
     public override getPublicKey(): Observable<string> {
-        const walletFromLocalStorage = this._lcStorage.retrieve("walletName");
-        this.walletStore.selectWallet(("Phantom" || walletFromLocalStorage) as WalletName);
+        this.walletStore.selectWallet("Phantom" as WalletName);
         return super.getPublicKey();
     }
 }
