@@ -2,7 +2,7 @@ import { ConfigService } from "@nestjs/config";
 import { MetaplexService } from "../metaplex/metaplex-service";
 import { AwsService } from "../aws/aws-service";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
-import { UploadedFiles } from "../uploader/uploaded-files";
+import { UploadedFiles } from "./uploaded-files";
 import { Blob } from "buffer";
 import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
 

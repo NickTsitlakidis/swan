@@ -1,8 +1,8 @@
 import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
-import { EvmMetadata } from "../uploader/evm-metadata";
-import { UploadedFiles } from "../uploader/uploaded-files";
+import { EvmMetadata } from "./evm-metadata";
+import { UploadedFiles } from "./uploaded-files";
 import { BlockchainActions } from "./blockchain-actions";
 import { ConfigService } from "@nestjs/config";
 import { AwsService } from "../aws/aws-service";

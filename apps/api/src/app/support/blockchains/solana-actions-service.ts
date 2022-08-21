@@ -4,7 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import { AwsService } from "./../aws/aws-service";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
 import { MetaplexService } from "../metaplex/metaplex-service";
-import { UploadedFiles } from "../uploader/uploaded-files";
+import { UploadedFiles } from "./uploaded-files";
 import { BlockchainActions } from "./blockchain-actions";
 
 @Injectable()
