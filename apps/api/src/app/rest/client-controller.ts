@@ -1,6 +1,6 @@
 import { Controller, Headers, Post } from "@nestjs/common";
 import { ClientTokenIssuer } from "../security/client-token-issuer";
-import { TokenDto } from "@nft-marketplace/common";
+import { TokenDto } from "@swan/dto";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { EventStore } from "../infrastructure/event-store";
 

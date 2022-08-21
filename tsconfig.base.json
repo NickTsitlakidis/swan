@@ -18,7 +18,7 @@
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
         "paths": {
-            "@nft-marketplace/common": ["libs/common/src/index.ts"],
+            "@swan/dto": ["libs/dto/src/index.ts"],
             "@swan/contracts": ["libs/contracts/src/index.ts"],
             "assert": ["node_modules/assert"],
             "crypto": ["node_modules/crypto-browserify"],

@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { UserService } from "../../../@core/services/user/user.service";
-import { ProfileNftDto } from "@nft-marketplace/common";
+import { ProfileNftDto } from "@swan/dto";
 
 @Component({
     selector: "nft-marketplace-profile-page",

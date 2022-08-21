@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { AvailabilityDto, CollectionDto, CreateCollectionDto, EntityDto } from "@nft-marketplace/common";
+import { AvailabilityDto, CollectionDto, CreateCollectionDto, EntityDto } from "@swan/dto";
 import { CoreModule } from "../../core.module";
 
 @Injectable({

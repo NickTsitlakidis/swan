@@ -8,7 +8,7 @@ import { UserWalletViewRepository } from "../../views/user-wallet/user-wallet-vi
 import { BadRequestException } from "@nestjs/common";
 import { BlockchainRepository } from "../../support/blockchains/blockchain-repository";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
-import { NftDto } from "@nft-marketplace/common";
+import { NftDto } from "@swan/dto";
 import { isNil } from "lodash";
 import { LogAsyncMethod } from "../../infrastructure/logging";
 

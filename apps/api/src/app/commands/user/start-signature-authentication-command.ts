@@ -1,4 +1,4 @@
-import { StartSignatureAuthenticationDto } from "@nft-marketplace/common";
+import { StartSignatureAuthenticationDto } from "@swan/dto";
 
 export class StartSignatureAuthenticationCommand {
     address: string;

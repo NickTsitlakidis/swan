@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { UserWalletDto, WalletDto } from "@nft-marketplace/common";
+import { UserWalletDto, WalletDto } from "@swan/dto";
 import { UserWalletViewRepository } from "../views/user-wallet/user-wallet-view-repository";
 import { WalletRepository } from "../support/blockchains/wallet-repository";
 

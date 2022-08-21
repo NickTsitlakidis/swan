@@ -16,7 +16,7 @@ import { WalletEvent, WalletEventType } from "../wallet-event";
 import { CreateNftInput } from "@metaplex-foundation/js";
 import { MetaplexService } from "./metaplex.service";
 import { SwanError } from "../../../interfaces/swan-error";
-import { NftMintTransactionDto } from "@nft-marketplace/common";
+import { NftMintTransactionDto } from "@swan/dto";
 
 export const isNotNull = <T>(source: Observable<T | null>) =>
     source.pipe(filter((item: T | null): item is T => item !== null));

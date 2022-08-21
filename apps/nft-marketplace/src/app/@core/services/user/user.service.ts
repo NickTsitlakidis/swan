@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, of, Subject } from "rxjs";
-import { ProfileNftDto, UserWalletDto } from "@nft-marketplace/common";
+import { ProfileNftDto, UserWalletDto } from "@swan/dto";
 import { map } from "rxjs/operators";
 import { plainToInstance } from "class-transformer";
 

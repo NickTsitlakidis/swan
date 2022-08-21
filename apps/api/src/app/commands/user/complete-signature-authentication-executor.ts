@@ -5,7 +5,7 @@ import { InternalServerErrorException, Logger, UnauthorizedException } from "@ne
 import { isNil } from "lodash";
 import { getLogger, LogAsyncMethod } from "../../infrastructure/logging";
 import { UserTokenIssuer } from "../../security/user-token-issuer";
-import { TokenDto } from "@nft-marketplace/common";
+import { TokenDto } from "@swan/dto";
 import { IdGenerator } from "../../infrastructure/id-generator";
 import { UserWalletViewRepository } from "../../views/user-wallet/user-wallet-view-repository";
 import { SignatureValidator } from "./signature-validator";

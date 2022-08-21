@@ -1,4 +1,4 @@
-import { CategoryDto, BlockchainWalletDto } from "@nft-marketplace/common";
+import { CategoryDto, BlockchainWalletDto } from "@swan/dto";
 import { Controller, Get, UseGuards } from "@nestjs/common";
 import { ClientGuard } from "../security/guards/client-guard";
 import { SupportQueryHandler } from "../queries/support-query-handler";

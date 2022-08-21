@@ -7,7 +7,7 @@ import { environment } from "../../../environments/environment";
 import { ClientAuthService } from "../services/authentication/client_auth.service";
 import { UserAuthService } from "../services/authentication/user_auth.service";
 import { Observable, throwError } from "rxjs";
-import { TokenDto } from "@nft-marketplace/common";
+import { TokenDto } from "@swan/dto";
 
 @Injectable()
 export class HttpRequestsInterceptor implements HttpInterceptor {

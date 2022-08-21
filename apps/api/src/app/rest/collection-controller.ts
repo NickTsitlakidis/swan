@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
-import { AvailabilityDto, CollectionDto, CreateCollectionDto, EntityDto } from "@nft-marketplace/common";
+import { AvailabilityDto, CollectionDto, CreateCollectionDto, EntityDto } from "@swan/dto";
 import { UserGuard } from "../security/guards/user-guard";
 import { CollectionQueryHandler } from "../queries/collection-query-handler";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";

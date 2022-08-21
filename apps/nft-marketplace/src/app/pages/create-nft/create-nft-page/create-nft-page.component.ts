@@ -1,14 +1,6 @@
-import { BlockchainWalletDto } from "@nft-marketplace/common";
-import { UserAuthService } from "./../../../@core/services/authentication/user_auth.service";
-import { UserService } from "./../../../@core/services/user/user.service";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
-import {
-    CategoryDto,
-    CollectionDto,
-    NftMetadataAttributeDto,
-    StartSignatureAuthenticationDto
-} from "@nft-marketplace/common";
+import { CategoryDto, CollectionDto, NftMetadataAttributeDto, StartSignatureAuthenticationDto } from "@swan/dto";
 import { fade } from "../../../@core/animations/enter-leave.animation";
 import { CreateNft } from "../../../@core/services/chains/nft";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";

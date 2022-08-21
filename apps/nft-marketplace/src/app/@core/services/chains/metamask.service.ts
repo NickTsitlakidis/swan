@@ -6,7 +6,7 @@ import { isNil } from "lodash";
 import { CreateNft } from "./nft";
 import { Injectable } from "@angular/core";
 import { ChainsModule } from "./chains.module";
-import { NftMintTransactionDto } from "@nft-marketplace/common";
+import { NftMintTransactionDto } from "@swan/dto";
 import { EvmChains, SwanNftFactory } from "@swan/contracts";
 
 @Injectable({

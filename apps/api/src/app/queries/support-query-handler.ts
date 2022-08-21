@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { CategoryDto, BlockchainWalletDto, WalletDto } from "@nft-marketplace/common";
+import { CategoryDto, BlockchainWalletDto, WalletDto } from "@swan/dto";
 import { CategoryRepository } from "../support/categories/category-repository";
 import { LogAsyncMethod } from "../infrastructure/logging";
 import { BlockchainWalletRepository } from "../support/blockchains/blockchain-wallet-repository";
@@ -44,7 +44,7 @@ export class SupportQueryHandler {
                 chain.isTestNetwork,
                 chain.rpcUrl,
                 chain.scanSiteUrl,
-                chain.chainId,
+                chain.chainIdHex,
                 finalWallets
             );
         });

@@ -4,15 +4,15 @@ import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class EvmMetadataValidator {
-    validate(metadata: Record<any, any>): boolean {
+    validate(metadata: unknown): boolean {
         const schema = Joi.object({
             name: Joi.string().required(),
-            description: Joi.string().required(),
+            description: Joi.string().allow("").required(),
             image: Joi.string().uri().required(),
-            animation_url: Joi.string().uri(),
-            external_url: Joi.string().uri(),
+            animation_url: Joi.string().allow(null).uri(),
+            external_url: Joi.string().allow(null).uri(),
             attributes: Joi.array()
-                .min(0)
+                .allow(null)
                 .items(
                     Joi.object({
                         trait_type: Joi.string().required(),
@@ -20,8 +20,7 @@ export class EvmMetadataValidator {
                         display_type: Joi.string()
                     })
                 )
-                .required()
-        });
+        }).unknown();
 
         return isNil(schema.validate(metadata).error);
     }

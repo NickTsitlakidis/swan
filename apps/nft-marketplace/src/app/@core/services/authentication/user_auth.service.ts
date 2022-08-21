@@ -6,7 +6,7 @@ import {
     RefreshTokenDto,
     StartSignatureAuthenticationDto,
     TokenDto
-} from "@nft-marketplace/common";
+} from "@swan/dto";
 import { LocalStorageService } from "ngx-webstorage";
 import { Observable, of, switchMap, throwError, zip } from "rxjs";
 import { plainToClass } from "class-transformer";

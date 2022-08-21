@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { BlockchainWalletDto, CategoryDto } from "@nft-marketplace/common";
+import { BlockchainWalletDto, CategoryDto } from "@swan/dto";
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { plainToInstance } from "class-transformer";

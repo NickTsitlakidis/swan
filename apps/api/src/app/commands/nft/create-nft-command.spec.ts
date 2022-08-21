@@ -1,4 +1,4 @@
-import { NftMetadataAttributeDto, NftMetadataDto } from "@nft-marketplace/common";
+import { NftMetadataAttributeDto, NftMetadataDto } from "@swan/dto";
 import { CreateNftCommand } from "./create-nft-command";
 
 test("fromDto - maps properties to new CreateNftCommand", () => {

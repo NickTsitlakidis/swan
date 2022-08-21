@@ -1,6 +1,6 @@
 import { IdGenerator } from "../../infrastructure/id-generator";
 import { SignatureAuthenticationRepository } from "../../security/signature-authentication-repository";
-import { TokenDto } from "@nft-marketplace/common";
+import { TokenDto } from "@swan/dto";
 import { CompleteSignatureAuthenticationExecutor } from "./complete-signature-authentication-executor";
 import { SignatureValidator } from "./signature-validator";
 import { UserTokenIssuer } from "../../security/user-token-issuer";
@@ -70,7 +70,7 @@ test("execute - throws if solana signature is invalid", async () => {
     authentication.blockchainId = "block";
     authentication._id = new ObjectId();
 
-    const deleteAuthSpy = jest.spyOn(authenticationRepoMock, "deleteById").mockResolvedValue(1 );
+    const deleteAuthSpy = jest.spyOn(authenticationRepoMock, "deleteById").mockResolvedValue(1);
 
     const findAuthenticationSpy = jest
         .spyOn(authenticationRepoMock, "findByAddressAndChain")

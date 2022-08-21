@@ -4,7 +4,7 @@ import { ClientRepository } from "./client-repository";
 import { compare } from "bcrypt";
 import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 import * as moment from "moment";
-import { TokenDto } from "@nft-marketplace/common";
+import { TokenDto } from "@swan/dto";
 
 @Injectable()
 export class ClientTokenIssuer {
@@ -12,7 +12,7 @@ export class ClientTokenIssuer {
 
     async issueWithCredentials(encodedCredentials: string): Promise<TokenDto> {
         const decoded = new Buffer(encodedCredentials, "base64").toString("ascii");
-        const isBase64 = Buffer.from(decoded).toString('base64') === encodedCredentials
+        const isBase64 = Buffer.from(decoded).toString("base64") === encodedCredentials;
         if (!isBase64 || !decoded.includes(":")) {
             throw new UnauthorizedException("Invalid or missing credentials");
         }

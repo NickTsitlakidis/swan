@@ -1,4 +1,4 @@
-import { CompleteSignatureAuthenticationDto } from "@nft-marketplace/common";
+import { CompleteSignatureAuthenticationDto } from "@swan/dto";
 
 export class CompleteWalletAdditionCommand {
     address: string;

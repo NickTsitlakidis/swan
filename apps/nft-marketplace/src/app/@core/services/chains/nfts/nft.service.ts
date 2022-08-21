@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { EntityDto, NftDto, NftMetadataDto, NftMintTransactionDto } from "@nft-marketplace/common";
+import { EntityDto, NftDto, NftMetadataDto, NftMintTransactionDto } from "@swan/dto";
 import { Observable } from "rxjs";
 import { CoreModule } from "../../../core.module";
 

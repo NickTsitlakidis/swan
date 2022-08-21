@@ -1,4 +1,4 @@
-import { NftMintTransactionDto } from "@nft-marketplace/common";
+import { NftMintTransactionDto } from "@swan/dto";
 
 export class MintNftCommand {
     id: string;

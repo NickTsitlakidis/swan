@@ -1,7 +1,7 @@
 import { NotFoundException } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
-import { EntityDto } from "@nft-marketplace/common";
+import { EntityDto } from "@swan/dto";
 import { NftFactory } from "../../domain/nft/nft-factory";
 import { EventStore } from "../../infrastructure/event-store";
 import { LogAsyncMethod } from "../../infrastructure/logging";

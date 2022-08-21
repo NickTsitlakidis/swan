@@ -1,4 +1,4 @@
-import { StartSignatureAuthenticationDto } from "@nft-marketplace/common";
+import { StartSignatureAuthenticationDto } from "@swan/dto";
 import { StartSignatureAuthenticationCommand } from "./start-signature-authentication-command";
 
 test("fromDto - maps properties to new StartSignatureAuthenticationCommand", () => {
@@ -12,4 +12,4 @@ test("fromDto - maps properties to new StartSignatureAuthenticationCommand", () 
     expect(command.address).toBe(dto.address);
     expect(command.blockchainId).toBe(dto.blockchainId);
     expect(command.walletId).toBe(dto.walletId);
-})
+});

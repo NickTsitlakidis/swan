@@ -3,7 +3,7 @@ import { StartSignatureAuthenticationCommand } from "./start-signature-authentic
 import { SignatureAuthenticationRepository } from "../../security/signature-authentication-repository";
 import { IdGenerator } from "../../infrastructure/id-generator";
 import { SignatureAuthentication } from "../../security/signature-authentication";
-import { NonceDto } from "@nft-marketplace/common";
+import { NonceDto } from "@swan/dto";
 import { ConfigService } from "@nestjs/config";
 import { BadRequestException } from "@nestjs/common";
 import { WalletRepository } from "../../support/blockchains/wallet-repository";

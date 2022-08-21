@@ -1,4 +1,4 @@
-import { NftMetadataAttributeDto } from "@nft-marketplace/common";
+import { NftMetadataAttributeDto } from "@swan/dto";
 
 export class NftMetadata {
     collection: Collection;

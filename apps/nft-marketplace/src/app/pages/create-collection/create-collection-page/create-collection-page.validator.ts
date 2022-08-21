@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { AbstractControl, AsyncValidatorFn, ValidationErrors } from "@angular/forms";
-import { AvailabilityDto } from "@nft-marketplace/common";
+import { AvailabilityDto } from "@swan/dto";
 import { debounceTime, distinctUntilChanged, map, Observable } from "rxjs";
 import { CollectionsService } from "../../../@core/services/collections/collections.service";
 
