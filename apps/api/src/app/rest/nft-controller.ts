@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
-import { EntityDto, NftDto, NftMetadataDto, NftMintTransactionDto, ProfileNftDto } from "@nft-marketplace/common";
+import { EntityDto, NftDto, NftMetadataDto, NftMintTransactionDto, ProfileNftDto } from "@swan/dto";
 import { UserGuard } from "../security/guards/user-guard";
 import { RequestUserId } from "../security/request-user-id";
 import { CreateNftCommand } from "../commands/nft/create-nft-command";

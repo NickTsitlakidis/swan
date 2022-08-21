@@ -1,4 +1,4 @@
-import { CompleteSignatureAuthenticationDto } from "@nft-marketplace/common";
+import { CompleteSignatureAuthenticationDto } from "@swan/dto";
 import { CompleteSignatureAuthenticationCommand } from "./complete-signature-authentication-command";
 
 test("fromDto - maps properties to new CompleteSignatureAuthenticationCommand command", () => {

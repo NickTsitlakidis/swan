@@ -1,4 +1,4 @@
-import { NftMintTransactionDto } from "@nft-marketplace/common";
+import { NftMintTransactionDto } from "@swan/dto";
 import { MintNftCommand } from "./mint-nft-command";
 
 test("fromDto - maps properties to new MintNftCommand", () => {

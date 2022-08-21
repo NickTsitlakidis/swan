@@ -6,7 +6,7 @@ import { RefreshToken } from "./refresh-token";
 import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { getLogger } from "../infrastructure/logging";
 import { isNil } from "lodash";
-import { TokenDto } from "@nft-marketplace/common";
+import { TokenDto } from "@swan/dto";
 
 @Injectable()
 export class UserTokenIssuer {

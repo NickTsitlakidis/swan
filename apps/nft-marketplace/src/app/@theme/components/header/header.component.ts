@@ -1,10 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import {
-    BlockchainWalletDto,
-    StartSignatureAuthenticationDto,
-    SupportedWallets,
-    WalletDto
-} from "@nft-marketplace/common";
+import { BlockchainWalletDto, StartSignatureAuthenticationDto, SupportedWallets, WalletDto } from "@swan/dto";
 
 import { ImagesService } from "../../../@core/services/images/images.service";
 

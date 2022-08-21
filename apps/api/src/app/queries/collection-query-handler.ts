@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { AvailabilityDto, CollectionDto } from "@nft-marketplace/common";
+import { AvailabilityDto, CollectionDto } from "@swan/dto";
 import { CollectionViewRepository } from "../views/collection/collection-view-repository";
 import { LogAsyncMethod } from "../infrastructure/logging";
 

@@ -1,4 +1,4 @@
-import { CollectionLinksDto, CreateCollectionDto } from "@nft-marketplace/common";
+import { CollectionLinksDto, CreateCollectionDto } from "@swan/dto";
 
 export class CreateCollectionCommand {
     userId: string;

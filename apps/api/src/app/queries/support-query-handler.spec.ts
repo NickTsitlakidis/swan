@@ -2,7 +2,7 @@ import { SupportQueryHandler } from "./support-query-handler";
 import { CategoryRepository } from "../support/categories/category-repository";
 import { Category } from "../support/categories/category";
 import { ObjectId } from "mongodb";
-import { CategoryDto } from "@nft-marketplace/common";
+import { CategoryDto } from "@swan/dto";
 import { getUnitTestingModule } from "../test-utils/test-modules";
 
 let categoryRepoMock: CategoryRepository;

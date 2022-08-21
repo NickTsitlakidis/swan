@@ -1,4 +1,4 @@
-import { WalletDto } from "@nft-marketplace/common";
+import { WalletDto } from "./wallet-dto";
 
 export class BlockchainWalletDto {
     blockchainId: string;

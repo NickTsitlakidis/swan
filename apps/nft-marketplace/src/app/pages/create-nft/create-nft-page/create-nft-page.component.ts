@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
-import { CategoryDto, CollectionDto, NftMetadataAttributeDto } from "@nft-marketplace/common";
+import { CategoryDto, CollectionDto, NftMetadataAttributeDto } from "@swan/dto";
 import { LocalStorageService } from "ngx-webstorage";
 import { fade } from "../../../@core/animations/enter-leave.animation";
 import { CreateNft } from "../../../@core/services/chains/nft";

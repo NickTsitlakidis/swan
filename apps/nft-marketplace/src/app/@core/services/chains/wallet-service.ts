@@ -1,4 +1,4 @@
-import { NftMintTransactionDto } from "@nft-marketplace/common";
+import { NftMintTransactionDto } from "@swan/dto";
 import { Observable } from "rxjs";
 import { CreateNft } from "./nft";
 import { WalletEvent } from "./wallet-event";

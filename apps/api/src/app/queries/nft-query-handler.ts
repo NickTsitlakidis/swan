@@ -1,6 +1,6 @@
 import { BlockchainActionsRegistryService } from "../support/blockchains/blockchain-actions-registry-service";
 import { Injectable } from "@nestjs/common";
-import { ProfileNftDto } from "@nft-marketplace/common";
+import { ProfileNftDto } from "@swan/dto";
 import { UserWalletViewRepository } from "../views/user-wallet/user-wallet-view-repository";
 import { BlockchainRepository } from "../support/blockchains/blockchain-repository";
 

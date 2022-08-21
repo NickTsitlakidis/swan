@@ -3,7 +3,7 @@ import { CreateCollectionCommand } from "./create-collection-command";
 import { CollectionFactory } from "../../domain/collection/collection-factory";
 import { CollectionViewRepository } from "../../views/collection/collection-view-repository";
 import { BadRequestException } from "@nestjs/common";
-import { EntityDto } from "@nft-marketplace/common";
+import { EntityDto } from "@swan/dto";
 import { CategoryRepository } from "../../support/categories/category-repository";
 import { LogAsyncMethod } from "../../infrastructure/logging";
 import { BlockchainRepository } from "../../support/blockchains/blockchain-repository";

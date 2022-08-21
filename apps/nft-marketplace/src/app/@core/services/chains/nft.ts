@@ -1,4 +1,4 @@
-import { NftMetadataAttributeDto } from "@nft-marketplace/common";
+import { NftMetadataAttributeDto } from "@swan/dto";
 import { Collection } from "../collections/collection";
 
 export interface CreateNft {

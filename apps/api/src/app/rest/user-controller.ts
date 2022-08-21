@@ -11,7 +11,7 @@ import {
     StartSignatureAuthenticationDto,
     TokenDto,
     UserWalletDto
-} from "@nft-marketplace/common";
+} from "@swan/dto";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { UserGuard } from "../security/guards/user-guard";
 import { RequestUserId } from "../security/request-user-id";

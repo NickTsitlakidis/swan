@@ -8,7 +8,7 @@ import { UserFactory } from "../../domain/user/user-factory";
 import { getLogger } from "../../infrastructure/logging";
 import { InternalServerErrorException, Logger, UnauthorizedException } from "@nestjs/common";
 import { isNil } from "lodash";
-import { EntityDto } from "@nft-marketplace/common";
+import { EntityDto } from "@swan/dto";
 import { EventStore } from "../../infrastructure/event-store";
 import { BlockchainRepository } from "../../support/blockchains/blockchain-repository";
 import { SignatureTypes } from "../../support/blockchains/signature-types";

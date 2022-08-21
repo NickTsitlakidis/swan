@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
-import { CategoryDto, CollectionLinksDto, CreateCollectionDto } from "@nft-marketplace/common";
+import { CategoryDto, CollectionLinksDto, CreateCollectionDto } from "@swan/dto";
 import { CollectionsService } from "../../../@core/services/collections/collections.service";
 import { ValidateName, ValidateUrl } from "./create-collection-page.validator";
 import { SupportService } from "../../../@core/services/support/support.service";

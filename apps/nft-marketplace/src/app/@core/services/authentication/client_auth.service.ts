@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { TokenDto } from "@nft-marketplace/common";
+import { TokenDto } from "@swan/dto";
 import { LocalStorageService } from "ngx-webstorage";
 import { environment } from "../../../../environments/environment";
 import { Observable } from "rxjs";
