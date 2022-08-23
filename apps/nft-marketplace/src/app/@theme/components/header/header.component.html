@@ -16,14 +16,19 @@
                 (selectedChange)="walletSelected($event)"
                 class="mr-4"
                 hero
+                multiple
                 placeholder="Select your wallet"
                 shape="semi-round"
                 status="info"
-                [selected]="walletName"
-                [(ngModel)]="selectedWallet"
+                [selected]="selectedWallets"
             >
                 <nb-option-group *ngFor="let chain of chainsNew" [title]="chain.name">
-                    <nb-option *ngFor="let wallet of chain.wallets" [value]="wallet">{{ wallet.name }}</nb-option>
+                    <nb-option
+                        *ngFor="let wallet of chain.wallets"
+                        [value]="wallet"
+                        [disabled]="isSelected[chain.blockchainId] && isSelected[chain.blockchainId][wallet.name]"
+                        >{{ wallet.name }}</nb-option
+                    >
                 </nb-option-group>
             </nb-select>
             <i [matMenuTriggerFor]="menu" class="fa-solid fa-user profile-thumb"></i>

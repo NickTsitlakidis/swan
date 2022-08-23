@@ -1,5 +1,7 @@
 import { NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
+import { MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from "@angular/material/dialog";
+
 import {
     NbButtonModule,
     NbFormFieldModule,
@@ -16,6 +18,7 @@ import { CreateNFTPageComponent } from "./create-nft-page/create-nft-page.compon
 import { CreateNFTRoutingModule } from "./create-nft-routing.module";
 import { CreateNFTComponent } from "./create-nft.component";
 import { ChainsModule } from "../../@core/services/chains/chains.module";
+import { SelectWalletDialogModule } from "../../@theme/components/select-wallet-dialog/select-wallet-dialog.module";
 
 @NgModule({
     imports: [
@@ -30,9 +33,11 @@ import { ChainsModule } from "../../@core/services/chains/chains.module";
         NbFormFieldModule,
         NbSelectModule,
         TitleSubTitleModule,
-        ChainsModule
+        ChainsModule,
+        MatDialogModule,
+        SelectWalletDialogModule
     ],
     declarations: [CreateNFTComponent, CreateNFTPageComponent],
-    providers: []
+    providers: [{ provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {} }]
 })
 export class CreateNFTModule {}

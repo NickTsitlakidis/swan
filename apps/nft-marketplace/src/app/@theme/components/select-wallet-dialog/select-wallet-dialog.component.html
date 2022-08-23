@@ -1,0 +1,21 @@
+<div class="select-wallet-dialog">
+    <div *ngIf="wallets.length" class="body">
+        <ul>
+            <li *ngFor="let wallet of wallets">
+                <button type="button" (click)="close(wallet.title)">
+                    <div size="24" class="logo">
+                        <img alt="" height="30px" [src]="wallet.img" size="24" />
+                    </div>
+                    <div class="title">
+                        <span font-weight="700" font-size="14px">{{ wallet.title }}</span>
+                    </div>
+                    <div class="chain">
+                        <span
+                            ><div>{{ wallet.chain }}</div></span
+                        >
+                    </div>
+                </button>
+            </li>
+        </ul>
+    </div>
+</div>
