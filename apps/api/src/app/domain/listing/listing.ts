@@ -1,10 +1,17 @@
-import { EventSourcedEntity } from "../../infrastructure/event-sourced-entity";
+import { EventProcessor, EventSourcedEntity } from "../../infrastructure/event-sourced-entity";
 import { SourcedEvent } from "../../infrastructure/sourced-event";
 import { getLogger } from "../../infrastructure/logging";
 import { CreateListingCommand } from "../../commands/listing/create-listing-command";
 import { ListingStatus } from "./listing-status";
 import { ChainTransaction } from "../../commands/listing/chain-transaction";
-import { ListingActivatedEvent, ListingCreatedEvent, ListingSubmittedEvent } from "./listing-events";
+import {
+    ListingActivatedEvent,
+    ListingCanceledEvent,
+    ListingCreatedEvent,
+    ListingSoldEvent,
+    ListingSubmittedEvent,
+    ListingUpdatedPriceEvent
+} from "./listing-events";
 import { BadRequestException } from "@nestjs/common";
 
 export class Listing extends EventSourcedEntity {
@@ -75,4 +82,43 @@ export class Listing extends EventSourcedEntity {
         this.status = ListingStatus.ACTIVE;
         this.apply(new ListingActivatedEvent(blockNumber));
     }
+
+    @EventProcessor(ListingCreatedEvent)
+    private processListingCreatedEvent = (event: ListingCreatedEvent) => {
+        this.price = event.price;
+        this.tokenContractAddress = event.tokenContractAddress;
+        this.blockchainId = event.blockchainId;
+        this.nftId = event.nftId;
+        this.categoryId = event.categoryId;
+        this.userId = event.userId;
+        this.chainTokenId = event.chainTokenId;
+        this.status = ListingStatus.CREATED;
+    };
+
+    @EventProcessor(ListingSubmittedEvent)
+    private processListingSubmittedEvent = (event: ListingSubmittedEvent) => {
+        this.chainTransaction.transactionId = event.chainTransactionId;
+        this.status = ListingStatus.SUBMITTED;
+    };
+
+    @EventProcessor(ListingActivatedEvent)
+    private processListingActivatedEvent = (event: ListingActivatedEvent) => {
+        this.chainTransaction.blockNumber = event.blockNumber;
+        this.status = ListingStatus.ACTIVE;
+    };
+
+    @EventProcessor(ListingCanceledEvent)
+    private processListingCanceledEvent = () => {
+        this.status = ListingStatus.CANCELED;
+    };
+
+    @EventProcessor(ListingUpdatedPriceEvent)
+    private processListingUpdatedPriceEvent = () => {
+        this.status = ListingStatus.UPDATE_PRICE;
+    };
+
+    @EventProcessor(ListingSoldEvent)
+    private processListingSoldEvent = () => {
+        this.status = ListingStatus.SOLD;
+    };
 }
