@@ -1,27 +1,36 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Observable, of } from "rxjs";
+import { Observable, of, Subject } from "rxjs";
 import { ProfileNftDto, UserWalletDto } from "@swan/dto";
 import { map } from "rxjs/operators";
 import { plainToInstance } from "class-transformer";
+import { LocalStorageService } from "ngx-webstorage";
 
 @Injectable({
     providedIn: "root"
 })
 export class UserService {
     public wallets: UserWalletDto[] = [];
+    private _walletPopulated: Subject<boolean>;
 
-    constructor(private readonly _httpClient: HttpClient) {}
+    constructor(private readonly _httpClient: HttpClient, private _lcStorage: LocalStorageService) {
+        this._walletPopulated = new Subject<boolean>();
+        if (this._lcStorage.retrieve("userTokenValue")) {
+            this._retrieveUserWallets().subscribe((wallets) => {
+                this.wallets = wallets;
+                this._walletPopulated.next(true);
+            });
+        }
+    }
 
     getUserWallets(): Observable<Array<UserWalletDto>> {
-        if (this.wallets.length > 0) {
+        if (this.wallets.length > 0 || !this._lcStorage.retrieve("userTokenValue")) {
             return of(this.wallets);
         }
 
-        return this._retrieveUserWallets().pipe(
-            map((wallets) => {
-                this.wallets = wallets;
-                return wallets;
+        return this._walletPopulated.pipe(
+            map(() => {
+                return this.wallets;
             })
         );
     }
