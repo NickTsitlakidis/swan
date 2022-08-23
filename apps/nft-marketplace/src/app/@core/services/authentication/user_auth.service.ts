@@ -84,7 +84,7 @@ export class UserAuthService {
         );
     }
 
-    public addUserWallet(body: StartSignatureAuthenticationDto) {
+    public addUserWallet(body: StartSignatureAuthenticationDto): Observable<object> {
         return this._walletRegistry.getWalletService(body.walletId).pipe(
             switchMap((walletService) => {
                 if (isNil(walletService)) {
@@ -108,9 +108,7 @@ export class UserAuthService {
                 completeBody.blockchainId = body.blockchainId;
                 completeBody.address = body.address;
                 return this._httpClient.post("/user/complete-wallet-addition", completeBody);
-            }),
-            map((httpResult) => plainToClass(TokenDto, httpResult)),
-            tap((dto) => this._storeUserData(dto, body))
+            })
         );
     }
 

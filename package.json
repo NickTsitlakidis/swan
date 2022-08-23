@@ -36,7 +36,7 @@
     "@fortawesome/free-solid-svg-icons": "6.1.1",
     "@heavy-duty/rxjs": "0.1.0",
     "@heavy-duty/wallet-adapter": "0.4.0",
-    "@metaplex-foundation/js": "0.14.0",
+    "@metaplex-foundation/js": "0.15.0",
     "@metaplex-foundation/mpl-candy-machine": "4.3.0",
     "@mikro-orm/core": "5.2.0",
     "@mikro-orm/mongodb": "5.2.0",

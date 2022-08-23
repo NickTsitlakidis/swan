@@ -1,15 +1,16 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
-import { CategoryDto, CollectionDto, NftMetadataAttributeDto, StartSignatureAuthenticationDto } from "@swan/dto";
+import { BlockchainWalletDto, CategoryDto, CollectionDto, NftMetadataAttributeDto, UserWalletDto } from "@swan/dto";
 import { fade } from "../../../@core/animations/enter-leave.animation";
 import { CreateNft } from "../../../@core/services/chains/nft";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
 import { SupportService } from "../../../@core/services/support/support.service";
-import { firstValueFrom, of, switchMap } from "rxjs";
+import { firstValueFrom, forkJoin, of, switchMap } from "rxjs";
 import { NftService } from "../../../@core/services/chains/nfts/nft.service";
 import { CollectionsService } from "../../../@core/services/collections/collections.service";
 import { MatDialog } from "@angular/material/dialog";
 import { SelectWalletDialogComponent } from "../../../@theme/components/select-wallet-dialog/select-wallet-dialog.component";
+import { UserService } from "../../../@core/services/user/user.service";
 
 @Component({
     selector: "nft-marketplace-create-nft-page",
@@ -69,6 +70,7 @@ export class CreateNFTPageComponent implements OnInit {
     public allBlockchains: { name: string; id: string }[];
     public blockchains: { name: string; id: string }[];
     public categories: CategoryDto[];
+    public userWallets: UserWalletDto[];
 
     constructor(
         private _fb: UntypedFormBuilder,
@@ -78,7 +80,6 @@ export class CreateNFTPageComponent implements OnInit {
         private _supportService: SupportService,
         private _nftService: NftService,
         private _collectionsService: CollectionsService,
-        private _userAuthService: UserAuthService,
         private _dialog: MatDialog
     ) {}
 
@@ -106,16 +107,22 @@ export class CreateNFTPageComponent implements OnInit {
             this._cd.detectChanges();
         });
 
-        this._supportService.getBlockchainWallets().subscribe((chains) => {
-            this.allBlockchains = chains.map((chain) => {
-                return {
-                    name: chain.name,
-                    id: chain.blockchainId
-                };
-            });
-            this.blockchains = [...this.allBlockchains];
-            this._cd.detectChanges();
-        });
+        forkJoin([this._supportService.getBlockchainWallets(), this._userService.getUserWallets()]).subscribe(
+            (results) => {
+                const chains = results[0];
+                this.userWallets = results[1];
+                this.allBlockchains = chains
+                    .map((chain) => {
+                        return {
+                            name: chain.name,
+                            id: chain.blockchainId
+                        };
+                    })
+                    .filter((chain) => this.userWallets.find((wal) => wal.wallet.chainId === chain.id));
+                this.blockchains = [...this.allBlockchains];
+                this._cd.detectChanges();
+            }
+        );
     }
 
     public getAttributeValue(formAttributeName: string) {
@@ -216,11 +223,10 @@ export class CreateNFTPageComponent implements OnInit {
             )
             .subscribe(console.log);
     }
+
     private async _findAvailableWallet(chainId: string): Promise<string> {
         let walletId: string | undefined;
-        const userWallets = (await firstValueFrom(this._userService.getUserWallets())).filter(
-            (wallet) => wallet.wallet.chainId === chainId
-        );
+        const userWallets = this.userWallets.filter((wallet) => wallet.wallet.chainId === chainId);
 
         if (userWallets.length === 1) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -229,7 +235,7 @@ export class CreateNFTPageComponent implements OnInit {
         } else if (userWallets.length > 1) {
             let allWallets = await firstValueFrom(this._supportService.getBlockchainWallets());
             allWallets = allWallets
-                .filter((wal) => wal.chainId === chainId)
+                .filter((wal) => wal.blockchainId === chainId)
                 .filter((wal) => {
                     wal.wallets = wal.wallets.filter((w) =>
                         userWallets.find((userWallet) => userWallet.wallet.id === w.id)
@@ -264,20 +270,6 @@ export class CreateNFTPageComponent implements OnInit {
             .filter((wallet) => wallet.blockchainId === chainId)
             .flatMap((wallet) => wallet.wallets)
             .find((wallet) => wallet.name === walletName);
-
-        if (wallet) {
-            const service = await firstValueFrom(this._walletRegistryService.getWalletService(wallet.id));
-            const walletAddress = service && (await firstValueFrom(service.getPublicKey()));
-            if (!walletAddress) {
-                return;
-            }
-            const authBody = new StartSignatureAuthenticationDto();
-            authBody.address = walletAddress;
-            authBody.blockchainId = wallet.chainId;
-            authBody.walletId = wallet.id;
-            await firstValueFrom(this._userAuthService.authenticateWithSignature(authBody));
-            this._userAuthService.authenticateWithSignature(authBody);
-        }
         return wallet?.id;
     }
 

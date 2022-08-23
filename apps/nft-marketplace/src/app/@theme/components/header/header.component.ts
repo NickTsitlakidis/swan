@@ -1,6 +1,12 @@
 import { UserService } from "./../../../@core/services/user/user.service";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import { BlockchainWalletDto, StartSignatureAuthenticationDto, SupportedWallets, WalletDto } from "@swan/dto";
+import {
+    BlockchainWalletDto,
+    StartSignatureAuthenticationDto,
+    SupportedWallets,
+    UserWalletDto,
+    WalletDto
+} from "@swan/dto";
 
 import { ImagesService } from "../../../@core/services/images/images.service";
 
@@ -49,6 +55,7 @@ export class HeaderComponent implements OnInit {
         }
     ];
     public isSelected: { [name: string]: { [name: string]: boolean } } = {};
+    public userWallets: UserWalletDto[];
 
     constructor(
         public imagesService: ImagesService,
@@ -76,7 +83,11 @@ export class HeaderComponent implements OnInit {
         authBody.address = walletAddress;
         authBody.blockchainId = wallet.chainId;
         authBody.walletId = wallet.id;
-        this._userAuthService.authenticateWithSignature(authBody).subscribe();
+        if (this.userWallets?.length) {
+            this._userAuthService.addUserWallet(authBody).subscribe();
+        } else {
+            this._userAuthService.authenticateWithSignature(authBody).subscribe();
+        }
     }
 
     public navigateTo(link: string) {
@@ -90,11 +101,11 @@ export class HeaderComponent implements OnInit {
     private _connectToObservables() {
         this._supportService.getBlockchainWallets().subscribe(async (wallets) => {
             this.chainsNew = wallets;
-            const userWallets = await firstValueFrom(this._userService.getUserWallets());
+            this.userWallets = await firstValueFrom(this._userService.getUserWallets());
             this.selectedWallets = wallets
                 .flatMap((w) => w.wallets)
                 .filter((wallet) =>
-                    userWallets.find((w) => w.wallet.chainId === wallet.chainId && w.wallet.id === wallet.id)
+                    this.userWallets.find((w) => w.wallet.chainId === wallet.chainId && w.wallet.id === wallet.id)
                 );
             this.selectedWallets.forEach((wal) => {
                 if (!this.isSelected[wal.chainId]) {

@@ -51,3 +51,5 @@ cache
 artifacts
 typechain
 typechain-types
+
+nft-game.code-workspace

@@ -114,7 +114,7 @@ export class SolanaWalletService implements WalletService {
                     sellerFeeBasisPoints: nft.resellPercentage,
                     isMutable: false,
                     maxSupply: nft.maxSupply,
-                    owner: new PublicKey(publicKey)
+                    tokenOwner: new PublicKey(publicKey)
                 } as CreateNftInput;
 
                 if (wallet) {

@@ -29,7 +29,10 @@ export class MetaplexService {
     }
 
     public async getUserNFTs(pubKey: string): Promise<MetaplexMetadata[]> {
-        const lazyNfts = await this._metaplex.nfts().findAllByOwner(new PublicKey(pubKey)).run();
+        const lazyNfts = await this._metaplex
+            .nfts()
+            .findAllByOwner({ owner: new PublicKey(pubKey) })
+            .run();
         const promises = lazyNfts.map((lazyNft) => axios.get<MetaplexMetadata>(lazyNft.uri));
         const nfts = await Promise.all(promises);
         return nfts.map((nft) => nft.data);
