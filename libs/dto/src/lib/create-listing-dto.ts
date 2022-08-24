@@ -1,10 +1,11 @@
-import { IsEthereumAddress, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsEthereumAddress, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateListingDto {
     @IsNumber()
     price: number;
 
     @IsString()
+    @IsOptional()
     nftId?: string;
 
     @IsString()

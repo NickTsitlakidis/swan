@@ -11,6 +11,8 @@ export class ProfileNftDto {
     public isListed: boolean;
     public listedPrice?: number;
     public lastSoldPrice?: number;
+    public tokenContractAddress?: string;
+    public tokenId?: string;
 
     @Type(() => BlockchainDto)
     public blockchain: BlockchainDto;

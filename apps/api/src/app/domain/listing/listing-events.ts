@@ -24,7 +24,7 @@ export class ListingSubmittedEvent extends EventPayload {
 
 @SerializedEvent("listing-activated-event")
 export class ListingActivatedEvent extends EventPayload {
-    constructor(public blockNumber: number) {
+    constructor(public blockNumber: number, public chainListingId: number) {
         super();
     }
 }

@@ -17,7 +17,7 @@ export class SubmitListingCommandExecutor implements ICommandHandler<ActivateLis
         }
 
         const listing = this._factory.createFromEvents(command.listingId, events);
-        listing.activate(command.blockNumber);
+        listing.activate(command.blockNumber, command.chainListingId);
         await listing.commit();
         return new EntityDto(listing.id, listing.version);
     }

@@ -25,7 +25,7 @@ export class Listing extends EventSourcedEntity {
     private userId: string;
     private status: ListingStatus;
     private chainTransaction: ChainTransaction;
-    private chainListingId: string;
+    private chainListingId: number;
 
     static fromEvents(id: string, events: Array<SourcedEvent>): Listing {
         const listing = new Listing(id);
@@ -74,14 +74,15 @@ export class Listing extends EventSourcedEntity {
         //todo run a listener for chain events here
     }
 
-    activate(blockNumber: number) {
+    activate(blockNumber: number, chainListingId: number) {
         if (this.status !== ListingStatus.SUBMITTED) {
             throw new BadRequestException(`Listing with id ${this.id} is not SUBMITTED`);
         }
 
         this.chainTransaction.blockNumber = blockNumber;
+        this.chainListingId = chainListingId;
         this.status = ListingStatus.ACTIVE;
-        this.apply(new ListingActivatedEvent(blockNumber));
+        this.apply(new ListingActivatedEvent(blockNumber, chainListingId));
     }
 
     @EventProcessor(ListingCreatedEvent)
@@ -107,6 +108,7 @@ export class Listing extends EventSourcedEntity {
     @EventProcessor(ListingActivatedEvent)
     private processListingActivatedEvent = (event: ListingActivatedEvent) => {
         this.chainTransaction.blockNumber = event.blockNumber;
+        this.chainListingId = event.chainListingId;
         this.status = ListingStatus.ACTIVE;
     };
 

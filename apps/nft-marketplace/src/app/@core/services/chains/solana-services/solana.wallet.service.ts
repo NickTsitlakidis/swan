@@ -2,7 +2,7 @@ import { ConnectionStore, Wallet, WalletStore } from "@heavy-duty/wallet-adapter
 import { WalletAdapterNetwork, WalletName } from "@solana/wallet-adapter-base";
 import { clusterApiUrl, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import * as base58 from "bs58";
-import { defer, forkJoin, from, of, Subject, throwError } from "rxjs";
+import { defer, EMPTY, forkJoin, from, of, Subject, throwError } from "rxjs";
 import { concatMap, first, map, switchMap, take } from "rxjs/operators";
 
 import { Observable } from "rxjs";
@@ -17,6 +17,7 @@ import { CreateNftInput } from "@metaplex-foundation/js";
 import { MetaplexService } from "./metaplex.service";
 import { SwanError } from "../../../interfaces/swan-error";
 import { NftMintTransactionDto } from "@swan/dto";
+import { ListingResult } from "@swan/contracts";
 
 export const isNotNull = <T>(source: Observable<T | null>) =>
     source.pipe(filter((item: T | null): item is T => item !== null));
@@ -223,5 +224,13 @@ export class SolanaWalletService implements WalletService {
                 next: (v) => console.log(v),
                 error: (e) => console.error(e)
             });
+    }
+
+    createListing(price: number, tokenContractAddress?: string, tokenId?: number): Observable<string> {
+        return EMPTY;
+    }
+
+    getListingResult(transactionHash: string): Observable<ListingResult> {
+        return EMPTY;
     }
 }

@@ -7,4 +7,7 @@ export class ActivateListingDto {
 
     @IsNumber()
     blockNumber: number;
+
+    @IsNumber()
+    chainListingId: number;
 }

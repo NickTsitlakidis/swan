@@ -11,8 +11,9 @@ import { BlockchainRepository } from "./blockchain-repository";
 import { EvmMetadataValidator } from "./evm-metadata-validator";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
-import { CovalentHqResponse } from "./covalent-hq-response";
+import { CovalentHqResponse, NftData } from "./covalent-hq-response";
 import { getLogger, LogAsyncMethod } from "../../infrastructure/logging";
+import { ChainNft } from "./chain-nft";
 
 @Injectable()
 export class EvmActionsService extends BlockchainActions {
@@ -53,7 +54,7 @@ export class EvmActionsService extends BlockchainActions {
     }
 
     @LogAsyncMethod
-    async getUserNfts(pubKey: string, blockchainId?: string): Promise<MetaplexMetadata[]> {
+    async getUserNfts(pubKey: string, blockchainId?: string): Promise<ChainNft[]> {
         if (!blockchainId) {
             throw new InternalServerErrorException("Missing blockchain id");
         }
@@ -81,13 +82,21 @@ export class EvmActionsService extends BlockchainActions {
             .filter(
                 (contract) => contract.supports_erc?.includes("erc721") || contract.supports_erc?.includes("erc1155")
             )
-            .flatMap((contract) => contract.nft_data)
+            .flatMap((contract) => {
+                return contract.nft_data.map((nft) => {
+                    const withAddress: NftData & { contractAddress: string } = nft as any;
+                    withAddress.contractAddress = contract.contract_address;
+                    return withAddress;
+                });
+            })
             .filter((nft) => {
                 return this._validator.validate(nft.external_data);
             })
             .map((nft) => {
                 const metadataNft = nft.external_data;
-                const metaplex: MetaplexMetadata = {
+                const metaplex: ChainNft = {
+                    tokenContractAddress: nft.contractAddress,
+                    tokenId: nft.token_id,
                     name: metadataNft.name,
                     image: metadataNft.image,
                     attributes: metadataNft.attributes,

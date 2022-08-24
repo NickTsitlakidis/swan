@@ -21,7 +21,7 @@ export class ListingController {
     @UseGuards(UserGuard)
     @Post("activate-listing")
     activate(@Body() dto: ActivateListingDto): Promise<EntityDto> {
-        return this._commandBus.execute(new ActivateListingCommand(dto.blockNumber, dto.listingId));
+        return this._commandBus.execute(new ActivateListingCommand(dto.blockNumber, dto.listingId, dto.chainListingId));
     }
 
     @UseGuards(UserGuard)

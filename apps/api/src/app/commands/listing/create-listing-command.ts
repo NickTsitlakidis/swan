@@ -2,17 +2,11 @@ import { CreateListingDto } from "@swan/dto";
 
 export class CreateListingCommand {
     price: number;
-
     nftId?: string;
-
     categoryId: string;
-
     blockchainId: string;
-
     tokenContractAddress?: string;
-
     chainTokenId?: string;
-
     userId: string;
 
     static fromDto(dto: CreateListingDto, userId: string) {

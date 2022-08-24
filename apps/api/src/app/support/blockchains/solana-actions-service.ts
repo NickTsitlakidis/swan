@@ -6,6 +6,7 @@ import { NftMetadata } from "../../domain/nft/nft-metadata";
 import { MetaplexService } from "../metaplex/metaplex-service";
 import { UploadedFiles } from "./uploaded-files";
 import { BlockchainActions } from "./blockchain-actions";
+import { ChainNft } from "./chain-nft";
 
 @Injectable()
 export class SolanaActionsService extends BlockchainActions {
@@ -13,7 +14,7 @@ export class SolanaActionsService extends BlockchainActions {
         super(awsService, configService, metaplexService);
     }
 
-    async getUserNfts(pubKey: string): Promise<MetaplexMetadata[]> {
+    async getUserNfts(pubKey: string): Promise<ChainNft[]> {
         return this.metaplexService.getUserNFTs(pubKey);
     }
 

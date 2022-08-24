@@ -5,6 +5,7 @@ import { NftMetadata } from "../../domain/nft/nft-metadata";
 import { UploadedFiles } from "./uploaded-files";
 import { Blob } from "buffer";
 import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
+import { ChainNft } from "./chain-nft";
 
 export abstract class BlockchainActions {
     protected constructor(
@@ -15,7 +16,7 @@ export abstract class BlockchainActions {
 
     abstract uploadMetadata(metadata: NftMetadata): Promise<UploadedFiles>;
 
-    abstract getUserNfts(pubKey: string, blockchainId?: string): Promise<MetaplexMetadata[]>;
+    abstract getUserNfts(pubKey: string, blockchainId?: string): Promise<ChainNft[]>;
 
     protected async uploadImage(s3Uri: string): Promise<string> {
         const params = this.getS3ParamsFromMetadataURI(s3Uri);
