@@ -66,7 +66,7 @@ export class ListingProjector
         }
 
         if (!view) {
-            this._logger.error("ListingView was not found");
+            this._logger.error(`ListingView with id ${event.aggregateId} was not found`);
             return;
         }
 
