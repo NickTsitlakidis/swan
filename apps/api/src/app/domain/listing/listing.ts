@@ -13,6 +13,7 @@ import {
     ListingUpdatedPriceEvent
 } from "./listing-events";
 import { BadRequestException } from "@nestjs/common";
+import { EMPTY } from "rxjs";
 
 export class Listing extends EventSourcedEntity {
     private price: number;
@@ -97,7 +98,9 @@ export class Listing extends EventSourcedEntity {
 
     @EventProcessor(ListingSubmittedEvent)
     private processListingSubmittedEvent = (event: ListingSubmittedEvent) => {
-        this.chainTransaction.transactionId = event.chainTransactionId;
+        this.chainTransaction = {
+            transactionId: event.chainTransactionId
+        };
         this.status = ListingStatus.SUBMITTED;
     };
 
@@ -114,7 +117,7 @@ export class Listing extends EventSourcedEntity {
 
     @EventProcessor(ListingUpdatedPriceEvent)
     private processListingUpdatedPriceEvent = () => {
-        this.status = ListingStatus.UPDATE_PRICE;
+        EMPTY;
     };
 
     @EventProcessor(ListingSoldEvent)

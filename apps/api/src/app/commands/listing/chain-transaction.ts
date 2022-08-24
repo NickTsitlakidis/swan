@@ -1,4 +1,4 @@
 export class ChainTransaction {
-    blockNumber: number;
+    blockNumber?: number;
     transactionId: string;
 }

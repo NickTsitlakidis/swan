@@ -84,10 +84,6 @@ export class ListingProjector
             view.status = ListingStatus.CANCELED;
         }
 
-        if (event instanceof ListingUpdatedPriceEvent) {
-            view.status = ListingStatus.UPDATE_PRICE;
-        }
-
         if (event instanceof ListingSoldEvent) {
             view.status = ListingStatus.SOLD;
         }
