@@ -1,7 +1,7 @@
 import { MongoDocument } from "../../infrastructure/mongo-document";
 import { Embedded, Entity, Property } from "@mikro-orm/core";
 import { ChainTransaction } from "../../commands/listing/chain-transaction";
-import { ListingStatus } from "../../domain/Listing/Listing-status";
+import { ListingStatus } from "../../domain/listing/listing-status";
 
 @Entity({ collection: "listing-views" })
 export class ListingView extends MongoDocument {

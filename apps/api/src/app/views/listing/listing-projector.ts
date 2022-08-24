@@ -7,7 +7,7 @@ import {
     ListingSoldEvent,
     ListingSubmittedEvent,
     ListingUpdatedPriceEvent
-} from "../../domain/Listing/Listing-events";
+} from "../../domain/listing/listing-events";
 import { ListingStatus } from "../../domain/listing/listing-status";
 import { getLogger, LogAsyncMethod } from "../../infrastructure/logging";
 import { ListingView } from "./listing-view";

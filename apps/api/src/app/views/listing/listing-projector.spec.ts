@@ -10,8 +10,8 @@ import {
     ListingSoldEvent,
     ListingSubmittedEvent,
     ListingUpdatedPriceEvent
-} from "../../domain/Listing/Listing-events";
-import { ListingStatus } from "../../domain/Listing/Listing-status";
+} from "../../domain/listing/listing-events";
+import { ListingStatus } from "../../domain/listing/listing-status";
 
 let repositoryMock: ListingViewRepository;
 let projector: ListingProjector;
