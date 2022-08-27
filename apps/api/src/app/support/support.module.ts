@@ -9,7 +9,6 @@ import { WalletRepository } from "./blockchains/wallet-repository";
 import { BlockchainRepository } from "./blockchains/blockchain-repository";
 import { BlockchainWalletRepository } from "./blockchains/blockchain-wallet-repository";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
-import { SwanWalletService } from "./swan-wallet-service";
 import { ConfigModule } from "@nestjs/config";
 import { AwsService } from "./aws/aws-service";
 import { MetaplexService } from "./metaplex/metaplex-service";
@@ -33,7 +32,6 @@ import { ContractsModule } from "../contracts.module";
         WalletRepository,
         BlockchainRepository,
         BlockchainWalletRepository,
-        SwanWalletService,
         AwsService,
         MetaplexService,
         EvmActionsService,
@@ -43,7 +41,6 @@ import { ContractsModule } from "../contracts.module";
     ],
     exports: [
         CategoryRepository,
-        SwanWalletService,
         WalletRepository,
         BlockchainRepository,
         BlockchainWalletRepository,

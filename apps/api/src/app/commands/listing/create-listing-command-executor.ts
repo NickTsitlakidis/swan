@@ -7,6 +7,7 @@ import { BlockchainRepository } from "../../support/blockchains/blockchain-repos
 import { NftViewRepository } from "../../views/nft/nft-view-repository";
 import { BadRequestException } from "@nestjs/common";
 import { isNil } from "lodash";
+import { LogAsyncMethod } from "../../infrastructure/logging";
 
 @CommandHandler(CreateListingCommand)
 export class CreateListingCommandExecutor implements ICommandHandler<CreateListingCommand> {
@@ -17,6 +18,7 @@ export class CreateListingCommandExecutor implements ICommandHandler<CreateListi
         private _nftRepository: NftViewRepository
     ) {}
 
+    @LogAsyncMethod
     async execute(command: CreateListingCommand): Promise<EntityDto> {
         const categoryCount = await this._categoryRepository.countById(command.categoryId);
         if (categoryCount === 0) {

@@ -6,7 +6,7 @@ import { BadRequestException } from "@nestjs/common";
 import { ActivateListingCommand } from "./activate-listing-command";
 
 @CommandHandler(ActivateListingCommand)
-export class SubmitListingCommandExecutor implements ICommandHandler<ActivateListingCommand> {
+export class ActivateListingCommandExecutor implements ICommandHandler<ActivateListingCommand> {
     constructor(private _factory: ListingFactory, private _eventStore: EventStore) {}
 
     async execute(command: ActivateListingCommand): Promise<EntityDto> {

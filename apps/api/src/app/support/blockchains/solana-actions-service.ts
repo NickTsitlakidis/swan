@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
 import { ConfigService } from "@nestjs/config";
-import { AwsService } from "./../aws/aws-service";
+import { AwsService } from "../aws/aws-service";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
 import { MetaplexService } from "../metaplex/metaplex-service";
 import { UploadedFiles } from "./uploaded-files";

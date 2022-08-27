@@ -24,7 +24,8 @@ test("fromDto - maps properties to new CreateCollectionCommand", () => {
     expect(mapped.categoryId).toBe(dto.categoryId);
     expect(mapped.name).toBe(dto.name);
     expect(mapped.customUrl).toBe(dto.customUrl);
-    expect(mapped.imageUrl).toBe(dto.description);
+    expect(mapped.imageUrl).toBe(dto.imageUrl);
+    expect(mapped.description).toBe(dto.description);
     expect(mapped.isExplicit).toBe(dto.isExplicit);
     expect(mapped.salePercentage).toBe(dto.salePercentage);
     expect(mapped.paymentToken).toBe(dto.paymentToken);
