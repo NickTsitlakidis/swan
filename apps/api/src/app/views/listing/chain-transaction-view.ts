@@ -8,7 +8,7 @@ export class ChainTransactionView {
     @Property()
     transactionId: string;
 
-    constructor(blockNumber: number, transactionId: string) {
+    constructor(transactionId: string, blockNumber?: number) {
         this.blockNumber = blockNumber;
         this.transactionId = transactionId;
     }

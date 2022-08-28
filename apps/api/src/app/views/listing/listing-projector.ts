@@ -12,6 +12,7 @@ import { ListingStatus } from "../../domain/listing/listing-status";
 import { getLogger, LogAsyncMethod } from "../../infrastructure/logging";
 import { ListingView } from "./listing-view";
 import { ListingViewRepository } from "./listing-view-repository";
+import { ChainTransactionView } from "./chain-transaction-view";
 
 @EventsHandler(
     ListingActivatedEvent,
@@ -71,7 +72,7 @@ export class ListingProjector
         }
 
         if (event instanceof ListingSubmittedEvent) {
-            view.chainTransaction.transactionId = event.chainTransactionId;
+            view.chainTransaction = new ChainTransactionView(event.chainTransactionId);
             view.status = ListingStatus.SUBMITTED;
         }
 
