@@ -7,15 +7,38 @@ import { MetaplexService } from "../metaplex/metaplex-service";
 import { UploadedFiles } from "./uploaded-files";
 import { BlockchainActions } from "./blockchain-actions";
 import { ChainNft } from "./chain-nft";
+import { HttpService } from "@nestjs/axios";
+import { CategoryRepository } from "../categories/category-repository";
+import { CategoryByFileType } from "./category-by-file-type";
 
 @Injectable()
 export class SolanaActionsService extends BlockchainActions {
-    constructor(awsService: AwsService, configService: ConfigService, metaplexService: MetaplexService) {
-        super(awsService, configService, metaplexService);
+    constructor(
+        awsService: AwsService,
+        configService: ConfigService,
+        metaplexService: MetaplexService,
+        httpService: HttpService,
+        categoryRepository: CategoryRepository
+    ) {
+        super(awsService, configService, metaplexService, httpService, categoryRepository);
     }
 
     async getUserNfts(pubKey: string): Promise<ChainNft[]> {
-        return this.metaplexService.getUserNFTs(pubKey);
+        const metaplexData = await this.metaplexService.getUserNFTs(pubKey);
+        const getFilesCategory: CategoryByFileType[] = [];
+        for (const nft of metaplexData) {
+            getFilesCategory.push({
+                animation_url: nft.animation_url,
+                image: nft.image
+            });
+        }
+        const foundCategories = await this.getCategoriesDto(getFilesCategory);
+        const data = metaplexData.map((nft, index) => {
+            const metaplex: ChainNft = { ...nft, categoryId: foundCategories[index]?.id };
+            return metaplex;
+        });
+
+        return data;
     }
 
     async uploadMetadata(metadata: NftMetadata): Promise<UploadedFiles> {

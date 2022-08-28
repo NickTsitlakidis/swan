@@ -40,8 +40,8 @@ test("getCategories - returns mapped dto array", async () => {
     const result = await handler.getCategories();
 
     expect(result.length).toBe(2);
-    expect(result[0]).toEqual(new CategoryDto(views[0].name, views[0].imageUrl, views[0].id));
-    expect(result[1]).toEqual(new CategoryDto(views[1].name, views[1].imageUrl, views[1].id));
+    expect(result[0]).toEqual(new CategoryDto(views[0].name, views[0].id, views[0].imageUrl));
+    expect(result[1]).toEqual(new CategoryDto(views[1].name, views[1].id, views[1].imageUrl));
 
     expect(repoSpy).toHaveBeenCalledTimes(1);
 });

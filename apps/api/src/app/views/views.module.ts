@@ -14,9 +14,15 @@ import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { NftProjector } from "./nft/nft-projector";
 import { NftViewRepository } from "./nft/nft-view-repository";
 import { NftView } from "./nft/nft-view";
+import { ListingViewRepository } from "./listing/listing-view-repository";
+import { ListingProjector } from "./listing/listing-projector";
+import { ListingView } from "./listing/listing-view";
 
 @Module({
-    imports: [InfrastructureModule, MikroOrmModule.forFeature([UserView, UserWalletView, NftView, CollectionView])],
+    imports: [
+        InfrastructureModule,
+        MikroOrmModule.forFeature([UserView, UserWalletView, NftView, CollectionView, ListingView])
+    ],
     providers: [
         UserViewRepository,
         UserProjector,
@@ -26,6 +32,8 @@ import { NftView } from "./nft/nft-view";
         CollectionViewRepository,
         CollectionProjector,
         NftViewRepository,
+        ListingViewRepository,
+        ListingProjector,
         NftProjector
     ],
     exports: [

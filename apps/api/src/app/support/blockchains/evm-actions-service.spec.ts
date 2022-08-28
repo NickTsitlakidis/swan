@@ -1,3 +1,4 @@
+import { CategoryRepository } from "./../categories/category-repository";
 import { BlockchainRepository } from "./blockchain-repository";
 import { getUnitTestingModule } from "../../test-utils/test-modules";
 import { EvmActionsService } from "./evm-actions-service";
@@ -13,12 +14,15 @@ import { Blockchain } from "./blockchain";
 import { CovalentHqResponse } from "./covalent-hq-response";
 import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
 import { cloneDeep } from "lodash";
+import { Category } from "../categories/category";
+import { ChainNft } from "./chain-nft";
 
 let service: EvmActionsService;
 let awsService: AwsService;
 let configService: ConfigService;
 let metaplexService: MetaplexService;
 let blockchainRepo: BlockchainRepository;
+let categoryRepo: CategoryRepository;
 let httpService: HttpService;
 let validator: EvmMetadataValidator;
 
@@ -165,6 +169,7 @@ beforeEach(async () => {
     awsService = testModule.get(AwsService);
     httpService = testModule.get(HttpService);
     validator = testModule.get(EvmMetadataValidator);
+    categoryRepo = testModule.get(CategoryRepository);
 });
 
 test("getUserNfts - throws if blockchainId parameter is missing", async () => {
@@ -342,8 +347,38 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
         request: {},
         statusText: ""
     };
-    const httpServiceSpy = jest.spyOn(httpService, "get").mockReturnValue(of(fakeResponse));
+
+    const fakeResponseForFileTypeCategories: AxiosResponse = {
+        headers: {
+            "content-type": "image/png"
+        },
+        status: 206,
+        statusText: "Partial Content",
+        config: {},
+        data: new Uint8Array([
+            137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 200, 0, 0, 0, 200, 8, 6, 0, 0, 0,
+            173, 88, 174, 158, 0, 0, 0, 1, 115, 82, 71, 66, 0, 174, 206, 28, 233, 0, 0, 0, 68, 101, 88, 73, 102, 77, 77,
+            0, 42, 0, 0, 0, 8, 0, 1, 135, 105, 0, 4, 0, 0, 0, 1, 0, 0, 0, 26, 0, 0, 0, 0, 0, 3, 160, 1, 0, 3, 0, 0, 0,
+            1, 0, 1, 0, 0, 160, 2, 0, 4, 0, 0, 0, 1, 0, 0, 0, 200, 160, 3, 0, 4, 0, 0, 0, 1, 0, 0, 0, 200, 0, 0, 0, 0,
+            155, 91, 61, 149, 0, 0, 64, 0, 73, 68, 65, 84, 120, 1, 237, 93, 7, 120, 84, 69, 215, 62, 155, 132, 14, 33,
+            141, 14, 73, 72, 2, 1, 129, 208, 68, 58, 134, 22, 170, 2, 42, 40, 189, 137, 160, 162, 232, 231, 103, 111,
+            216, 191, 223, 2, 34, 32, 136, 93, 138, 34, 10, 98, 3, 84, 154, 160, 168, 180, 16, 154, 129, 116, 2, 36,
+            244, 78, 10, 100, 255
+        ])
+    };
+
+    const category = new Category();
+    category.name = "image";
+    category.id = "628ea0716b8991c676c19a4a";
+
+    const httpServiceSpy = jest
+        .spyOn(httpService, "get")
+        .mockReturnValueOnce(of(fakeResponse))
+        .mockReturnValueOnce(of(fakeResponseForFileTypeCategories))
+        .mockReturnValueOnce(of(fakeResponseForFileTypeCategories));
     const configSpy = jest.spyOn(configService, "get").mockReturnValue("api-key");
+
+    const categorySpy = jest.spyOn(categoryRepo, "findAll").mockResolvedValue([category]);
 
     const validatorSpy = jest.spyOn(validator, "validate").mockReturnValue(true);
 
@@ -351,10 +386,11 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
 
     expect(returned.length).toBe(2);
 
-    const expectedNft1: MetaplexMetadata = {
+    const expectedNft1: ChainNft = {
         name: covalentResponse.data.items[1].nft_data[0].external_data.name,
         image: covalentResponse.data.items[1].nft_data[0].external_data.image,
         attributes: covalentResponse.data.items[1].nft_data[0].external_data.attributes,
+        categoryId: category.id,
         description: covalentResponse.data.items[1].nft_data[0].external_data.description,
         animation_url: covalentResponse.data.items[1].nft_data[0].external_data.animation_url,
         external_url: covalentResponse.data.items[1].nft_data[0].external_data.external_url,
@@ -363,11 +399,12 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
         }
     };
 
-    const expectedNft2: MetaplexMetadata = {
+    const expectedNft2: ChainNft = {
         name: covalentResponse.data.items[1].nft_data[1].external_data.name,
         image: covalentResponse.data.items[1].nft_data[1].external_data.image,
         attributes: covalentResponse.data.items[1].nft_data[1].external_data.attributes,
         description: covalentResponse.data.items[1].nft_data[1].external_data.description,
+        categoryId: category.id,
         animation_url: covalentResponse.data.items[1].nft_data[1].external_data.animation_url,
         external_url: covalentResponse.data.items[1].nft_data[1].external_data.external_url,
         properties: {
@@ -382,6 +419,8 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
 
     expect(configSpy).toHaveBeenCalledTimes(1);
     expect(configSpy).toHaveBeenCalledWith("COVALENTHQ_KEY");
+
+    expect(categorySpy).toHaveBeenCalledTimes(1);
 
     const expectedUrl = `https://api.covalenthq.com/v1/1000/address/otinanai/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=api-key`;
     expect(httpServiceSpy).toHaveBeenCalledTimes(1);

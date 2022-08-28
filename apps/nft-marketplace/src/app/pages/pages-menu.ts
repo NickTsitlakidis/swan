@@ -16,6 +16,10 @@ export const MENU_ITEMS: NbMenuItem[] = [
         link: "/create-nft"
     },
     {
+        title: "Create listing",
+        link: "/create-listing"
+    },
+    {
         title: "Miscellaneous",
         icon: "shuffle-2-outline",
         children: [

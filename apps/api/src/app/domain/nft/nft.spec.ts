@@ -6,11 +6,12 @@ import { MintNftCommand } from "../../commands/nft/mint-nft-command";
 import { BadRequestException } from "@nestjs/common";
 
 test("create - sets properties and applies NftCreatedEvent", () => {
-    const nft = Nft.create("the-id", "the-user", "the-chain");
+    const nft = Nft.create("the-id", "the-user", "the-chain", "category");
 
     expect(nft.appliedEvents.length).toBe(1);
     expect(nft.appliedEvents[0]).toBeInstanceOf(NftCreatedEvent);
     expect((nft.appliedEvents[0] as NftCreatedEvent).blockchainId).toBe("the-chain");
+    expect((nft.appliedEvents[0] as NftCreatedEvent).categoryId).toBe("category");
     expect((nft.appliedEvents[0] as NftCreatedEvent).userId).toBe("the-user");
     expect((nft.appliedEvents[0] as NftCreatedEvent).aggregateId).toBe("the-id");
 
@@ -21,11 +22,12 @@ test("create - sets properties and applies NftCreatedEvent", () => {
 });
 
 test("fromEvents - can process NftCreatedEvent", () => {
-    const event = new NftCreatedEvent("the-user", "the-chain");
+    const event = new NftCreatedEvent("the-user", "the-chain", "category");
     const nft = Nft.fromEvents("the-id", [new SourcedEvent("the-id", event)]);
 
     expect(nft.userId).toBe("the-user");
     expect(nft.blockchainId).toBe("the-chain");
+    expect(nft.categoryId).toBe("category");
     expect(nft.status).toBe(NftStatus.CREATED);
     expect(nft.id).toBe("the-id");
 });
@@ -39,7 +41,7 @@ test("fromEvents - can process NftMintedEvent", () => {
 });
 
 test("mint - returns bad request when status is not UPLOADED_FILES", () => {
-    const nft = Nft.create("the-id", "the-user", "the-chain");
+    const nft = Nft.create("the-id", "the-user", "the-chain", "category");
     const command = new MintNftCommand();
     command.id = "id";
     command.tokenAddress = "tokenAddress";
@@ -52,7 +54,7 @@ test("mint - returns bad request when status is not UPLOADED_FILES", () => {
 
 test("mint - successfully aplies the event to the store", () => {
     const sourcedEvents = [
-        new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id")),
+        new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id", "category")),
         new SourcedEvent("nft-id", new UploadedNftMetadataEvent(NftStatus.UPLOADED_FILES, "metadata-uri", "image-uri"))
     ];
     const nft = Nft.fromEvents("nft-id", sourcedEvents);

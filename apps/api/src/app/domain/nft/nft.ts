@@ -12,6 +12,7 @@ export class Nft extends EventSourcedEntity {
     private _status: NftStatus;
     private _userId: string;
     private _blockchainId: string;
+    private _categoryId: string;
     private _metadataUri: string;
 
     static fromEvents(id: string, events: Array<SourcedEvent>): Nft {
@@ -20,12 +21,13 @@ export class Nft extends EventSourcedEntity {
         return nft;
     }
 
-    static create(id: string, userId: string, blockchainId: string): Nft {
+    static create(id: string, userId: string, blockchainId: string, categoryId: string): Nft {
         const nft = new Nft(id);
         nft._blockchainId = blockchainId;
+        nft._categoryId = categoryId;
         nft._userId = userId;
         nft._status = NftStatus.CREATED;
-        nft.apply(new NftCreatedEvent(userId, blockchainId));
+        nft.apply(new NftCreatedEvent(userId, blockchainId, categoryId));
         return nft;
     }
 
@@ -43,6 +45,10 @@ export class Nft extends EventSourcedEntity {
 
     get blockchainId(): string {
         return this._blockchainId;
+    }
+
+    get categoryId(): string {
+        return this._categoryId;
     }
 
     get userId(): string {
@@ -83,6 +89,7 @@ export class Nft extends EventSourcedEntity {
     private processNftCreated = (event: NftCreatedEvent) => {
         this._userId = event.userId;
         this._blockchainId = event.blockchainId;
+        this._categoryId = event.categoryId;
         this._status = NftStatus.CREATED;
     };
 

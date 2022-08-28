@@ -22,7 +22,7 @@ export class UploadedNftMetadataEvent extends EventPayload {
 
 @SerializedEvent("nft-created-event")
 export class NftCreatedEvent extends EventPayload {
-    constructor(public userId: string, public blockchainId: string) {
+    constructor(public userId: string, public blockchainId: string, public categoryId: string) {
         super();
     }
 }

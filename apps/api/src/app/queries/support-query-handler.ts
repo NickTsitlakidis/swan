@@ -19,7 +19,7 @@ export class SupportQueryHandler {
     async getCategories(): Promise<Array<CategoryDto>> {
         const views = await this._categoryRepository.findAll();
         return views.map((view) => {
-            return new CategoryDto(view.name, view.imageUrl, view.id);
+            return new CategoryDto(view.name, view.id, view.imageUrl);
         });
     }
 

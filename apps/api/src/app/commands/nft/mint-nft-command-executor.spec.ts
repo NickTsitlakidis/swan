@@ -53,9 +53,9 @@ test("execute - create nft functionality", async () => {
     const nftView = new NftView();
     nftView.id = new ObjectId().toHexString();
 
-    const nft = Nft.create(command.id, command.userId, "chain-1");
+    const nft = Nft.create(command.id, command.userId, "chain-1", "category");
 
-    const sourcedEvents = [new SourcedEvent(command.id, new NftCreatedEvent(command.userId, "chain-id"))];
+    const sourcedEvents = [new SourcedEvent(command.id, new NftCreatedEvent(command.userId, "chain-id", "category"))];
 
     const viewRepositorySpy = jest.spyOn(viewRepository, "findByIdAndUserId").mockResolvedValue(nftView);
     const eventStoreSpy = jest.spyOn(eventStore, "findEventByAggregateId").mockResolvedValue(sourcedEvents);
