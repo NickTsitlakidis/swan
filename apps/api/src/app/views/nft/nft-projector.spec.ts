@@ -50,7 +50,7 @@ test("handle UploadedNftMetadataEvent - Updates NftView with uploaded files even
 
     const metadataUri = "metadataUri";
     const fileUri = "fileUri";
-    const event = new UploadedNftMetadataEvent(NftStatus.UPLOADED_FILES, metadataUri, fileUri);
+    const event = new UploadedNftMetadataEvent(metadataUri, fileUri);
     event.aggregateId = id;
     const handled = await projector.handle(event);
 
@@ -77,7 +77,7 @@ test("handle UploadedNftMetadataEvent - Skip save when NftView was not found", a
 
     const metadataUri = "metadataUri";
     const fileUri = "fileUri";
-    const event = new UploadedNftMetadataEvent(NftStatus.UPLOADED_FILES, metadataUri, fileUri);
+    const event = new UploadedNftMetadataEvent(metadataUri, fileUri);
     event.aggregateId = id;
     const handled = await projector.handle(event);
 
@@ -98,7 +98,7 @@ test("handle NftMintedEvent - Updates NftView with minted event", async () => {
     const transactionId = "transactionId";
     const tokenId = "tokenId";
     const tokenAddress = "tokenAddress";
-    const event = new NftMintedEvent(NftStatus.MINTED, transactionId, tokenAddress, tokenId);
+    const event = new NftMintedEvent(transactionId, tokenAddress, tokenId);
     event.aggregateId = id;
     const handled = await projector.handle(event);
 

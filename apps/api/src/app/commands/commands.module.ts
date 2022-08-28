@@ -17,6 +17,7 @@ import { MintNftCommandExecutor } from "./nft/mint-nft-command-executor";
 import { ListingModule } from "../domain/listing/listing.module";
 import { CreateListingCommandExecutor } from "./listing/create-listing-command-executor";
 import { SubmitListingCommandExecutor } from "./listing/submit-listing-command-executor";
+import { ActivateListingCommandExecutor } from "./listing/activate-listing-command-executor";
 
 @Module({
     providers: [
@@ -28,7 +29,8 @@ import { SubmitListingCommandExecutor } from "./listing/submit-listing-command-e
         CreateNftCommandExecutor,
         MintNftCommandExecutor,
         CreateListingCommandExecutor,
-        SubmitListingCommandExecutor
+        SubmitListingCommandExecutor,
+        ActivateListingCommandExecutor
     ],
     exports: [
         StartSignatureAuthenticationExecutor,
@@ -38,7 +40,8 @@ import { SubmitListingCommandExecutor } from "./listing/submit-listing-command-e
         CreateNftCommandExecutor,
         MintNftCommandExecutor,
         CreateListingCommandExecutor,
-        SubmitListingCommandExecutor
+        SubmitListingCommandExecutor,
+        ActivateListingCommandExecutor
     ],
     imports: [
         InfrastructureModule,
