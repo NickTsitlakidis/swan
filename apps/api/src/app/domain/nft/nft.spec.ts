@@ -82,7 +82,7 @@ test("mint - successfully applies the event to the store", () => {
 
 test("uploadFiles - throws bad request when nft has already uploaded files", async () => {
     const sourcedEvents = [
-        new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id")),
+        new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id", "category")),
         new SourcedEvent("nft-id", new UploadedNftMetadataEvent("metadata-uri", "image-uri"))
     ];
     const nft = Nft.fromEvents("nft-id", sourcedEvents);
@@ -93,7 +93,7 @@ test("uploadFiles - throws bad request when nft has already uploaded files", asy
 });
 
 test("uploadFiles - uploads files and applies UploadedNftMetadataEvent", async () => {
-    const sourcedEvents = [new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id"))];
+    const sourcedEvents = [new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id", "category"))];
     const nft = Nft.fromEvents("nft-id", sourcedEvents);
 
     const registry = createMock<BlockchainActionsRegistryService>();
@@ -125,7 +125,7 @@ test("uploadFiles - uploads files and applies UploadedNftMetadataEvent", async (
 });
 
 test("uploadFiles - throws internal server error if registry returns no service", async () => {
-    const sourcedEvents = [new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id"))];
+    const sourcedEvents = [new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id", "category"))];
     const nft = Nft.fromEvents("nft-id", sourcedEvents);
 
     const registry = createMock<BlockchainActionsRegistryService>();

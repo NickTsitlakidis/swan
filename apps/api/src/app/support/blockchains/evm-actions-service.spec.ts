@@ -387,6 +387,8 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
     expect(returned.length).toBe(2);
 
     const expectedNft1: ChainNft = {
+        tokenId: covalentResponse.data.items[1].nft_data[0].token_id,
+        tokenContractAddress: covalentResponse.data.items[1].contract_address,
         name: covalentResponse.data.items[1].nft_data[0].external_data.name,
         image: covalentResponse.data.items[1].nft_data[0].external_data.image,
         attributes: covalentResponse.data.items[1].nft_data[0].external_data.attributes,
@@ -400,6 +402,8 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
     };
 
     const expectedNft2: ChainNft = {
+        tokenId: covalentResponse.data.items[1].nft_data[1].token_id,
+        tokenContractAddress: covalentResponse.data.items[1].contract_address,
         name: covalentResponse.data.items[1].nft_data[1].external_data.name,
         image: covalentResponse.data.items[1].nft_data[1].external_data.image,
         attributes: covalentResponse.data.items[1].nft_data[1].external_data.attributes,
@@ -423,8 +427,15 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
     expect(categorySpy).toHaveBeenCalledTimes(1);
 
     const expectedUrl = `https://api.covalenthq.com/v1/1000/address/otinanai/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=api-key`;
-    expect(httpServiceSpy).toHaveBeenCalledTimes(1);
-    expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
+    const imageUrl = "https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx";
+    const imageHeaders = {
+        headers: { "Content-Type": "application/json", Range: "bytes=0-200" },
+        responseType: "arraybuffer"
+    };
+    expect(httpServiceSpy).toHaveBeenCalledTimes(3);
+    expect(httpServiceSpy).toHaveBeenNthCalledWith(1, expectedUrl);
+    expect(httpServiceSpy).toHaveBeenNthCalledWith(2, imageUrl, imageHeaders);
+    expect(httpServiceSpy).toHaveBeenNthCalledWith(3, imageUrl, imageHeaders);
 
     expect(validatorSpy).toHaveBeenCalledTimes(2);
     expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items.at(1).nft_data.at(0).external_data);
