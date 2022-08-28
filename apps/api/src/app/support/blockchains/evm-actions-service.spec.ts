@@ -386,7 +386,7 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
 
     expect(returned.length).toBe(2);
 
-    const expectedNft1: MetaplexMetadata = {
+    const expectedNft1: ChainNft = {
         name: covalentResponse.data.items[1].nft_data[0].external_data.name,
         image: covalentResponse.data.items[1].nft_data[0].external_data.image,
         attributes: covalentResponse.data.items[1].nft_data[0].external_data.attributes,
@@ -399,7 +399,7 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
         }
     };
 
-    const expectedNft2: MetaplexMetadata = {
+    const expectedNft2: ChainNft = {
         name: covalentResponse.data.items[1].nft_data[1].external_data.name,
         image: covalentResponse.data.items[1].nft_data[1].external_data.image,
         attributes: covalentResponse.data.items[1].nft_data[1].external_data.attributes,
