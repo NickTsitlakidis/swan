@@ -1,5 +1,5 @@
 import { WalletService } from "./wallet-service";
-import { from, map, Observable, of, Subject, switchMap, throwError } from "rxjs";
+import { from, map, Observable, of, Subject, switchMap, throwError, zip } from "rxjs";
 import { WalletEvent } from "./wallet-event";
 import { ethers } from "ethers";
 import { isNil } from "lodash";
@@ -38,11 +38,12 @@ export class MetamaskService implements WalletService {
     }
 
     mint(nft: CreateNft): Observable<NftMintTransactionDto> {
-        const contract = this._swanNftFactory.create(this._ethersProvider, EvmChains.FANTOM, true);
-
         return this.getPublicKey().pipe(
-            switchMap((publicKey) => contract.createItem(publicKey, nft.metadataUri)),
-            map((result) => {
+            mergeMap((publicKey) => {
+                const contract = this._swanNftFactory.create(this._ethersProvider, EvmChains.FANTOM, true);
+                return zip(of(contract), from(contract.createItem(publicKey, nft.metadataUri)));
+            }),
+            map(([contract, result]) => {
                 return new NftMintTransactionDto(
                     nft.id,
                     result.transactionId,
@@ -68,11 +69,10 @@ export class MetamaskService implements WalletService {
                 if (!tokenContractAddress || !tokenId) {
                     return throwError(() => "oops");
                 }
-                const contract = this._erc721Factory.create(provider, tokenContractAddress);
-                return from(contract.approve("0x53c1F032b8952553a36355BBe92047edE88D33A6", tokenId));
+                const contract = this._erc721Factory.create(provider, tokenContractAddress, EvmChains.FANTOM, true);
+                return from(contract.approve(tokenId));
             }),
             mergeMap((approveResult) => {
-                console.log(approveResult);
                 const contract = this._swanMarketplaceFactory.create(this._ethersProvider, EvmChains.FANTOM, true);
                 return of(contract);
             }),

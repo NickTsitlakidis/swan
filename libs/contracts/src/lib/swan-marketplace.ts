@@ -34,36 +34,26 @@ export class SwanMarketplace {
     }
 
     async getListingResult(transactionHash: string, signerAddress: string): Promise<ListingResult> {
-        const mappedEventObservable = this.streamEvents("ListingCreated", signerAddress).pipe(
+        const eventFilter = this._contractInstance.filters["ListingCreated"](signerAddress);
+
+        const mappedEventObservable = new Observable<any>((subscriber) => {
+            this._contractInstance.on(eventFilter, (seller, tokenContractAddress, tokenId, price, listingId, event) => {
+                subscriber.next(event);
+            });
+        }).pipe(
             skipWhile((contractEvent) => contractEvent.transactionHash !== transactionHash),
             take(1),
             mergeMap((contractEvent) => zip(of(contractEvent), from(this._ethersProvider.getBlockNumber()))),
             map(([contractEvent, blockNumber]) => {
                 return {
                     blockNumber: blockNumber,
-                    chainListingId: contractEvent.listingId
+                    chainListingId: contractEvent.args.listingId.toNumber()
                 };
             }),
-            tap(() => {
-                this.removeEventListeners();
-            })
+            tap(() => this._contractInstance.removeAllListeners())
         );
 
         return firstValueFrom(mappedEventObservable);
-    }
-
-    removeEventListeners() {
-        this._contractInstance.removeAllListeners();
-    }
-
-    streamEvents(eventName: string, address: string): Observable<any> {
-        const filter = this._contractInstance.filters[eventName]();
-
-        return new Observable<any>((subscriber) => {
-            this._contractInstance.on(filter, (from, to, amount, event) => {
-                subscriber.next(event);
-            });
-        });
     }
 
     private getAbi(chain: EvmChains, usingTestNet: boolean): ethers.ContractInterface {

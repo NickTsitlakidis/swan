@@ -1,6 +1,6 @@
 export const FANTOM_MARKETPLACE_TEST_NET = {
     version: "1",
-    address: "0x53c1F032b8952553a36355BBe92047edE88D33A6",
+    address: "0xE01BA27D4e0a0F5fF47Ae0519AEC3df4253E033C",
     abi: [
         {
             inputs: [],
@@ -11,7 +11,13 @@ export const FANTOM_MARKETPLACE_TEST_NET = {
             anonymous: false,
             inputs: [
                 {
-                    indexed: false,
+                    indexed: true,
+                    internalType: "uint256",
+                    name: "listingId",
+                    type: "uint256"
+                },
+                {
+                    indexed: true,
                     internalType: "address",
                     name: "seller",
                     type: "address"
@@ -27,12 +33,6 @@ export const FANTOM_MARKETPLACE_TEST_NET = {
                     internalType: "uint256",
                     name: "tokenId",
                     type: "uint256"
-                },
-                {
-                    indexed: false,
-                    internalType: "uint256",
-                    name: "listingId",
-                    type: "uint256"
                 }
             ],
             name: "ListingCancelled",
@@ -42,19 +42,19 @@ export const FANTOM_MARKETPLACE_TEST_NET = {
             anonymous: false,
             inputs: [
                 {
-                    indexed: false,
+                    indexed: true,
                     internalType: "address",
                     name: "seller",
                     type: "address"
                 },
                 {
-                    indexed: false,
+                    indexed: true,
                     internalType: "address",
                     name: "tokenContractAddress",
                     type: "address"
                 },
                 {
-                    indexed: false,
+                    indexed: true,
                     internalType: "uint256",
                     name: "tokenId",
                     type: "uint256"
@@ -79,7 +79,13 @@ export const FANTOM_MARKETPLACE_TEST_NET = {
             anonymous: false,
             inputs: [
                 {
-                    indexed: false,
+                    indexed: true,
+                    internalType: "uint256",
+                    name: "listingId",
+                    type: "uint256"
+                },
+                {
+                    indexed: true,
                     internalType: "address",
                     name: "seller",
                     type: "address"
@@ -106,12 +112,6 @@ export const FANTOM_MARKETPLACE_TEST_NET = {
                     indexed: false,
                     internalType: "uint256",
                     name: "previousPrice",
-                    type: "uint256"
-                },
-                {
-                    indexed: false,
-                    internalType: "uint256",
-                    name: "listingId",
                     type: "uint256"
                 }
             ],
@@ -141,13 +141,19 @@ export const FANTOM_MARKETPLACE_TEST_NET = {
             anonymous: false,
             inputs: [
                 {
-                    indexed: false,
+                    indexed: true,
+                    internalType: "uint256",
+                    name: "listingId",
+                    type: "uint256"
+                },
+                {
+                    indexed: true,
                     internalType: "address",
                     name: "seller",
                     type: "address"
                 },
                 {
-                    indexed: false,
+                    indexed: true,
                     internalType: "address",
                     name: "buyer",
                     type: "address"
@@ -168,12 +174,6 @@ export const FANTOM_MARKETPLACE_TEST_NET = {
                     indexed: false,
                     internalType: "uint256",
                     name: "price",
-                    type: "uint256"
-                },
-                {
-                    indexed: false,
-                    internalType: "uint256",
-                    name: "listingId",
                     type: "uint256"
                 }
             ],

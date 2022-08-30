@@ -37,7 +37,13 @@ export class SwanNft {
         const connected = this._contractInstance.connect(this._ethersProvider.getSigner());
         const mintResult: ContractTransaction = await connected["createItem"](receiverAddress, metadataUri);
 
-        const mappedEventObservable = this.streamEvents("Transfer", receiverAddress).pipe(
+        const eventFilter = this._contractInstance.filters["Transfer"](null, receiverAddress);
+
+        const mappedEventObservable = new Observable<any>((subscriber) => {
+            this._contractInstance.on(eventFilter, (from, to, amount, event) => {
+                subscriber.next(event);
+            });
+        }).pipe(
             skipWhile((contractEvent) => contractEvent.transactionHash !== mintResult.hash),
             take(1),
             map((contractEvent) => {
@@ -46,26 +52,9 @@ export class SwanNft {
                     transactionId: contractEvent.transactionHash as string
                 };
             }),
-            tap(() => {
-                this.removeEventListeners();
-            })
+            tap(() => this._contractInstance.removeAllListeners())
         );
-
         return firstValueFrom(mappedEventObservable);
-    }
-
-    streamEvents(eventName: string, address: string): Observable<any> {
-        const filter = this._contractInstance.filters[eventName](null, address);
-
-        return new Observable<any>((subscriber) => {
-            this._contractInstance.on(filter, (from, to, amount, event) => {
-                subscriber.next(event);
-            });
-        });
-    }
-
-    removeEventListeners() {
-        this._contractInstance.removeAllListeners();
     }
 
     private getAbi(chain: EvmChains, usingTestNet: boolean): ethers.ContractInterface {

@@ -54,7 +54,7 @@ export class QueueEventBus extends EventBus {
         if (isNil(this._handlerPairs)) {
             this._handlerPairs = [];
         }
-        this._logger.log(`Binding event [${name}] to handler`);
+        this._logger.log(`Binding event [${name}] to handler class [${handler.constructor.name}]`);
         this._handlerPairs.push({
             eventName: name,
             handler: handler
