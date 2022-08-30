@@ -2,7 +2,6 @@ import { ContractTransaction, ethers } from "ethers";
 import { EvmChains } from "./evm-chains";
 import { FANTOM_TEST_NET } from "./abi/swan-nft-fantom-testnet";
 import { FANTOM_MAIN_NET } from "./abi/swan-nft-fantom-mainnet";
-import { InternalServerErrorException } from "@nestjs/common";
 import { firstValueFrom, map, Observable, skipWhile, take, tap } from "rxjs";
 
 export class SwanNft {
@@ -60,22 +59,22 @@ export class SwanNft {
     private getAbi(chain: EvmChains, usingTestNet: boolean): ethers.ContractInterface {
         switch (chain) {
             case EvmChains.ETHEREUM:
-                throw new InternalServerErrorException("Ethereum is unsupported");
+                throw new Error("Ethereum is unsupported");
             case EvmChains.FANTOM:
                 return usingTestNet ? FANTOM_TEST_NET.abi : FANTOM_MAIN_NET.abi;
             case EvmChains.MATIC:
-                throw new InternalServerErrorException("MATIC is unsupported");
+                throw new Error("MATIC is unsupported");
         }
     }
 
     private getAddress(chain: EvmChains, usingTestNet: boolean): string {
         switch (chain) {
             case EvmChains.ETHEREUM:
-                throw new InternalServerErrorException("Ethereum is unsupported");
+                throw new Error("Ethereum is unsupported");
             case EvmChains.FANTOM:
                 return usingTestNet ? FANTOM_TEST_NET.address : FANTOM_MAIN_NET.address;
             case EvmChains.MATIC:
-                throw new InternalServerErrorException("MATIC is unsupported");
+                throw new Error("MATIC is unsupported");
         }
     }
 }
