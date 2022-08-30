@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SwanMarketplace, SwanNft, TestToken } from "../typechain-types";
+import { firstValueFrom, Observable, take } from "rxjs";
 
 describe("SwanMarketplace", () => {
     let deployedMarketplace: SwanMarketplace;
@@ -75,6 +76,30 @@ describe("SwanMarketplace", () => {
 
         expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(true);
         expect(await deployedNft.ownerOf(1)).to.equal(seller.address);
+    });
+
+    it("createListing - emits event with indexed address", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        const eventFilter = deployedMarketplace.filters["ListingCreated"](seller.address);
+
+        const observable = new Observable<any>((subscriber) => {
+            deployedMarketplace.on(eventFilter, (seller, contractAddress, tokenId, price, listingId) => {
+                subscriber.next({ seller, contractAddress, tokenId, price, listingId });
+            });
+        }).pipe(take(1));
+
+        const eventResult = await firstValueFrom(observable);
+
+        expect(eventResult.seller).to.equal(seller.address);
+        expect(eventResult.contractAddress).to.equal(deployedNft.address);
+        expect(eventResult.tokenId).to.equal(ethers.BigNumber.from(1));
+        expect(eventResult.price).to.equal(ethers.utils.parseEther("0.5"));
+        expect(eventResult.listingId).to.equal(ethers.BigNumber.from(2));
     });
 
     it("createListing - reverts when contract is not approved", async () => {
@@ -169,9 +194,33 @@ describe("SwanMarketplace", () => {
 
         await expect(result)
             .to.emit(deployedMarketplace, "ListingCancelled")
-            .withArgs(seller.address, deployedNft.address, 1, 2);
+            .withArgs(2, seller.address, deployedNft.address, 1);
         expect(await deployedNft.ownerOf(1)).to.equal(seller.address);
         expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(false);
+    });
+
+    it("cancelListing - emits event with indexed listing id", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+        await deployedMarketplace.connect(seller).cancelListing(deployedNft.address, 1);
+
+        const eventFilter = deployedMarketplace.filters["ListingCancelled"](2);
+
+        const observable = new Observable<any>((subscriber) => {
+            deployedMarketplace.on(eventFilter, (listingId, seller, contractAddress, tokenId) => {
+                subscriber.next({ seller, contractAddress, tokenId, listingId });
+            });
+        }).pipe(take(1));
+
+        const eventResult = await firstValueFrom(observable);
+
+        expect(eventResult.seller).to.equal(seller.address);
+        expect(eventResult.contractAddress).to.equal(deployedNft.address);
+        expect(eventResult.tokenId).to.equal(ethers.BigNumber.from(1));
+        expect(eventResult.listingId).to.equal(ethers.BigNumber.from(2));
     });
 
     it("updateFeePercentage - reverts if fee is 0", async () => {
@@ -363,12 +412,12 @@ describe("SwanMarketplace", () => {
         await expect(result)
             .to.emit(deployedMarketplace, "ListingUpdated")
             .withArgs(
+                2,
                 seller.address,
                 deployedNft.address,
                 1,
                 ethers.utils.parseEther("0"),
-                ethers.utils.parseEther("0.5"),
-                2
+                ethers.utils.parseEther("0.5")
             );
 
         const found = await deployedMarketplace.getListing(deployedNft.address, 1);
@@ -390,15 +439,46 @@ describe("SwanMarketplace", () => {
         await expect(result)
             .to.emit(deployedMarketplace, "ListingUpdated")
             .withArgs(
+                2,
                 seller.address,
                 deployedNft.address,
                 1,
                 ethers.utils.parseEther("0.7"),
-                ethers.utils.parseEther("0.5"),
-                2
+                ethers.utils.parseEther("0.5")
             );
 
         const found = await deployedMarketplace.getListing(deployedNft.address, 1);
         expect(found.price).to.equal(ethers.utils.parseEther("0.7"));
+    });
+
+    it("updateListingPrice - emits event with indexed listing id", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+        await deployedMarketplace
+            .connect(seller)
+            .updateListingPrice(deployedNft.address, 1, ethers.utils.parseEther("0.7"));
+
+        const eventFilter = deployedMarketplace.filters["ListingUpdated"](2);
+
+        const observable = new Observable<any>((subscriber) => {
+            deployedMarketplace.on(
+                eventFilter,
+                (listingId, seller, contractAddress, tokenId, currentPrice, previousPrice) => {
+                    subscriber.next({ seller, contractAddress, tokenId, listingId, currentPrice, previousPrice });
+                }
+            );
+        }).pipe(take(1));
+
+        const eventResult = await firstValueFrom(observable);
+
+        expect(eventResult.seller).to.equal(seller.address);
+        expect(eventResult.contractAddress).to.equal(deployedNft.address);
+        expect(eventResult.tokenId).to.equal(ethers.BigNumber.from(1));
+        expect(eventResult.listingId).to.equal(ethers.BigNumber.from(2));
+        expect(eventResult.currentPrice).to.equal(ethers.utils.parseEther("0.7"));
+        expect(eventResult.previousPrice).to.equal(ethers.utils.parseEther("0.5"));
     });
 });
