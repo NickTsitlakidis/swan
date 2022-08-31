@@ -14,36 +14,35 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
     using Counters for Counters.Counter;
 
     event ListingCreated(
-        address seller,
-        address tokenContractAddress,
-        uint tokenId,
+        address indexed seller,
+        address indexed tokenContractAddress,
+        uint indexed tokenId,
         uint price,
-        uint listingId
-    );
+        uint listingId);
 
     event ListingUpdated(
-        address seller,
+        uint indexed listingId,
+        address indexed seller,
         address tokenContractAddress,
         uint tokenId,
         uint currentPrice,
-        uint previousPrice,
-        uint listingId
+        uint previousPrice
     );
 
     event TokenSold(
-        address seller,
-        address buyer,
+        uint indexed listingId,
+        address indexed seller,
+        address indexed buyer,
         address tokenContractAddress,
         uint tokenId,
-        uint price,
-        uint listingId
+        uint price
     );
 
     event ListingCancelled(
-        address seller,
+        uint indexed listingId,
+        address indexed seller,
         address tokenAddress,
-        uint tokenId,
-        uint listingId
+        uint tokenId
     );
 
     struct TokenListing {
@@ -138,12 +137,12 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         listings[tokenContractAddress][tokenId].price = newPrice; //todo
 
         emit ListingUpdated(
+            found.listingId,
             found.seller,
             found.tokenContractAddress,
             found.tokenId,
             newPrice,
-            previousPrice,
-            found.listingId
+            previousPrice
         );
 
     }
@@ -171,12 +170,12 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         delete (listings[tokenContractAddress][tokenId]);
 
         emit TokenSold(
+            found.listingId,
             found.seller,
             msg.sender,
             found.tokenContractAddress,
             found.tokenId,
-            found.price,
-            found.listingId
+            found.price
         );
     }
 
@@ -186,6 +185,6 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         require(found.seller == msg.sender, "Incorrect owner of listing");
 
         delete (listings[tokenContractAddress][tokenId]);
-        emit ListingCancelled(found.seller, found.tokenContractAddress, found.tokenId, found.listingId);
+        emit ListingCancelled(found.listingId, found.seller, found.tokenContractAddress, found.tokenId);
     }
 }

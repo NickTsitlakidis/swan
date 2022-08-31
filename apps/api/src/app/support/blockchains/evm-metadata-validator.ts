@@ -17,7 +17,7 @@ export class EvmMetadataValidator {
                     Joi.object({
                         trait_type: Joi.string().required(),
                         value: Joi.string().required(),
-                        display_type: Joi.string()
+                        display_type: Joi.string().allow("")
                     })
                 )
         }).unknown();

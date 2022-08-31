@@ -2,7 +2,6 @@ import { ContractTransaction, ethers } from "ethers";
 import { EvmChains } from "./evm-chains";
 import { FANTOM_TEST_NET } from "./abi/swan-nft-fantom-testnet";
 import { FANTOM_MAIN_NET } from "./abi/swan-nft-fantom-mainnet";
-import { InternalServerErrorException } from "@nestjs/common";
 import { firstValueFrom, map, Observable, skipWhile, take, tap } from "rxjs";
 
 export class SwanNft {
@@ -37,7 +36,13 @@ export class SwanNft {
         const connected = this._contractInstance.connect(this._ethersProvider.getSigner());
         const mintResult: ContractTransaction = await connected["createItem"](receiverAddress, metadataUri);
 
-        const mappedEventObservable = this.streamEvents("Transfer", receiverAddress).pipe(
+        const eventFilter = this._contractInstance.filters["Transfer"](null, receiverAddress);
+
+        const mappedEventObservable = new Observable<any>((subscriber) => {
+            this._contractInstance.on(eventFilter, (from, to, amount, event) => {
+                subscriber.next(event);
+            });
+        }).pipe(
             skipWhile((contractEvent) => contractEvent.transactionHash !== mintResult.hash),
             take(1),
             map((contractEvent) => {
@@ -46,47 +51,30 @@ export class SwanNft {
                     transactionId: contractEvent.transactionHash as string
                 };
             }),
-            tap(() => {
-                this.removeEventListeners();
-            })
+            tap(() => this._contractInstance.removeAllListeners())
         );
-
         return firstValueFrom(mappedEventObservable);
-    }
-
-    streamEvents(eventName: string, address: string): Observable<any> {
-        const filter = this._contractInstance.filters[eventName](null, address);
-
-        return new Observable<any>((subscriber) => {
-            this._contractInstance.on(filter, (from, to, amount, event) => {
-                subscriber.next(event);
-            });
-        });
-    }
-
-    removeEventListeners() {
-        this._contractInstance.removeAllListeners();
     }
 
     private getAbi(chain: EvmChains, usingTestNet: boolean): ethers.ContractInterface {
         switch (chain) {
             case EvmChains.ETHEREUM:
-                throw new InternalServerErrorException("Ethereum is unsupported");
+                throw new Error("Ethereum is unsupported");
             case EvmChains.FANTOM:
                 return usingTestNet ? FANTOM_TEST_NET.abi : FANTOM_MAIN_NET.abi;
             case EvmChains.MATIC:
-                throw new InternalServerErrorException("MATIC is unsupported");
+                throw new Error("MATIC is unsupported");
         }
     }
 
     private getAddress(chain: EvmChains, usingTestNet: boolean): string {
         switch (chain) {
             case EvmChains.ETHEREUM:
-                throw new InternalServerErrorException("Ethereum is unsupported");
+                throw new Error("Ethereum is unsupported");
             case EvmChains.FANTOM:
                 return usingTestNet ? FANTOM_TEST_NET.address : FANTOM_MAIN_NET.address;
             case EvmChains.MATIC:
-                throw new InternalServerErrorException("MATIC is unsupported");
+                throw new Error("MATIC is unsupported");
         }
     }
 }

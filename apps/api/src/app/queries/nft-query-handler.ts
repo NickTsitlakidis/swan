@@ -1,3 +1,4 @@
+import { CategoryRepository } from "./../support/categories/category-repository";
 import { BlockchainActionsRegistryService } from "../support/blockchains/blockchain-actions-registry-service";
 import { Injectable } from "@nestjs/common";
 import { ProfileNftDto } from "@swan/dto";
@@ -9,13 +10,15 @@ export class NftQueryHandler {
     constructor(
         private _userWalletRepository: UserWalletViewRepository,
         private _blockchainRepository: BlockchainRepository,
-        private _blockchainActions: BlockchainActionsRegistryService
+        private _blockchainActions: BlockchainActionsRegistryService,
+        private _categoryRepository: CategoryRepository
     ) {}
 
     async getByUserId(userId: string): Promise<Array<ProfileNftDto>> {
         const userWallets = await this._userWalletRepository.findByUserId(userId);
 
         const chains = await this._blockchainRepository.findByIds(userWallets.map((wallet) => wallet.blockchainId));
+        const categories = await this._categoryRepository.findAll();
 
         let profileNfts = [];
         for (const wallet of userWallets) {
@@ -24,10 +27,15 @@ export class NftQueryHandler {
             const chain = chains.find((c) => c.id === wallet.blockchainId);
             profileNfts = profileNfts.concat(
                 nfts.map((nft) => {
+                    const category = categories.find((cat) => cat.id === nft.categoryId);
                     const profileNftDto = new ProfileNftDto();
                     profileNftDto.blockchain = {
                         id: chain.id,
                         name: chain.name
+                    };
+                    profileNftDto.category = {
+                        id: category?.id,
+                        name: category?.name
                     };
                     /* profileNftDto.collection = {
                         name: nft.collection.name
@@ -36,6 +44,10 @@ export class NftQueryHandler {
                     profileNftDto.imageUri = nft.image;
                     // TODO
                     profileNftDto.isListed = false;
+                    profileNftDto.tokenId = nft.tokenId;
+                    profileNftDto.tokenContractAddress = nft.tokenContractAddress;
+                    profileNftDto.nftAddress = nft.nftAddress;
+                    profileNftDto.walletId = wallet.id;
                     return profileNftDto;
                 })
             );

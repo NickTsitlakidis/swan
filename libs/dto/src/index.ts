@@ -19,3 +19,6 @@ export * from "./lib/nft-dto";
 export * from "./lib/nft-mint-transaction-dto";
 export * from "./lib/profile-nft-dto";
 export * from "./lib/blockchain-dto";
+export * from "./lib/create-listing-dto";
+export * from "./lib/submit-listing-dto";
+export * from "./lib/activate-listing-dto";

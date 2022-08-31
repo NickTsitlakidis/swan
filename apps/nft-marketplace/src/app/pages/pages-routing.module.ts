@@ -31,6 +31,11 @@ const routes: Routes = [
                 loadChildren: () => import("./create-nft/create-nft.module").then((m) => m.CreateNFTModule)
             },
             {
+                path: "create-listing",
+                canActivate: [AuthGuard],
+                loadChildren: () => import("./create-listing/create-listing.module").then((m) => m.CreateListingModule)
+            },
+            {
                 path: "miscellaneous",
                 loadChildren: () => import("./miscellaneous/miscellaneous.module").then((m) => m.MiscellaneousModule)
             },

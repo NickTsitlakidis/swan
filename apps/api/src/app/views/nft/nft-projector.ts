@@ -22,6 +22,7 @@ export class NftProjector implements IEventHandler<NftCreatedEvent | NftMintedEv
             view.id = event.aggregateId;
             view.blockchainId = event.blockchainId;
             view.userId = event.userId;
+            view.categoryId = event.categoryId;
         } else {
             view = await this._repository.findById(event.aggregateId);
         }

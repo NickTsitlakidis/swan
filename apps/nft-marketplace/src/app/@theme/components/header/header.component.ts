@@ -1,8 +1,11 @@
-import { UserService } from "./../../../@core/services/user/user.service";
+import { UserService } from "../../../@core/services/user/user.service";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import {
+    ActivateListingDto,
     BlockchainWalletDto,
+    CreateListingDto,
     StartSignatureAuthenticationDto,
+    SubmitListingDto,
     SupportedWallets,
     UserWalletDto,
     WalletDto
@@ -15,7 +18,8 @@ import { Router } from "@angular/router";
 import { SupportService } from "../../../@core/services/support/support.service";
 import { UserAuthService } from "../../../@core/services/authentication/user_auth.service";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
-import { firstValueFrom, of } from "rxjs";
+import { EMPTY, firstValueFrom, mergeMap, of, zip } from "rxjs";
+import { ListingsService } from "../../../@core/services/listings/listings.service";
 @Component({
     selector: "nft-marketplace-header",
     styleUrls: ["./header.component.scss"],

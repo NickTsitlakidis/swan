@@ -47,11 +47,13 @@
  */
 import "zone.js"; // Included with Angular CLI.
 import "reflect-metadata";
+import { Buffer } from "buffer";
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (window as any).global = window;
+global.Buffer = Buffer;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (window as any).process = {
     env: { DEBUG: undefined }
