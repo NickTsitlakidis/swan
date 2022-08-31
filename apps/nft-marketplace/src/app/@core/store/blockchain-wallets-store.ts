@@ -1,8 +1,6 @@
 import { BlockchainWalletDto } from "@swan/dto";
 import { action, computed, makeObservable, observable } from "mobx";
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import { toStream } from "mobx-utils";
 
 @Injectable({ providedIn: "root" })
 export class BlockchainWalletsStore {
