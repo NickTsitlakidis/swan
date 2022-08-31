@@ -34,6 +34,7 @@ test("execute - throws when category is not found", async () => {
     command.blockchainId = "block id";
     command.chainTokenId = "tok";
     command.tokenContractAddress = "address";
+    command.nftAddress = "nftAddress";
     command.price = 4;
 
     const categorySpy = jest.spyOn(categoryRepository, "countById").mockResolvedValue(0);
@@ -52,6 +53,7 @@ test("execute - throws when blockchain is not found", async () => {
     command.blockchainId = "block id";
     command.chainTokenId = "tok";
     command.tokenContractAddress = "address";
+    command.nftAddress = "nftAddress";
     command.price = 4;
 
     const categorySpy = jest.spyOn(categoryRepository, "countById").mockResolvedValue(1);
@@ -77,6 +79,7 @@ test("execute - throws when nft id is set and not found", async () => {
     command.blockchainId = blockchain.id;
     command.chainTokenId = "tok";
     command.tokenContractAddress = "address";
+    command.nftAddress = "nftAddress";
     command.price = 4;
 
     const categorySpy = jest.spyOn(categoryRepository, "countById").mockResolvedValue(1);
@@ -103,6 +106,7 @@ test("execute - throws when blockchain id doesn't match nft blockchain", async (
     command.blockchainId = "block";
     command.chainTokenId = "tok";
     command.tokenContractAddress = "address";
+    command.nftAddress = "nftAddress";
     command.price = 4;
 
     const blockchain = new Blockchain();
@@ -137,6 +141,7 @@ test("execute - creates listing and commits", async () => {
     command.blockchainId = blockchain.id;
     command.chainTokenId = "tok";
     command.tokenContractAddress = "address";
+    command.nftAddress = "nftAddress";
     command.price = 4;
 
     const nftView = new NftView();

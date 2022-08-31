@@ -56,6 +56,7 @@ export class ListingProjector
             view.id = event.aggregateId;
             view.price = event.price;
             view.tokenContractAddress = event.tokenContractAddress;
+            view.nftAddress = event.nftAddress;
             view.blockchainId = event.blockchainId;
             view.nftId = event.nftId;
             view.categoryId = event.categoryId;

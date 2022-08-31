@@ -6,6 +6,7 @@ export class CreateListingCommand {
     categoryId: string;
     blockchainId: string;
     tokenContractAddress?: string;
+    nftAddress?: string;
     chainTokenId?: string;
     userId: string;
 
@@ -13,6 +14,7 @@ export class CreateListingCommand {
         const command = new CreateListingCommand();
         command.price = dto.price;
         command.tokenContractAddress = dto.tokenContractAddress;
+        command.nftAddress = dto.nftAddress;
         command.blockchainId = dto.blockchainId;
         command.nftId = dto.nftId;
         command.categoryId = dto.categoryId;

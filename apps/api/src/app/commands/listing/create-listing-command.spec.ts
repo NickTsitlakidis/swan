@@ -9,6 +9,7 @@ test("fromDto - maps properties to new CreateListingCommand", () => {
     dto.nftId = "444";
     dto.price = 34;
     dto.tokenContractAddress = "contract";
+    dto.nftAddress = "nftAddress";
 
     const mapped = CreateListingCommand.fromDto(dto, "user");
     expect(mapped.blockchainId).toBe(dto.blockchainId);
@@ -17,5 +18,6 @@ test("fromDto - maps properties to new CreateListingCommand", () => {
     expect(mapped.nftId).toBe(dto.nftId);
     expect(mapped.price).toBe(dto.price);
     expect(mapped.tokenContractAddress).toBe(dto.tokenContractAddress);
+    expect(mapped.nftAddress).toBe(dto.nftAddress);
     expect(mapped.userId).toBe("user");
 });

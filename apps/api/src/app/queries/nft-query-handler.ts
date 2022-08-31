@@ -46,6 +46,7 @@ export class NftQueryHandler {
                     profileNftDto.isListed = false;
                     profileNftDto.tokenId = nft.tokenId;
                     profileNftDto.tokenContractAddress = nft.tokenContractAddress;
+                    profileNftDto.nftAddress = nft.nftAddress;
                     return profileNftDto;
                 })
             );

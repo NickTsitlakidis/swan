@@ -22,5 +22,9 @@ export class CreateListingDto {
 
     @IsString()
     @IsNotEmpty()
+    nftAddress?: string;
+
+    @IsString()
+    @IsNotEmpty()
     chainTokenId?: string;
 }

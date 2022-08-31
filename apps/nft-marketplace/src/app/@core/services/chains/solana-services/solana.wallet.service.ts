@@ -226,7 +226,7 @@ export class SolanaWalletService implements WalletService {
             });
     }
 
-    createListing(price: number, tokenContractAddress?: string, tokenId?: number): Observable<string> {
+    createListing(price: number, tokenContractAddress?: string, tokenId?: number, nftAddress?: string): Observable<string> {
         return EMPTY;
     }
 
