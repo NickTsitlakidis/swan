@@ -20,6 +20,7 @@ import { UserAuthService } from "../../../@core/services/authentication/user_aut
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
 import { EMPTY, firstValueFrom, mergeMap, of, zip } from "rxjs";
 import { ListingsService } from "../../../@core/services/listings/listings.service";
+import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets-facade";
 @Component({
     selector: "nft-marketplace-header",
     styleUrls: ["./header.component.scss"],
@@ -62,6 +63,7 @@ export class HeaderComponent implements OnInit {
     public userWallets: UserWalletDto[];
 
     constructor(
+        private _blockchainWalletsFacade: BlockchainWalletsFacade,
         public imagesService: ImagesService,
         private _router: Router,
         private _supportService: SupportService,
@@ -103,7 +105,7 @@ export class HeaderComponent implements OnInit {
      *********************************************************/
 
     private _connectToObservables() {
-        this._supportService.getBlockchainWallets().subscribe(async (wallets) => {
+        this._blockchainWalletsFacade.streamWallets().subscribe(async (wallets) => {
             this.chainsNew = wallets;
             this.userWallets = await firstValueFrom(this._userService.getUserWallets());
             this.selectedWallets = wallets

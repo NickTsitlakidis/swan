@@ -18,13 +18,16 @@ export class CreateListingDto {
 
     @IsString()
     @IsNotEmpty()
+    @IsOptional()
     tokenContractAddress?: string;
 
     @IsString()
     @IsNotEmpty()
+    @IsOptional()
     nftAddress?: string;
 
     @IsString()
     @IsNotEmpty()
+    @IsOptional()
     chainTokenId?: string;
 }
