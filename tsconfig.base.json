@@ -7,6 +7,7 @@
         "moduleResolution": "node",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
+        "useDefineForClassFields": true,
         "strictPropertyInitialization": false,
         "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,

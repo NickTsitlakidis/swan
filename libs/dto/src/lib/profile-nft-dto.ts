@@ -12,7 +12,9 @@ export class ProfileNftDto {
     public listedPrice?: number;
     public lastSoldPrice?: number;
     public tokenContractAddress?: string;
+    public nftAddress?: string;
     public tokenId?: string;
+    public walletId: string;
 
     @Type(() => BlockchainDto)
     public blockchain: BlockchainDto;

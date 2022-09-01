@@ -37,6 +37,12 @@ export class MetaplexService {
             .run();
         const promises = lazyNfts.map((lazyNft) => axios.get<MetaplexMetadata>(lazyNft.uri));
         const nfts = await Promise.all(promises);
-        return nfts.map((nft) => nft.data);
+        return nfts.map((nft, index) => {
+            const chainNftData = {
+                ...nft.data,
+                nftAddress: lazyNfts[index].address.toString()
+            };
+            return chainNftData;
+        });
     }
 }

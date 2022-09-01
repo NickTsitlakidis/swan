@@ -74,6 +74,7 @@
     "helmet": "5.1.1",
     "joi": "17.6.0",
     "lodash": "4.17.21",
+    "mobx": "6.6.1",
     "moment": "2.29.2",
     "mongodb": "3.7.3",
     "nest-winston": "1.6.2",

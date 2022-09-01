@@ -59,34 +59,32 @@ export class CreateListingPageComponent implements OnInit {
             .createListing(dto)
             .pipe(
                 mergeMap((listingEntity) => {
-                    return zip(
-                        of(listingEntity),
-                        this._walletRegistryService.getWalletService("628ea2226b8991c676c19a4d")
-                    );
+                    return zip(of(listingEntity), this._walletRegistryService.getWalletService(nft.walletId));
                 }),
-                mergeMap(([listingEntity, metamaskService]) => {
-                    if (metamaskService) {
+                mergeMap(([listingEntity, walletService]) => {
+                    if (walletService) {
                         return zip(
                             of(listingEntity),
-                            of(metamaskService),
-                            metamaskService.createListing(
+                            of(walletService),
+                            walletService.createListing(
                                 dto.price,
                                 dto.tokenContractAddress,
                                 // TODO add solana implementation
-                                parseInt(dto.chainTokenId || "")
+                                parseInt(dto.chainTokenId || ""),
+                                dto.nftAddress
                             )
                         );
                     }
                     return EMPTY;
                 }),
-                mergeMap(([listingEntity, metamaskService, transactionHash]) => {
+                mergeMap(([listingEntity, walletService, transactionHash]) => {
                     const dto = new SubmitListingDto();
                     dto.listingId = listingEntity.id;
                     dto.chainTransactionId = transactionHash;
-                    return zip(of(metamaskService), of(transactionHash), this._listingsService.submitListing(dto));
+                    return zip(of(walletService), of(transactionHash), this._listingsService.submitListing(dto));
                 }),
-                mergeMap(([metamaskService, transactionHash, listingEntity]) => {
-                    return zip(metamaskService.getListingResult(transactionHash), of(listingEntity));
+                mergeMap(([walletService, transactionHash, listingEntity]) => {
+                    return zip(walletService.getListingResult(transactionHash), of(listingEntity));
                 }),
                 mergeMap(([result, listingEntity]) => {
                     const dto = new ActivateListingDto();

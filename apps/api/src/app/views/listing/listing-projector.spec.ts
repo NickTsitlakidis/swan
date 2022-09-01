@@ -33,6 +33,7 @@ test("handle ListingCreatedEvent - Saves new ListingView", async () => {
     const categoryId = "category";
     const blockchainId = "blockchain";
     const tokenContractAddress = "addr";
+    const nftAddress = "nftAddress";
     const chainTokenId = "chainTokenId";
     const nftId = "nftId";
     const event = new ListingCreatedEvent(
@@ -41,6 +42,7 @@ test("handle ListingCreatedEvent - Saves new ListingView", async () => {
         categoryId,
         blockchainId,
         tokenContractAddress,
+        nftAddress,
         chainTokenId,
         nftId
     );
@@ -56,6 +58,7 @@ test("handle ListingCreatedEvent - Saves new ListingView", async () => {
     expectedSaved.categoryId = "category";
     expectedSaved.blockchainId = "blockchain";
     expectedSaved.tokenContractAddress = "addr";
+    expectedSaved.nftAddress = "nftAddress";
     expectedSaved.chainTokenId = "chainTokenId";
     expectedSaved.nftId = "nftId";
     expectedSaved.status = ListingStatus.CREATED;

@@ -9,6 +9,6 @@ export interface WalletService {
     signMessage(message: string): Observable<string | undefined>;
     mint(nft: CreateNft): Observable<NftMintTransactionDto>;
     getEvents(): Observable<WalletEvent>;
-    createListing(price: number, tokenContractAddress?: string, tokenId?: number): Observable<string>;
+    createListing(price: number, tokenContractAddress?: string, tokenId?: number, nftAddress?: string): Observable<string>;
     getListingResult(transactionHash: string): Observable<ListingResult>;
 }

@@ -27,6 +27,9 @@ export class ListingView extends MongoDocument {
     tokenContractAddress?: string;
 
     @Property()
+    nftAddress?: string;
+
+    @Property()
     chainTokenId?: string;
 
     @Property()
