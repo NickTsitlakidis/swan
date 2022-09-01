@@ -1,11 +1,8 @@
 import { UserService } from "../../../@core/services/user/user.service";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import {
-    ActivateListingDto,
     BlockchainWalletDto,
-    CreateListingDto,
     StartSignatureAuthenticationDto,
-    SubmitListingDto,
     SupportedWallets,
     UserWalletDto,
     WalletDto
@@ -18,9 +15,9 @@ import { Router } from "@angular/router";
 import { SupportService } from "../../../@core/services/support/support.service";
 import { UserAuthService } from "../../../@core/services/authentication/user_auth.service";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
-import { EMPTY, firstValueFrom, mergeMap, of, zip } from "rxjs";
-import { ListingsService } from "../../../@core/services/listings/listings.service";
+import { firstValueFrom, of } from "rxjs";
 import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets-facade";
+import { UserFacade } from "../../../@core/store/user-facade";
 @Component({
     selector: "nft-marketplace-header",
     styleUrls: ["./header.component.scss"],
@@ -70,11 +67,37 @@ export class HeaderComponent implements OnInit {
         private _cd: ChangeDetectorRef,
         private _userAuthService: UserAuthService,
         private _walletRegistryService: WalletRegistryService,
-        private _userService: UserService
-    ) {}
+        private _userService: UserService,
+        private _userFacade: UserFacade
+    ) {
+        this.userWallets = [];
+    }
 
     ngOnInit() {
-        this._connectToObservables();
+        this._blockchainWalletsFacade.streamWallets().subscribe((blockchainWallets) => {
+            this.chainsNew = blockchainWallets;
+
+            this._userFacade.streamUser().subscribe((user) => {
+                if (user) {
+                    this.userWallets = user.wallets;
+                    this.selectedWallets = this.chainsNew
+                        .flatMap((w) => w.wallets)
+                        .filter((wallet) =>
+                            this.userWallets.find(
+                                (w) => w.wallet.chainId === wallet.chainId && w.wallet.id === wallet.id
+                            )
+                        );
+                    this.selectedWallets.forEach((wal) => {
+                        if (!this.isSelected[wal.chainId]) {
+                            this.isSelected[wal.chainId] = {};
+                        }
+                        this.isSelected[wal.chainId][wal.name] = true;
+                    });
+                }
+                this._cd.detectChanges();
+            });
+        });
+        this._userFacade.refreshUser();
     }
 
     public async walletSelected(wallets: WalletDto[]) {
@@ -92,34 +115,11 @@ export class HeaderComponent implements OnInit {
         if (this.userWallets?.length) {
             this._userAuthService.addUserWallet(authBody).subscribe();
         } else {
-            this._userAuthService.authenticateWithSignature(authBody).subscribe();
+            await this._userFacade.authenticateWithSignature(authBody);
         }
     }
 
     public navigateTo(link: string) {
         this._router.navigate([link]);
-    }
-
-    /*********************************************************
-     *                  Private Methods
-     *********************************************************/
-
-    private _connectToObservables() {
-        this._blockchainWalletsFacade.streamWallets().subscribe(async (wallets) => {
-            this.chainsNew = wallets;
-            this.userWallets = await firstValueFrom(this._userService.getUserWallets());
-            this.selectedWallets = wallets
-                .flatMap((w) => w.wallets)
-                .filter((wallet) =>
-                    this.userWallets.find((w) => w.wallet.chainId === wallet.chainId && w.wallet.id === wallet.id)
-                );
-            this.selectedWallets.forEach((wal) => {
-                if (!this.isSelected[wal.chainId]) {
-                    this.isSelected[wal.chainId] = {};
-                }
-                this.isSelected[wal.chainId][wal.name] = true;
-            });
-            this._cd.detectChanges();
-        });
     }
 }

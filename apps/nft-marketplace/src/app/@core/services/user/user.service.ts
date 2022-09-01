@@ -1,9 +1,17 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, of, Subject } from "rxjs";
-import { ProfileNftDto, UserWalletDto } from "@swan/dto";
+import {
+    CompleteSignatureAuthenticationDto,
+    NonceDto,
+    ProfileNftDto,
+    StartSignatureAuthenticationDto,
+    TokenDto,
+    UserDto,
+    UserWalletDto
+} from "@swan/dto";
 import { map } from "rxjs/operators";
-import { plainToInstance } from "class-transformer";
+import { plainToClass, plainToInstance } from "class-transformer";
 import { LocalStorageService } from "ngx-webstorage";
 
 @Injectable({
@@ -21,6 +29,22 @@ export class UserService {
                 this._walletPopulated.next(true);
             });
         }
+    }
+
+    startSignatureAuthentication(body: StartSignatureAuthenticationDto): Observable<NonceDto> {
+        return this._httpClient
+            .post("/user/start-signature-authentication", body)
+            .pipe(map((httpResult) => plainToClass(NonceDto, httpResult)));
+    }
+
+    completeSignatureAuthentication(completeBody: CompleteSignatureAuthenticationDto): Observable<TokenDto> {
+        return this._httpClient
+            .post("/user/complete-signature-authentication", completeBody)
+            .pipe(map((httpResult) => plainToClass(TokenDto, httpResult)));
+    }
+
+    getUser(): Observable<UserDto> {
+        return this._httpClient.get("/user").pipe(map((httpResult) => plainToClass(UserDto, httpResult)));
     }
 
     getUserWallets(): Observable<Array<UserWalletDto>> {

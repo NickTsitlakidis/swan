@@ -5,7 +5,8 @@ import {
     NonceDto,
     RefreshTokenDto,
     StartSignatureAuthenticationDto,
-    TokenDto
+    TokenDto,
+    UserDto
 } from "@swan/dto";
 import { LocalStorageService } from "ngx-webstorage";
 import { Observable, of, switchMap, throwError, zip } from "rxjs";
@@ -33,54 +34,11 @@ export class UserAuthService {
         );
     }
 
-    public setPublicKey(address: string) {
-        if (address) {
-            this._lcStorage.store("publicKey", address);
-        }
-    }
-
-    public getPublicKey(): string {
-        return this._lcStorage.retrieve("publicKey");
-    }
-
     public refreshToken(): Observable<TokenDto> {
         const storedRefreshToken = this._lcStorage.retrieve("userRefreshToken");
         return this._httpClient.post("/user/refresh-token", new RefreshTokenDto(storedRefreshToken)).pipe(
             map((httpResult) => plainToClass(TokenDto, httpResult)),
             tap((dto) => this._storeUserData(dto))
-        );
-    }
-
-    public authenticateWithSignature(body: StartSignatureAuthenticationDto) {
-        return this._walletRegistry.getWalletService(body.walletId).pipe(
-            switchMap((walletService) => {
-                if (isNil(walletService)) {
-                    return throwError(() => "Unable to match wallet with service");
-                }
-                return zip(
-                    of(walletService),
-                    this._httpClient.post<NonceDto>("/user/start-signature-authentication", body)
-                );
-            }),
-
-            switchMap((service) => {
-                const walletService = service[0];
-                const nonce = service[1];
-                return walletService.signMessage(nonce.nonce);
-            }),
-            switchMap((signature) => {
-                if (isNil(signature)) {
-                    return throwError(() => "Signature authentication stopped");
-                }
-
-                const completeBody = new CompleteSignatureAuthenticationDto();
-                completeBody.signature = signature;
-                completeBody.blockchainId = body.blockchainId;
-                completeBody.address = body.address;
-                return this._httpClient.post("/user/complete-signature-authentication", completeBody);
-            }),
-            map((httpResult) => plainToClass(TokenDto, httpResult)),
-            tap((dto) => this._storeUserData(dto, body))
         );
     }
 
