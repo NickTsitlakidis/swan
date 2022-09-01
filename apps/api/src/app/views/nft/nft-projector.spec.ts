@@ -4,7 +4,6 @@ import { NftViewRepository } from "./nft-view-repository";
 import { NftProjector } from "./nft-projector";
 import { NftView } from "./nft-view";
 import { NftCreatedEvent, NftMintedEvent, UploadedNftMetadataEvent } from "../../domain/nft/nft-events";
-import { NftStatus } from "../../domain/nft/nft-status";
 
 let repositoryMock: NftViewRepository;
 let projector: NftProjector;

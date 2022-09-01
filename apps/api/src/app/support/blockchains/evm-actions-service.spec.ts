@@ -1,10 +1,8 @@
-import { CategoryRepository } from "./../categories/category-repository";
+import { CategoryRepository } from "../categories/category-repository";
 import { BlockchainRepository } from "./blockchain-repository";
 import { getUnitTestingModule } from "../../test-utils/test-modules";
 import { EvmActionsService } from "./evm-actions-service";
-import { AwsService } from "../aws/aws-service";
 import { ConfigService } from "@nestjs/config";
-import { MetaplexService } from "../metaplex/metaplex-service";
 import { HttpService } from "@nestjs/axios";
 import { EvmMetadataValidator } from "./evm-metadata-validator";
 import { InternalServerErrorException } from "@nestjs/common";
@@ -12,15 +10,12 @@ import { of } from "rxjs";
 import { AxiosResponse } from "axios";
 import { Blockchain } from "./blockchain";
 import { CovalentHqResponse } from "./covalent-hq-response";
-import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
 import { cloneDeep } from "lodash";
 import { Category } from "../categories/category";
 import { ChainNft } from "./chain-nft";
 
 let service: EvmActionsService;
-let awsService: AwsService;
 let configService: ConfigService;
-let metaplexService: MetaplexService;
 let blockchainRepo: BlockchainRepository;
 let categoryRepo: CategoryRepository;
 let httpService: HttpService;
@@ -164,9 +159,7 @@ beforeEach(async () => {
     const testModule = await getUnitTestingModule(EvmActionsService);
     service = testModule.get(EvmActionsService);
     configService = testModule.get(ConfigService);
-    metaplexService = testModule.get(MetaplexService);
     blockchainRepo = testModule.get(BlockchainRepository);
-    awsService = testModule.get(AwsService);
     httpService = testModule.get(HttpService);
     validator = testModule.get(EvmMetadataValidator);
     categoryRepo = testModule.get(CategoryRepository);

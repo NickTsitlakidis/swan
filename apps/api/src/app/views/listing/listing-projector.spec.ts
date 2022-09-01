@@ -3,14 +3,7 @@ import { getUnitTestingModule } from "../../test-utils/test-modules";
 import { ListingViewRepository } from "./listing-view-repository";
 import { ListingProjector } from "./listing-projector";
 import { ListingView } from "./listing-view";
-import {
-    ListingActivatedEvent,
-    ListingCanceledEvent,
-    ListingCreatedEvent,
-    ListingSoldEvent,
-    ListingSubmittedEvent,
-    ListingUpdatedPriceEvent
-} from "../../domain/listing/listing-events";
+import { ListingCreatedEvent } from "../../domain/listing/listing-events";
 import { ListingStatus } from "../../domain/listing/listing-status";
 
 let repositoryMock: ListingViewRepository;

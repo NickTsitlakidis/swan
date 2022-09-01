@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import { CategoryDto } from "@swan/dto";
-import { CategoryRepository } from "./../categories/category-repository";
+import { CategoryRepository } from "../categories/category-repository";
 import { ConfigService } from "@nestjs/config";
 import { MetaplexService } from "../metaplex/metaplex-service";
 import { AwsService } from "../aws/aws-service";
