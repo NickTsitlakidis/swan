@@ -1,7 +1,6 @@
 import { NestFactory, Reflector } from "@nestjs/core";
 import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
 import { ClassSerializerInterceptor, Logger, ValidationPipe } from "@nestjs/common";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app/app.module";
 import helmet from "helmet";
 
@@ -14,15 +13,6 @@ async function bootstrap() {
     app.useGlobalPipes(new ValidationPipe());
     app.use(helmet());
     app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-
-    const options = new DocumentBuilder()
-        .setTitle("NFT API")
-        .setDescription("The nft API description")
-        .setVersion("1.0")
-        .addBearerAuth()
-        .build();
-    const document = SwaggerModule.createDocument(app, options);
-    SwaggerModule.setup("docs", app, document);
 
     const port = process.env.PORT || 3310;
     await app.listen(port, () => {
