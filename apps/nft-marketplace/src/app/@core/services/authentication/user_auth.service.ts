@@ -1,17 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import {
-    CompleteSignatureAuthenticationDto,
-    NonceDto,
-    RefreshTokenDto,
-    StartSignatureAuthenticationDto,
-    TokenDto
-} from "@swan/dto";
+import { CompleteSignatureAuthenticationDto, NonceDto, StartSignatureAuthenticationDto } from "@swan/dto";
 import { LocalStorageService } from "ngx-webstorage";
 import { Observable, of, switchMap, throwError, zip } from "rxjs";
-import { plainToClass } from "class-transformer";
-import { map, tap } from "rxjs/operators";
-import moment from "moment";
 import { WalletRegistryService } from "../chains/wallet-registry.service";
 import { isNil } from "lodash";
 
@@ -24,14 +15,6 @@ export class UserAuthService {
         private _walletRegistry: WalletRegistryService,
         private _lcStorage: LocalStorageService
     ) {}
-
-    public getUserTokenData(): TokenDto {
-        return new TokenDto(
-            this._lcStorage.retrieve("userTokenValue"),
-            moment(this._lcStorage.retrieve("userExpiresAt")),
-            this._lcStorage.retrieve("userRefreshToken")
-        );
-    }
 
     public addUserWallet(body: StartSignatureAuthenticationDto): Observable<object> {
         return this._walletRegistry.getWalletService(body.walletId).pipe(

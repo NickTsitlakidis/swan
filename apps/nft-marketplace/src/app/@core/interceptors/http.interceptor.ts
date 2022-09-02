@@ -5,11 +5,11 @@ import { catchError, mergeMap } from "rxjs/operators";
 
 import { environment } from "../../../environments/environment";
 import { ClientAuthService } from "../services/authentication/client_auth.service";
-import { UserAuthService } from "../services/authentication/user_auth.service";
 import { from, map, Observable, of, switchMap, throwError } from "rxjs";
 import { TokenDto } from "@swan/dto";
 import { UserFacade } from "../store/user-facade";
 import { ComplexState } from "../store/complex-state";
+import { isNil } from "lodash";
 
 @Injectable()
 export class HttpRequestsInterceptor implements HttpInterceptor {
@@ -24,14 +24,12 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
 
     constructor(
         private _clientAuthService: ClientAuthService,
-        private _userFacade: UserFacade,
-        private _userAuthService: UserAuthService
+        private _userFacade: UserFacade
     ) {}
 
     intercept(req: HttpRequest<unknown>, next: HttpHandler) {
         const url = req.url;
         const clientData = this._clientAuthService.getClientTokenData();
-        const userData = this._userAuthService.getUserTokenData();
 
         const isClientRequest = this.clientRequests.some((requestString) => url.includes(requestString));
         const isUserRequest =
@@ -43,10 +41,6 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
             req = this._addBearerToken(req, clientData.tokenValue);
         }
 
-        if (userData.tokenValue && isUserRequest) {
-            req = this._addBearerToken(req, userData.tokenValue);
-        }
-
         let fullUrlReq: HttpRequest<unknown> = req.clone();
 
         if (!fullUrlReq.url.includes("http")) {
@@ -56,7 +50,23 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
         }
 
         const retryable = fullUrlReq.clone();
-        return next.handle(fullUrlReq).pipe(
+
+        let toRun = next.handle(fullUrlReq);
+
+        if (isUserRequest) {
+            toRun = this._userFacade.streamToken().pipe(
+                map((tokenState) => {
+                    if(isNil(tokenState.state)) {
+                        return fullUrlReq
+                    } else {
+                        return this._addBearerToken(fullUrlReq, tokenState.state.tokenValue);
+                    }
+                }),
+                mergeMap((urlReq) => next.handle(urlReq))
+            );
+        }
+
+        return toRun.pipe(
             catchError((error) => {
                 if (error.status !== 401) {
                     //todo some error handling here perhaps?

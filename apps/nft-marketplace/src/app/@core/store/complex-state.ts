@@ -1,5 +1,3 @@
-import { isNil } from "lodash";
-
 export class ComplexState<T> {
     private _state: T;
     private _error: Error;

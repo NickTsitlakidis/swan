@@ -5,6 +5,8 @@ import { CollectionsService } from "../../../@core/services/collections/collecti
 import { ValidateName, ValidateUrl } from "./create-collection-page.validator";
 import { SupportService } from "../../../@core/services/support/support.service";
 import { DisplayedBlockchains, DisplayPaymentTokens } from "./create-collection";
+import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets-facade";
+import { Janitor } from "../../../@core/components/janitor";
 
 @Component({
     selector: "nft-marketplace-create-collection-page",
@@ -12,7 +14,7 @@ import { DisplayedBlockchains, DisplayPaymentTokens } from "./create-collection"
     styleUrls: ["./create-collection-page.component.scss"],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CreateCollectionPageComponent implements OnInit {
+export class CreateCollectionPageComponent extends Janitor implements OnInit {
     public createCollectionForm: UntypedFormGroup;
     public categories: CategoryDto[];
     public blockchains: DisplayedBlockchains[];
@@ -81,25 +83,13 @@ export class CreateCollectionPageComponent implements OnInit {
     constructor(
         private _fb: UntypedFormBuilder,
         private _collectionsService: CollectionsService,
+        private _blockchainWalletsFacade: BlockchainWalletsFacade,
         private _supportService: SupportService,
         private _cd: ChangeDetectorRef
     ) {
+        super();
         this._supportService.getCategories().subscribe((categories) => {
             this.categories = categories;
-        });
-        this._supportService.getBlockchainWallets().subscribe((chains) => {
-            this.blockchains = chains.map((chain) => {
-                return {
-                    name: chain.name,
-                    id: chain.blockchainId
-                };
-            });
-            this.paymentTokens = chains.map((chain) => {
-                return {
-                    name: chain.mainTokenSymbol
-                };
-            });
-            this._cd.detectChanges();
         });
     }
 
@@ -122,6 +112,23 @@ export class CreateCollectionPageComponent implements OnInit {
             percentageFee: [undefined],
             sensitiveContent: [undefined]
         });
+
+        const sub = this._blockchainWalletsFacade.streamWallets().subscribe((chainWallets) => {
+            this.blockchains = chainWallets.map((chain) => {
+                return {
+                    name: chain.name,
+                    id: chain.blockchainId
+                };
+            });
+            this.paymentTokens = chainWallets.map((chain) => {
+                return {
+                    name: chain.mainTokenSymbol
+                };
+            });
+            this._cd.detectChanges();
+        });
+
+        this.addSubscription(sub);
     }
 
     updateLogoImage(file: File | null) {

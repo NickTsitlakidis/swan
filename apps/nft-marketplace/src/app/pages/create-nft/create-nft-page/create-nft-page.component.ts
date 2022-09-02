@@ -73,6 +73,7 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
     public blockchains: { name: string; id: string }[];
     public categories: CategoryDto[];
     public userWallets: UserWalletDto[];
+    public blockchainWallets: Array<BlockchainWalletDto>;
 
     constructor(
         private _fb: UntypedFormBuilder,
@@ -113,6 +114,7 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
         });
 
         const blockchainSub = this._blockchainWalletsFacade.streamWallets().subscribe((blockchainWallets) => {
+            this.blockchainWallets = blockchainWallets;
             const userSub = this._userFacade.streamUser().subscribe((user) => {
                 if (user) {
                     this.userWallets = user.wallets;
@@ -241,8 +243,7 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
             // @ts-ignore: Object is possibly 'undefined'
             walletId = userWallets.at(0).wallet.id;
         } else if (userWallets.length > 1) {
-            let allWallets = await firstValueFrom(this._supportService.getBlockchainWallets());
-            allWallets = allWallets
+            const allWallets = this.blockchainWallets
                 .filter((wal) => wal.blockchainId === chainId)
                 .filter((wal) => {
                     wal.wallets = wal.wallets.filter((w) =>
