@@ -1,8 +1,6 @@
 import { ListingFactory } from "../../domain/listing/listing-factory";
 import { getUnitTestingModule } from "../../test-utils/test-modules";
-import { SubmitListingCommandExecutor } from "./submit-listing-command-executor";
 import { EventStore } from "../../infrastructure/event-store";
-import { SubmitListingCommand } from "./submit-listing-command";
 import { BadRequestException } from "@nestjs/common";
 import { ListingCreatedEvent } from "../../domain/listing/listing-events";
 import { SourcedEvent } from "../../infrastructure/sourced-event";

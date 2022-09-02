@@ -12,7 +12,6 @@ import {
     TokenDto,
     UserWalletDto
 } from "@swan/dto";
-import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { UserGuard } from "../security/guards/user-guard";
 import { RequestUserId } from "../security/request-user-id";
 import { CompleteWalletAdditionCommand } from "../commands/user/complete-wallet-addition-command";
@@ -27,16 +26,12 @@ export class UserController {
         private readonly _tokenIssuer: UserTokenIssuer
     ) {}
 
-    @ApiOperation({ summary: "Starts the signature authentication process for a user by generating a nonce" })
-    @ApiOkResponse({ description: "The generated nonce", type: NonceDto })
     @Post("start-signature-authentication")
     @UseGuards(ClientGuard)
     startAuthentication(@Body() body: StartSignatureAuthenticationDto): Promise<NonceDto> {
         return this._commandBus.execute(StartSignatureAuthenticationCommand.fromDto(body));
     }
 
-    @ApiOperation({ summary: "Completes the authentication process for a user and returns user token" })
-    @ApiOkResponse({ description: "The token information for the user", type: TokenDto })
     @Post("complete-signature-authentication")
     @UseGuards(ClientGuard)
     completeAuthentication(@Body() body: CompleteSignatureAuthenticationDto): Promise<TokenDto> {
@@ -49,7 +44,6 @@ export class UserController {
         return this._tokenIssuer.issueFromRefreshToken(body.token);
     }
 
-    @ApiOkResponse({ description: "The generated nonce", type: NonceDto })
     @Post("start-wallet-addition")
     @UseGuards(UserGuard)
     startWalletAddition(
@@ -61,7 +55,6 @@ export class UserController {
         return this._commandBus.execute(mapped);
     }
 
-    @ApiOkResponse({ description: "The added wallet", type: UserWalletDto })
     @Post("complete-wallet-addition")
     @UseGuards(UserGuard)
     completeWalletAddition(

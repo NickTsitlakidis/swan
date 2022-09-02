@@ -1,5 +1,4 @@
 import { EventPayload, SerializedEvent } from "../../infrastructure/serialized-event";
-import { NftStatus } from "./nft-status";
 
 @SerializedEvent("nft-minted-event")
 export class NftMintedEvent extends EventPayload {
