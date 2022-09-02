@@ -5,8 +5,7 @@ import {
     NonceDto,
     RefreshTokenDto,
     StartSignatureAuthenticationDto,
-    TokenDto,
-    UserDto
+    TokenDto
 } from "@swan/dto";
 import { LocalStorageService } from "ngx-webstorage";
 import { Observable, of, switchMap, throwError, zip } from "rxjs";
@@ -31,14 +30,6 @@ export class UserAuthService {
             this._lcStorage.retrieve("userTokenValue"),
             moment(this._lcStorage.retrieve("userExpiresAt")),
             this._lcStorage.retrieve("userRefreshToken")
-        );
-    }
-
-    public refreshToken(): Observable<TokenDto> {
-        const storedRefreshToken = this._lcStorage.retrieve("userRefreshToken");
-        return this._httpClient.post("/user/refresh-token", new RefreshTokenDto(storedRefreshToken)).pipe(
-            map((httpResult) => plainToClass(TokenDto, httpResult)),
-            tap((dto) => this._storeUserData(dto))
         );
     }
 
@@ -68,15 +59,5 @@ export class UserAuthService {
                 return this._httpClient.post("/user/complete-wallet-addition", completeBody);
             })
         );
-    }
-
-    private _storeUserData(userData: TokenDto, authBody?: StartSignatureAuthenticationDto) {
-        this._lcStorage.store("userTokenValue", userData.tokenValue);
-        this._lcStorage.store("userExpiresAt", userData.expiresAt.toISOString());
-        this._lcStorage.store("userRefreshToken", userData.refreshToken);
-        if (authBody) {
-            this._lcStorage.store("walletId", authBody.walletId);
-            this._lcStorage.store("chainId", authBody.blockchainId);
-        }
     }
 }

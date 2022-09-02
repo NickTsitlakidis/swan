@@ -1,59 +1,45 @@
 import { Injectable } from "@angular/core";
 import { action, computed, makeObservable, observable } from "mobx";
 import { TokenDto, UserDto } from "@swan/dto";
-import { LocalStorageService } from "ngx-webstorage";
 import { isNil } from "lodash";
+import { ComplexState } from "./complex-state";
 
 @Injectable({ providedIn: "root" })
 export class UserStore {
     @observable
-    token: TokenDto | undefined;
+    token: ComplexState<TokenDto>;
 
     @observable
-    user: UserDto | undefined;
-
-    @observable
-    isLoading: boolean;
-
-    @observable
-    error: Error | undefined;
+    user: ComplexState<UserDto>;
 
     constructor() {
-        this.isLoading = false;
+        this.token = new ComplexState<TokenDto>();
+        this.user = new ComplexState<UserDto>();
         makeObservable(this);
     }
 
     @action
-    setToken(token: TokenDto, skipLoadingUpdate = false) {
+    setToken(token: ComplexState<TokenDto>) {
         this.token = token;
-        if (!skipLoadingUpdate) {
-            this.isLoading = false;
-        }
     }
 
     @action
-    setUser(user: UserDto, skipLoadingUpdate = false) {
+    clearToken() {
+        this.token = new ComplexState<TokenDto>();
+    }
+
+    @action
+    setUser(user: ComplexState<UserDto>) {
         this.user = user;
-        if (!skipLoadingUpdate) {
-            this.isLoading = false;
-        }
-    }
-
-    @action
-    startLoading() {
-        this.isLoading = true;
-    }
-
-    @action
-    finishLoading(error?: Error) {
-        this.isLoading = false;
-        if (error) {
-            this.error = error;
-        }
     }
 
     @computed
     get isLoggedIn(): boolean {
         return !isNil(this.token);
+    }
+
+    @computed
+    get isLoading(): boolean {
+        return this.user.isLoading || this.token.isLoading;
     }
 }
