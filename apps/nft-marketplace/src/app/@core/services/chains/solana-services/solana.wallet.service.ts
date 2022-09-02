@@ -2,11 +2,8 @@ import { ConnectionStore, Wallet, WalletStore } from "@heavy-duty/wallet-adapter
 import { WalletAdapterNetwork, WalletName } from "@solana/wallet-adapter-base";
 import { clusterApiUrl, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import * as base58 from "bs58";
-import { defer, EMPTY, forkJoin, from, of, Subject, throwError } from "rxjs";
-import { concatMap, first, map, switchMap, take } from "rxjs/operators";
-
-import { Observable } from "rxjs";
-import { filter } from "rxjs/operators";
+import { defer, EMPTY, forkJoin, from, of, Subject, throwError, Observable } from "rxjs";
+import { concatMap, first, map, switchMap, take, filter } from "rxjs/operators";
 
 import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { environment } from "../../../../../environments/environment";
@@ -99,14 +96,7 @@ export class SolanaWalletService implements WalletService {
     }
 
     public mint(nft: CreateNft): Observable<NftMintTransactionDto> {
-        const completeWalletObservable = new Observable<Wallet | null>((subscriber) => {
-            this.wallet$.subscribe((wallet) => {
-                subscriber.next(wallet);
-                subscriber.complete();
-            });
-        });
-
-        return forkJoin([this.getPublicKey(), completeWalletObservable]).pipe(
+        return forkJoin([this.getPublicKey(), this._completeWalletObservable()]).pipe(
             switchMap(([publicKey, wallet]) => {
                 const nftInput = {
                     uri: nft.metadataUri,
@@ -226,11 +216,40 @@ export class SolanaWalletService implements WalletService {
             });
     }
 
-    createListing(price: number, tokenContractAddress?: string, tokenId?: number, nftAddress?: string): Observable<string> {
-        return EMPTY;
+    createListing(
+        price: number,
+        tokenContractAddress?: string,
+        tokenId?: number,
+        nftAddress?: string
+    ): Observable<string> {
+        // TODO Error handler
+        if (!nftAddress) {
+            return EMPTY;
+        }
+
+        return this._completeWalletObservable().pipe(
+            switchMap((wallet) => {
+                return from(this._metaplexService.createListing(nftAddress, wallet));
+            }),
+            switchMap((listingOutput) => {
+                if (!listingOutput) {
+                    return of();
+                }
+                return listingOutput.response.signature;
+            })
+        );
     }
 
     getListingResult(transactionHash: string): Observable<ListingResult> {
         return EMPTY;
+    }
+
+    private _completeWalletObservable(): Observable<Wallet | null> {
+        return new Observable<Wallet | null>((subscriber) => {
+            this.wallet$.subscribe((wallet) => {
+                subscriber.next(wallet);
+                subscriber.complete();
+            });
+        });
     }
 }

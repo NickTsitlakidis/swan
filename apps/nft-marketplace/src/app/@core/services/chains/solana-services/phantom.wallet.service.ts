@@ -5,7 +5,7 @@ import { ConnectionStore, WalletStore } from "@heavy-duty/wallet-adapter";
 import { MetaplexService } from "./metaplex.service";
 import { Injectable } from "@angular/core";
 import { ChainsModule } from "../chains.module";
-import { Observable } from "rxjs";
+import { EMPTY, Observable, switchMap } from "rxjs";
 import { WalletName } from "@solana/wallet-adapter-base";
 
 @Injectable({
@@ -24,5 +24,22 @@ export class PhantomWalletService extends SolanaWalletService {
     public override getPublicKey(): Observable<string> {
         this.walletStore.selectWallet("Phantom" as WalletName);
         return super.getPublicKey();
+    }
+
+    public override createListing(
+        price: number,
+        tokenContractAddress?: string | undefined,
+        tokenId?: number | undefined,
+        nftAddress?: string | undefined
+    ): Observable<string> {
+        return this.walletStore.connected$.pipe(
+            switchMap((connected) => {
+                if (connected) {
+                    this.walletStore.selectWallet("Phantom" as WalletName);
+                    return super.createListing(price, tokenContractAddress, tokenId, nftAddress);
+                }
+                return EMPTY;
+            })
+        );
     }
 }
