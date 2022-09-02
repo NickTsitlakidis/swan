@@ -53,6 +53,34 @@ export class UserFacade {
         }
     }
 
+    async addUserWallet(body: StartSignatureAuthenticationDto) {
+        try {
+            const walletService = await firstValueFrom(this._walletRegistry.getWalletService(body.walletId));
+            if (isNil(walletService)) {
+                //todo this should throw a generic error without changing state
+                return;
+            }
+
+            const nonce = await firstValueFrom(this._userService.startWalletAddition(body));
+            const signature = await firstValueFrom(walletService.signMessage(nonce.nonce));
+            if (isNil(signature)) {
+                //todo this should throw a generic error without changing state
+                return;
+            }
+
+            const completeBody = new CompleteSignatureAuthenticationDto();
+            completeBody.signature = signature;
+            completeBody.blockchainId = body.blockchainId;
+            completeBody.address = body.address;
+
+            await firstValueFrom(this._userService.completeWalletAddition(completeBody));
+            this.refreshUser();
+        } catch (error) {
+            //todo this should throw a generic error without changing state
+            return;
+        }
+    }
+
     async refreshUser() {
         if (this._userStore.isLoggedIn) {
             try {

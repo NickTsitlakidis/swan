@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import {
     CompleteSignatureAuthenticationDto,
+    EntityDto,
     NonceDto,
     ProfileNftDto,
     RefreshTokenDto,
@@ -26,6 +27,18 @@ export class UserService {
         return this._httpClient
             .post("/user/start-signature-authentication", body)
             .pipe(map((httpResult) => plainToClass(NonceDto, httpResult)));
+    }
+
+    startWalletAddition(body: StartSignatureAuthenticationDto): Observable<NonceDto> {
+        return this._httpClient
+            .post("/user/start-wallet-addition", body)
+            .pipe(map((httpResult) => plainToClass(NonceDto, httpResult)));
+    }
+
+    completeWalletAddition(body: CompleteSignatureAuthenticationDto): Observable<EntityDto> {
+        return this._httpClient
+            .post("/user/complete-wallet-addition", body)
+            .pipe(map((httpResult) => plainToClass(EntityDto, httpResult)));
     }
 
     completeSignatureAuthentication(completeBody: CompleteSignatureAuthenticationDto): Observable<TokenDto> {

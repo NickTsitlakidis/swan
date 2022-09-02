@@ -9,7 +9,6 @@ import {
 
 import { faPaintBrush } from "@fortawesome/free-solid-svg-icons";
 import { Router } from "@angular/router";
-import { UserAuthService } from "../../../@core/services/authentication/user_auth.service";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
 import { firstValueFrom, of } from "rxjs";
 import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets-facade";
@@ -61,7 +60,6 @@ export class HeaderComponent extends Janitor implements OnInit {
         private _blockchainWalletsFacade: BlockchainWalletsFacade,
         private _router: Router,
         private _cd: ChangeDetectorRef,
-        private _userAuthService: UserAuthService,
         private _walletRegistryService: WalletRegistryService,
         private _userFacade: UserFacade
     ) {
@@ -111,7 +109,7 @@ export class HeaderComponent extends Janitor implements OnInit {
         authBody.blockchainId = wallet.chainId;
         authBody.walletId = wallet.id;
         if (this.userWallets?.length) {
-            this._userAuthService.addUserWallet(authBody).subscribe();
+            await this._userFacade.addUserWallet(authBody);
         } else {
             await this._userFacade.authenticateWithSignature(authBody);
         }
