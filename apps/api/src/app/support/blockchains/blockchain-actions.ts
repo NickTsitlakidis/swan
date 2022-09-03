@@ -1,4 +1,5 @@
-import { AxiosResponse } from "axios";
+import { MetadataValidator } from "./metadata-validator";
+import { AxiosResponse, AxiosError } from "axios";
 import { CategoryDto } from "@swan/dto";
 import { CategoryRepository } from "../categories/category-repository";
 import { ConfigService } from "@nestjs/config";
@@ -13,15 +14,22 @@ import { fromBuffer } from "file-type";
 import { firstValueFrom } from "rxjs";
 import { parallel } from "radash";
 import { CategoryByFileType } from "./category-by-file-type";
+import { Logger } from "@nestjs/common";
+import { getLogger } from "../../infrastructure/logging";
 
 export abstract class BlockchainActions {
+    protected logger: Logger;
+
     protected constructor(
         private _awsService: AwsService,
         protected _configService: ConfigService,
         protected metaplexService: MetaplexService,
         protected readonly httpService: HttpService,
-        protected categoryRepository: CategoryRepository
-    ) {}
+        protected categoryRepository: CategoryRepository,
+        protected validator: MetadataValidator
+    ) {
+        this.logger = getLogger(BlockchainActions);
+    }
 
     abstract uploadMetadata(metadata: NftMetadata): Promise<UploadedFiles>;
 
@@ -56,19 +64,23 @@ export abstract class BlockchainActions {
     }
 
     protected async imageTypeFromURI(url: string, categories: CategoryDto[]): Promise<CategoryDto | undefined> {
-        const response: AxiosResponse = await firstValueFrom(
+        const response: AxiosResponse & AxiosError = await firstValueFrom(
             this.httpService.get(url, {
                 responseType: "arraybuffer",
-                headers: { Range: `bytes=0-200`, "Content-Type": "application/json" }
+                headers: { Range: `bytes=0-300`, "Content-Type": "application/json" }
             })
         ).catch((e) => e);
 
         if (!response.data) {
+            this.logger.error(`Error retrieving nft with url:"${url}"`);
             return;
         }
 
         const mimeTypeResponse = await fromBuffer(response.data);
-        const mimeType = mimeTypeResponse?.mime;
+        let mimeType = mimeTypeResponse?.mime;
+        if (!mimeType) {
+            mimeType = this._checkIfFileIsMultipart(response);
+        }
         let category: CategoryDto;
         for (const cat of categories) {
             const regex = new RegExp(`${cat.name.toLocaleLowerCase()}.*`);
@@ -80,6 +92,7 @@ export abstract class BlockchainActions {
         return category;
     }
 
+    /* TODO PLACE THEM SOMEWHERE ELSE */
     protected async getCategoriesDto(data: CategoryByFileType[]): Promise<CategoryDto[]> {
         const categories = await this.categoryRepository.findAll();
         const categoriesDto: CategoryDto[] = [];
@@ -93,5 +106,16 @@ export abstract class BlockchainActions {
             return await this.imageTypeFromURI(uri, categoriesDto);
         });
         return resolvedPromises;
+    }
+
+    private _checkIfFileIsMultipart(response: AxiosResponse) {
+        if (response.headers["content-type"] === "application/octet-stream") {
+            const bufferString = response.data.toString().toLowerCase().replace(/[\r]/g, "");
+            const contentRegExp = new RegExp("content-type.*(\\n|$)");
+            const matched = bufferString.match(contentRegExp);
+            if (matched) {
+                return matched[0];
+            }
+        }
     }
 }

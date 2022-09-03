@@ -3,7 +3,7 @@ import { isNil } from "lodash";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class EvmMetadataValidator {
+export class MetadataValidator {
     validate(metadata: unknown): boolean {
         const schema = Joi.object({
             name: Joi.string().required(),
