@@ -4,7 +4,7 @@ import { getUnitTestingModule } from "../../test-utils/test-modules";
 import { EvmActionsService } from "./evm-actions-service";
 import { ConfigService } from "@nestjs/config";
 import { HttpService } from "@nestjs/axios";
-import { MetadataValidator } from "./evm-metadata-validator";
+import { MetadataValidator } from "./metadata-validator";
 import { InternalServerErrorException } from "@nestjs/common";
 import { of } from "rxjs";
 import { AxiosResponse } from "axios";

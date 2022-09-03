@@ -1,4 +1,4 @@
-import { MetadataValidator } from "./evm-metadata-validator";
+import { MetadataValidator } from "./metadata-validator";
 import { AxiosResponse, AxiosError } from "axios";
 import { CategoryDto } from "@swan/dto";
 import { CategoryRepository } from "../categories/category-repository";
@@ -14,8 +14,12 @@ import { fromBuffer } from "file-type";
 import { firstValueFrom } from "rxjs";
 import { parallel } from "radash";
 import { CategoryByFileType } from "./category-by-file-type";
+import { Logger } from "@nestjs/common";
+import { getLogger } from "../../infrastructure/logging";
 
 export abstract class BlockchainActions {
+    private _logger: Logger;
+
     protected constructor(
         private _awsService: AwsService,
         protected _configService: ConfigService,
@@ -23,7 +27,9 @@ export abstract class BlockchainActions {
         protected readonly httpService: HttpService,
         protected categoryRepository: CategoryRepository,
         protected validator: MetadataValidator
-    ) {}
+    ) {
+        this._logger = getLogger(BlockchainActions);
+    }
 
     abstract uploadMetadata(metadata: NftMetadata): Promise<UploadedFiles>;
 
@@ -66,7 +72,7 @@ export abstract class BlockchainActions {
         ).catch((e) => e);
 
         if (!response.data) {
-            console.error(response?.code, response.headers["content-type"]);
+            this._logger.error(`Error retrieving nft with url:"${url}"`);
             return;
         }
 

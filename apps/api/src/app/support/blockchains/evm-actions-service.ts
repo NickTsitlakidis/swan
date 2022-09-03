@@ -8,7 +8,7 @@ import { ConfigService } from "@nestjs/config";
 import { AwsService } from "../aws/aws-service";
 import { MetaplexService } from "../metaplex/metaplex-service";
 import { BlockchainRepository } from "./blockchain-repository";
-import { MetadataValidator } from "./evm-metadata-validator";
+import { MetadataValidator } from "./metadata-validator";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { CovalentHqResponse, NftData } from "./covalent-hq-response";

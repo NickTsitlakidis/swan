@@ -15,7 +15,7 @@ import { MetaplexService } from "./metaplex/metaplex-service";
 import { EvmActionsService } from "./blockchains/evm-actions-service";
 import { SolanaActionsService } from "./blockchains/solana-actions-service";
 import { BlockchainActionsRegistryService } from "./blockchains/blockchain-actions-registry-service";
-import { MetadataValidator } from "./blockchains/evm-metadata-validator";
+import { MetadataValidator } from "./blockchains/metadata-validator";
 import { HttpModule } from "@nestjs/axios";
 import { ContractsModule } from "../contracts.module";
 

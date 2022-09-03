@@ -10,7 +10,7 @@ import { ChainNft } from "./chain-nft";
 import { HttpService } from "@nestjs/axios";
 import { CategoryRepository } from "../categories/category-repository";
 import { CategoryByFileType } from "./category-by-file-type";
-import { MetadataValidator } from "./evm-metadata-validator";
+import { MetadataValidator } from "./metadata-validator";
 
 @Injectable()
 export class SolanaActionsService extends BlockchainActions {

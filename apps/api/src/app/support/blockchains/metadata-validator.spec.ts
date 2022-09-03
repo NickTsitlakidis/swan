@@ -1,5 +1,5 @@
 import { getUnitTestingModule } from "../../test-utils/test-modules";
-import { MetadataValidator } from "./evm-metadata-validator";
+import { MetadataValidator } from "./metadata-validator";
 
 let validator: MetadataValidator;
 
