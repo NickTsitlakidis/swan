@@ -10,6 +10,7 @@ import { ObjectID } from "mongodb";
 import { NftView } from "../../views/nft/nft-view";
 import { BadRequestException } from "@nestjs/common";
 import { Listing } from "../../domain/listing/listing";
+import { SignatureTypes } from "../../support/blockchains/signature-types";
 
 let factory: ListingFactory;
 let categoryRepository: CategoryRepository;
@@ -124,6 +125,104 @@ test("execute - throws when blockchain id doesn't match nft blockchain", async (
     expect(categorySpy).toHaveBeenCalledTimes(1);
 
     expect(blockchainSpy).toHaveBeenCalledWith("block");
+    expect(blockchainSpy).toHaveBeenCalledTimes(1);
+
+    expect(nftSpy).toHaveBeenCalledWith("nft");
+    expect(nftSpy).toHaveBeenCalledTimes(1);
+});
+
+test("execute - throws when tokenContractAddress is missing from create listing command (EVM)", async () => {
+    const blockchain = new Blockchain();
+    blockchain.id = new ObjectID().toHexString();
+    blockchain.signatureType = SignatureTypes.EVM;
+
+    const command = new CreateListingCommand();
+    command.nftId = "nft";
+    command.categoryId = "cat";
+    command.userId = "the-user";
+    command.blockchainId = blockchain.id;
+    command.chainTokenId = "tok";
+    command.nftAddress = "nftAddress";
+    command.price = 4;
+
+    const nftView = new NftView();
+    nftView.blockchainId = blockchain.id;
+
+    const categorySpy = jest.spyOn(categoryRepository, "countById").mockResolvedValue(1);
+    const blockchainSpy = jest.spyOn(blockchainRepository, "findById").mockResolvedValue(blockchain);
+    const nftSpy = jest.spyOn(nftRepository, "findById").mockResolvedValue(nftView);
+
+    await expect(executor.execute(command)).rejects.toThrow(BadRequestException);
+
+    expect(categorySpy).toHaveBeenCalledWith("cat");
+    expect(categorySpy).toHaveBeenCalledTimes(1);
+
+    expect(blockchainSpy).toHaveBeenCalledWith(blockchain.id);
+    expect(blockchainSpy).toHaveBeenCalledTimes(1);
+
+    expect(nftSpy).toHaveBeenCalledWith("nft");
+    expect(nftSpy).toHaveBeenCalledTimes(1);
+});
+
+test("execute - throws when chainTokenId is missing from create listing command (EVM)", async () => {
+    const blockchain = new Blockchain();
+    blockchain.id = new ObjectID().toHexString();
+    blockchain.signatureType = SignatureTypes.EVM;
+
+    const command = new CreateListingCommand();
+    command.nftId = "nft";
+    command.categoryId = "cat";
+    command.userId = "the-user";
+    command.blockchainId = blockchain.id;
+    command.tokenContractAddress = "addr";
+    command.nftAddress = "nftAddress";
+    command.price = 4;
+
+    const nftView = new NftView();
+    nftView.blockchainId = blockchain.id;
+
+    const categorySpy = jest.spyOn(categoryRepository, "countById").mockResolvedValue(1);
+    const blockchainSpy = jest.spyOn(blockchainRepository, "findById").mockResolvedValue(blockchain);
+    const nftSpy = jest.spyOn(nftRepository, "findById").mockResolvedValue(nftView);
+
+    await expect(executor.execute(command)).rejects.toThrow(BadRequestException);
+
+    expect(categorySpy).toHaveBeenCalledWith("cat");
+    expect(categorySpy).toHaveBeenCalledTimes(1);
+
+    expect(blockchainSpy).toHaveBeenCalledWith(blockchain.id);
+    expect(blockchainSpy).toHaveBeenCalledTimes(1);
+
+    expect(nftSpy).toHaveBeenCalledWith("nft");
+    expect(nftSpy).toHaveBeenCalledTimes(1);
+});
+
+test("execute - throws when nftAddress is missing from create listing command (Solana)", async () => {
+    const blockchain = new Blockchain();
+    blockchain.id = new ObjectID().toHexString();
+    blockchain.signatureType = SignatureTypes.SOLANA;
+
+    const command = new CreateListingCommand();
+    command.nftId = "nft";
+    command.categoryId = "cat";
+    command.userId = "the-user";
+    command.blockchainId = blockchain.id;
+    command.tokenContractAddress = "addr";
+    command.price = 4;
+
+    const nftView = new NftView();
+    nftView.blockchainId = blockchain.id;
+
+    const categorySpy = jest.spyOn(categoryRepository, "countById").mockResolvedValue(1);
+    const blockchainSpy = jest.spyOn(blockchainRepository, "findById").mockResolvedValue(blockchain);
+    const nftSpy = jest.spyOn(nftRepository, "findById").mockResolvedValue(nftView);
+
+    await expect(executor.execute(command)).rejects.toThrow(BadRequestException);
+
+    expect(categorySpy).toHaveBeenCalledWith("cat");
+    expect(categorySpy).toHaveBeenCalledTimes(1);
+
+    expect(blockchainSpy).toHaveBeenCalledWith(blockchain.id);
     expect(blockchainSpy).toHaveBeenCalledTimes(1);
 
     expect(nftSpy).toHaveBeenCalledWith("nft");
