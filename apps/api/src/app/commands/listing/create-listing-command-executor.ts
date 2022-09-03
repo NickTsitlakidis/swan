@@ -1,3 +1,4 @@
+import { SignatureTypes } from "./../../support/blockchains/signature-types";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateListingCommand } from "./create-listing-command";
 import { EntityDto } from "@swan/dto";
@@ -41,6 +42,19 @@ export class CreateListingCommandExecutor implements ICommandHandler<CreateListi
             }
         }
 
+        if (blockchain.signatureType === SignatureTypes.EVM) {
+            if (!command.tokenContractAddress) {
+                throw new BadRequestException("Empty EVM nft contract address");
+            }
+
+            if (!command.chainTokenId) {
+                throw new BadRequestException("Empty EVM nft chain token id");
+            }
+        } else if (blockchain.signatureType === SignatureTypes.SOLANA) {
+            if (!command.nftAddress) {
+                throw new BadRequestException("Empty Solana nft address");
+            }
+        }
         const created = this._factory.createNew(command);
         await created.commit();
         return new EntityDto(created.id, created.version);
