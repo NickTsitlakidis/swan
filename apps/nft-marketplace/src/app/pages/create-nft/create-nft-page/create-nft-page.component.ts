@@ -109,11 +109,12 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
             this._cd.detectChanges();
         });
 
-        this._categoriesFacade.streamCategories().subscribe((categories) => {
+        const categorySub = this._categoriesFacade.streamCategories().subscribe((categories) => {
             this.allCategories = categories;
             this.categories = [...this.allCategories];
             this._cd.detectChanges();
         });
+        this.addSubscription(categorySub);
 
         const blockchainSub = this._blockchainWalletsFacade.streamWallets().subscribe((blockchainWallets) => {
             this.blockchainWallets = blockchainWallets;
