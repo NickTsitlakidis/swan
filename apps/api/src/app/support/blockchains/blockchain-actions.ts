@@ -72,13 +72,8 @@ export abstract class BlockchainActions {
 
         const mimeTypeResponse = await fromBuffer(response.data);
         let mimeType = mimeTypeResponse?.mime;
-        if (response.headers["content-type"] === "application/octet-stream") {
-            const bufferString = response.data.toString().toLowerCase().replace(/[\r]/g, "");
-            const contentRegExp = new RegExp("content-type.*(\\n|$)");
-            const matched = bufferString.match(contentRegExp);
-            if (matched) {
-                mimeType = matched[0];
-            }
+        if (!mimeType) {
+            mimeType = this._checkIfFileIsMultipart(response);
         }
         let category: CategoryDto;
         for (const cat of categories) {
@@ -91,6 +86,7 @@ export abstract class BlockchainActions {
         return category;
     }
 
+    /* TODO PLACE THEM SOMEWHERE ELSE */
     protected async getCategoriesDto(data: CategoryByFileType[]): Promise<CategoryDto[]> {
         const categories = await this.categoryRepository.findAll();
         const categoriesDto: CategoryDto[] = [];
@@ -104,5 +100,16 @@ export abstract class BlockchainActions {
             return await this.imageTypeFromURI(uri, categoriesDto);
         });
         return resolvedPromises;
+    }
+
+    private _checkIfFileIsMultipart(response: AxiosResponse) {
+        if (response.headers["content-type"] === "application/octet-stream") {
+            const bufferString = response.data.toString().toLowerCase().replace(/[\r]/g, "");
+            const contentRegExp = new RegExp("content-type.*(\\n|$)");
+            const matched = bufferString.match(contentRegExp);
+            if (matched) {
+                return matched[0];
+            }
+        }
     }
 }
