@@ -8,7 +8,7 @@ import { ConfigService } from "@nestjs/config";
 import { AwsService } from "../aws/aws-service";
 import { MetaplexService } from "../metaplex/metaplex-service";
 import { BlockchainRepository } from "./blockchain-repository";
-import { EvmMetadataValidator } from "./evm-metadata-validator";
+import { MetadataValidator } from "./evm-metadata-validator";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { CovalentHqResponse, NftData } from "./covalent-hq-response";
@@ -26,10 +26,10 @@ export class EvmActionsService extends BlockchainActions {
         metaplexService: MetaplexService,
         categoryRepository: CategoryRepository,
         httpService: HttpService,
-        private readonly _validator: EvmMetadataValidator,
+        validator: MetadataValidator,
         private readonly _blockchainRepository: BlockchainRepository
     ) {
-        super(awsService, configService, metaplexService, httpService, categoryRepository);
+        super(awsService, configService, metaplexService, httpService, categoryRepository, validator);
         this._logger = getLogger(EvmActionsService);
     }
 
@@ -92,7 +92,7 @@ export class EvmActionsService extends BlockchainActions {
                 });
             })
             .filter((nft) => {
-                return this._validator.validate(nft.external_data);
+                return this.validator.validate(nft.external_data);
             });
 
         const getFilesCategory: CategoryByFileType[] = [];
@@ -107,23 +107,25 @@ export class EvmActionsService extends BlockchainActions {
          */
         const foundCategories = await this.getCategoriesDto(getFilesCategory);
 
-        return validatedNfts.map((nft, index) => {
-            const metadataNft = nft.external_data;
-            const metaplex: ChainNft = {
-                tokenContractAddress: nft.contractAddress,
-                tokenId: nft.token_id,
-                name: metadataNft.name,
-                image: metadataNft.image,
-                attributes: metadataNft.attributes,
-                description: metadataNft.description,
-                animation_url: metadataNft.animation_url,
-                external_url: metadataNft.external_url,
-                categoryId: foundCategories[index]?.id,
-                properties: {
-                    files: []
-                }
-            };
-            return metaplex;
-        });
+        return validatedNfts
+            .map((nft, index) => {
+                const metadataNft = nft.external_data;
+                const metaplex: ChainNft = {
+                    tokenContractAddress: nft.contractAddress,
+                    tokenId: nft.token_id,
+                    name: metadataNft.name,
+                    image: metadataNft.image,
+                    attributes: metadataNft.attributes,
+                    description: metadataNft.description,
+                    animation_url: metadataNft.animation_url,
+                    external_url: metadataNft.external_url,
+                    categoryId: foundCategories[index]?.id,
+                    properties: {
+                        files: []
+                    }
+                };
+                return metaplex;
+            })
+            .filter((nft) => nft.categoryId);
     }
 }

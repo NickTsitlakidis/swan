@@ -1,4 +1,5 @@
-import { AxiosResponse } from "axios";
+import { MetadataValidator } from "./evm-metadata-validator";
+import { AxiosResponse, AxiosError } from "axios";
 import { CategoryDto } from "@swan/dto";
 import { CategoryRepository } from "../categories/category-repository";
 import { ConfigService } from "@nestjs/config";
@@ -20,7 +21,8 @@ export abstract class BlockchainActions {
         protected _configService: ConfigService,
         protected metaplexService: MetaplexService,
         protected readonly httpService: HttpService,
-        protected categoryRepository: CategoryRepository
+        protected categoryRepository: CategoryRepository,
+        protected validator: MetadataValidator
     ) {}
 
     abstract uploadMetadata(metadata: NftMetadata): Promise<UploadedFiles>;
@@ -56,19 +58,28 @@ export abstract class BlockchainActions {
     }
 
     protected async imageTypeFromURI(url: string, categories: CategoryDto[]): Promise<CategoryDto | undefined> {
-        const response: AxiosResponse = await firstValueFrom(
+        const response: AxiosResponse & AxiosError = await firstValueFrom(
             this.httpService.get(url, {
                 responseType: "arraybuffer",
-                headers: { Range: `bytes=0-200`, "Content-Type": "application/json" }
+                headers: { Range: `bytes=0-300`, "Content-Type": "application/json" }
             })
         ).catch((e) => e);
 
         if (!response.data) {
+            console.error(response?.code, response.headers["content-type"]);
             return;
         }
 
         const mimeTypeResponse = await fromBuffer(response.data);
-        const mimeType = mimeTypeResponse?.mime;
+        let mimeType = mimeTypeResponse?.mime;
+        if (response.headers["content-type"] === "application/octet-stream") {
+            const bufferString = response.data.toString().toLowerCase().replace(/[\r]/g, "");
+            const contentRegExp = new RegExp("content-type.*(\\n|$)");
+            const matched = bufferString.match(contentRegExp);
+            if (matched) {
+                mimeType = matched[0];
+            }
+        }
         let category: CategoryDto;
         for (const cat of categories) {
             const regex = new RegExp(`${cat.name.toLocaleLowerCase()}.*`);

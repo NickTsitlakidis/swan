@@ -1,11 +1,11 @@
 import { getUnitTestingModule } from "../../test-utils/test-modules";
-import { EvmMetadataValidator } from "./evm-metadata-validator";
+import { MetadataValidator } from "./evm-metadata-validator";
 
-let validator: EvmMetadataValidator;
+let validator: MetadataValidator;
 
 beforeEach(async () => {
-    const testModule = await getUnitTestingModule(EvmMetadataValidator);
-    validator = testModule.get(EvmMetadataValidator);
+    const testModule = await getUnitTestingModule(MetadataValidator);
+    validator = testModule.get(MetadataValidator);
 });
 
 test("validate - returns false for missing name", () => {

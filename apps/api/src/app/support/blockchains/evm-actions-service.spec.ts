@@ -4,7 +4,7 @@ import { getUnitTestingModule } from "../../test-utils/test-modules";
 import { EvmActionsService } from "./evm-actions-service";
 import { ConfigService } from "@nestjs/config";
 import { HttpService } from "@nestjs/axios";
-import { EvmMetadataValidator } from "./evm-metadata-validator";
+import { MetadataValidator } from "./evm-metadata-validator";
 import { InternalServerErrorException } from "@nestjs/common";
 import { of } from "rxjs";
 import { AxiosResponse } from "axios";
@@ -19,7 +19,7 @@ let configService: ConfigService;
 let blockchainRepo: BlockchainRepository;
 let categoryRepo: CategoryRepository;
 let httpService: HttpService;
-let validator: EvmMetadataValidator;
+let validator: MetadataValidator;
 
 const covalentResponse: CovalentHqResponse = {
     error: false,
@@ -161,7 +161,7 @@ beforeEach(async () => {
     configService = testModule.get(ConfigService);
     blockchainRepo = testModule.get(BlockchainRepository);
     httpService = testModule.get(HttpService);
-    validator = testModule.get(EvmMetadataValidator);
+    validator = testModule.get(MetadataValidator);
     categoryRepo = testModule.get(CategoryRepository);
 });
 
