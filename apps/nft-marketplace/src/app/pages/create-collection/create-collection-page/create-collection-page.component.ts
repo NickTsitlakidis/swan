@@ -1,9 +1,9 @@
+import { CategoriesFacade } from "./../../../@core/store/categories-facade";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { CategoryDto, CollectionLinksDto, CreateCollectionDto } from "@swan/dto";
 import { CollectionsService } from "../../../@core/services/collections/collections.service";
 import { ValidateName, ValidateUrl } from "./create-collection-page.validator";
-import { SupportService } from "../../../@core/services/support/support.service";
 import { DisplayedBlockchains, DisplayPaymentTokens } from "./create-collection";
 import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets-facade";
 import { Janitor } from "../../../@core/components/janitor";
@@ -84,11 +84,11 @@ export class CreateCollectionPageComponent extends Janitor implements OnInit {
         private _fb: UntypedFormBuilder,
         private _collectionsService: CollectionsService,
         private _blockchainWalletsFacade: BlockchainWalletsFacade,
-        private _supportService: SupportService,
+        private _categoriesFacade: CategoriesFacade,
         private _cd: ChangeDetectorRef
     ) {
         super();
-        this._supportService.getCategories().subscribe((categories) => {
+        this._categoriesFacade.streamCategories().subscribe((categories) => {
             this.categories = categories;
         });
     }

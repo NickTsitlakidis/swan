@@ -1,3 +1,4 @@
+import { CategoriesFacade } from "./../../../@core/store/categories-facade";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
 import { BlockchainWalletDto, CategoryDto, CollectionDto, NftMetadataAttributeDto, UserWalletDto } from "@swan/dto";
@@ -82,6 +83,7 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
         private _cd: ChangeDetectorRef,
         private _walletRegistryService: WalletRegistryService,
         private _supportService: SupportService,
+        private _categoriesFacade: CategoriesFacade,
         private _nftService: NftService,
         private _collectionsService: CollectionsService,
         private _dialog: MatDialog
@@ -107,7 +109,7 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
             this._cd.detectChanges();
         });
 
-        this._supportService.getCategories().subscribe((categories) => {
+        this._categoriesFacade.streamCategories().subscribe((categories) => {
             this.allCategories = categories;
             this.categories = [...this.allCategories];
             this._cd.detectChanges();
