@@ -422,7 +422,7 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
     const expectedUrl = `https://api.covalenthq.com/v1/1000/address/otinanai/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=api-key`;
     const imageUrl = "https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx";
     const imageHeaders = {
-        headers: { "Content-Type": "application/json", Range: "bytes=0-200" },
+        headers: { "Content-Type": "application/json", Range: "bytes=0-300" },
         responseType: "arraybuffer"
     };
     expect(httpServiceSpy).toHaveBeenCalledTimes(3);
