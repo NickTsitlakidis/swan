@@ -18,8 +18,6 @@ import { CategoryByFileType } from "./category-by-file-type";
 
 @Injectable()
 export class EvmActionsService extends BlockchainActions {
-    private _logger: Logger;
-
     constructor(
         awsService: AwsService,
         configService: ConfigService,
@@ -30,7 +28,7 @@ export class EvmActionsService extends BlockchainActions {
         private readonly _blockchainRepository: BlockchainRepository
     ) {
         super(awsService, configService, metaplexService, httpService, categoryRepository, validator);
-        this._logger = getLogger(EvmActionsService);
+        this.logger = getLogger(EvmActionsService);
     }
 
     async uploadMetadata(metadata: NftMetadata): Promise<UploadedFiles> {
@@ -76,7 +74,7 @@ export class EvmActionsService extends BlockchainActions {
         const nfts = await firstValueFrom(this.httpService.get<CovalentHqResponse>(url));
 
         if (nfts.status !== 200) {
-            this._logger.error(`Got error response from CovalentHQ API. Status : ${nfts.status}`);
+            this.logger.error(`Got error response from CovalentHQ API. Status : ${nfts.status}`);
             throw new InternalServerErrorException("Could not retrieve nfts from covalentHQ");
         }
 

@@ -18,7 +18,7 @@ import { Logger } from "@nestjs/common";
 import { getLogger } from "../../infrastructure/logging";
 
 export abstract class BlockchainActions {
-    private _logger: Logger;
+    protected logger: Logger;
 
     protected constructor(
         private _awsService: AwsService,
@@ -28,7 +28,7 @@ export abstract class BlockchainActions {
         protected categoryRepository: CategoryRepository,
         protected validator: MetadataValidator
     ) {
-        this._logger = getLogger(BlockchainActions);
+        this.logger = getLogger(BlockchainActions);
     }
 
     abstract uploadMetadata(metadata: NftMetadata): Promise<UploadedFiles>;
@@ -72,7 +72,7 @@ export abstract class BlockchainActions {
         ).catch((e) => e);
 
         if (!response.data) {
-            this._logger.error(`Error retrieving nft with url:"${url}"`);
+            this.logger.error(`Error retrieving nft with url:"${url}"`);
             return;
         }
 
