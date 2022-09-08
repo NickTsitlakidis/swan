@@ -1,17 +1,18 @@
-FROM node:14 As build
+FROM node:16.15.1 As build
 WORKDIR /usr/src/app
 COPY ["package*.json", "nx.json", "decorate-angular-cli.js", "./"]
-RUN npm install
+RUN npm install --legacy-peer-deps
 COPY . .
 RUN npm run build-api
 
-FROM node:14-alpine As staging
+FROM node:16.15.1-alpine As staging
 WORKDIR /usr/src/app
 COPY ["package*.json", "decorate-angular-cli.js", "./"]
 RUN apk add git
-RUN npm install --production
+RUN npm i --legacy-peer-deps --production
 
-FROM node:14-alpine As production
+
+FROM node:16.15.1-alpine As production
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 WORKDIR /usr/src/app
