@@ -1,6 +1,7 @@
 FROM node:16.15.1 As build
 WORKDIR /usr/src/app
 COPY ["package*.json", "nx.json", "decorate-angular-cli.js", "./"]
+RUN npm pkg set scripts.postinstall="echo omit-no-postinstall"
 RUN npm install --legacy-peer-deps
 COPY . .
 RUN npm run build-api
@@ -9,7 +10,8 @@ FROM node:16.15.1-alpine As staging
 WORKDIR /usr/src/app
 COPY ["package*.json", "decorate-angular-cli.js", "./"]
 RUN apk add git
-RUN npm i --legacy-peer-deps --production
+RUN npm pkg set scripts.postinstall="echo omit-no-postinstall"
+RUN npm install --legacy-peer-deps --omit=dev
 
 
 FROM node:16.15.1-alpine As production
