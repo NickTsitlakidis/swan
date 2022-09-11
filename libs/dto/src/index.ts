@@ -22,3 +22,4 @@ export * from "./lib/blockchain-dto";
 export * from "./lib/create-listing-dto";
 export * from "./lib/submit-listing-dto";
 export * from "./lib/activate-listing-dto";
+export * from "./lib/user-dto";

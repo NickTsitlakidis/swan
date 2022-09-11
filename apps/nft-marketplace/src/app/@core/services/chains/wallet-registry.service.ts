@@ -1,10 +1,10 @@
 import { WalletService } from "./wallet-service";
 import { MetamaskService } from "./metamask.service";
 import { Injectable } from "@angular/core";
-import { SupportService } from "../support/support.service";
 import { SolflareWalletService } from "./solana-services/solflare.wallet.service";
 import { PhantomWalletService } from "./solana-services/phantom.wallet.service";
 import { map, Observable, of, Subject } from "rxjs";
+import { BlockchainWalletsFacade } from "../../store/blockchain-wallets-facade";
 
 @Injectable({
     providedIn: "root"
@@ -15,10 +15,11 @@ export class WalletRegistryService {
 
     constructor(
         private _metamaskService: MetamaskService,
-        private _supportService: SupportService,
         private _solflareService: SolflareWalletService,
-        private _phantomService: PhantomWalletService
-    ) {
+        private _phantomService: PhantomWalletService,
+        private _blockchainWalletsFacade: BlockchainWalletsFacade
+    ) //todo: facades can potentially use this class. maybe a better architecture to avoid cyclic dependency
+    {
         this._registry = new Map();
         this._registryPopulated = new Subject<boolean>();
     }
@@ -36,7 +37,7 @@ export class WalletRegistryService {
     }
 
     populateRegistry() {
-        this._supportService.getBlockchainWallets().subscribe((results) => {
+        this._blockchainWalletsFacade.streamWallets().subscribe((results) => {
             results.forEach((dto) => {
                 dto.wallets.forEach((wallet) => {
                     if (!this._registry.has(wallet.id)) {

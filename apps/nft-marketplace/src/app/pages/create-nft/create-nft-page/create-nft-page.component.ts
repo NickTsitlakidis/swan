@@ -1,3 +1,4 @@
+import { CategoriesFacade } from "./../../../@core/store/categories-facade";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
 import { BlockchainWalletDto, CategoryDto, CollectionDto, NftMetadataAttributeDto, UserWalletDto } from "@swan/dto";
@@ -5,12 +6,14 @@ import { fade } from "../../../@core/animations/enter-leave.animation";
 import { CreateNft } from "../../../@core/services/chains/nft";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
 import { SupportService } from "../../../@core/services/support/support.service";
-import { firstValueFrom, forkJoin, of, switchMap } from "rxjs";
+import { firstValueFrom, of, switchMap } from "rxjs";
 import { NftService } from "../../../@core/services/chains/nfts/nft.service";
 import { CollectionsService } from "../../../@core/services/collections/collections.service";
 import { MatDialog } from "@angular/material/dialog";
 import { SelectWalletDialogComponent } from "../../../@theme/components/select-wallet-dialog/select-wallet-dialog.component";
-import { UserService } from "../../../@core/services/user/user.service";
+import { UserFacade } from "../../../@core/store/user-facade";
+import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets-facade";
+import { Janitor } from "../../../@core/components/janitor";
 
 @Component({
     selector: "nft-marketplace-create-nft-page",
@@ -19,7 +22,7 @@ import { UserService } from "../../../@core/services/user/user.service";
     styleUrls: ["./create-nft-page.component.scss"],
     animations: [fade]
 })
-export class CreateNFTPageComponent implements OnInit {
+export class CreateNFTPageComponent extends Janitor implements OnInit {
     @ViewChild("collectionSelect") collectionSelect: any;
     public labelsAndPlaceholders = {
         title: {
@@ -71,17 +74,22 @@ export class CreateNFTPageComponent implements OnInit {
     public blockchains: { name: string; id: string }[];
     public categories: CategoryDto[];
     public userWallets: UserWalletDto[];
+    public blockchainWallets: Array<BlockchainWalletDto>;
 
     constructor(
         private _fb: UntypedFormBuilder,
+        private _userFacade: UserFacade,
+        private _blockchainWalletsFacade: BlockchainWalletsFacade,
         private _cd: ChangeDetectorRef,
         private _walletRegistryService: WalletRegistryService,
-        private _userService: UserService,
         private _supportService: SupportService,
+        private _categoriesFacade: CategoriesFacade,
         private _nftService: NftService,
         private _collectionsService: CollectionsService,
         private _dialog: MatDialog
-    ) {}
+    ) {
+        super();
+    }
 
     ngOnInit(): void {
         this.createNFTForm = this._fb.group({
@@ -101,28 +109,33 @@ export class CreateNFTPageComponent implements OnInit {
             this._cd.detectChanges();
         });
 
-        this._supportService.getCategories().subscribe((categories) => {
+        const categorySub = this._categoriesFacade.streamCategories().subscribe((categories) => {
             this.allCategories = categories;
             this.categories = [...this.allCategories];
             this._cd.detectChanges();
         });
+        this.addSubscription(categorySub);
 
-        forkJoin([this._supportService.getBlockchainWallets(), this._userService.getUserWallets()]).subscribe(
-            (results) => {
-                const chains = results[0];
-                this.userWallets = results[1];
-                this.allBlockchains = chains
-                    .map((chain) => {
-                        return {
-                            name: chain.name,
-                            id: chain.blockchainId
-                        };
-                    })
-                    .filter((chain) => this.userWallets.find((wal) => wal.wallet.chainId === chain.id));
-                this.blockchains = [...this.allBlockchains];
+        const blockchainSub = this._blockchainWalletsFacade.streamWallets().subscribe((blockchainWallets) => {
+            this.blockchainWallets = blockchainWallets;
+            const userSub = this._userFacade.streamUser().subscribe((user) => {
+                if (user) {
+                    this.userWallets = user.wallets;
+                    this.allBlockchains = blockchainWallets
+                        .map((chain) => {
+                            return {
+                                name: chain.name,
+                                id: chain.blockchainId
+                            };
+                        })
+                        .filter((chain) => this.userWallets.find((wal) => wal.wallet.chainId === chain.id));
+                    this.blockchains = [...this.allBlockchains];
+                }
                 this._cd.detectChanges();
-            }
-        );
+            });
+            this.addSubscription(userSub);
+        });
+        this.addSubscription(blockchainSub);
     }
 
     public getAttributeValue(formAttributeName: string) {
@@ -233,8 +246,7 @@ export class CreateNFTPageComponent implements OnInit {
             // @ts-ignore: Object is possibly 'undefined'
             walletId = userWallets.at(0).wallet.id;
         } else if (userWallets.length > 1) {
-            let allWallets = await firstValueFrom(this._supportService.getBlockchainWallets());
-            allWallets = allWallets
+            const allWallets = this.blockchainWallets
                 .filter((wal) => wal.blockchainId === chainId)
                 .filter((wal) => {
                     wal.wallets = wal.wallets.filter((w) =>

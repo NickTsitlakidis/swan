@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { UserWalletDto, WalletDto } from "@swan/dto";
+import { UserDto, UserWalletDto, WalletDto } from "@swan/dto";
 import { UserWalletViewRepository } from "../views/user-wallet/user-wallet-view-repository";
 import { WalletRepository } from "../support/blockchains/wallet-repository";
 
@@ -19,5 +19,21 @@ export class UserQueryHandler {
             const walletDto = new WalletDto(view.walletId, walletMatch.name, view.blockchainId);
             return new UserWalletDto(view.userId, view.id, view.address, walletDto);
         });
+    }
+
+    async getUser(userId: string): Promise<UserDto> {
+        const [views, wallets] = await Promise.all([
+            this._userWalletRepository.findByUserId(userId),
+            this._walletRepository.findAll()
+        ]);
+
+        const walletDtos = views.map((view) => {
+            const walletMatch = wallets.find((supportedWallet) => supportedWallet.id === view.walletId);
+
+            const walletDto = new WalletDto(view.walletId, walletMatch.name, view.blockchainId);
+            return new UserWalletDto(view.userId, view.id, view.address, walletDto);
+        });
+
+        return new UserDto(userId, walletDtos);
     }
 }
