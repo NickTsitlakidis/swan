@@ -26,11 +26,13 @@ export class AuthGuard implements CanActivate {
         const userStream = this._userFacade.streamUser().pipe(
             skipWhile((user) => isNil(user)),
             timeout({
-                each: 1000,
+                each: 2000,
                 with: () => throwError(() => new Error("User not found"))
             }),
             take(1)
         );
+
+        this._userFacade.refreshUser();
 
         try {
             const refreshedUser = await firstValueFrom(userStream);

@@ -17,7 +17,6 @@ export class UserGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
 
-
         if (!hasBearerToken(context)) {
             throw new UnauthorizedException("Invalid or missing credentials");
         }
@@ -28,7 +27,7 @@ export class UserGuard implements CanActivate {
             // todo:  Error ? 'Argument passed in must be a single String of 12 bytes or a string of 24 hex characters'
             verified = this._signingService.verify(extractBearerValue(context));
         } catch (error) {
-            this._logger.error(`Detected unverified or expired token ${token}`);
+            this._logger.error(`Detected unverified or expired user token ${token}`);
             throw new UnauthorizedException("Invalid or missing credentials");
         }
 
@@ -36,11 +35,11 @@ export class UserGuard implements CanActivate {
         try {
             found = await this._userViewRepository.findById(verified.sub);
         } catch {
-            throw new UnauthorizedException("Invalid or missing credentials");
+            throw new UnauthorizedException("Invalid or missing user credentials");
         }
 
         if (isNil(found)) {
-            throw new UnauthorizedException("Invalid or missing credentials");
+            throw new UnauthorizedException("Invalid or missing user credentials");
         }
 
         request.userId = verified.sub;

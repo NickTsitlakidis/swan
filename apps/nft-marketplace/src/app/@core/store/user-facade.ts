@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { UserStore } from "./user-store";
 import { CompleteSignatureAuthenticationDto, StartSignatureAuthenticationDto, TokenDto, UserDto } from "@swan/dto";
 import { firstValueFrom, Observable } from "rxjs";
-import { mobxStream } from "./stream-utils";
+import { mobxStream } from "../utils/stream-utils";
 import { WalletRegistryService } from "../services/chains/wallet-registry.service";
 import { isNil } from "lodash";
 import { LocalStorageService } from "ngx-webstorage";
@@ -101,6 +101,7 @@ export class UserFacade {
             const tokenValue = this._userStore.token.state.refreshToken;
             const refreshed = await firstValueFrom(this._userService.refreshToken(tokenValue));
             this._userStore.setToken(ComplexState.fromSuccess(refreshed));
+            this.saveTokenToStorage(refreshed);
         } catch (error) {
             this._userStore.setToken(ComplexState.fromError(error as Error));
         }

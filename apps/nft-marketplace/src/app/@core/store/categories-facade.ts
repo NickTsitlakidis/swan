@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { SupportService } from "../services/support/support.service";
 import { Observable, switchMap } from "rxjs";
-import { mobxStream } from "./stream-utils";
+import { mobxStream } from "../utils/stream-utils";
 import { CategoryDto } from "@swan/dto";
 import { CategoriesStore } from "./categories-store";
 

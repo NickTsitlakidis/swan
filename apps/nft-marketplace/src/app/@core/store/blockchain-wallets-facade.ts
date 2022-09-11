@@ -3,7 +3,7 @@ import { BlockchainWalletsStore } from "./blockchain-wallets-store";
 import { SupportService } from "../services/support/support.service";
 import { Observable, switchMap } from "rxjs";
 import { BlockchainWalletDto } from "@swan/dto";
-import { mobxStream } from "./stream-utils";
+import { mobxStream } from "../utils/stream-utils";
 
 @Injectable({ providedIn: "root" })
 export class BlockchainWalletsFacade {
