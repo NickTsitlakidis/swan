@@ -1,34 +1,32 @@
 import { WalletDto } from "./wallet-dto";
+import { BlockchainDto } from "./blockchain-dto";
+import { Type } from "class-transformer";
 
 export class BlockchainWalletDto {
-    blockchainId: string;
-    name: string;
+    @Type(() => BlockchainDto)
+    blockchain: BlockchainDto;
     mainTokenName: string;
     mainTokenSymbol: string;
     isTestNetwork: boolean;
     rpcUrl: string;
-    chainId: string;
     scanSiteUrl: string;
+    @Type(() => BlockchainDto)
     wallets: Array<WalletDto>;
 
     constructor(
-        blockchainId: string,
-        name: string,
+        blockchain: BlockchainDto,
         mainTokenName: string,
         mainTokenSymbol: string,
         isTestNetwork: boolean,
         rpcUrl: string,
-        chainId: string,
         scanSiteUrl: string,
         wallets: Array<WalletDto>
     ) {
-        this.blockchainId = blockchainId;
-        this.name = name;
+        this.blockchain = blockchain;
         this.mainTokenName = mainTokenName;
         this.mainTokenSymbol = mainTokenSymbol;
         this.isTestNetwork = isTestNetwork;
         this.rpcUrl = rpcUrl;
-        this.chainId = chainId;
         this.scanSiteUrl = scanSiteUrl;
         this.wallets = wallets;
     }

@@ -1,4 +1,7 @@
-export const FANTOM_MARKETPLACE_TEST_NET = {
+import { DeployedContract } from "../deployed-contract";
+
+export const FANTOM_MARKETPLACE_TEST_NET: DeployedContract = {
+    blockchainId: "62f967f0c245edd617089307",
     version: "1",
     address: "0xE01BA27D4e0a0F5fF47Ae0519AEC3df4253E033C",
     abi: [

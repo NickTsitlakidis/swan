@@ -1,4 +1,4 @@
-import { CategoriesFacade } from "./../../../@core/store/categories-facade";
+import { CategoriesFacade } from "../../../@core/store/categories-facade";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { CategoryDto, CollectionLinksDto, CreateCollectionDto } from "@swan/dto";
@@ -117,8 +117,8 @@ export class CreateCollectionPageComponent extends Janitor implements OnInit {
         const sub = this._blockchainWalletsFacade.streamWallets().subscribe((chainWallets) => {
             this.blockchains = chainWallets.map((chain) => {
                 return {
-                    name: chain.name,
-                    id: chain.blockchainId
+                    name: chain.blockchain.name,
+                    id: chain.blockchain.id
                 };
             });
             this.paymentTokens = chainWallets.map((chain) => {

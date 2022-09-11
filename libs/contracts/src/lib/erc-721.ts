@@ -1,22 +1,24 @@
 import { BigNumber, ContractTransaction, ethers } from "ethers";
 import { abi } from "./abi/enumerable-erc721";
 import { firstValueFrom, map, Observable, skipWhile, take, tap } from "rxjs";
-import { EvmChains } from "./evm-chains";
 import { FANTOM_MARKETPLACE_TEST_NET } from "./abi/swan-marketplace-fantom-testnet";
 import { FANTOM_MARKETPLACE_MAIN_NET } from "./abi/swan-marketplace-fantom-mainnet";
+import { DeployedContract } from "./deployed-contract";
+import { isNil } from "lodash";
 
 export class Erc721 {
     private readonly _contractInstance: ethers.Contract;
     private readonly _marketplaceAddress: string;
+    private readonly _supportedContracts: Array<DeployedContract>;
 
     constructor(
         private readonly _ethersProvider: ethers.providers.JsonRpcProvider,
         private readonly _address: string,
-        evmChain: EvmChains,
-        usingTestNet = false
+        blockchainId: string
     ) {
+        this._supportedContracts = [FANTOM_MARKETPLACE_TEST_NET, FANTOM_MARKETPLACE_MAIN_NET];
         this._contractInstance = new ethers.Contract(this._address, abi, this._ethersProvider);
-        this._marketplaceAddress = this.getMarketplaceAddress(evmChain, usingTestNet);
+        this._marketplaceAddress = this.getMarketplaceAddress(blockchainId);
     }
 
     balanceOf(ownerAddress: string): Promise<number> {
@@ -60,14 +62,13 @@ export class Erc721 {
         return this._contractInstance["tokenURI"](tokenId);
     }
 
-    private getMarketplaceAddress(chain: EvmChains, usingTestNet: boolean): string {
-        switch (chain) {
-            case EvmChains.ETHEREUM:
-                throw new Error("Ethereum is unsupported");
-            case EvmChains.FANTOM:
-                return usingTestNet ? FANTOM_MARKETPLACE_TEST_NET.address : FANTOM_MARKETPLACE_MAIN_NET.address;
-            case EvmChains.MATIC:
-                throw new Error("MATIC is unsupported");
+    private getMarketplaceAddress(blockchainId: string): string {
+        const found = this._supportedContracts.find((contract) => contract.blockchainId === blockchainId);
+
+        if (isNil(found)) {
+            throw new Error(`Blockchain with id ${blockchainId} is unsupported`);
         }
+
+        return found.address;
     }
 }

@@ -1,25 +1,20 @@
 import { ContractTransaction, ethers } from "ethers";
-import { EvmChains } from "@swan/contracts";
 import { FANTOM_MARKETPLACE_TEST_NET } from "./abi/swan-marketplace-fantom-testnet";
 import { FANTOM_MARKETPLACE_MAIN_NET } from "./abi/swan-marketplace-fantom-mainnet";
 import { firstValueFrom, from, map, mergeMap, Observable, of, skipWhile, take, tap, zip } from "rxjs";
 import { ListingResult } from "./listing-result";
+import { DeployedContract } from "./deployed-contract";
+import { isNil } from "lodash";
 
 export class SwanMarketplace {
     private readonly _contractInstance: ethers.Contract;
     private readonly _address: string;
+    private readonly _supportedContracts: Array<DeployedContract>;
 
-    constructor(
-        private readonly _ethersProvider: ethers.providers.JsonRpcProvider,
-        private readonly _evmChain: EvmChains,
-        private readonly _usingTestNet = false
-    ) {
-        this._address = this.getAddress(this._evmChain, this._usingTestNet);
-        this._contractInstance = new ethers.Contract(
-            this._address,
-            this.getAbi(this._evmChain, this._usingTestNet),
-            this._ethersProvider
-        );
+    constructor(private readonly _ethersProvider: ethers.providers.JsonRpcProvider, blockchainId: string) {
+        this._supportedContracts = [FANTOM_MARKETPLACE_TEST_NET, FANTOM_MARKETPLACE_MAIN_NET];
+        this._address = this.getAddress(blockchainId);
+        this._contractInstance = new ethers.Contract(this._address, this.getAbi(blockchainId), this._ethersProvider);
     }
 
     async createListing(tokenContractAddress: string, tokenId: number, price: number): Promise<string> {
@@ -55,25 +50,23 @@ export class SwanMarketplace {
         return firstValueFrom(mappedEventObservable);
     }
 
-    private getAbi(chain: EvmChains, usingTestNet: boolean): ethers.ContractInterface {
-        switch (chain) {
-            case EvmChains.ETHEREUM:
-                throw new Error("Ethereum is unsupported");
-            case EvmChains.FANTOM:
-                return usingTestNet ? FANTOM_MARKETPLACE_TEST_NET.abi : FANTOM_MARKETPLACE_MAIN_NET.abi;
-            case EvmChains.MATIC:
-                throw new Error("MATIC is unsupported");
+    private getAbi(blockchainId: string): ethers.ContractInterface {
+        const found = this._supportedContracts.find((contract) => contract.blockchainId === blockchainId);
+
+        if (isNil(found)) {
+            throw new Error(`Blockchain with id ${blockchainId} is unsupported`);
         }
+
+        return found.abi;
     }
 
-    private getAddress(chain: EvmChains, usingTestNet: boolean): string {
-        switch (chain) {
-            case EvmChains.ETHEREUM:
-                throw new Error("Ethereum is unsupported");
-            case EvmChains.FANTOM:
-                return usingTestNet ? FANTOM_MARKETPLACE_TEST_NET.address : FANTOM_MARKETPLACE_MAIN_NET.address;
-            case EvmChains.MATIC:
-                throw new Error("MATIC is unsupported");
+    private getAddress(blockchainId: string): string {
+        const found = this._supportedContracts.find((contract) => contract.blockchainId === blockchainId);
+
+        if (isNil(found)) {
+            throw new Error(`Blockchain with id ${blockchainId} is unsupported`);
         }
+
+        return found.address;
     }
 }

@@ -1,12 +1,8 @@
 import { ethers } from "ethers";
-import { EvmChains, SwanMarketplace } from "@swan/contracts";
+import { SwanMarketplace } from "@swan/contracts";
 
 export class SwanMarketplaceFactory {
-    create(
-        ethersProvider: ethers.providers.JsonRpcProvider,
-        evmChain: EvmChains,
-        usingTestNet = false
-    ): SwanMarketplace {
-        return new SwanMarketplace(ethersProvider, evmChain, usingTestNet);
+    create(ethersProvider: ethers.providers.JsonRpcProvider, blockchainId: string): SwanMarketplace {
+        return new SwanMarketplace(ethersProvider, blockchainId);
     }
 }
