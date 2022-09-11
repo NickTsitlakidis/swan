@@ -88,9 +88,10 @@ export class CreateCollectionPageComponent extends Janitor implements OnInit {
         private _cd: ChangeDetectorRef
     ) {
         super();
-        this._categoriesFacade.streamCategories().subscribe((categories) => {
+        const categorySub = this._categoriesFacade.streamCategories().subscribe((categories) => {
             this.categories = categories;
         });
+        this.addSubscription(categorySub);
     }
 
     ngOnInit(): void {
