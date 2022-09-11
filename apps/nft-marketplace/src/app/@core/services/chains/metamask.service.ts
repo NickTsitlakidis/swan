@@ -40,7 +40,7 @@ export class MetamaskService implements WalletService {
     mint(nft: CreateNft): Observable<NftMintTransactionDto> {
         return this.getPublicKey().pipe(
             switchMap((publicKey) => {
-                return zip(of(publicKey), from(this.switchToCorrectNetwork(nft.blockchain.chainId)));
+                return zip(of(publicKey), from(this.switchNetwork(nft.blockchain.chainId)));
             }),
             switchMap(([publicKey]) => {
                 const contract = this._swanNftFactory.create(this._ethersProvider, nft.blockchain.id);
@@ -69,7 +69,7 @@ export class MetamaskService implements WalletService {
     createListing(listing: CreateListing): Observable<string> {
         return this.getEthersProvider().pipe(
             switchMap((provider) => {
-                return zip(of(provider), from(this.switchToCorrectNetwork(listing.blockchain.chainId)));
+                return zip(of(provider), from(this.switchNetwork(listing.blockchain.chainId)));
             }),
             switchMap(([provider]) => {
                 if (!listing.tokenContractAddress || !listing.tokenId) {
@@ -116,7 +116,7 @@ export class MetamaskService implements WalletService {
         }
     }
 
-    private async switchToCorrectNetwork(chainId: string) {
+    private async switchNetwork(chainId: string) {
         const currentNetwork = await this._ethersProvider.getNetwork();
         if (currentNetwork.chainId.toString() === chainId) {
             return;
