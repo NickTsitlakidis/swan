@@ -1,4 +1,4 @@
-import { NftMetadataAttributeDto } from "@swan/dto";
+import { BlockchainDto, NftMetadataAttributeDto } from "@swan/dto";
 import { Collection } from "../collections/collection";
 
 export interface CreateNft {
@@ -10,9 +10,5 @@ export interface CreateNft {
     resellPercentage?: number;
     maxSupply?: number;
     metadata: Array<NftMetadataAttributeDto>;
-}
-
-export interface ErrorMintTransaction {
-    success: boolean;
-    message: string;
+    blockchain: BlockchainDto;
 }

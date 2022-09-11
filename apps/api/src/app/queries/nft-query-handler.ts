@@ -1,7 +1,7 @@
 import { CategoryRepository } from "./../support/categories/category-repository";
 import { BlockchainActionsRegistryService } from "../support/blockchains/blockchain-actions-registry-service";
 import { Injectable } from "@nestjs/common";
-import { ProfileNftDto } from "@swan/dto";
+import { BlockchainDto, ProfileNftDto } from "@swan/dto";
 import { UserWalletViewRepository } from "../views/user-wallet/user-wallet-view-repository";
 import { BlockchainRepository } from "../support/blockchains/blockchain-repository";
 
@@ -29,10 +29,7 @@ export class NftQueryHandler {
                 nfts.map((nft) => {
                     const category = categories.find((cat) => cat.id === nft.categoryId);
                     const profileNftDto = new ProfileNftDto();
-                    profileNftDto.blockchain = {
-                        id: chain.id,
-                        name: chain.name
-                    };
+                    profileNftDto.blockchain = new BlockchainDto(chain.name, chain.id, chain.chainIdHex);
                     profileNftDto.category = {
                         id: category?.id,
                         name: category?.name

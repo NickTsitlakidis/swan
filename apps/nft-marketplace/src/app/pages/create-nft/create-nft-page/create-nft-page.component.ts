@@ -1,9 +1,9 @@
-import { CategoriesFacade } from "./../../../@core/store/categories-facade";
+import { CategoriesFacade } from "../../../@core/store/categories-facade";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
 import { BlockchainWalletDto, CategoryDto, CollectionDto, NftMetadataAttributeDto, UserWalletDto } from "@swan/dto";
 import { fade } from "../../../@core/animations/enter-leave.animation";
-import { CreateNft } from "../../../@core/services/chains/nft";
+import { CreateNft } from "../../../@core/services/chains/create-nft";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
 import { SupportService } from "../../../@core/services/support/support.service";
 import { firstValueFrom, of, switchMap } from "rxjs";
@@ -124,8 +124,8 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
                     this.allBlockchains = blockchainWallets
                         .map((chain) => {
                             return {
-                                name: chain.name,
-                                id: chain.blockchainId
+                                name: chain.blockchain.name,
+                                id: chain.blockchain.id
                             };
                         })
                         .filter((chain) => this.userWallets.find((wal) => wal.wallet.chainId === chain.id));
@@ -215,14 +215,16 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
                     return this._nftService.createNft(nftMetadataDto);
                 }),
                 switchMap((nftResponse) => {
-                    const nft = {
+                    const matchingWallets = this.blockchainWallets.find((wallets) => wallets.blockchain.id === chainId);
+                    const nft: CreateNft = {
                         id: nftResponse.id,
                         metadataUri: nftResponse.metadataUri,
                         name: this.createNFTForm.get("title")?.value,
                         symbol: this.createNFTForm.get("symbol")?.value,
                         resellPercentage: this.createNFTForm.get("royalties")?.value,
                         maxSupply: this.createNFTForm.get("maxSupply")?.value,
-                        metadata
+                        metadata,
+                        blockchain: matchingWallets?.blockchain
                     } as CreateNft;
                     if (walletService) {
                         return walletService.mint(nft);
@@ -247,7 +249,7 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
             walletId = userWallets.at(0).wallet.id;
         } else if (userWallets.length > 1) {
             const allWallets = this.blockchainWallets
-                .filter((wal) => wal.blockchainId === chainId)
+                .filter((wal) => wal.blockchain.id === chainId)
                 .filter((wal) => {
                     wal.wallets = wal.wallets.filter((w) =>
                         userWallets.find((userWallet) => userWallet.wallet.id === w.id)
@@ -267,7 +269,7 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
 
     private async _getWallet(chainId: string, wallets: BlockchainWalletDto[]): Promise<string | undefined> {
         const selectWalletsInput = wallets
-            .filter((wallet) => wallet.blockchainId === chainId)
+            .filter((wallet) => wallet.blockchain.id === chainId)
             .flatMap((wallet) => wallet.wallets)
             .map((wallet) => {
                 return {
@@ -279,7 +281,7 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
         const dialogRef = this._openDialog(selectWalletsInput);
         const walletName = await firstValueFrom(dialogRef.afterClosed());
         const wallet = wallets
-            .filter((wallet) => wallet.blockchainId === chainId)
+            .filter((wallet) => wallet.blockchain.id === chainId)
             .flatMap((wallet) => wallet.wallets)
             .find((wallet) => wallet.name === walletName);
         return wallet?.id;

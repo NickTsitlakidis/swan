@@ -32,11 +32,11 @@
                 status="info"
                 [selected]="selectedWallets"
             >
-                <nb-option-group *ngFor="let chain of chainsNew" [title]="chain.name">
+                <nb-option-group *ngFor="let chain of chainsNew" [title]="chain.blockchain.name">
                     <nb-option
                         *ngFor="let wallet of chain.wallets"
                         [value]="wallet"
-                        [disabled]="isSelected[chain.blockchainId] && isSelected[chain.blockchainId][wallet.name]"
+                        [disabled]="isSelected[chain.blockchain.id] && isSelected[chain.blockchain.id][wallet.name]"
                         >{{ wallet.name }}</nb-option
                     >
                 </nb-option-group>

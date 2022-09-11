@@ -3,12 +3,12 @@ import { from, map, Observable, of, Subject, switchMap, throwError, zip } from "
 import { WalletEvent } from "./wallet-event";
 import { ethers } from "ethers";
 import { isNil } from "lodash";
-import { CreateNft } from "./nft";
+import { CreateNft } from "./create-nft";
 import { Injectable } from "@angular/core";
 import { ChainsModule } from "./chains.module";
 import { NftMintTransactionDto } from "@swan/dto";
-import { Erc721Factory, EvmChains, ListingResult, SwanMarketplaceFactory, SwanNftFactory } from "@swan/contracts";
-import { mergeMap } from "rxjs/operators";
+import { Erc721Factory, ListingResult, SwanMarketplaceFactory, SwanNftFactory } from "@swan/contracts";
+import { CreateListing } from "./create-listing";
 
 @Injectable({
     providedIn: ChainsModule
@@ -39,8 +39,11 @@ export class MetamaskService implements WalletService {
 
     mint(nft: CreateNft): Observable<NftMintTransactionDto> {
         return this.getPublicKey().pipe(
-            mergeMap((publicKey) => {
-                const contract = this._swanNftFactory.create(this._ethersProvider, EvmChains.FANTOM, true);
+            switchMap((publicKey) => {
+                return zip(of(publicKey), from(this.switchNetwork(nft.blockchain.chainId)));
+            }),
+            switchMap(([publicKey]) => {
+                const contract = this._swanNftFactory.create(this._ethersProvider, nft.blockchain.id);
                 return zip(of(contract), from(contract.createItem(publicKey, nft.metadataUri)));
             }),
             map(([contract, result]) => {
@@ -63,32 +66,39 @@ export class MetamaskService implements WalletService {
         );
     }
 
-    createListing(price: number, tokenContractAddress?: string, tokenId?: number): Observable<string> {
+    createListing(listing: CreateListing): Observable<string> {
         return this.getEthersProvider().pipe(
-            mergeMap((provider) => {
-                if (!tokenContractAddress || !tokenId) {
+            switchMap((provider) => {
+                return zip(of(provider), from(this.switchNetwork(listing.blockchain.chainId)));
+            }),
+            switchMap(([provider]) => {
+                if (!listing.tokenContractAddress || !listing.tokenId) {
                     return throwError(() => "oops");
                 }
-                const contract = this._erc721Factory.create(provider, tokenContractAddress, EvmChains.FANTOM, true);
-                return from(contract.approve(tokenId));
+                const contract = this._erc721Factory.create(
+                    provider,
+                    listing.tokenContractAddress,
+                    listing.blockchain.id
+                );
+                return from(contract.approve(listing.tokenId));
             }),
-            mergeMap((approveResult) => {
-                const contract = this._swanMarketplaceFactory.create(this._ethersProvider, EvmChains.FANTOM, true);
+            switchMap(() => {
+                const contract = this._swanMarketplaceFactory.create(this._ethersProvider, listing.blockchain.id);
                 return of(contract);
             }),
-            mergeMap((contract) => {
-                if (!tokenContractAddress || !tokenId) {
+            switchMap((contract) => {
+                if (!listing.tokenContractAddress || !listing.tokenId) {
                     return throwError(() => "oops");
                 }
-                return from(contract.createListing(tokenContractAddress, tokenId, price));
+                return from(contract.createListing(listing.tokenContractAddress, listing.tokenId, listing.price));
             })
         );
     }
 
-    getListingResult(transactionHash: string): Observable<ListingResult> {
-        const contract = this._swanMarketplaceFactory.create(this._ethersProvider, EvmChains.FANTOM, true);
+    getListingResult(transactionHash: string, blockchainId: string): Observable<ListingResult> {
+        const contract = this._swanMarketplaceFactory.create(this._ethersProvider, blockchainId);
         return from(this._ethersProvider.getSigner().getAddress()).pipe(
-            mergeMap((address) => from(contract.getListingResult(transactionHash, address)))
+            switchMap((address) => from(contract.getListingResult(transactionHash, address)))
         );
     }
 
@@ -99,10 +109,19 @@ export class MetamaskService implements WalletService {
             if (!isNil(this._ethersProvider)) {
                 return of(this._ethersProvider);
             }
-            this._ethersProvider = new ethers.providers.Web3Provider(externalProvider);
+            this._ethersProvider = new ethers.providers.Web3Provider(externalProvider, "any");
             return from(this._ethersProvider.send("eth_requestAccounts", [])).pipe(map(() => this._ethersProvider));
         } else {
             return throwError(() => "Ethereum object is not added to window");
         }
+    }
+
+    private async switchNetwork(chainId: string) {
+        const currentNetwork = await this._ethersProvider.getNetwork();
+        if (currentNetwork.chainId.toString() === chainId) {
+            return;
+        }
+
+        return this._ethersProvider.send("wallet_switchEthereumChain", [{ chainId }]);
     }
 }

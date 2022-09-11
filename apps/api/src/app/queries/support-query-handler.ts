@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { CategoryDto, BlockchainWalletDto, WalletDto } from "@swan/dto";
+import { CategoryDto, BlockchainWalletDto, WalletDto, BlockchainDto } from "@swan/dto";
 import { CategoryRepository } from "../support/categories/category-repository";
 import { LogAsyncMethod } from "../infrastructure/logging";
 import { BlockchainWalletRepository } from "../support/blockchains/blockchain-wallet-repository";
@@ -36,15 +36,14 @@ export class SupportQueryHandler {
                 .filter((wallet) => wallet)
                 .map((wallet) => new WalletDto(wallet.id, wallet.name, chain.id));
 
+            const blockchainDto = new BlockchainDto(chain.name, chain.id, chain.chainIdHex);
             return new BlockchainWalletDto(
-                chain.id,
-                chain.name,
+                blockchainDto,
                 chain.mainTokenName,
                 chain.mainTokenSymbol,
                 chain.isTestNetwork,
                 chain.rpcUrl,
                 chain.scanSiteUrl,
-                chain.chainIdHex,
                 finalWallets
             );
         });
