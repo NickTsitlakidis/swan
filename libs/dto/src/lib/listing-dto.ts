@@ -1,24 +1,23 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsString, IsOptional, IsNotEmpty, IsNumber } from "class-validator";
 
-export class CreateListingDto {
-    @IsNumber()
-    price: number;
+export class ListingDto {
+    id: string;
 
-    @IsString()
-    @IsOptional()
-    nftId?: string;
-
-    @IsString()
     @IsNotEmpty()
+    @IsString()
+    blockchainId: string;
+
+    @IsNotEmpty()
+    @IsString()
     categoryId: string;
 
-    @IsString()
     @IsNotEmpty()
-    walletId: string;
+    @IsString()
+    sellerAddress: string;
 
-    @IsString()
     @IsNotEmpty()
-    blockchainId: string;
+    @IsNumber()
+    price: number;
 
     @IsString()
     @IsNotEmpty()

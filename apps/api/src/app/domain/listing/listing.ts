@@ -27,6 +27,7 @@ export class Listing extends EventSourcedEntity {
     private status: ListingStatus;
     private chainTransaction: ChainTransaction;
     private chainListingId: number;
+    private walletId: string;
 
     static fromEvents(id: string, events: Array<SourcedEvent>): Listing {
         const listing = new Listing(id);
@@ -45,12 +46,14 @@ export class Listing extends EventSourcedEntity {
         listing.userId = command.userId;
         listing.chainTokenId = command.chainTokenId;
         listing.status = ListingStatus.CREATED;
+        listing.walletId = command.walletId;
 
         const event = new ListingCreatedEvent(
             listing.price,
             listing.userId,
             listing.categoryId,
             listing.blockchainId,
+            listing.walletId,
             listing.tokenContractAddress,
             listing.nftAddress,
             listing.chainTokenId,
@@ -96,6 +99,7 @@ export class Listing extends EventSourcedEntity {
         this.blockchainId = event.blockchainId;
         this.nftId = event.nftId;
         this.categoryId = event.categoryId;
+        this.walletId = event.walletId;
         this.userId = event.userId;
         this.chainTokenId = event.chainTokenId;
         this.status = ListingStatus.CREATED;

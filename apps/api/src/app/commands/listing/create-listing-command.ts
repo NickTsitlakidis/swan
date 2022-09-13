@@ -9,6 +9,7 @@ export class CreateListingCommand {
     nftAddress?: string;
     chainTokenId?: string;
     userId: string;
+    walletId: string;
 
     static fromDto(dto: CreateListingDto, userId: string) {
         const command = new CreateListingCommand();
@@ -20,6 +21,7 @@ export class CreateListingCommand {
         command.categoryId = dto.categoryId;
         command.userId = userId;
         command.chainTokenId = dto.chainTokenId;
+        command.walletId = dto.walletId;
         return command;
     }
 }

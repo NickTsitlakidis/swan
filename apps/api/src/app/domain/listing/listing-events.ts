@@ -7,6 +7,7 @@ export class ListingCreatedEvent extends EventPayload {
         public userId: string,
         public categoryId: string,
         public blockchainId: string,
+        public walletId: string,
         public tokenContractAddress?: string,
         public nftAddress?: string,
         public chainTokenId?: string,

@@ -13,6 +13,7 @@ import { getLogger, LogAsyncMethod } from "../../infrastructure/logging";
 import { ListingView } from "./listing-view";
 import { ListingViewRepository } from "./listing-view-repository";
 import { ChainTransactionView } from "./chain-transaction-view";
+import { UserWalletViewRepository } from "../user-wallet/user-wallet-view-repository";
 
 @EventsHandler(
     ListingActivatedEvent,
@@ -35,7 +36,10 @@ export class ListingProjector
 {
     private _logger: Logger;
 
-    constructor(private readonly _repository: ListingViewRepository) {
+    constructor(
+        private readonly _repository: ListingViewRepository,
+        private _userWalletViewRepository: UserWalletViewRepository
+    ) {
         this._logger = getLogger(ListingProjector);
     }
 
@@ -52,6 +56,11 @@ export class ListingProjector
         let view: ListingView;
 
         if (event instanceof ListingCreatedEvent) {
+            const userWallet = await this._userWalletViewRepository.findByUserIdAndWalletIdAndChainId(
+                event.userId,
+                event.walletId,
+                event.blockchainId
+            );
             view = new ListingView();
             view.id = event.aggregateId;
             view.price = event.price;
@@ -62,6 +71,8 @@ export class ListingProjector
             view.categoryId = event.categoryId;
             view.userId = event.userId;
             view.chainTokenId = event.chainTokenId;
+            view.walletId = event.walletId;
+            view.sellerAddress = userWallet?.address;
             view.status = ListingStatus.CREATED;
         } else {
             view = await this._repository.findById(event.aggregateId);

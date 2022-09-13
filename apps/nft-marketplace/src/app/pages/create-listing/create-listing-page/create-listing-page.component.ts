@@ -53,8 +53,8 @@ export class CreateListingPageComponent implements OnInit {
         dto.tokenContractAddress = nft.tokenContractAddress;
         dto.chainTokenId = nft.tokenId;
         dto.blockchainId = nft.blockchain.id;
-        // TODO what happens?
-        dto.categoryId = nft.category?.id || "";
+        dto.categoryId = nft.category.id;
+        dto.walletId = nft.walletId;
         console.log(dto, nft);
 
         this._listingsService

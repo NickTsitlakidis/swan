@@ -40,4 +40,10 @@ export class ListingView extends MongoDocument {
 
     @Property()
     chainListingId: string;
+
+    @Property()
+    walletId: string;
+
+    @Property()
+    sellerAddress?: string;
 }

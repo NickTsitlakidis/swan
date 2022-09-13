@@ -23,5 +23,5 @@ export class ProfileNftDto {
     public collection?: CollectionDto;
 
     @Type(() => CategoryDto)
-    public category?: CategoryDto;
+    public category: CategoryDto;
 }
