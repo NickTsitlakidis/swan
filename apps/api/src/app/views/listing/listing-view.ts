@@ -46,4 +46,10 @@ export class ListingView extends MongoDocument {
 
     @Property()
     sellerAddress?: string;
+
+    @Property()
+    animationUrl?: string;
+
+    @Property()
+    imageUrl: string;
 }

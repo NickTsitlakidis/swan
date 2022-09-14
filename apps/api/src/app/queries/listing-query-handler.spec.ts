@@ -1,3 +1,4 @@
+import { PaginationDto } from "@swan/dto";
 import { getUnitTestingModule } from "../test-utils/test-modules";
 import { ObjectID } from "mongodb";
 import { ListingView } from "../views/listing/listing-view";
@@ -19,12 +20,16 @@ beforeEach(async () => {
 test("getActiveListings - returns empty array when no collections are found", async () => {
     const repoSpy = jest.spyOn(repoMock, "findAllActive").mockResolvedValue([[], 0]);
 
-    const { listingDtos } = await handler.getActiveListings(0, 50);
+    const dto: PaginationDto = {
+        skip: 0,
+        limit: 50
+    };
+    const { listingDtos } = await handler.getActiveListings(dto);
     expect(listingDtos.length).toBe(0);
 
     expect(repoSpy).toHaveBeenCalledTimes(1);
 
-    expect(repoSpy).toHaveBeenCalledWith(0, 50);
+    expect(repoSpy).toHaveBeenCalledWith(dto.skip, dto.limit);
 });
 
 test("getActiveListings - returns false when collections is not found", async () => {
@@ -60,7 +65,11 @@ test("getActiveListings - returns false when collections is not found", async ()
 
     const countSpy = jest.spyOn(repoMock, "findAllActive").mockResolvedValue([listingViews, 2]);
 
-    const { listingDtos, listingsCount } = await handler.getActiveListings(0, 50);
+    const dto: PaginationDto = {
+        skip: 0,
+        limit: 50
+    };
+    const { listingDtos, listingsCount } = await handler.getActiveListings(dto);
     expect(listingDtos.length).toBe(2);
 
     expect(listingDtos[0].id).toBe(listingViews[0].id);
@@ -85,5 +94,5 @@ test("getActiveListings - returns false when collections is not found", async ()
 
     expect(countSpy).toHaveBeenCalledTimes(1);
 
-    expect(countSpy).toHaveBeenCalledWith(0, 50);
+    expect(countSpy).toHaveBeenCalledWith(dto.skip, dto.limit);
 });

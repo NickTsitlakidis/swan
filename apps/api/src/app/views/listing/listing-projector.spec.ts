@@ -38,6 +38,8 @@ test("handle ListingCreatedEvent - Saves new ListingView", async () => {
     const tokenContractAddress = "addr";
     const nftAddress = "nftAddress";
     const chainTokenId = "chainTokenId";
+    const animationUrl = "animationUrl";
+    const imageUrl = "imageUrl";
     const nftId = "nftId";
     const event = new ListingCreatedEvent(
         price,
@@ -45,6 +47,8 @@ test("handle ListingCreatedEvent - Saves new ListingView", async () => {
         categoryId,
         blockchainId,
         walletId,
+        imageUrl,
+        animationUrl,
         tokenContractAddress,
         nftAddress,
         chainTokenId,
@@ -68,6 +72,8 @@ test("handle ListingCreatedEvent - Saves new ListingView", async () => {
     expectedSaved.chainTokenId = "chainTokenId";
     expectedSaved.nftId = "nftId";
     expectedSaved.status = ListingStatus.CREATED;
+    expectedSaved.imageUrl = "imageUrl";
+    expectedSaved.animationUrl = "animationUrl";
     delete expectedSaved.createdAt;
 
     expect(saveSpy).toHaveBeenCalledTimes(1);

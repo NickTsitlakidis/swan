@@ -74,6 +74,8 @@ export class ListingProjector
             view.walletId = event.walletId;
             view.sellerAddress = userWallet?.address;
             view.status = ListingStatus.CREATED;
+            view.animationUrl = event.animationUrl;
+            view.imageUrl = event.imageUrl;
         } else {
             view = await this._repository.findById(event.aggregateId);
         }

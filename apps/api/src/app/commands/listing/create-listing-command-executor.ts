@@ -33,6 +33,7 @@ export class CreateListingCommandExecutor implements ICommandHandler<CreateListi
             command.walletId,
             command.blockchainId
         );
+
         if (isNil(blockchain)) {
             throw new BadRequestException(`Blockchain is not found: ${command.blockchainId}`);
         }

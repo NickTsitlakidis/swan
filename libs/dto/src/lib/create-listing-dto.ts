@@ -21,6 +21,15 @@ export class CreateListingDto {
     blockchainId: string;
 
     @IsString()
+    @IsOptional()
+    @IsNotEmpty()
+    animationUrl?: string;
+
+    @IsString()
+    @IsNotEmpty()
+    imageUrl: string;
+
+    @IsString()
     @IsNotEmpty()
     @IsOptional()
     tokenContractAddress?: string;

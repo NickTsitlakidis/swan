@@ -10,6 +10,8 @@ export class CreateListingCommand {
     chainTokenId?: string;
     userId: string;
     walletId: string;
+    animationUrl?: string;
+    imageUrl: string;
 
     static fromDto(dto: CreateListingDto, userId: string) {
         const command = new CreateListingCommand();
@@ -22,6 +24,8 @@ export class CreateListingCommand {
         command.userId = userId;
         command.chainTokenId = dto.chainTokenId;
         command.walletId = dto.walletId;
+        command.animationUrl = dto.animationUrl;
+        command.imageUrl = dto.imageUrl;
         return command;
     }
 }

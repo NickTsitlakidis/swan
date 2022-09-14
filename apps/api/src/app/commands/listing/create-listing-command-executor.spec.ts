@@ -37,6 +37,8 @@ test("execute - throws when category is not found", async () => {
     command.tokenContractAddress = "address";
     command.nftAddress = "nftAddress";
     command.price = 4;
+    command.animationUrl = "animationUrl";
+    command.imageUrl = "imageUrl";
 
     const categorySpy = jest.spyOn(categoryRepository, "countById").mockResolvedValue(0);
 
@@ -56,6 +58,8 @@ test("execute - throws when blockchain is not found", async () => {
     command.tokenContractAddress = "address";
     command.nftAddress = "nftAddress";
     command.price = 4;
+    command.animationUrl = "animationUrl";
+    command.imageUrl = "imageUrl";
 
     const categorySpy = jest.spyOn(categoryRepository, "countById").mockResolvedValue(1);
     const blockchainSpy = jest.spyOn(blockchainRepository, "findById").mockResolvedValue(null);
@@ -82,6 +86,8 @@ test("execute - throws when nft id is set and not found", async () => {
     command.tokenContractAddress = "address";
     command.nftAddress = "nftAddress";
     command.price = 4;
+    command.animationUrl = "animationUrl";
+    command.imageUrl = "imageUrl";
 
     const categorySpy = jest.spyOn(categoryRepository, "countById").mockResolvedValue(1);
     const blockchainSpy = jest.spyOn(blockchainRepository, "findById").mockResolvedValue(blockchain);
@@ -109,6 +115,8 @@ test("execute - throws when blockchain id doesn't match nft blockchain", async (
     command.tokenContractAddress = "address";
     command.nftAddress = "nftAddress";
     command.price = 4;
+    command.animationUrl = "animationUrl";
+    command.imageUrl = "imageUrl";
 
     const blockchain = new Blockchain();
     blockchain.id = new ObjectID().toHexString();
@@ -144,6 +152,8 @@ test("execute - throws when tokenContractAddress is missing from create listing 
     command.chainTokenId = "tok";
     command.nftAddress = "nftAddress";
     command.price = 4;
+    command.animationUrl = "animationUrl";
+    command.imageUrl = "imageUrl";
 
     const nftView = new NftView();
     nftView.blockchainId = blockchain.id;
@@ -177,6 +187,8 @@ test("execute - throws when chainTokenId is missing from create listing command 
     command.tokenContractAddress = "addr";
     command.nftAddress = "nftAddress";
     command.price = 4;
+    command.animationUrl = "animationUrl";
+    command.imageUrl = "imageUrl";
 
     const nftView = new NftView();
     nftView.blockchainId = blockchain.id;
@@ -209,6 +221,8 @@ test("execute - throws when nftAddress is missing from create listing command (S
     command.blockchainId = blockchain.id;
     command.tokenContractAddress = "addr";
     command.price = 4;
+    command.animationUrl = "animationUrl";
+    command.imageUrl = "imageUrl";
 
     const nftView = new NftView();
     nftView.blockchainId = blockchain.id;
@@ -242,6 +256,8 @@ test("execute - creates listing and commits", async () => {
     command.tokenContractAddress = "address";
     command.nftAddress = "nftAddress";
     command.price = 4;
+    command.animationUrl = "animationUrl";
+    command.imageUrl = "imageUrl";
 
     const nftView = new NftView();
     nftView.blockchainId = blockchain.id;

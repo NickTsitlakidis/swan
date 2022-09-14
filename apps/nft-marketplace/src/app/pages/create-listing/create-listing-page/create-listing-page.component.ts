@@ -40,6 +40,7 @@ export class CreateListingPageComponent implements OnInit {
 
     async onSelectNft(nft: ProfileNftDto) {
         this.selectedForListingNft = isEqual(this.selectedForListingNft, nft) ? undefined : nft;
+        console.log(this.selectedForListingNft);
         this._cd.detectChanges();
     }
 
@@ -55,6 +56,8 @@ export class CreateListingPageComponent implements OnInit {
         dto.blockchainId = nft.blockchain.id;
         dto.categoryId = nft.category.id;
         dto.walletId = nft.walletId;
+        dto.animationUrl = nft.animationUri;
+        dto.imageUrl = nft.imageUri;
         console.log(dto, nft);
 
         this._listingsService
