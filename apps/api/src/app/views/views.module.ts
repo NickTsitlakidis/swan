@@ -41,7 +41,8 @@ import { ListingView } from "./listing/listing-view";
         CategoryRepository,
         UserWalletViewRepository,
         CollectionViewRepository,
-        NftViewRepository
+        NftViewRepository,
+        ListingViewRepository
     ]
 })
 export class ViewsModule {}

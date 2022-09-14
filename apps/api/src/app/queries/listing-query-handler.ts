@@ -1,6 +1,6 @@
 import { ListingViewRepository } from "./../views/listing/listing-view-repository";
 import { Injectable } from "@nestjs/common";
-import { ListingDto } from "@swan/dto";
+import { ListingDto, PaginationDto } from "@swan/dto";
 import { LogAsyncMethod } from "../infrastructure/logging";
 
 @Injectable()
@@ -9,10 +9,12 @@ export class ListingQueryHandler {
 
     @LogAsyncMethod
     async getActiveListings(
-        skip: number,
-        limit: number
+        paginationDto: PaginationDto
     ): Promise<{ listingDtos: ListingDto[]; listingsCount: number }> {
-        const [listings, listingsCount] = await this._listingViewRepository.findAllActive(skip, limit);
+        const [listings, listingsCount] = await this._listingViewRepository.findAllActive(
+            paginationDto.skip,
+            paginationDto.limit
+        );
         const listingDtos = [];
         listings.forEach((listing) => {
             const lto = new ListingDto();

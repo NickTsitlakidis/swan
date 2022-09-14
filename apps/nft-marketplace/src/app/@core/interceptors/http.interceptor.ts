@@ -17,7 +17,8 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
         "/support",
         "/user/start-signature-authentication",
         "/user/complete-signature-authentication",
-        "/user/refresh-token"
+        "/user/refresh-token",
+        "/listings/get-active-listings"
     ];
 
     public clientLogin = "/client/login";
