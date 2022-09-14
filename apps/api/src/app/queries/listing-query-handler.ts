@@ -26,6 +26,8 @@ export class ListingQueryHandler {
             lto.price = listing.price;
             lto.sellerAddress = listing.sellerAddress;
             lto.tokenContractAddress = listing.tokenContractAddress;
+            lto.animationUrl = listing.animationUrl;
+            lto.imageUrl = listing.imageUrl;
             listingDtos.push(lto);
         });
 
