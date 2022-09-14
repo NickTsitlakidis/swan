@@ -1,4 +1,4 @@
-import { CategoryRepository } from "./../support/categories/category-repository";
+import { CategoryRepository } from "../support/categories/category-repository";
 import { BlockchainActionsRegistryService } from "../support/blockchains/blockchain-actions-registry-service";
 import { Injectable } from "@nestjs/common";
 import { BlockchainDto, ProfileNftDto } from "@swan/dto";

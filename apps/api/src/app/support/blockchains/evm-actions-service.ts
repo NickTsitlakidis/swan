@@ -1,5 +1,5 @@
-import { CategoryRepository } from "./../categories/category-repository";
-import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
+import { CategoryRepository } from "../categories/category-repository";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
 import { EvmMetadata } from "./evm-metadata";
 import { UploadedFiles } from "./uploaded-files";
