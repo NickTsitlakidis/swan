@@ -10,7 +10,7 @@ import { ConfigService } from "@nestjs/config";
 export class MetaplexService {
     private _metaplexor: NFTStorageMetaplexor;
     private _metaplex: Metaplex;
-    private _connection: Connection;
+    private readonly _connection: Connection;
 
     constructor(private _configService: ConfigService) {
         this._connection = new Connection(clusterApiUrl("devnet"));

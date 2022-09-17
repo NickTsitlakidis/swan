@@ -39,7 +39,7 @@ export function EventProcessor(eventClass): PropertyDecorator {
 export abstract class EventSourcedEntity {
     private _appliedEvents: Array<EventPayload>;
     private _version: number;
-    private _logger: Logger;
+    private readonly _logger: Logger;
 
     protected constructor(private readonly _id: string, logger?: Logger) {
         this._appliedEvents = [];
