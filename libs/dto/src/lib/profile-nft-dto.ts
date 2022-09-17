@@ -5,12 +5,10 @@ import { CategoryDto } from "./category-dto";
 
 export class ProfileNftDto {
     public id?: string;
+    //todo check this: where should this get values?
     public name: string;
     public animationUri?: string;
     public imageUri: string;
-    public isListed: boolean;
-    public listedPrice?: number;
-    public lastSoldPrice?: number;
     public tokenContractAddress?: string;
     public nftAddress?: string;
     public tokenId?: string;

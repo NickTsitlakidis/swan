@@ -23,6 +23,7 @@ export class NftProjector implements IEventHandler<NftCreatedEvent | NftMintedEv
             view.blockchainId = event.blockchainId;
             view.userId = event.userId;
             view.categoryId = event.categoryId;
+            view.userWalletId = event.userWalletId;
         } else {
             view = await this._repository.findById(event.aggregateId);
         }
@@ -39,7 +40,7 @@ export class NftProjector implements IEventHandler<NftCreatedEvent | NftMintedEv
 
         if (event instanceof NftMintedEvent) {
             view.transactionId = event.transactionId;
-            view.tokenAddress = event.tokenAddress;
+            view.tokenContractAddress = event.tokenAddress;
             view.tokenId = event.tokenId;
         }
 

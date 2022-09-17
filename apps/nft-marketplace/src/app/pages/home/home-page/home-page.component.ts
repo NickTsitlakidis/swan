@@ -1,6 +1,7 @@
 import { ListingDto, PaginationDto } from "@swan/dto";
 import { Component, OnInit } from "@angular/core";
 import { ListingsService } from "../../../@core/services/listings/listings.service";
+import { MetamaskService } from "../../../@core/services/chains/metamask.service";
 
 @Component({
     selector: "nft-marketplace-home-page",
@@ -9,7 +10,7 @@ import { ListingsService } from "../../../@core/services/listings/listings.servi
 })
 export class HomePageComponent implements OnInit {
     listings: ListingDto[];
-    constructor(private _listingService: ListingsService) {}
+    constructor(private _listingService: ListingsService, private _metamask: MetamaskService) {}
 
     ngOnInit() {
         const query = {
@@ -23,6 +24,6 @@ export class HomePageComponent implements OnInit {
     }
 
     buyToken(listing: ListingDto) {
-        return;
+        this._metamask.buyToken(listing).subscribe((result) => console.log(result));
     }
 }
