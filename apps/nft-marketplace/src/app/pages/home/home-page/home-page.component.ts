@@ -24,6 +24,6 @@ export class HomePageComponent implements OnInit {
     }
 
     buyToken(listing: ListingDto) {
-        this._metamask.buyToken(listing).subscribe((result) => console.log(result));
+        //this._metamask.buyToken(listing).subscribe((result) => console.log(result));
     }
 }

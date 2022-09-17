@@ -1,6 +1,12 @@
 import { Injectable } from "@angular/core";
 import { UserStore } from "./user-store";
-import { CompleteSignatureAuthenticationDto, StartSignatureAuthenticationDto, TokenDto, UserDto } from "@swan/dto";
+import {
+    CompleteSignatureAuthenticationDto,
+    ProfileNftDto,
+    StartSignatureAuthenticationDto,
+    TokenDto,
+    UserDto
+} from "@swan/dto";
 import { firstValueFrom, Observable } from "rxjs";
 import { mobxStream } from "../utils/stream-utils";
 import { WalletRegistryService } from "../services/chains/wallet-registry.service";
@@ -107,12 +113,32 @@ export class UserFacade {
         }
     }
 
+    async getNfts() {
+        try {
+            const swanNft = await firstValueFrom(this._userService.getNfts());
+            this._userStore.addSwanNft(ComplexState.fromSuccess(swanNft));
+        } catch (error) {
+            this._userStore.addSwanNft(ComplexState.fromError(error as Error));
+        }
+
+        try {
+            const swanNft = await firstValueFrom(this._userService.getExternalNfts());
+            this._userStore.addExternalNft(ComplexState.fromSuccess(swanNft));
+        } catch (error) {
+            this._userStore.addExternalNft(ComplexState.fromError(error as Error));
+        }
+    }
+
     streamUser(): Observable<UserDto | undefined> {
         return mobxStream(() => this._userStore.user.state);
     }
 
     streamToken(): Observable<ComplexState<TokenDto>> {
         return mobxStream(() => this._userStore.token);
+    }
+
+    streamNft(): Observable<ComplexState<Array<ProfileNftDto>>> {
+        return mobxStream(() => this._userStore.nft);
     }
 
     private saveTokenToStorage(token: TokenDto) {

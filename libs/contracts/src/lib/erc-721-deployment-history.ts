@@ -6,7 +6,7 @@ export class Erc721DeploymentHistory {
         const mainNet = [FANTOM_MAIN_NET.address];
 
         if (includeTestNet) {
-            return mainNet.concat([FANTOM_TEST_NET.address]);
+            return mainNet.concat([FANTOM_TEST_NET.address, "0xec93cf7fb37f43c1852488f5f7516958bc5ec6d3"]);
         }
 
         return mainNet;

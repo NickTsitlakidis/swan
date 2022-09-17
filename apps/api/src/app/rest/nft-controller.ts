@@ -30,10 +30,10 @@ export class NftController {
     @Get("/user")
     @UseGuards(UserGuard)
     async getByUserId(@RequestUserId() userId: string): Promise<Array<ProfileNftDto>> {
-        return this._nftQueryHandler.getExternalByUserId(userId);
+        return this._nftQueryHandler.getByUserId(userId);
     }
 
-    @Get("/user")
+    @Get("/user/external")
     @UseGuards(UserGuard)
     async getExternalByUserId(@RequestUserId() userId: string): Promise<Array<ProfileNftDto>> {
         return this._nftQueryHandler.getExternalByUserId(userId);

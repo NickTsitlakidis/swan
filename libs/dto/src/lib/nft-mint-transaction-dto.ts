@@ -3,6 +3,6 @@ export class NftMintTransactionDto {
         public id: string,
         public transactionId: string,
         public tokenContractAddress: string,
-        public tokenId: string
+        public tokenId?: string
     ) {}
 }

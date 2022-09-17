@@ -85,7 +85,12 @@ export class EvmActionsService extends BlockchainActions {
             .filter(
                 (contract) => contract.supports_erc?.includes("erc721") || contract.supports_erc?.includes("erc1155")
             )
-            .filter((contract) => swanAddresses.indexOf(contract.contract_address) === -1)
+            .filter(
+                (contract) =>
+                    swanAddresses.filter(
+                        (swanAddress) => swanAddress.toLowerCase() === contract.contract_address.toLowerCase()
+                    ).length === 0
+            )
             .flatMap((contract) => {
                 return contract.nft_data.map((nft) => {
                     const withAddress: NftData & { contractAddress: string } = nft as any;
@@ -104,9 +109,6 @@ export class EvmActionsService extends BlockchainActions {
                 image: nft.external_data.image
             });
         }
-        /*
-            TODO get category from metadata for Swan NFTS
-         */
         const foundCategories = await this.getCategoriesDto(getFilesCategory);
 
         return validatedNfts
