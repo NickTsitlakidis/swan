@@ -16,7 +16,7 @@ import { WalletEvent, WalletEventType } from "../wallet-event";
 import { CreateNftInput } from "@metaplex-foundation/js";
 import { MetaplexService } from "./metaplex.service";
 import { SwanError } from "../../../interfaces/swan-error";
-import { NftMintTransactionDto } from "@swan/dto";
+import { ListingDto, NftMintTransactionDto } from "@swan/dto";
 import { ListingResult } from "@swan/contracts";
 import { CreateListing } from "../create-listing";
 
@@ -232,6 +232,10 @@ export class SolanaWalletService implements WalletService {
     }
 
     getListingResult(transactionHash: string, blockchainId: string): Observable<ListingResult> {
+        return EMPTY;
+    }
+
+    buyToken(listing: ListingDto): Observable<string> {
         return EMPTY;
     }
 }

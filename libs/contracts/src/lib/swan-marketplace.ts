@@ -27,6 +27,17 @@ export class SwanMarketplace {
         return listingResult.hash;
     }
 
+    async buyToken(tokenContractAddress: string, tokenId: number, price: number): Promise<string> {
+        const connected = this._contractInstance.connect(this._ethersProvider.getSigner());
+        const listing = await connected["getListing"](tokenContractAddress, tokenId);
+        console.log(listing.price.toString());
+        console.log(ethers.utils.parseEther(price.toString()).toString());
+        const buyResult: ContractTransaction = await connected["buyToken"](tokenContractAddress, tokenId, {
+            value: ethers.utils.parseEther(price.toString())
+        });
+        return buyResult.hash;
+    }
+
     async getListingResult(transactionHash: string, signerAddress: string): Promise<ListingResult> {
         const eventFilter = this._contractInstance.filters["ListingCreated"](signerAddress);
 
