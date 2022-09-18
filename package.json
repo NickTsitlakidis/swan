@@ -14,7 +14,7 @@
     "lint-api": "nx lint api",
     "lint-nft-marketplace": "nx lint nft-marketplace",
     "test": "nx test",
-    "test-api": "nx test api",
+    "test-api": "nx test api --skip-nx-cache",
     "test-solidity": "cd ./apps/solidity-contracts && npx hardhat test",
     "create-solidity-types": "cd ./apps/solidity-contracts && npx hardhat typechain"
   },
@@ -146,6 +146,7 @@
     "hardhat-gas-reporter": "1.0.8",
     "jest": "27.5.1",
     "jest-preset-angular": "11.1.2",
+    "jest-verify-node-version": "1.0.3",
     "nx": "14.3.6",
     "prettier": "2.6.2",
     "supertest": "6.1.3",
