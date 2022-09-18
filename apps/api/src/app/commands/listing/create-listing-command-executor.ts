@@ -9,6 +9,7 @@ import { NftViewRepository } from "../../views/nft/nft-view-repository";
 import { BadRequestException } from "@nestjs/common";
 import { isNil } from "lodash";
 import { LogAsyncMethod } from "../../infrastructure/logging";
+import { BlockchainWalletRepository } from "../../support/blockchains/blockchain-wallet-repository";
 
 @CommandHandler(CreateListingCommand)
 export class CreateListingCommandExecutor implements ICommandHandler<CreateListingCommand> {
@@ -16,7 +17,8 @@ export class CreateListingCommandExecutor implements ICommandHandler<CreateListi
         private _factory: ListingFactory,
         private _categoryRepository: CategoryRepository,
         private _blockchainRepository: BlockchainRepository,
-        private _nftRepository: NftViewRepository
+        private _nftRepository: NftViewRepository,
+        private _blockchainWalletRepository: BlockchainWalletRepository
     ) {}
 
     @LogAsyncMethod
@@ -27,32 +29,43 @@ export class CreateListingCommandExecutor implements ICommandHandler<CreateListi
         }
 
         const blockchain = await this._blockchainRepository.findById(command.blockchainId);
+        const wallet = await this._blockchainWalletRepository.findByWalletIdAndBlockchainId(
+            command.walletId,
+            command.blockchainId
+        );
+
         if (isNil(blockchain)) {
-            throw new BadRequestException("Blockchain is not found");
+            throw new BadRequestException(`Blockchain is not found: ${command.blockchainId}`);
+        }
+
+        if (isNil(wallet)) {
+            throw new BadRequestException(
+                `Wallet(${command.walletId}) - Blockchain(${command.blockchainId}) combination is not found`
+            );
         }
 
         if (!isNil(command.nftId)) {
             const nft = await this._nftRepository.findById(command.nftId);
             if (isNil(nft)) {
-                throw new BadRequestException("Nft is not found");
+                throw new BadRequestException(`Nft is not found: ${command.nftId}`);
             }
 
             if (nft.blockchainId !== blockchain.id) {
-                throw new BadRequestException("Invalid NFT blockchain");
+                throw new BadRequestException(`Invalid NFT(${blockchain.id}) - Blockchain(${nft.blockchainId})`);
             }
         }
 
         if (blockchain.signatureType === SignatureTypes.EVM) {
             if (!command.tokenContractAddress) {
-                throw new BadRequestException("Empty EVM nft contract address");
+                throw new BadRequestException(`Empty EVM nft contract address: Command ${command}`);
             }
 
             if (!command.chainTokenId) {
-                throw new BadRequestException("Empty EVM nft chain token id");
+                throw new BadRequestException(`Empty EVM nft chain token id: Command ${command}`);
             }
         } else if (blockchain.signatureType === SignatureTypes.SOLANA) {
             if (!command.nftAddress) {
-                throw new BadRequestException("Empty Solana nft address");
+                throw new BadRequestException(`Empty Solana nft address: Command ${command}`);
             }
         }
         const created = this._factory.createNew(command);

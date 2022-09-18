@@ -33,7 +33,7 @@ test("execute - throws if listing is missing", async () => {
 test("execute - submits and commits", async () => {
     const command = new SubmitListingCommand("chained", "listed");
 
-    const events = [new SourcedEvent("id", new ListingCreatedEvent(34, "u", "c", "b"))];
+    const events = [new SourcedEvent("id", new ListingCreatedEvent(34, "u", "c", "b", "t", "a"))];
     events[0].aggregateVersion = 1;
     const eventsSpy = jest.spyOn(eventStore, "findEventByAggregateId").mockResolvedValue(events);
 

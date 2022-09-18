@@ -14,7 +14,20 @@ export class CreateListingDto {
 
     @IsString()
     @IsNotEmpty()
+    walletId: string;
+
+    @IsString()
+    @IsNotEmpty()
     blockchainId: string;
+
+    @IsString()
+    @IsOptional()
+    @IsNotEmpty()
+    animationUrl?: string;
+
+    @IsString()
+    @IsNotEmpty()
+    imageUrl: string;
 
     @IsString()
     @IsNotEmpty()

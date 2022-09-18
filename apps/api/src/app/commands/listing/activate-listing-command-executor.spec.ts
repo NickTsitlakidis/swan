@@ -33,7 +33,7 @@ test("execute - throws bad request if listing is missing", async () => {
 test("execute - activates and commits", async () => {
     const command = new ActivateListingCommand(34, "listed", 65);
 
-    const events = [new SourcedEvent("id", new ListingCreatedEvent(34, "u", "c", "b"))];
+    const events = [new SourcedEvent("id", new ListingCreatedEvent(34, "u", "c", "b", "t", "a"))];
     events[0].aggregateVersion = 1;
     const eventsSpy = jest.spyOn(eventStore, "findEventByAggregateId").mockResolvedValue(events);
 
