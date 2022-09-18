@@ -17,7 +17,7 @@ beforeEach(async () => {
     repoMock = testModule.get(ListingViewRepository);
 });
 
-test("getActiveListings - returns empty array when no collections are found", async () => {
+test("getActiveListings - returns empty array when no active listings are found", async () => {
     const repoSpy = jest.spyOn(repoMock, "findAllActive").mockResolvedValue([[], 0]);
 
     const dto: PaginationDto = {
@@ -32,7 +32,7 @@ test("getActiveListings - returns empty array when no collections are found", as
     expect(repoSpy).toHaveBeenCalledWith(dto.skip, dto.limit);
 });
 
-test("getActiveListings - returns false when collections is not found", async () => {
+test("getActiveListings - returns two valid active listings", async () => {
     const listingViews = [new ListingView(), new ListingView()];
     listingViews[0].id = new ObjectID().toHexString();
     listingViews[0].blockchainId = "block1";
