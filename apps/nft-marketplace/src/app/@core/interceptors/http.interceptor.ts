@@ -1,13 +1,15 @@
 import { HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 
-import { catchError, mergeMap, tap } from "rxjs/operators";
+import { catchError, mergeMap } from "rxjs/operators";
 
 import { environment } from "../../../environments/environment";
 import { ClientAuthService } from "../services/authentication/client_auth.service";
-import { UserAuthService } from "../services/authentication/user_auth.service";
-import { Observable, throwError } from "rxjs";
+import { from, map, Observable, of, switchMap, throwError } from "rxjs";
 import { TokenDto } from "@swan/dto";
+import { UserFacade } from "../store/user-facade";
+import { ComplexState } from "../store/complex-state";
+import { isNil } from "lodash";
 
 @Injectable()
 export class HttpRequestsInterceptor implements HttpInterceptor {
@@ -15,17 +17,20 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
         "/support",
         "/user/start-signature-authentication",
         "/user/complete-signature-authentication",
-        "/user/refresh-token"
+        "/user/refresh-token",
+        "/listings/get-active-listings"
     ];
 
     public clientLogin = "/client/login";
 
-    constructor(private _clientAuthService: ClientAuthService, private _userAuthService: UserAuthService) {}
+    constructor(
+        private _clientAuthService: ClientAuthService,
+        private _userFacade: UserFacade
+    ) {}
 
     intercept(req: HttpRequest<unknown>, next: HttpHandler) {
         const url = req.url;
         const clientData = this._clientAuthService.getClientTokenData();
-        const userData = this._userAuthService.getUserTokenData();
 
         const isClientRequest = this.clientRequests.some((requestString) => url.includes(requestString));
         const isUserRequest =
@@ -37,10 +42,6 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
             req = this._addBearerToken(req, clientData.tokenValue);
         }
 
-        if (userData.tokenValue && isUserRequest) {
-            req = this._addBearerToken(req, userData.tokenValue);
-        }
-
         let fullUrlReq: HttpRequest<unknown> = req.clone();
 
         if (!fullUrlReq.url.includes("http")) {
@@ -50,32 +51,51 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
         }
 
         const retryable = fullUrlReq.clone();
-        return next.handle(fullUrlReq).pipe(
-            tap({
-                // Succeeds when there is a response; ignore other events
-                /* next: (event) => (ok = event instanceof HttpResponse ? "succeeded" : "") */
-                // Operation failed; error is an HttpErrorResponse
-                /* error: (error) => () */
-            }),
+
+        let toRun = next.handle(fullUrlReq);
+
+        if (isUserRequest) {
+            toRun = this._userFacade.streamToken().pipe(
+                map((tokenState) => {
+                    if(isNil(tokenState.state)) {
+                        return fullUrlReq
+                    } else {
+                        return this._addBearerToken(fullUrlReq, tokenState.state.tokenValue);
+                    }
+                }),
+                mergeMap((urlReq) => next.handle(urlReq))
+            );
+        }
+
+        return toRun.pipe(
             catchError((error) => {
                 if (error.status !== 401) {
                     //todo some error handling here perhaps?
                     return throwError(error);
                 }
 
-                let withNewToken: Observable<TokenDto> = throwError(error);
+                let withNewToken: Observable<ComplexState<TokenDto>> = throwError(error);
 
                 if (isClientRequest) {
-                    withNewToken = this._clientAuthService.getAndStoreClientToken();
+                    withNewToken = this._clientAuthService.getAndStoreClientToken().pipe(
+                        map((token) => ComplexState<TokenDto>.fromSuccess(token)),
+                        catchError((error) => of(ComplexState<TokenDto>.fromError(error) as ComplexState<TokenDto>))
+                    );
                 }
 
                 if (isUserRequest) {
-                    withNewToken = this._userAuthService.refreshToken();
+                    withNewToken = from(this._userFacade.refreshToken()).pipe(
+                        switchMap(() => this._userFacade.streamToken())
+                    );
                 }
 
                 return withNewToken.pipe(
                     mergeMap((token) => {
-                        return next.handle(this._addBearerToken(retryable, token.tokenValue));
+                        if (token.error) {
+                            return throwError(() => token.error);
+                        } else {
+                            return next.handle(this._addBearerToken(retryable, token.state.tokenValue));
+                        }
                     }),
                     catchError((retriedError) => {
                         //todo: maybe we should do something here when we have a nice structure for errors
@@ -83,13 +103,6 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
                     })
                 );
             })
-            /* // Log when response observable either completes or errors
-            finalize(() => {
-                const elapsed = Date.now() - started;
-                const msg = `${req.method} "${req.urlWithParams}"
-             ${ok} in ${elapsed} ms.`;
-                this.messenger.add(msg);
-            }) */
         );
     }
 

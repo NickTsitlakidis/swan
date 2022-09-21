@@ -1,4 +1,4 @@
-import { IsEthereumAddress, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateListingDto {
     @IsNumber()
@@ -14,7 +14,20 @@ export class CreateListingDto {
 
     @IsString()
     @IsNotEmpty()
+    walletId: string;
+
+    @IsString()
+    @IsNotEmpty()
     blockchainId: string;
+
+    @IsString()
+    @IsOptional()
+    @IsNotEmpty()
+    animationUrl?: string;
+
+    @IsString()
+    @IsNotEmpty()
+    imageUrl: string;
 
     @IsString()
     @IsNotEmpty()

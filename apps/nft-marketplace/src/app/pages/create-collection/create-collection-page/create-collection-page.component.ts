@@ -1,10 +1,12 @@
+import { CategoriesFacade } from "../../../@core/store/categories-facade";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { CategoryDto, CollectionLinksDto, CreateCollectionDto } from "@swan/dto";
 import { CollectionsService } from "../../../@core/services/collections/collections.service";
 import { ValidateName, ValidateUrl } from "./create-collection-page.validator";
-import { SupportService } from "../../../@core/services/support/support.service";
 import { DisplayedBlockchains, DisplayPaymentTokens } from "./create-collection";
+import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets-facade";
+import { Janitor } from "../../../@core/components/janitor";
 
 @Component({
     selector: "nft-marketplace-create-collection-page",
@@ -12,7 +14,7 @@ import { DisplayedBlockchains, DisplayPaymentTokens } from "./create-collection"
     styleUrls: ["./create-collection-page.component.scss"],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CreateCollectionPageComponent implements OnInit {
+export class CreateCollectionPageComponent extends Janitor implements OnInit {
     public createCollectionForm: UntypedFormGroup;
     public categories: CategoryDto[];
     public blockchains: DisplayedBlockchains[];
@@ -81,26 +83,15 @@ export class CreateCollectionPageComponent implements OnInit {
     constructor(
         private _fb: UntypedFormBuilder,
         private _collectionsService: CollectionsService,
-        private _supportService: SupportService,
+        private _blockchainWalletsFacade: BlockchainWalletsFacade,
+        private _categoriesFacade: CategoriesFacade,
         private _cd: ChangeDetectorRef
     ) {
-        this._supportService.getCategories().subscribe((categories) => {
+        super();
+        const categorySub = this._categoriesFacade.streamCategories().subscribe((categories) => {
             this.categories = categories;
         });
-        this._supportService.getBlockchainWallets().subscribe((chains) => {
-            this.blockchains = chains.map((chain) => {
-                return {
-                    name: chain.name,
-                    id: chain.blockchainId
-                };
-            });
-            this.paymentTokens = chains.map((chain) => {
-                return {
-                    name: chain.mainTokenSymbol
-                };
-            });
-            this._cd.detectChanges();
-        });
+        this.addSubscription(categorySub);
     }
 
     ngOnInit(): void {
@@ -122,6 +113,23 @@ export class CreateCollectionPageComponent implements OnInit {
             percentageFee: [undefined],
             sensitiveContent: [undefined]
         });
+
+        const sub = this._blockchainWalletsFacade.streamWallets().subscribe((chainWallets) => {
+            this.blockchains = chainWallets.map((chain) => {
+                return {
+                    name: chain.blockchain.name,
+                    id: chain.blockchain.id
+                };
+            });
+            this.paymentTokens = chainWallets.map((chain) => {
+                return {
+                    name: chain.mainTokenSymbol
+                };
+            });
+            this._cd.detectChanges();
+        });
+
+        this.addSubscription(sub);
     }
 
     updateLogoImage(file: File | null) {

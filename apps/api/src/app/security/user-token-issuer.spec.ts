@@ -2,53 +2,23 @@ import { IdGenerator } from "../infrastructure/id-generator";
 import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 import { RefreshTokenRepository } from "./refresh-token-repository";
 import { UserTokenIssuer } from "./user-token-issuer";
-import { Test } from "@nestjs/testing";
 import { UnauthorizedException } from "@nestjs/common";
 import { RefreshToken } from "./refresh-token";
-import { getMockCalledParameters } from "../test-utils/mocking";
 import * as moment from "moment";
+import { getUnitTestingModule } from "../test-utils/test-modules";
 
-const idGeneratorMock: Partial<IdGenerator> = {
-    generateUUID: () => {
-        throw "should never be called";
-    },
-    generateEntityId: () => {
-        throw "should never be called";
-    }
-};
-
-const jwtServiceMock: Partial<JwtService> = {
-    sign: () => "",
-    verify: () => undefined
-};
-
-const repoMock: Partial<RefreshTokenRepository> = {
-    save: () => Promise.resolve(undefined),
-    findByTokenValue: () => undefined
-};
-
+let idGeneratorMock: IdGenerator;
+let jwtServiceMock: JwtService;
+let repoMock: RefreshTokenRepository;
 let issuer: UserTokenIssuer;
 
 beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
-        providers: [
-            UserTokenIssuer,
-            {
-                provide: JwtService,
-                useValue: jwtServiceMock
-            },
-            {
-                provide: IdGenerator,
-                useValue: idGeneratorMock
-            },
-            {
-                provide: RefreshTokenRepository,
-                useValue: repoMock
-            }
-        ]
-    }).compile();
+    const moduleRef = await getUnitTestingModule(UserTokenIssuer);
 
     issuer = moduleRef.get(UserTokenIssuer);
+    repoMock = moduleRef.get(RefreshTokenRepository);
+    jwtServiceMock = moduleRef.get(JwtService);
+    idGeneratorMock = moduleRef.get(IdGenerator);
 });
 
 test("issueFromId - creates and stores token", async () => {
@@ -72,22 +42,30 @@ test("issueFromId - creates and stores token", async () => {
     expect(generateDisplayIdSpy).toHaveBeenCalledTimes(1);
     expect(generateEntityIdSpy).toHaveBeenCalledTimes(1);
 
-    const savedRefreshToken: RefreshToken = getMockCalledParameters(saveSpy)[0];
-
-    expect(savedRefreshToken.tokenValue).toBe("uuid");
-    expect(savedRefreshToken.isRevoked).toBe(false);
-    expect(savedRefreshToken.userId).toBe("the-user");
-    expect(savedRefreshToken.id).toBe("507f1f77bcf86cd799439011");
+    const expectedRefreshToken = new RefreshToken();
+    expectedRefreshToken.userId = "the-user";
+    expectedRefreshToken.tokenValue = "uuid";
+    expectedRefreshToken.isRevoked = false;
+    expectedRefreshToken.id = "507f1f77bcf86cd799439011";
+    delete expectedRefreshToken.issuedAt;
     expect(saveSpy).toHaveBeenCalledTimes(1);
+    expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining(expectedRefreshToken));
 
-    const refreshSignOptions: JwtSignOptions = getMockCalledParameters(signSpy, 2)[1];
-    const accessSignOptions: JwtSignOptions = getMockCalledParameters(signSpy, 2, 2)[1];
+    const expectedRefreshOptions: JwtSignOptions = {
+        subject: "the-user",
+        jwtid: "uuid",
+        algorithm: "ES256"
+    };
 
-    expect(refreshSignOptions.subject).toBe("the-user");
-    expect(refreshSignOptions.jwtid).toBe("uuid");
+    const expectedAccessOptions: JwtSignOptions = {
+        subject: "the-user",
+        expiresIn: "120m",
+        algorithm: "ES256"
+    };
 
-    expect(accessSignOptions.subject).toBe("the-user");
-    expect(accessSignOptions.expiresIn).toBe("120m");
+    expect(signSpy).toHaveBeenCalledTimes(2);
+    expect(signSpy).toHaveBeenNthCalledWith(1, {}, expect.objectContaining(expectedRefreshOptions));
+    expect(signSpy).toHaveBeenNthCalledWith(2, {}, expect.objectContaining(expectedAccessOptions));
 });
 
 test("issueFromRefreshToken - throws for non existing token", async () => {
@@ -161,8 +139,12 @@ test("issueFromRefreshToken - creates and returns for valid refresh token", asyn
     expect(findSpy).toHaveBeenCalledTimes(1);
     expect(findSpy).toHaveBeenCalledWith("the-token");
 
-    const accessSignOptions: JwtSignOptions = getMockCalledParameters(signSpy, 2, 1)[1];
+    const expectedAccessOptions: JwtSignOptions = {
+        subject: "the-user",
+        expiresIn: "120m",
+        algorithm: "ES256"
+    };
 
-    expect(accessSignOptions.subject).toBe("the-user");
-    expect(accessSignOptions.expiresIn).toBe("120m");
+    expect(signSpy).toHaveBeenCalledTimes(1);
+    expect(signSpy).toHaveBeenNthCalledWith(1, {}, expect.objectContaining(expectedAccessOptions));
 });

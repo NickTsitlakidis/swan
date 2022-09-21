@@ -10,6 +10,7 @@ import { ChainNft } from "./chain-nft";
 import { HttpService } from "@nestjs/axios";
 import { CategoryRepository } from "../categories/category-repository";
 import { CategoryByFileType } from "./category-by-file-type";
+import { MetadataValidator } from "./metadata-validator";
 
 @Injectable()
 export class SolanaActionsService extends BlockchainActions {
@@ -18,13 +19,17 @@ export class SolanaActionsService extends BlockchainActions {
         configService: ConfigService,
         metaplexService: MetaplexService,
         httpService: HttpService,
-        categoryRepository: CategoryRepository
+        categoryRepository: CategoryRepository,
+        validator: MetadataValidator
     ) {
-        super(awsService, configService, metaplexService, httpService, categoryRepository);
+        super(awsService, configService, metaplexService, httpService, categoryRepository, validator);
     }
 
     async getUserNfts(pubKey: string): Promise<ChainNft[]> {
-        const metaplexData = await this.metaplexService.getUserNFTs(pubKey);
+        let metaplexData = await this.metaplexService.getUserNFTs(pubKey);
+        metaplexData = metaplexData.filter((nft) => {
+            return this.validator.validate(nft);
+        });
         const getFilesCategory: CategoryByFileType[] = [];
         for (const nft of metaplexData) {
             getFilesCategory.push({
@@ -33,10 +38,12 @@ export class SolanaActionsService extends BlockchainActions {
             });
         }
         const foundCategories = await this.getCategoriesDto(getFilesCategory);
-        const data = metaplexData.map((nft, index) => {
-            const metaplex: ChainNft = { ...nft, categoryId: foundCategories[index]?.id };
-            return metaplex;
-        });
+        const data = metaplexData
+            .map((nft, index) => {
+                const metaplex: ChainNft = { ...nft, categoryId: foundCategories[index]?.id };
+                return metaplex;
+            })
+            .filter((nft) => nft.categoryId);
 
         return data;
     }

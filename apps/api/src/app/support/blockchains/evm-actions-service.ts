@@ -1,5 +1,5 @@
-import { CategoryRepository } from "./../categories/category-repository";
-import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
+import { CategoryRepository } from "../categories/category-repository";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
 import { EvmMetadata } from "./evm-metadata";
 import { UploadedFiles } from "./uploaded-files";
@@ -8,7 +8,7 @@ import { ConfigService } from "@nestjs/config";
 import { AwsService } from "../aws/aws-service";
 import { MetaplexService } from "../metaplex/metaplex-service";
 import { BlockchainRepository } from "./blockchain-repository";
-import { EvmMetadataValidator } from "./evm-metadata-validator";
+import { MetadataValidator } from "./metadata-validator";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { CovalentHqResponse, NftData } from "./covalent-hq-response";
@@ -18,19 +18,17 @@ import { CategoryByFileType } from "./category-by-file-type";
 
 @Injectable()
 export class EvmActionsService extends BlockchainActions {
-    private _logger: Logger;
-
     constructor(
         awsService: AwsService,
         configService: ConfigService,
         metaplexService: MetaplexService,
         categoryRepository: CategoryRepository,
         httpService: HttpService,
-        private readonly _validator: EvmMetadataValidator,
+        validator: MetadataValidator,
         private readonly _blockchainRepository: BlockchainRepository
     ) {
-        super(awsService, configService, metaplexService, httpService, categoryRepository);
-        this._logger = getLogger(EvmActionsService);
+        super(awsService, configService, metaplexService, httpService, categoryRepository, validator);
+        this.logger = getLogger(EvmActionsService);
     }
 
     async uploadMetadata(metadata: NftMetadata): Promise<UploadedFiles> {
@@ -76,7 +74,7 @@ export class EvmActionsService extends BlockchainActions {
         const nfts = await firstValueFrom(this.httpService.get<CovalentHqResponse>(url));
 
         if (nfts.status !== 200) {
-            this._logger.error(`Got error response from CovalentHQ API. Status : ${nfts.status}`);
+            this.logger.error(`Got error response from CovalentHQ API. Status : ${nfts.status}`);
             throw new InternalServerErrorException("Could not retrieve nfts from covalentHQ");
         }
 
@@ -92,7 +90,7 @@ export class EvmActionsService extends BlockchainActions {
                 });
             })
             .filter((nft) => {
-                return this._validator.validate(nft.external_data);
+                return this.validator.validate(nft.external_data);
             });
 
         const getFilesCategory: CategoryByFileType[] = [];
@@ -107,23 +105,25 @@ export class EvmActionsService extends BlockchainActions {
          */
         const foundCategories = await this.getCategoriesDto(getFilesCategory);
 
-        return validatedNfts.map((nft, index) => {
-            const metadataNft = nft.external_data;
-            const metaplex: ChainNft = {
-                tokenContractAddress: nft.contractAddress,
-                tokenId: nft.token_id,
-                name: metadataNft.name,
-                image: metadataNft.image,
-                attributes: metadataNft.attributes,
-                description: metadataNft.description,
-                animation_url: metadataNft.animation_url,
-                external_url: metadataNft.external_url,
-                categoryId: foundCategories[index]?.id,
-                properties: {
-                    files: []
-                }
-            };
-            return metaplex;
-        });
+        return validatedNfts
+            .map((nft, index) => {
+                const metadataNft = nft.external_data;
+                const metaplex: ChainNft = {
+                    tokenContractAddress: nft.contractAddress,
+                    tokenId: nft.token_id,
+                    name: metadataNft.name,
+                    image: metadataNft.image,
+                    attributes: metadataNft.attributes,
+                    description: metadataNft.description,
+                    animation_url: metadataNft.animation_url,
+                    external_url: metadataNft.external_url,
+                    categoryId: foundCategories[index]?.id,
+                    properties: {
+                        files: []
+                    }
+                };
+                return metaplex;
+            })
+            .filter((nft) => nft.categoryId);
     }
 }

@@ -4,6 +4,7 @@ import { BlockchainActions } from "./blockchain-actions";
 import { BlockchainRepository } from "./blockchain-repository";
 import { EvmActionsService } from "./evm-actions-service";
 import { SolanaActionsService } from "./solana-actions-service";
+import { SignatureTypes } from "./signature-types";
 
 @Injectable()
 export class BlockchainActionsRegistryService {
@@ -18,9 +19,9 @@ export class BlockchainActionsRegistryService {
     async getService(blockchainId: string): Promise<BlockchainActions> {
         await this._initBlockchains();
         const blockchain = this._blockchains.find((blockchain) => blockchain.id === blockchainId);
-        if (blockchain?.signatureType === "EVM") {
+        if (blockchain?.signatureType === SignatureTypes.EVM) {
             return this._evmActionsService;
-        } else if (blockchain?.signatureType === "SOLANA") {
+        } else if (blockchain?.signatureType === SignatureTypes.SOLANA) {
             return this._solanaActionsService;
         }
     }

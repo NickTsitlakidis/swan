@@ -1,5 +1,14 @@
-import { Body, Controller, Post, UseGuards } from "@nestjs/common";
-import { ActivateListingDto, CreateListingDto, EntityDto, SubmitListingDto } from "@swan/dto";
+import { ListingQueryHandler } from "./../queries/listing-query-handler";
+import { ClientGuard } from "./../security/guards/client-guard";
+import { Body, Controller, Get, Post, Query, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
+import {
+    ActivateListingDto,
+    CreateListingDto,
+    EntityDto,
+    ListingDto,
+    PaginationDto,
+    SubmitListingDto
+} from "@swan/dto";
 import { UserGuard } from "../security/guards/user-guard";
 import { RequestUserId } from "../security/request-user-id";
 import { CreateListingCommand } from "../commands/listing/create-listing-command";
@@ -9,7 +18,7 @@ import { ActivateListingCommand } from "../commands/listing/activate-listing-com
 
 @Controller("listings")
 export class ListingController {
-    constructor(private _commandBus: CommandBus) {}
+    constructor(private _commandBus: CommandBus, private _listingQueryHandler: ListingQueryHandler) {}
 
     @UseGuards(UserGuard)
     @Post("create-listing")
@@ -28,5 +37,14 @@ export class ListingController {
     @Post("submit-listing")
     submit(@Body() dto: SubmitListingDto): Promise<EntityDto> {
         return this._commandBus.execute(new SubmitListingCommand(dto.chainTransactionId, dto.listingId));
+    }
+
+    @UseGuards(ClientGuard)
+    @UsePipes(new ValidationPipe({ transform: true }))
+    @Get("get-active-listings")
+    getActiveListings(
+        @Query() queryParams: PaginationDto
+    ): Promise<{ listingDtos: ListingDto[]; listingsCount: number }> {
+        return this._listingQueryHandler.getActiveListings(queryParams);
     }
 }

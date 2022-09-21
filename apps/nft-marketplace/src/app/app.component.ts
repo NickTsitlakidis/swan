@@ -1,8 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { NbIconLibraries } from "@nebular/theme";
-import { LocalStorageService } from "ngx-webstorage";
 import { ClientAuthService } from "./@core/services/authentication/client_auth.service";
-import { AnalyticsService } from "./@core/utils/analytics.service";
+import { AnalyticsService } from "./@core/utils";
 import { WalletRegistryService } from "./@core/services/chains/wallet-registry.service";
 
 @Component({
@@ -14,7 +13,6 @@ export class AppComponent implements OnInit {
         private _analytics: AnalyticsService,
         private _clientAuthService: ClientAuthService,
         private _walletRegistry: WalletRegistryService,
-        private _lcStorage: LocalStorageService,
         private _iconLibraries: NbIconLibraries
     ) {
         this._iconLibraries.registerFontPack("font-awesome");

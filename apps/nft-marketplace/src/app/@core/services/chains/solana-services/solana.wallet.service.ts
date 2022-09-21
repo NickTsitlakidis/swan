@@ -8,13 +8,14 @@ import { concatMap, first, map, switchMap, take, filter } from "rxjs/operators";
 import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { environment } from "../../../../../environments/environment";
 import { WalletService } from "../wallet-service";
-import { CreateNft } from "../nft";
+import { CreateNft } from "../create-nft";
 import { WalletEvent, WalletEventType } from "../wallet-event";
 import { CreateNftInput } from "@metaplex-foundation/js";
 import { MetaplexService } from "./metaplex.service";
 import { SwanError } from "../../../interfaces/swan-error";
 import { NftMintTransactionDto } from "@swan/dto";
 import { ListingResult } from "@swan/contracts";
+import { CreateListing } from "../create-listing";
 
 export const isNotNull = <T>(source: Observable<T | null>) =>
     source.pipe(filter((item: T | null): item is T => item !== null));
@@ -216,20 +217,13 @@ export class SolanaWalletService implements WalletService {
             });
     }
 
-    createListing(
-        price: number,
-        tokenContractAddress?: string,
-        tokenId?: number,
-        nftAddress?: string
-    ): Observable<string> {
-        // TODO Error handler
-        if (!nftAddress) {
-            return EMPTY;
-        }
-
+    createListing(listing: CreateListing): Observable<string> {
         return this._completeWalletObservable().pipe(
             switchMap((wallet) => {
-                return from(this._metaplexService.createListing(nftAddress, wallet));
+                if (!listing.nftAddress) {
+                    return EMPTY;
+                }
+                return from(this._metaplexService.createListing(listing.nftAddress, wallet));
             }),
             switchMap((listingOutput) => {
                 if (!listingOutput) {
@@ -240,7 +234,7 @@ export class SolanaWalletService implements WalletService {
         );
     }
 
-    getListingResult(transactionHash: string): Observable<ListingResult> {
+    getListingResult(transactionHash: string, blockchainId: string): Observable<ListingResult> {
         return EMPTY;
     }
 

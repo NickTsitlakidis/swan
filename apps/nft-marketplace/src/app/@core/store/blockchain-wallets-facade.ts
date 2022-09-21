@@ -1,31 +1,26 @@
 import { Injectable } from "@angular/core";
 import { BlockchainWalletsStore } from "./blockchain-wallets-store";
 import { SupportService } from "../services/support/support.service";
-import { Observable, Subject } from "rxjs";
+import { Observable, switchMap } from "rxjs";
 import { BlockchainWalletDto } from "@swan/dto";
-import { reaction } from "mobx";
+import { mobxStream } from "../utils/stream-utils";
 
 @Injectable({ providedIn: "root" })
 export class BlockchainWalletsFacade {
-    private _subject: Subject<BlockchainWalletDto[]>;
-
-    constructor(private _store: BlockchainWalletsStore, private _supportService: SupportService) {
-        this._subject = new Subject<BlockchainWalletDto[]>();
-        reaction(
-            () => this._store.wallets,
-            (wallets) => {
-                this._subject.next(wallets);
-            }
-        );
-    }
+    constructor(private _store: BlockchainWalletsStore, private _supportService: SupportService) {}
 
     streamWallets(): Observable<Array<BlockchainWalletDto>> {
+        const observable = mobxStream(() => this._store.wallets);
+
         if (this._store.wallets.length === 0) {
-            this._supportService.getBlockchainWallets().subscribe((wallets) => {
-                this._store.setWallets(wallets);
-            });
+            return this._supportService.getBlockchainWallets().pipe(
+                switchMap((wallets) => {
+                    this._store.setWallets(wallets);
+                    return observable;
+                })
+            );
         }
 
-        return this._subject.asObservable();
+        return observable;
     }
 }

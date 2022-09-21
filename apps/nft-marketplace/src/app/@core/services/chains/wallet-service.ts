@@ -1,14 +1,15 @@
 import { NftMintTransactionDto } from "@swan/dto";
 import { Observable } from "rxjs";
-import { CreateNft } from "./nft";
+import { CreateNft } from "./create-nft";
 import { WalletEvent } from "./wallet-event";
 import { ListingResult } from "@swan/contracts";
+import { CreateListing } from "./create-listing";
 
 export interface WalletService {
     getPublicKey(): Observable<string>;
     signMessage(message: string): Observable<string | undefined>;
     mint(nft: CreateNft): Observable<NftMintTransactionDto>;
     getEvents(): Observable<WalletEvent>;
-    createListing(price: number, tokenContractAddress?: string, tokenId?: number, nftAddress?: string): Observable<string>;
-    getListingResult(transactionHash: string): Observable<ListingResult>;
+    createListing(listing: CreateListing): Observable<string>;
+    getListingResult(transactionHash: string, blockchainId: string): Observable<ListingResult>;
 }

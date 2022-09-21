@@ -1,6 +1,7 @@
+import { PaginationDto } from "@swan/dto";
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { ActivateListingDto, CreateListingDto, EntityDto, SubmitListingDto } from "@swan/dto";
+import { ActivateListingDto, CreateListingDto, EntityDto, ListingDto, SubmitListingDto } from "@swan/dto";
 import { CoreModule } from "../../core.module";
 
 @Injectable({
@@ -19,5 +20,17 @@ export class ListingsService {
 
     public activateListing(body: ActivateListingDto) {
         return this._httpClient.post<EntityDto>("/listings/activate-listing", body);
+    }
+
+    public getActiveListings(query: PaginationDto) {
+        return this._httpClient.get<{ listingDtos: ListingDto[]; listingsCount: number }>(
+            "/listings/get-active-listings",
+            {
+                params: {
+                    skip: query.skip,
+                    limit: query.limit
+                }
+            }
+        );
     }
 }

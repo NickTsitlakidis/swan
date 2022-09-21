@@ -1,8 +1,8 @@
 import { ethers } from "ethers";
-import { EvmChains, SwanNft } from "@swan/contracts";
+import { SwanNft } from "@swan/contracts";
 
 export class SwanNftFactory {
-    create(ethersProvider: ethers.providers.JsonRpcProvider, evmChain: EvmChains, usingTestNet = false): SwanNft {
-        return new SwanNft(ethersProvider, evmChain, usingTestNet);
+    create(ethersProvider: ethers.providers.JsonRpcProvider, blockchainId: string): SwanNft {
+        return new SwanNft(ethersProvider, blockchainId);
     }
 }
