@@ -22,7 +22,7 @@ export class SwanMarketplace {
         const listingResult: ContractTransaction = await connected["createListing"](
             tokenContractAddress,
             tokenId,
-            price
+            ethers.utils.parseEther(price.toString())
         );
         return listingResult.hash;
     }

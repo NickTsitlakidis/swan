@@ -1,6 +1,9 @@
 import {check} from "jest-verify-node-version";
 
 check({ engines: { node: '>= 16' } });
+import { check } from "jest-verify-node-version";
+
+check({ engines: { node: ">= 16.15.1" } });
 /* eslint-disable */
 export default {
     displayName: "api",
