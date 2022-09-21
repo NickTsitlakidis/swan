@@ -5,4 +5,5 @@ export interface CreateListing {
     tokenContractAddress?: string;
     tokenId?: number;
     blockchain: BlockchainDto;
+    nftAddress?: string | undefined;
 }
