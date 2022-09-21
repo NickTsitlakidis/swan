@@ -38,6 +38,11 @@ export class SwanMarketplace {
         return buyResult.hash;
     }
 
+    async getFeePercentage(): Promise<number> {
+        const fee = await this._contractInstance["getFeePercentage"]();
+        return fee.toNumber();
+    }
+
     async getListingResult(transactionHash: string, signerAddress: string): Promise<ListingResult> {
         const eventFilter = this._contractInstance.filters["ListingCreated"](signerAddress);
 

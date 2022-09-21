@@ -1,4 +1,4 @@
-import { ListingDto, PaginationDto } from "@swan/dto";
+import { BuyListingDto, ListingDto, PaginationDto } from "@swan/dto";
 import { Component, OnInit } from "@angular/core";
 import { ListingsService } from "../../../@core/services/listings/listings.service";
 import { MetamaskService } from "../../../@core/services/chains/metamask.service";
@@ -24,6 +24,11 @@ export class HomePageComponent implements OnInit {
     }
 
     buyToken(listing: ListingDto) {
-        //this._metamask.buyToken(listing).subscribe((result) => console.log(result));
+        this._metamask.buyToken(listing).subscribe((hash) => {
+            const dto = new BuyListingDto();
+            dto.chainTransactionHash = hash;
+            dto.listingId = listing.id;
+            this._listingService.buyListing(dto).subscribe((result) => console.log(result));
+        });
     }
 }

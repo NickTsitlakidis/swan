@@ -1,4 +1,6 @@
 import { EventPayload, SerializedEvent } from "../../infrastructure/serialized-event";
+import { Buyer } from "./buyer";
+import { TransactionFee } from "./transaction";
 
 @SerializedEvent("listing-created-event")
 export class ListingCreatedEvent extends EventPayload {
@@ -13,7 +15,8 @@ export class ListingCreatedEvent extends EventPayload {
         public tokenContractAddress?: string,
         public nftAddress?: string,
         public chainTokenId?: string,
-        public nftId?: string
+        public nftId?: string,
+        public marketPlaceContractAddress?: string
     ) {
         super();
     }
@@ -49,7 +52,16 @@ export class ListingUpdatedPriceEvent extends EventPayload {
 
 @SerializedEvent("listing-sold-event")
 export class ListingSoldEvent extends EventPayload {
-    constructor() {
+    public transactionHash: string;
+    public buyer: Buyer;
+    public transactionFee: TransactionFee;
+    public blockNumber: number;
+
+    constructor(transactionHash: string, buyer: Buyer, transactionFee: TransactionFee, blockNumber?: number) {
         super();
+        this.transactionHash = transactionHash;
+        this.buyer = buyer;
+        this.transactionFee = transactionFee;
+        this.blockNumber = blockNumber;
     }
 }

@@ -1,4 +1,4 @@
-import { PaginationDto } from "@swan/dto";
+import { BuyListingDto, PaginationDto } from "@swan/dto";
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { ActivateListingDto, CreateListingDto, EntityDto, ListingDto, SubmitListingDto } from "@swan/dto";
@@ -32,5 +32,9 @@ export class ListingsService {
                 }
             }
         );
+    }
+
+    public buyListing(body: BuyListingDto) {
+        return this._httpClient.post<EntityDto>("/listings/buy-listing", body);
     }
 }

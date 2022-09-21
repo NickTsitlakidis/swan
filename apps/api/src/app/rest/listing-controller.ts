@@ -3,6 +3,7 @@ import { ClientGuard } from "./../security/guards/client-guard";
 import { Body, Controller, Get, Post, Query, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import {
     ActivateListingDto,
+    BuyListingDto,
     CreateListingDto,
     EntityDto,
     ListingDto,
@@ -15,6 +16,7 @@ import { CreateListingCommand } from "../commands/listing/create-listing-command
 import { CommandBus } from "@nestjs/cqrs";
 import { SubmitListingCommand } from "../commands/listing/submit-listing-command";
 import { ActivateListingCommand } from "../commands/listing/activate-listing-command";
+import { BuyListingCommand } from "../commands/listing/buy-listing-command";
 
 @Controller("listings")
 export class ListingController {
@@ -37,6 +39,14 @@ export class ListingController {
     @Post("submit-listing")
     submit(@Body() dto: SubmitListingDto): Promise<EntityDto> {
         return this._commandBus.execute(new SubmitListingCommand(dto.chainTransactionId, dto.listingId));
+    }
+
+    @UseGuards(UserGuard)
+    @Post("buy-listing")
+    buy(@RequestUserId() userId: string, @Body() dto: BuyListingDto): Promise<EntityDto> {
+        return this._commandBus.execute(
+            new BuyListingCommand(dto.listingId, userId, dto.chainTransactionHash, dto.blockNumber)
+        );
     }
 
     @UseGuards(ClientGuard)

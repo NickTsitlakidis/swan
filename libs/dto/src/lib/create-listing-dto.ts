@@ -43,4 +43,9 @@ export class CreateListingDto {
     @IsNotEmpty()
     @IsOptional()
     chainTokenId?: string;
+
+    @IsString()
+    @IsNotEmpty()
+    @IsOptional()
+    marketPlaceContractAddress?: string;
 }
