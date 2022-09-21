@@ -1,3 +1,4 @@
+import { CreateListing } from "./../create-listing";
 import { SolanaWalletService } from "./solana.wallet.service";
 import { LocalStorageService } from "ngx-webstorage";
 
@@ -26,17 +27,12 @@ export class PhantomWalletService extends SolanaWalletService {
         return super.getPublicKey();
     }
 
-    public override createListing(
-        price: number,
-        tokenContractAddress?: string | undefined,
-        tokenId?: number | undefined,
-        nftAddress?: string | undefined
-    ): Observable<string> {
+    public override createListing(listing: CreateListing): Observable<string> {
         return this.walletStore.connected$.pipe(
             switchMap((connected) => {
                 if (connected) {
                     this.walletStore.selectWallet("Phantom" as WalletName);
-                    return super.createListing(price, tokenContractAddress, tokenId, nftAddress);
+                    return super.createListing(listing);
                 }
                 return EMPTY;
             })
