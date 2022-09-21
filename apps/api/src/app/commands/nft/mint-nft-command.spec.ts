@@ -14,7 +14,7 @@ test("fromDto - maps properties to new MintNftCommand", () => {
 
     expect(command.id).toBe(dto.id);
     expect(command.transactionId).toBe(dto.transactionId);
-    expect(command.tokenAddress).toBe(dto.tokenAddress);
+    expect(command.tokenContractAddress).toBe(dto.tokenContractAddress);
     expect(command.tokenId).toBe(dto.tokenId);
     expect(command.userId).toBe(userId);
 });

@@ -1,4 +1,3 @@
-import { UserService } from "../../../@core/services/user/user.service";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
 import { mergeMap, zip, of, EMPTY } from "rxjs";
 import { ListingsService } from "../../../@core/services/listings/listings.service";
@@ -7,6 +6,8 @@ import { ActivateListingDto, BlockchainWalletDto, CreateListingDto, ProfileNftDt
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { isEqual } from "lodash";
 import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets-facade";
+import { Janitor } from "../../../@core/components/janitor";
+import { UserFacade } from "../../../@core/store/user-facade";
 
 @Component({
     selector: "nft-marketplace-create-listing-page",
@@ -14,7 +15,7 @@ import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrls: ["./create-listing-page.component.scss"]
 })
-export class CreateListingPageComponent implements OnInit {
+export class CreateListingPageComponent extends Janitor implements OnInit {
     public createListingForm: UntypedFormGroup;
     public selectedForListingNft: ProfileNftDto | undefined;
     public userNfts: ProfileNftDto[];
@@ -25,17 +26,25 @@ export class CreateListingPageComponent implements OnInit {
         private _cd: ChangeDetectorRef,
         private _listingsService: ListingsService,
         private _walletRegistryService: WalletRegistryService,
-        private _userService: UserService
-    ) {}
+        private _userFacade: UserFacade
+    ) {
+        super();
+    }
 
     ngOnInit(): void {
         this.createListingForm = this._fb.group({
             price: [undefined, Validators.required]
         });
-        this._userService.getUserNfts().subscribe((nfts) => {
-            this.userNfts = nfts;
-            this._cd.detectChanges();
+
+        const nftSub = this._userFacade.streamNft().subscribe((nfts) => {
+            if (nfts.isEmpty) {
+                this._userFacade.getNfts();
+            } else {
+                this.userNfts = nfts.state;
+                this._cd.detectChanges();
+            }
         });
+        this.addSubscription(nftSub);
     }
 
     async onSelectNft(nft: ProfileNftDto) {

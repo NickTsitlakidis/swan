@@ -10,29 +10,32 @@ import { NftMetadata } from "./nft-metadata";
 import { EvmActionsService } from "../../support/blockchains/evm-actions-service";
 
 test("create - sets properties and applies NftCreatedEvent", () => {
-    const nft = Nft.create("the-id", "the-user", "the-chain", "category");
+    const nft = Nft.create("the-id", "the-user", "the-chain", "category", "wallet");
 
     expect(nft.appliedEvents.length).toBe(1);
     expect(nft.appliedEvents[0]).toBeInstanceOf(NftCreatedEvent);
     expect((nft.appliedEvents[0] as NftCreatedEvent).blockchainId).toBe("the-chain");
     expect((nft.appliedEvents[0] as NftCreatedEvent).categoryId).toBe("category");
     expect((nft.appliedEvents[0] as NftCreatedEvent).userId).toBe("the-user");
+    expect((nft.appliedEvents[0] as NftCreatedEvent).userWalletId).toBe("wallet");
     expect((nft.appliedEvents[0] as NftCreatedEvent).aggregateId).toBe("the-id");
 
     expect(nft.userId).toBe("the-user");
     expect(nft.blockchainId).toBe("the-chain");
     expect(nft.status).toBe(NftStatus.CREATED);
+    expect(nft.userWalletId).toBe("wallet");
     expect(nft.id).toBe("the-id");
 });
 
 test("fromEvents - can process NftCreatedEvent", () => {
-    const event = new NftCreatedEvent("the-user", "the-chain", "category");
+    const event = new NftCreatedEvent("the-user", "the-chain", "category", "wallet");
     const nft = Nft.fromEvents("the-id", [new SourcedEvent("the-id", event)]);
 
     expect(nft.userId).toBe("the-user");
     expect(nft.blockchainId).toBe("the-chain");
     expect(nft.categoryId).toBe("category");
     expect(nft.status).toBe(NftStatus.CREATED);
+    expect(nft.userWalletId).toBe("wallet");
     expect(nft.id).toBe("the-id");
 });
 
@@ -45,10 +48,10 @@ test("fromEvents - can process NftMintedEvent", () => {
 });
 
 test("mint - returns bad request when status is not UPLOADED_FILES", () => {
-    const nft = Nft.create("the-id", "the-user", "the-chain", "category");
+    const nft = Nft.create("the-id", "the-user", "the-chain", "category", "wallet");
     const command = new MintNftCommand();
     command.id = "id";
-    command.tokenAddress = "tokenAddress";
+    command.tokenContractAddress = "tokenAddress";
     command.tokenId = "tokenId";
     command.userId = "user";
     command.transactionId = "transactionId";
@@ -58,14 +61,14 @@ test("mint - returns bad request when status is not UPLOADED_FILES", () => {
 
 test("mint - successfully applies the event to the store", () => {
     const sourcedEvents = [
-        new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id", "category")),
+        new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id", "category", "wallet")),
         new SourcedEvent("nft-id", new UploadedNftMetadataEvent("metadata-uri", "image-uri"))
     ];
     const nft = Nft.fromEvents("nft-id", sourcedEvents);
 
     const command = new MintNftCommand();
     command.id = "nft-id";
-    command.tokenAddress = "tokenAddress";
+    command.tokenContractAddress = "tokenAddress";
     command.tokenId = "tokenId";
     command.userId = "user";
     command.transactionId = "transactionId";
@@ -82,7 +85,7 @@ test("mint - successfully applies the event to the store", () => {
 
 test("uploadFiles - throws bad request when nft has already uploaded files", async () => {
     const sourcedEvents = [
-        new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id", "category")),
+        new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id", "category", "wallet")),
         new SourcedEvent("nft-id", new UploadedNftMetadataEvent("metadata-uri", "image-uri"))
     ];
     const nft = Nft.fromEvents("nft-id", sourcedEvents);
@@ -93,7 +96,7 @@ test("uploadFiles - throws bad request when nft has already uploaded files", asy
 });
 
 test("uploadFiles - uploads files and applies UploadedNftMetadataEvent", async () => {
-    const sourcedEvents = [new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id", "category"))];
+    const sourcedEvents = [new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id", "category", "wallet"))];
     const nft = Nft.fromEvents("nft-id", sourcedEvents);
 
     const registry = createMock<BlockchainActionsRegistryService>();
@@ -125,7 +128,7 @@ test("uploadFiles - uploads files and applies UploadedNftMetadataEvent", async (
 });
 
 test("uploadFiles - throws internal server error if registry returns no service", async () => {
-    const sourcedEvents = [new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id", "category"))];
+    const sourcedEvents = [new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id", "category", "wallet"))];
     const nft = Nft.fromEvents("nft-id", sourcedEvents);
 
     const registry = createMock<BlockchainActionsRegistryService>();

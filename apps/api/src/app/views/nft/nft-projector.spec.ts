@@ -23,7 +23,8 @@ test("handle NftCreatedEvent - Saves new NftView", async () => {
     const userId = "user-1";
     const chainId = "chain-1";
     const categoryId = "category";
-    const event = new NftCreatedEvent(userId, chainId, categoryId);
+    const walletId = "wallet";
+    const event = new NftCreatedEvent(userId, chainId, categoryId, walletId);
     event.aggregateId = id;
     const handled = await projector.handle(event);
 
@@ -34,6 +35,7 @@ test("handle NftCreatedEvent - Saves new NftView", async () => {
     expectedSaved.userId = userId;
     expectedSaved.blockchainId = chainId;
     expectedSaved.categoryId = categoryId;
+    expectedSaved.userWalletId = walletId;
     delete expectedSaved.createdAt;
 
     expect(saveSpy).toHaveBeenCalledTimes(1);
@@ -106,7 +108,7 @@ test("handle NftMintedEvent - Updates NftView with minted event", async () => {
     const expectedSaved = new NftView();
     expectedSaved.id = id;
     expectedSaved.transactionId = transactionId;
-    expectedSaved.tokenAddress = tokenAddress;
+    expectedSaved.tokenContractAddress = tokenAddress;
     expectedSaved.tokenId = tokenId;
     delete expectedSaved.createdAt;
 

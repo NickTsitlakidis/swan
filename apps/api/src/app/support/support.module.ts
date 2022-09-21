@@ -21,6 +21,7 @@ import { ContractsModule } from "../contracts.module";
 
 @Module({
     imports: [
+        ContractsModule,
         InfrastructureModule,
         ConfigModule,
         HttpModule,

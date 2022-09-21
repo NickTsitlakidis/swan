@@ -11,10 +11,17 @@ export class NftViewRepository {
     }
 
     save(view: NftView): Promise<NftView> {
-        return this._entityManager.persistAndFlush(view).then(() => view);
+        return this._entityManager
+            .fork()
+            .persistAndFlush(view)
+            .then(() => view);
     }
 
     findById(id: string): Promise<NftView | undefined> {
-        return this._entityManager.findOne(NftView, { id });
+        return this._entityManager.fork().findOne(NftView, { id });
+    }
+
+    findByUserId(userId: string): Promise<Array<NftView>> {
+        return this._entityManager.fork().find(NftView, { userId: userId });
     }
 }
