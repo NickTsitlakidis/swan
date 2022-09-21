@@ -12,9 +12,9 @@ export class NftFactory {
         return this._store.connectEntity(Nft.fromEvents(id, events));
     }
 
-    createNew(userId: string, blockchainId: string, categoryId: string): Nft {
+    createNew(userId: string, blockchainId: string, categoryId: string, userWalletId: string): Nft {
         return this._store.connectEntity(
-            Nft.create(this._idGenerator.generateEntityId(), userId, blockchainId, categoryId)
+            Nft.create(this._idGenerator.generateEntityId(), userId, blockchainId, categoryId, userWalletId)
         );
     }
 }

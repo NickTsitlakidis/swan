@@ -61,7 +61,7 @@ export class CreateNftCommandExecutor implements ICommandHandler<CreateNftComman
         metadata.s3uri = command.s3uri;
         metadata.name = command.name;
 
-        const newNft = this._factory.createNew(command.userId, command.chainId, command.categoryId);
+        const newNft = this._factory.createNew(command.userId, command.chainId, command.categoryId, wallet.id);
         await newNft.uploadFiles(this._blockchainActionsService, metadata);
         await newNft.commit();
         return new NftDto(newNft.metadataUri, newNft.id);

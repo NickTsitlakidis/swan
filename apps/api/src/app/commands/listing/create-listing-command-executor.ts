@@ -1,4 +1,4 @@
-import { SignatureTypes } from "./../../support/blockchains/signature-types";
+import { SignatureTypes } from "../../support/blockchains/signature-types";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateListingCommand } from "./create-listing-command";
 import { EntityDto } from "@swan/dto";

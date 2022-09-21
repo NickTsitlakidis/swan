@@ -2,10 +2,9 @@ import { Collection, ObjectId } from "mongodb";
 import { TestingModule } from "@nestjs/testing";
 import { CollectionViewRepository } from "./collection-view-repository";
 import { CollectionView } from "./collection-view";
-import { CollectionLinksView } from "./collection-links-view";
 import { instanceToPlain } from "class-transformer";
-import { cloneDeep } from "lodash";
 import { cleanUpMongo, getCollection, getMongoTestingModule } from "../../test-utils/test-modules";
+import { buildCollectionView } from "../../test-utils/test-builders";
 
 let repository: CollectionViewRepository;
 let collection: Collection<any>;
@@ -24,18 +23,7 @@ afterEach(async () => {
 });
 
 test("save - persists collection view", async () => {
-    const view = new CollectionView();
-    view._id = new ObjectId();
-    view.categoryId = "cat-id";
-    view.name = "the-collection";
-    view.blockchainId = "block";
-    view.customUrl = "some-url";
-    view.salePercentage = 45;
-    view.description = "a description";
-    view.imageUrl = "collection-image";
-    view.isExplicit = false;
-    view.paymentToken = "ETH";
-    view.links = new CollectionLinksView("ins", "dis", "tel", "web", "med");
+    const view = buildCollectionView();
 
     const saved = await repository.save(view);
     expect(saved).toEqual(view);
@@ -47,159 +35,104 @@ test("save - persists collection view", async () => {
 });
 
 test("countByName - returns 0 for no match", async () => {
-    const view = new CollectionView();
-    view._id = new ObjectId();
-    view.categoryId = "cat-id";
-    view.name = "the-collection";
-    view.blockchainId = "block";
-    view.customUrl = "some-url";
-    view.salePercentage = 45;
-    view.description = "a description";
-    view.imageUrl = "collection-image";
-    view.isExplicit = false;
-    view.paymentToken = "ETH";
-    view.links = new CollectionLinksView("ins", "dis", "tel", "web", "med");
-
+    const view = buildCollectionView();
     await collection.insertOne(instanceToPlain(view));
 
-    const count = await repository.countByName("blarg");
+    const count = await repository.countByName("something");
     expect(count).toEqual(0);
 });
 
 test("countByName - returns 1 for match", async () => {
-    const view1 = new CollectionView();
-    view1._id = new ObjectId();
-    view1.categoryId = "cat-id";
-    view1.name = "the-collection";
-    view1.blockchainId = "block";
-    view1.customUrl = "some-url";
-    view1.salePercentage = 45;
-    view1.description = "a description";
-    view1.imageUrl = "collection-image";
-    view1.isExplicit = false;
-    view1.paymentToken = "ETH";
-    view1.links = new CollectionLinksView("ins", "dis", "tel", "web", "med");
+    const view1 = buildCollectionView();
 
-    const view2 = cloneDeep(view1);
-    view2._id = new ObjectId();
-    view2.name = "other-name";
+    const view2 = buildCollectionView();
 
     await collection.insertOne(instanceToPlain(view1));
     await collection.insertOne(instanceToPlain(view2));
 
-    const count = await repository.countByName("the-collection");
+    const count = await repository.countByName(view2.name);
     expect(count).toEqual(1);
 });
 
 test("countByCustomUrl - returns 0 for no match", async () => {
-    const view = new CollectionView();
-    view._id = new ObjectId();
-    view.categoryId = "cat-id";
-    view.name = "the-collection";
-    view.blockchainId = "block";
-    view.customUrl = "some-url";
-    view.salePercentage = 45;
-    view.description = "a description";
-    view.imageUrl = "collection-image";
-    view.isExplicit = false;
-    view.paymentToken = "ETH";
-    view.links = new CollectionLinksView("ins", "dis", "tel", "web", "med");
-    view.links.medium = "med";
-    view.links.discord = "dis";
-    view.links.instagram = "ins";
-    view.links.telegram = "tel";
-    view.links.website = "web";
-
+    const view = buildCollectionView();
     await collection.insertOne(instanceToPlain(view));
 
-    const count = await repository.countByCustomUrl("blarg");
+    const count = await repository.countByCustomUrl("something");
     expect(count).toEqual(0);
 });
 
 test("countByCustomUrl - returns 1 for match", async () => {
-    const view1 = new CollectionView();
-    view1._id = new ObjectId();
-    view1.categoryId = "cat-id";
-    view1.name = "the-collection";
-    view1.blockchainId = "block";
-    view1.customUrl = "some-url";
-    view1.salePercentage = 45;
-    view1.description = "a description";
-    view1.imageUrl = "collection-image";
-    view1.isExplicit = false;
-    view1.paymentToken = "ETH";
-    view1.links = new CollectionLinksView("ins", "dis", "tel", "web", "med");
-
-    const view2 = cloneDeep(view1);
-    view2._id = new ObjectId();
-    view2.customUrl = "other-url";
+    const view1 = buildCollectionView();
+    const view2 = buildCollectionView();
 
     await collection.insertOne(instanceToPlain(view1));
     await collection.insertOne(instanceToPlain(view2));
 
-    const count = await repository.countByCustomUrl("some-url");
+    const count = await repository.countByCustomUrl(view1.customUrl);
     expect(count).toEqual(1);
 });
 
 test("findByUserIdAndId - returns match", async () => {
-    const view1 = new CollectionView();
-    view1._id = new ObjectId();
-    view1.categoryId = "cat-id";
-    view1.name = "the-collection";
-    view1.blockchainId = "block";
-    view1.customUrl = "some-url";
-    view1.salePercentage = 45;
-    view1.description = "a description";
-    view1.imageUrl = "collection-image";
-    view1.isExplicit = false;
-    view1.paymentToken = "ETH";
-    view1.userId = "the-user";
-    view1.links = new CollectionLinksView("ins", "dis", "tel", "web", "med");
-
+    const view1 = buildCollectionView();
     await collection.insertOne(instanceToPlain(view1));
 
-    const count = await repository.findByUserIdAndId("the-user", view1.id);
+    const count = await repository.findByUserIdAndId(view1.userId, view1.id);
     expect(count).toMatchObject(view1);
 });
 
 test("findByUserIdAndId - returns null for no user id match", async () => {
-    const view1 = new CollectionView();
-    view1._id = new ObjectId();
-    view1.categoryId = "cat-id";
-    view1.name = "the-collection";
-    view1.blockchainId = "block";
-    view1.customUrl = "some-url";
-    view1.salePercentage = 45;
-    view1.description = "a description";
-    view1.imageUrl = "collection-image";
-    view1.isExplicit = false;
-    view1.paymentToken = "ETH";
-    view1.userId = "the-user";
-    view1.links = new CollectionLinksView("ins", "dis", "tel", "web", "med");
+    const view1 = buildCollectionView();
 
     await collection.insertOne(instanceToPlain(view1));
 
-    const count = await repository.findByUserIdAndId("the-other-user", view1.id);
+    const count = await repository.findByUserIdAndId("the-non-random-user", view1.id);
     expect(count).toBeNull();
 });
 
-test("findByUserIdAndId - returns null for no user id match", async () => {
-    const view1 = new CollectionView();
-    view1._id = new ObjectId();
-    view1.categoryId = "cat-id";
-    view1.name = "the-collection";
-    view1.blockchainId = "block";
-    view1.customUrl = "some-url";
-    view1.salePercentage = 45;
-    view1.description = "a description";
-    view1.imageUrl = "collection-image";
-    view1.isExplicit = false;
-    view1.paymentToken = "ETH";
-    view1.userId = "the-user";
-    view1.links = new CollectionLinksView("ins", "dis", "tel", "web", "med");
+test("findByUserIdAndId - returns null for no id match", async () => {
+    const view1 = buildCollectionView();
 
     await collection.insertOne(instanceToPlain(view1));
 
-    const count = await repository.findByUserIdAndId("the-user", new ObjectId().toHexString());
+    const count = await repository.findByUserIdAndId(view1.userId, new ObjectId().toHexString());
     expect(count).toBeNull();
+});
+
+test("findByIds - returns empty collections array for no match", async () => {
+    const view1 = buildCollectionView();
+    const view2 = buildCollectionView();
+
+    await collection.insertOne(instanceToPlain(view1));
+    await collection.insertOne(instanceToPlain(view2));
+
+    const found = await repository.findByIds([new ObjectId().toHexString(), new ObjectId().toHexString()]);
+    expect(found.length).toBe(0);
+});
+
+test("findByIds - returns single collection match", async () => {
+    const view1 = buildCollectionView();
+    const view2 = buildCollectionView();
+
+    await collection.insertOne(instanceToPlain(view1));
+    await collection.insertOne(instanceToPlain(view2));
+
+    const found = await repository.findByIds([view1.id, new ObjectId().toHexString()]);
+    expect(found.length).toBe(1);
+    expect(found[0]).toMatchObject(view1);
+});
+
+test("findByIds - returns multiple collection matches", async () => {
+    const view1 = buildCollectionView();
+    const view2 = buildCollectionView();
+    const view3 = buildCollectionView();
+
+    await collection.insertOne(instanceToPlain(view1));
+    await collection.insertOne(instanceToPlain(view2));
+    await collection.insertOne(instanceToPlain(view3));
+
+    const found = await repository.findByIds([view1.id, view3.id]);
+    expect(found.length).toBe(2);
+    expect(found[0]).toMatchObject(view1);
+    expect(found[1]).toMatchObject(view3);
 });

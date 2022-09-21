@@ -24,6 +24,4 @@ export class CollectionDto {
     blockchainId: string;
 
     paymentToken: string;
-
-    assetsCount: number;
 }

@@ -29,7 +29,7 @@ beforeEach(async () => {
 test("execute - throws not found exception in case the Nft does not exist on the DB", async () => {
     const command = new MintNftCommand();
     command.id = "id";
-    command.tokenAddress = "tokenAddress";
+    command.tokenContractAddress = "tokenAddress";
     command.tokenId = "tokenId";
     command.userId = "user";
     command.transactionId = "transactionId";
@@ -45,7 +45,7 @@ test("execute - throws not found exception in case the Nft does not exist on the
 test("execute - create nft functionality", async () => {
     const command = new MintNftCommand();
     command.id = "id";
-    command.tokenAddress = "tokenAddress";
+    command.tokenContractAddress = "tokenAddress";
     command.tokenId = "tokenId";
     command.userId = "user";
     command.transactionId = "transactionId";
@@ -53,9 +53,11 @@ test("execute - create nft functionality", async () => {
     const nftView = new NftView();
     nftView.id = new ObjectId().toHexString();
 
-    const nft = Nft.create(command.id, command.userId, "chain-1", "category");
+    const nft = Nft.create(command.id, command.userId, "chain-1", "category", "wallet");
 
-    const sourcedEvents = [new SourcedEvent(command.id, new NftCreatedEvent(command.userId, "chain-id", "category"))];
+    const sourcedEvents = [
+        new SourcedEvent(command.id, new NftCreatedEvent(command.userId, "chain-id", "category", "wallet"))
+    ];
 
     const viewRepositorySpy = jest.spyOn(viewRepository, "findByIdAndUserId").mockResolvedValue(nftView);
     const eventStoreSpy = jest.spyOn(eventStore, "findEventByAggregateId").mockResolvedValue(sourcedEvents);

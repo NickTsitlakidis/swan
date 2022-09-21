@@ -57,8 +57,16 @@ export class UserService {
             .pipe(map((httpResult) => plainToClass(TokenDto, httpResult)));
     }
 
-    getUserNfts(): Observable<Array<ProfileNftDto>> {
+    getNfts(): Observable<Array<ProfileNftDto>> {
         return this._httpClient.get<Array<ProfileNftDto>>("/nft/user").pipe(
+            map((results) => {
+                return plainToInstance(ProfileNftDto, results);
+            })
+        );
+    }
+
+    getExternalNfts(): Observable<Array<ProfileNftDto>> {
+        return this._httpClient.get<Array<ProfileNftDto>>("/nft/user/external").pipe(
             map((results) => {
                 return plainToInstance(ProfileNftDto, results);
             })

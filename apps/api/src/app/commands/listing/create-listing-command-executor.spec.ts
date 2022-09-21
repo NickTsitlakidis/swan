@@ -1,3 +1,4 @@
+import { BlockchainWallet } from "./../../support/blockchains/blockchain-wallet";
 import { ListingFactory } from "../../domain/listing/listing-factory";
 import { CategoryRepository } from "../../support/categories/category-repository";
 import { BlockchainRepository } from "../../support/blockchains/blockchain-repository";
@@ -6,17 +7,19 @@ import { CreateListingCommandExecutor } from "./create-listing-command-executor"
 import { getUnitTestingModule } from "../../test-utils/test-modules";
 import { CreateListingCommand } from "./create-listing-command";
 import { Blockchain } from "../../support/blockchains/blockchain";
-import { ObjectID } from "mongodb";
+import { ObjectId, ObjectID } from "mongodb";
 import { NftView } from "../../views/nft/nft-view";
 import { BadRequestException } from "@nestjs/common";
 import { Listing } from "../../domain/listing/listing";
 import { SignatureTypes } from "../../support/blockchains/signature-types";
+import { BlockchainWalletRepository } from "../../support/blockchains/blockchain-wallet-repository";
 
 let factory: ListingFactory;
 let categoryRepository: CategoryRepository;
 let blockchainRepository: BlockchainRepository;
 let nftRepository: NftViewRepository;
 let executor: CreateListingCommandExecutor;
+let blockchainWalletRepository: BlockchainWalletRepository;
 
 beforeEach(async () => {
     const testModule = await getUnitTestingModule(CreateListingCommandExecutor);
@@ -25,6 +28,7 @@ beforeEach(async () => {
     categoryRepository = testModule.get(CategoryRepository);
     blockchainRepository = testModule.get(BlockchainRepository);
     nftRepository = testModule.get(NftViewRepository);
+    blockchainWalletRepository = testModule.get(BlockchainWalletRepository);
 });
 
 test("execute - throws when category is not found", async () => {
@@ -39,6 +43,7 @@ test("execute - throws when category is not found", async () => {
     command.price = 4;
     command.animationUrl = "animationUrl";
     command.imageUrl = "imageUrl";
+    command.walletId = "walletId";
 
     const categorySpy = jest.spyOn(categoryRepository, "countById").mockResolvedValue(0);
 
@@ -60,7 +65,18 @@ test("execute - throws when blockchain is not found", async () => {
     command.price = 4;
     command.animationUrl = "animationUrl";
     command.imageUrl = "imageUrl";
+    command.walletId = "walletId";
 
+    const userWallet: BlockchainWallet = {
+        blockchainId: command.blockchainId,
+        id: "blockWalletId",
+        walletId: command.walletId,
+        _id: new ObjectId()
+    };
+
+    const blockchainWalletSpy = jest
+        .spyOn(blockchainWalletRepository, "findByWalletIdAndBlockchainId")
+        .mockResolvedValue(userWallet);
     const categorySpy = jest.spyOn(categoryRepository, "countById").mockResolvedValue(1);
     const blockchainSpy = jest.spyOn(blockchainRepository, "findById").mockResolvedValue(null);
 
@@ -71,6 +87,9 @@ test("execute - throws when blockchain is not found", async () => {
 
     expect(blockchainSpy).toHaveBeenCalledWith(command.blockchainId);
     expect(blockchainSpy).toHaveBeenCalledTimes(1);
+
+    expect(blockchainWalletSpy).toHaveBeenCalledWith(command.walletId, command.blockchainId);
+    expect(blockchainWalletSpy).toHaveBeenCalledTimes(1);
 });
 
 test("execute - throws when nft id is set and not found", async () => {
@@ -88,6 +107,18 @@ test("execute - throws when nft id is set and not found", async () => {
     command.price = 4;
     command.animationUrl = "animationUrl";
     command.imageUrl = "imageUrl";
+    command.walletId = "walletId";
+
+    const userWallet: BlockchainWallet = {
+        blockchainId: command.blockchainId,
+        id: "blockWalletId",
+        walletId: command.walletId,
+        _id: new ObjectId()
+    };
+
+    const blockchainWalletSpy = jest
+        .spyOn(blockchainWalletRepository, "findByWalletIdAndBlockchainId")
+        .mockResolvedValue(userWallet);
 
     const categorySpy = jest.spyOn(categoryRepository, "countById").mockResolvedValue(1);
     const blockchainSpy = jest.spyOn(blockchainRepository, "findById").mockResolvedValue(blockchain);
@@ -100,6 +131,9 @@ test("execute - throws when nft id is set and not found", async () => {
 
     expect(blockchainSpy).toHaveBeenCalledWith(blockchain.id);
     expect(blockchainSpy).toHaveBeenCalledTimes(1);
+
+    expect(blockchainWalletSpy).toHaveBeenCalledWith(command.walletId, command.blockchainId);
+    expect(blockchainWalletSpy).toHaveBeenCalledTimes(1);
 
     expect(nftSpy).toHaveBeenCalledWith("nft");
     expect(nftSpy).toHaveBeenCalledTimes(1);
@@ -117,6 +151,18 @@ test("execute - throws when blockchain id doesn't match nft blockchain", async (
     command.price = 4;
     command.animationUrl = "animationUrl";
     command.imageUrl = "imageUrl";
+    command.walletId = "walletId";
+
+    const userWallet: BlockchainWallet = {
+        blockchainId: command.blockchainId,
+        id: "blockWalletId",
+        walletId: command.walletId,
+        _id: new ObjectId()
+    };
+
+    const blockchainWalletSpy = jest
+        .spyOn(blockchainWalletRepository, "findByWalletIdAndBlockchainId")
+        .mockResolvedValue(userWallet);
 
     const blockchain = new Blockchain();
     blockchain.id = new ObjectID().toHexString();
@@ -134,6 +180,9 @@ test("execute - throws when blockchain id doesn't match nft blockchain", async (
 
     expect(blockchainSpy).toHaveBeenCalledWith("block");
     expect(blockchainSpy).toHaveBeenCalledTimes(1);
+
+    expect(blockchainWalletSpy).toHaveBeenCalledWith(command.walletId, command.blockchainId);
+    expect(blockchainWalletSpy).toHaveBeenCalledTimes(1);
 
     expect(nftSpy).toHaveBeenCalledWith("nft");
     expect(nftSpy).toHaveBeenCalledTimes(1);
@@ -154,6 +203,18 @@ test("execute - throws when tokenContractAddress is missing from create listing 
     command.price = 4;
     command.animationUrl = "animationUrl";
     command.imageUrl = "imageUrl";
+    command.walletId = "walletId";
+
+    const userWallet: BlockchainWallet = {
+        blockchainId: command.blockchainId,
+        id: "blockWalletId",
+        walletId: command.walletId,
+        _id: new ObjectId()
+    };
+
+    const blockchainWalletSpy = jest
+        .spyOn(blockchainWalletRepository, "findByWalletIdAndBlockchainId")
+        .mockResolvedValue(userWallet);
 
     const nftView = new NftView();
     nftView.blockchainId = blockchain.id;
@@ -169,6 +230,9 @@ test("execute - throws when tokenContractAddress is missing from create listing 
 
     expect(blockchainSpy).toHaveBeenCalledWith(blockchain.id);
     expect(blockchainSpy).toHaveBeenCalledTimes(1);
+
+    expect(blockchainWalletSpy).toHaveBeenCalledWith(command.walletId, command.blockchainId);
+    expect(blockchainWalletSpy).toHaveBeenCalledTimes(1);
 
     expect(nftSpy).toHaveBeenCalledWith("nft");
     expect(nftSpy).toHaveBeenCalledTimes(1);
@@ -189,6 +253,18 @@ test("execute - throws when chainTokenId is missing from create listing command 
     command.price = 4;
     command.animationUrl = "animationUrl";
     command.imageUrl = "imageUrl";
+    command.walletId = "walletId";
+
+    const userWallet: BlockchainWallet = {
+        blockchainId: command.blockchainId,
+        id: "blockWalletId",
+        walletId: command.walletId,
+        _id: new ObjectId()
+    };
+
+    const blockchainWalletSpy = jest
+        .spyOn(blockchainWalletRepository, "findByWalletIdAndBlockchainId")
+        .mockResolvedValue(userWallet);
 
     const nftView = new NftView();
     nftView.blockchainId = blockchain.id;
@@ -204,6 +280,9 @@ test("execute - throws when chainTokenId is missing from create listing command 
 
     expect(blockchainSpy).toHaveBeenCalledWith(blockchain.id);
     expect(blockchainSpy).toHaveBeenCalledTimes(1);
+
+    expect(blockchainWalletSpy).toHaveBeenCalledWith(command.walletId, command.blockchainId);
+    expect(blockchainWalletSpy).toHaveBeenCalledTimes(1);
 
     expect(nftSpy).toHaveBeenCalledWith("nft");
     expect(nftSpy).toHaveBeenCalledTimes(1);
@@ -223,6 +302,18 @@ test("execute - throws when nftAddress is missing from create listing command (S
     command.price = 4;
     command.animationUrl = "animationUrl";
     command.imageUrl = "imageUrl";
+    command.walletId = "walletId";
+
+    const userWallet: BlockchainWallet = {
+        blockchainId: command.blockchainId,
+        id: "blockWalletId",
+        walletId: command.walletId,
+        _id: new ObjectId()
+    };
+
+    const blockchainWalletSpy = jest
+        .spyOn(blockchainWalletRepository, "findByWalletIdAndBlockchainId")
+        .mockResolvedValue(userWallet);
 
     const nftView = new NftView();
     nftView.blockchainId = blockchain.id;
@@ -239,8 +330,50 @@ test("execute - throws when nftAddress is missing from create listing command (S
     expect(blockchainSpy).toHaveBeenCalledWith(blockchain.id);
     expect(blockchainSpy).toHaveBeenCalledTimes(1);
 
+    expect(blockchainWalletSpy).toHaveBeenCalledWith(command.walletId, command.blockchainId);
+    expect(blockchainWalletSpy).toHaveBeenCalledTimes(1);
+
     expect(nftSpy).toHaveBeenCalledWith("nft");
     expect(nftSpy).toHaveBeenCalledTimes(1);
+});
+
+test("execute - throws when blockChain wallet combination did not found in the DB", async () => {
+    const blockchain = new Blockchain();
+    blockchain.id = new ObjectID().toHexString();
+
+    const command = new CreateListingCommand();
+    command.nftId = "nft";
+    command.categoryId = "cat";
+    command.userId = "the-user";
+    command.blockchainId = blockchain.id;
+    command.chainTokenId = "tok";
+    command.tokenContractAddress = "address";
+    command.nftAddress = "nftAddress";
+    command.price = 4;
+    command.animationUrl = "animationUrl";
+    command.imageUrl = "imageUrl";
+    command.walletId = "walletId";
+
+    const blockchainWalletSpy = jest
+        .spyOn(blockchainWalletRepository, "findByWalletIdAndBlockchainId")
+        .mockResolvedValue(null);
+
+    const nftView = new NftView();
+    nftView.blockchainId = blockchain.id;
+
+    const categorySpy = jest.spyOn(categoryRepository, "countById").mockResolvedValue(1);
+    const blockchainSpy = jest.spyOn(blockchainRepository, "findById").mockResolvedValue(blockchain);
+
+    await expect(executor.execute(command)).rejects.toThrow(BadRequestException);
+
+    expect(categorySpy).toHaveBeenCalledWith("cat");
+    expect(categorySpy).toHaveBeenCalledTimes(1);
+
+    expect(blockchainSpy).toHaveBeenCalledWith(blockchain.id);
+    expect(blockchainSpy).toHaveBeenCalledTimes(1);
+
+    expect(blockchainWalletSpy).toHaveBeenCalledWith(command.walletId, command.blockchainId);
+    expect(blockchainWalletSpy).toHaveBeenCalledTimes(1);
 });
 
 test("execute - creates listing and commits", async () => {
@@ -258,6 +391,18 @@ test("execute - creates listing and commits", async () => {
     command.price = 4;
     command.animationUrl = "animationUrl";
     command.imageUrl = "imageUrl";
+    command.walletId = "walletId";
+
+    const userWallet: BlockchainWallet = {
+        blockchainId: command.blockchainId,
+        id: "blockWalletId",
+        walletId: command.walletId,
+        _id: new ObjectId()
+    };
+
+    const blockchainWalletSpy = jest
+        .spyOn(blockchainWalletRepository, "findByWalletIdAndBlockchainId")
+        .mockResolvedValue(userWallet);
 
     const nftView = new NftView();
     nftView.blockchainId = blockchain.id;
@@ -284,6 +429,9 @@ test("execute - creates listing and commits", async () => {
 
     expect(nftSpy).toHaveBeenCalledWith("nft");
     expect(nftSpy).toHaveBeenCalledTimes(1);
+
+    expect(blockchainWalletSpy).toHaveBeenCalledWith(command.walletId, command.blockchainId);
+    expect(blockchainWalletSpy).toHaveBeenCalledTimes(1);
 
     expect(factorySpy).toHaveBeenCalledWith(command);
     expect(factorySpy).toHaveBeenCalledTimes(1);

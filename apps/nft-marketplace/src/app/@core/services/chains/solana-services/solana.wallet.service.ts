@@ -130,12 +130,13 @@ export class SolanaWalletService implements WalletService {
 
             switchMap((mintResponse) => {
                 if (mintResponse) {
-                    const mintTransaction = {
-                        transactionId: mintResponse.response.signature,
-                        tokenAddress: mintResponse.tokenAddress.toString(),
-                        id: nft.id
-                    } as NftMintTransactionDto;
-                    return of(mintTransaction);
+                    return of(
+                        new NftMintTransactionDto(
+                            nft.id,
+                            mintResponse.response.signature,
+                            mintResponse.tokenAddress.toString()
+                        )
+                    );
                 } else {
                     return throwError(() => {
                         return new SwanError("Could not mint token");

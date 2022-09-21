@@ -10,6 +10,9 @@ export class NftView extends MongoDocument {
     userId: string;
 
     @Property()
+    userWalletId: string;
+
+    @Property()
     categoryId: string;
 
     @Property()
@@ -28,8 +31,12 @@ export class NftView extends MongoDocument {
     transactionId?: string;
 
     @Property()
-    tokenAddress?: string;
+    tokenContractAddress?: string;
 
     @Property()
     tokenId?: string;
+
+    //todo check this. how and when to add values?
+    @Property()
+    nftAddress?: string;
 }
