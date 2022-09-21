@@ -3,7 +3,7 @@ import { NftMintTransactionDto } from "@swan/dto";
 export class MintNftCommand {
     id: string;
     transactionId: string;
-    tokenAddress: string;
+    tokenContractAddress: string;
     tokenId: string;
     userId: string;
 
@@ -12,7 +12,7 @@ export class MintNftCommand {
 
         command.id = dto.id;
         command.transactionId = dto.transactionId;
-        command.tokenAddress = dto.tokenAddress;
+        command.tokenContractAddress = dto.tokenContractAddress;
         command.tokenId = dto.tokenId;
         command.userId = userId;
 

@@ -1,3 +1,5 @@
+import { isNil } from "lodash";
+
 export class ComplexState<T> {
     private _state: T;
     private _error: Error;
@@ -27,5 +29,9 @@ export class ComplexState<T> {
 
     get isLoading(): boolean {
         return this._isLoading;
+    }
+
+    get isEmpty(): boolean {
+        return isNil(this._state) && isNil(this._error);
     }
 }

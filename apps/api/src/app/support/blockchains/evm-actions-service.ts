@@ -15,6 +15,7 @@ import { CovalentHqResponse, NftData } from "./covalent-hq-response";
 import { getLogger, LogAsyncMethod } from "../../infrastructure/logging";
 import { ChainNft } from "./chain-nft";
 import { CategoryByFileType } from "./category-by-file-type";
+import { Erc721DeploymentHistory } from "@swan/contracts";
 
 @Injectable()
 export class EvmActionsService extends BlockchainActions {
@@ -25,7 +26,8 @@ export class EvmActionsService extends BlockchainActions {
         categoryRepository: CategoryRepository,
         httpService: HttpService,
         validator: MetadataValidator,
-        private readonly _blockchainRepository: BlockchainRepository
+        private readonly _blockchainRepository: BlockchainRepository,
+        private readonly _erc721DeploymentHistory: Erc721DeploymentHistory
     ) {
         super(awsService, configService, metaplexService, httpService, categoryRepository, validator);
         this.logger = getLogger(EvmActionsService);
@@ -78,9 +80,16 @@ export class EvmActionsService extends BlockchainActions {
             throw new InternalServerErrorException("Could not retrieve nfts from covalentHQ");
         }
 
+        const swanAddresses = this._erc721DeploymentHistory.getAllAddresses(true);
         const validatedNfts = nfts.data.data.items
             .filter(
                 (contract) => contract.supports_erc?.includes("erc721") || contract.supports_erc?.includes("erc1155")
+            )
+            .filter(
+                (contract) =>
+                    swanAddresses.filter(
+                        (swanAddress) => swanAddress.toLowerCase() === contract.contract_address.toLowerCase()
+                    ).length === 0
             )
             .flatMap((contract) => {
                 return contract.nft_data.map((nft) => {
@@ -100,9 +109,6 @@ export class EvmActionsService extends BlockchainActions {
                 image: nft.external_data.image
             });
         }
-        /*
-            TODO get category from metadata for Swan NFTS
-         */
         const foundCategories = await this.getCategoriesDto(getFilesCategory);
 
         return validatedNfts

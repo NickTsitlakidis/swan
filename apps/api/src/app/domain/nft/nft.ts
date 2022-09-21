@@ -15,6 +15,7 @@ export class Nft extends EventSourcedEntity {
     private _blockchainId: string;
     private _categoryId: string;
     private _metadataUri: string;
+    private _userWalletId: string;
 
     static fromEvents(id: string, events: Array<SourcedEvent>): Nft {
         const nft = new Nft(id);
@@ -22,13 +23,14 @@ export class Nft extends EventSourcedEntity {
         return nft;
     }
 
-    static create(id: string, userId: string, blockchainId: string, categoryId: string): Nft {
+    static create(id: string, userId: string, blockchainId: string, categoryId: string, userWalletId: string): Nft {
         const nft = new Nft(id);
         nft._blockchainId = blockchainId;
         nft._categoryId = categoryId;
         nft._userId = userId;
         nft._status = NftStatus.CREATED;
-        nft.apply(new NftCreatedEvent(userId, blockchainId, categoryId));
+        nft._userWalletId = userWalletId;
+        nft.apply(new NftCreatedEvent(userId, blockchainId, categoryId, userWalletId));
         return nft;
     }
 
@@ -54,6 +56,10 @@ export class Nft extends EventSourcedEntity {
 
     get userId(): string {
         return this._userId;
+    }
+
+    get userWalletId(): string {
+        return this._userWalletId;
     }
 
     async uploadFiles(actionsRegistry: BlockchainActionsRegistryService, metadata: NftMetadata): Promise<Nft> {
@@ -83,7 +89,11 @@ export class Nft extends EventSourcedEntity {
         }
         this._status = NftStatus.MINTED;
         this.apply(
-            new NftMintedEvent(mintTransaction.transactionId, mintTransaction.tokenAddress, mintTransaction.tokenId)
+            new NftMintedEvent(
+                mintTransaction.transactionId,
+                mintTransaction.tokenContractAddress,
+                mintTransaction.tokenId
+            )
         );
     }
 
@@ -92,6 +102,7 @@ export class Nft extends EventSourcedEntity {
         this._userId = event.userId;
         this._blockchainId = event.blockchainId;
         this._categoryId = event.categoryId;
+        this._userWalletId = event.userWalletId;
         this._status = NftStatus.CREATED;
     };
 
