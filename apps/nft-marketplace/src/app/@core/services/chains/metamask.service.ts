@@ -6,7 +6,7 @@ import { isNil } from "lodash";
 import { CreateNft } from "./create-nft";
 import { Injectable } from "@angular/core";
 import { ChainsModule } from "./chains.module";
-import { ListingDto, NftMintTransactionDto } from "@swan/dto";
+import { BlockchainDto, ListingDto, NftMintTransactionDto } from "@swan/dto";
 import { Erc721Factory, ListingResult, SwanMarketplaceFactory, SwanNftFactory } from "@swan/contracts";
 import { CreateListing } from "./create-listing";
 
@@ -102,17 +102,21 @@ export class MetamaskService implements WalletService {
         );
     }
 
-    buyToken(listing: ListingDto): Observable<string> {
+    buyToken(listing: ListingDto, blockchain?: BlockchainDto): Observable<string> {
+        if (isNil(blockchain)) {
+            return throwError(() => "Blockchain info is required in evm");
+        }
+
         return this.getEthersProvider().pipe(
             switchMap((provider) => {
-                return zip(of(provider), from(this.switchNetwork("0xfa2")));
+                return zip(of(provider), from(this.switchNetwork(blockchain.chainId)));
             }),
-            switchMap(([provider]) => {
-                const contract = this._swanMarketplaceFactory.create(this._ethersProvider, listing.blockchainId);
+            switchMap(() => {
+                const contract = this._swanMarketplaceFactory.create(this._ethersProvider, blockchain.id);
                 return from(
                     contract.buyToken(
                         listing.tokenContractAddress as string,
-                        parseInt(listing.chainTokenId as string),
+                        listing.chainTokenId as number,
                         listing.price
                     )
                 );

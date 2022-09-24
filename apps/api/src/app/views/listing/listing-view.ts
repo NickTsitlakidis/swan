@@ -29,6 +29,7 @@ export class ListingView extends MongoDocument {
     @Property()
     nftAddress?: string;
 
+    //todo : refactor this to number
     @Property()
     chainTokenId?: string;
 

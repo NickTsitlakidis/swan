@@ -7,6 +7,7 @@ import {
     CreateListingDto,
     EntityDto,
     ListingDto,
+    PageDto,
     PaginationDto,
     SubmitListingDto
 } from "@swan/dto";
@@ -52,9 +53,7 @@ export class ListingController {
     @UseGuards(ClientGuard)
     @UsePipes(new ValidationPipe({ transform: true }))
     @Get("get-active-listings")
-    getActiveListings(
-        @Query() queryParams: PaginationDto
-    ): Promise<{ listingDtos: ListingDto[]; listingsCount: number }> {
+    getActiveListings(@Query() queryParams: PaginationDto): Promise<PageDto<ListingDto>> {
         return this._listingQueryHandler.getActiveListings(queryParams);
     }
 }
