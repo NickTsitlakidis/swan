@@ -23,7 +23,7 @@ export class Listing extends EventSourcedEntity {
     private nftId?: string;
     private categoryId: string;
     private _blockchainId: string;
-    private marketPlaceContractAddress?: string;
+    private _marketPlaceContractAddress?: string;
     private tokenContractAddress?: string;
     private nftAddress?: string;
     private chainTokenId?: string;
@@ -58,7 +58,7 @@ export class Listing extends EventSourcedEntity {
         listing._walletId = command.walletId;
         listing.animationUrl = command.animationUrl;
         listing.imageUrl = command.imageUrl;
-        listing.marketPlaceContractAddress = command.marketPlaceContractAddress;
+        listing._marketPlaceContractAddress = command.marketPlaceContractAddress;
 
         const event = new ListingCreatedEvent(
             listing.price,
@@ -72,7 +72,7 @@ export class Listing extends EventSourcedEntity {
             listing.nftAddress,
             listing.chainTokenId,
             listing.nftId,
-            listing.marketPlaceContractAddress
+            listing._marketPlaceContractAddress
         );
 
         listing.apply(event);
@@ -89,6 +89,10 @@ export class Listing extends EventSourcedEntity {
 
     public get blockchainId(): string {
         return this._blockchainId;
+    }
+
+    get marketPlaceContractAddress(): string {
+        return this._marketPlaceContractAddress;
     }
 
     submitToChain(chainTransactionId: string) {
@@ -151,7 +155,7 @@ export class Listing extends EventSourcedEntity {
         this.status = ListingStatus.CREATED;
         this.animationUrl = event.animationUrl;
         this.imageUrl = event.imageUrl;
-        this.marketPlaceContractAddress = event.marketPlaceContractAddress;
+        this._marketPlaceContractAddress = event.marketPlaceContractAddress;
     };
 
     @EventProcessor(ListingSubmittedEvent)

@@ -1,4 +1,4 @@
-import { BlockchainRepository } from "./../../support/blockchains/blockchain-repository";
+import { BlockchainRepository } from "../../support/blockchains/blockchain-repository";
 import { BuyListingCommand } from "./buy-listing-command";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CurrencyList, EntityDto } from "@swan/dto";
@@ -8,8 +8,8 @@ import { BadRequestException } from "@nestjs/common";
 import { Buyer } from "../../domain/listing/buyer";
 import { UserWalletViewRepository } from "../../views/user-wallet/user-wallet-view-repository";
 import { isNil } from "lodash";
-import { SwanMarketplaceFactory } from "@swan/contracts";
 import { ethers } from "ethers";
+import { ContractFactory } from "@swan/contracts";
 
 @CommandHandler(BuyListingCommand)
 export class BuyListingCommandExecutor implements ICommandHandler<BuyListingCommand> {
@@ -17,7 +17,7 @@ export class BuyListingCommandExecutor implements ICommandHandler<BuyListingComm
         private _factory: ListingFactory,
         private _eventStore: EventStore,
         private _userWalletRepository: UserWalletViewRepository,
-        private _swanMarketplaceFactory: SwanMarketplaceFactory,
+        private _contractFactory: ContractFactory,
         private _blockChainRepository: BlockchainRepository
     ) {}
 
@@ -55,7 +55,10 @@ export class BuyListingCommandExecutor implements ICommandHandler<BuyListingComm
 
         const customHttpProvider = new ethers.providers.JsonRpcProvider(blockchain.rpcUrl);
 
-        const swanMarketPlace = this._swanMarketplaceFactory.create(customHttpProvider, listing.blockchainId);
+        const swanMarketPlace = this._contractFactory.createMarketplace(
+            customHttpProvider,
+            listing.marketPlaceContractAddress
+        );
         const fee = await swanMarketPlace.getFeePercentage();
 
         listing.buy(

@@ -12,5 +12,5 @@ export interface WalletService {
     getEvents(): Observable<WalletEvent>;
     createListing(listing: CreateListing): Observable<string>;
     getListingResult(transactionHash: string, marketplaceContractAddress: string): Observable<ListingResult>;
-    buyToken(listing: ListingDto, blockchain?: BlockchainDto): Observable<string>;
+    buyToken(listing: ListingDto, blockchain?: BlockchainDto, marketplaceContractAddress?: string): Observable<string>;
 }
