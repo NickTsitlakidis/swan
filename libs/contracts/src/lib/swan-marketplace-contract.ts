@@ -1,29 +1,22 @@
 import { ContractTransaction, ethers } from "ethers";
-import { FANTOM_MARKETPLACE_TEST_NET } from "./abi/swan-marketplace-fantom-testnet";
-import { FANTOM_MARKETPLACE_MAIN_NET } from "./abi/swan-marketplace-fantom-mainnet";
 import { firstValueFrom, from, map, mergeMap, Observable, of, skipWhile, take, tap, zip } from "rxjs";
 import { ListingResult } from "./listing-result";
-import { DeployedContract } from "./deployed-contract";
-import { isNil } from "lodash";
+import { SwanMarketplace, SwanMarketplace__factory } from "../../../../apps/solidity-contracts/typechain-types";
 
-export class SwanMarketplace {
-    private readonly _contractInstance: ethers.Contract;
-    private readonly _address: string;
-    private readonly _supportedContracts: Array<DeployedContract>;
+export class SwanMarketplaceContract {
+    private readonly _contractInstance: SwanMarketplace;
 
-    constructor(private readonly _ethersProvider: ethers.providers.JsonRpcProvider, blockchainId: string) {
-        this._supportedContracts = [FANTOM_MARKETPLACE_TEST_NET, FANTOM_MARKETPLACE_MAIN_NET];
-        this._address = this.getAddress(blockchainId);
-        this._contractInstance = new ethers.Contract(this._address, this.getAbi(blockchainId), this._ethersProvider);
+    constructor(private readonly _ethersProvider: ethers.providers.JsonRpcProvider, private readonly _address: string) {
+        this._contractInstance = SwanMarketplace__factory.connect(this._address, this._ethersProvider);
+    }
+
+    get address(): string {
+        return this._address;
     }
 
     async createListing(tokenContractAddress: string, tokenId: number, price: number): Promise<string> {
         const connected = this._contractInstance.connect(this._ethersProvider.getSigner());
-        const listingResult: ContractTransaction = await connected["createListing"](
-            tokenContractAddress,
-            tokenId,
-            ethers.utils.parseEther(price.toString())
-        );
+        const listingResult: ContractTransaction = await connected.createListing(tokenContractAddress, tokenId, ethers.utils.parseEther(price.toString()));
         return listingResult.hash;
     }
 
@@ -45,6 +38,7 @@ export class SwanMarketplace {
 
         const mappedEventObservable = new Observable<any>((subscriber) => {
             this._contractInstance.on(eventFilter, (seller, tokenContractAddress, tokenId, price, listingId, event) => {
+                console.log("Got ListingCreated event from chain");
                 subscriber.next(event);
             });
         }).pipe(
@@ -61,25 +55,5 @@ export class SwanMarketplace {
         );
 
         return firstValueFrom(mappedEventObservable);
-    }
-
-    private getAbi(blockchainId: string): ethers.ContractInterface {
-        const found = this._supportedContracts.find((contract) => contract.blockchainId === blockchainId);
-
-        if (isNil(found)) {
-            throw new Error(`Blockchain with id ${blockchainId} is unsupported`);
-        }
-
-        return found.abi;
-    }
-
-    private getAddress(blockchainId: string): string {
-        const found = this._supportedContracts.find((contract) => contract.blockchainId === blockchainId);
-
-        if (isNil(found)) {
-            throw new Error(`Blockchain with id ${blockchainId} is unsupported`);
-        }
-
-        return found.address;
     }
 }

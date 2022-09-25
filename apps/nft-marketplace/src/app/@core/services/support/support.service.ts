@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { BlockchainWalletDto, CategoryDto } from "@swan/dto";
+import { BlockchainWalletDto, CategoryDto, EvmContractDto } from "@swan/dto";
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { plainToInstance } from "class-transformer";
@@ -27,6 +27,22 @@ export class SupportService {
         return this._httpClient.get<Array<unknown>>("/support/categories").pipe(
             map((categories) => {
                 return plainToInstance(CategoryDto, categories);
+            })
+        );
+    }
+
+    getEvmMarketplaceContracts(): Observable<Array<EvmContractDto>> {
+        return this._httpClient.get<Array<unknown>>("/support/evm-marketplace-contracts").pipe(
+            map((contracts) => {
+                return plainToInstance(EvmContractDto, contracts);
+            })
+        );
+    }
+
+    getEvmErc721Contracts(): Observable<Array<EvmContractDto>> {
+        return this._httpClient.get<Array<unknown>>("/support/evm-erc721-contracts").pipe(
+            map((contracts) => {
+                return plainToInstance(EvmContractDto, contracts);
             })
         );
     }

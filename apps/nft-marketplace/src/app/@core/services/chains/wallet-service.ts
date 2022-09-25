@@ -11,6 +11,6 @@ export interface WalletService {
     mint(nft: CreateNft): Observable<NftMintTransactionDto>;
     getEvents(): Observable<WalletEvent>;
     createListing(listing: CreateListing): Observable<string>;
-    getListingResult(transactionHash: string, blockchainId: string): Observable<ListingResult>;
+    getListingResult(transactionHash: string, marketplaceContractAddress: string): Observable<ListingResult>;
     buyToken(listing: ListingDto, blockchain?: BlockchainDto): Observable<string>;
 }

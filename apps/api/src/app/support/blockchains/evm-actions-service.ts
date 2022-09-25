@@ -15,7 +15,8 @@ import { CovalentHqResponse, NftData } from "./covalent-hq-response";
 import { getLogger, LogAsyncMethod } from "../../infrastructure/logging";
 import { ChainNft } from "./chain-nft";
 import { CategoryByFileType } from "./category-by-file-type";
-import { Erc721DeploymentHistory } from "@swan/contracts";
+import { EvmContractsRepository } from "../evm-contracts/evm-contracts-repository";
+import { EvmContractType } from "../evm-contracts/evm-contract-type";
 
 @Injectable()
 export class EvmActionsService extends BlockchainActions {
@@ -27,7 +28,7 @@ export class EvmActionsService extends BlockchainActions {
         httpService: HttpService,
         validator: MetadataValidator,
         private readonly _blockchainRepository: BlockchainRepository,
-        private readonly _erc721DeploymentHistory: Erc721DeploymentHistory
+        private readonly _evmContractsRepository: EvmContractsRepository
     ) {
         super(awsService, configService, metaplexService, httpService, categoryRepository, validator);
         this.logger = getLogger(EvmActionsService);
@@ -80,7 +81,8 @@ export class EvmActionsService extends BlockchainActions {
             throw new InternalServerErrorException("Could not retrieve nfts from covalentHQ");
         }
 
-        const swanAddresses = this._erc721DeploymentHistory.getAllAddresses(true);
+        const swanNftContracts = await this._evmContractsRepository.findByType(EvmContractType.ERC721);
+        const swanAddresses = swanNftContracts.map((contract) => contract.deploymentAddress);
         const validatedNfts = nfts.data.data.items
             .filter(
                 (contract) => contract.supports_erc?.includes("erc721") || contract.supports_erc?.includes("erc1155")
