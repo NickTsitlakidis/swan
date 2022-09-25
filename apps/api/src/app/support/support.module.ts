@@ -18,6 +18,8 @@ import { BlockchainActionsRegistryService } from "./blockchains/blockchain-actio
 import { MetadataValidator } from "./blockchains/metadata-validator";
 import { HttpModule } from "@nestjs/axios";
 import { ContractsModule } from "../contracts.module";
+import { EvmContract } from "./evm-contracts/evm-contract";
+import { EvmContractsRepository } from "./evm-contracts/evm-contracts-repository";
 
 @Module({
     imports: [
@@ -26,7 +28,7 @@ import { ContractsModule } from "../contracts.module";
         ConfigModule,
         HttpModule,
         ContractsModule,
-        MikroOrmModule.forFeature([Category, Wallet, Blockchain, BlockchainWallet])
+        MikroOrmModule.forFeature([Category, Wallet, Blockchain, BlockchainWallet, EvmContract])
     ],
     providers: [
         CategoryRepository,
@@ -38,7 +40,8 @@ import { ContractsModule } from "../contracts.module";
         EvmActionsService,
         BlockchainActionsRegistryService,
         SolanaActionsService,
-        MetadataValidator
+        MetadataValidator,
+        EvmContractsRepository
     ],
     exports: [
         CategoryRepository,
@@ -50,7 +53,8 @@ import { ContractsModule } from "../contracts.module";
         EvmActionsService,
         BlockchainActionsRegistryService,
         SolanaActionsService,
-        MetadataValidator
+        MetadataValidator,
+        EvmContractsRepository
     ]
 })
 export class SupportModule {}

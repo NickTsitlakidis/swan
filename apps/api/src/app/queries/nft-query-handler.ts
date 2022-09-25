@@ -26,11 +26,13 @@ export class NftQueryHandler {
         const nfts = await this._nftViewRepository.findByUserId(userId);
 
         const collectionIds = unique(nfts.map((view) => view.collectionId));
+        const userWalletIds = unique(nfts.map((view) => view.userWalletId));
 
-        const [collections, categories, blockchains] = await Promise.all([
+        const [collections, categories, blockchains, userWallets] = await Promise.all([
             this._collectionViewRepository.findByIds(collectionIds),
             this._categoryRepository.findAll(),
-            this._blockchainRepository.findAll()
+            this._blockchainRepository.findAll(),
+            this._userWalletRepository.findByIds(userWalletIds)
         ]);
 
         return nfts.map((view) => {
@@ -43,7 +45,7 @@ export class NftQueryHandler {
             dto.blockchain = new BlockchainDto(blockchain.name, blockchain.id, blockchain.chainIdHex);
 
             dto.id = view.id;
-            dto.walletId = view.userWalletId;
+            dto.walletId = userWallets.find((userWallet) => userWallet.id === view.userWalletId)?.walletId;
             dto.imageUri = view.fileUri;
 
             dto.tokenId = view.tokenId;
