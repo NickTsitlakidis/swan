@@ -4,7 +4,6 @@ import { CreateNft } from "./create-nft";
 import { WalletEvent } from "./wallet-event";
 import { ListingResult } from "@swan/contracts";
 import { CreateListing } from "./create-listing";
-import { EvmContract } from "../../../../../../api/src/app/support/evm-contracts/evm-contract";
 
 export interface WalletService {
     getPublicKey(): Observable<string>;
