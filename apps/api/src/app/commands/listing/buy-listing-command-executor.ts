@@ -66,7 +66,6 @@ export class BuyListingCommandExecutor implements ICommandHandler<BuyListingComm
             buyer,
             fee,
             CurrencyList[blockchain.mainTokenName],
-            command.walletId,
             command.blockNumber
         );
         await listing.commit();

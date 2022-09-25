@@ -127,14 +127,12 @@ export class Listing extends EventSourcedEntity {
         buyer: Buyer,
         transactionFeePercentage: number,
         currency: CurrencyList,
-        walletId: string,
         blockNumber?: number
     ) {
         if (this._status !== ListingStatus.ACTIVE) {
             throw new BadRequestException(`Listing with id ${this.id} is not ACTIVE`);
         }
 
-        this._walletId = walletId;
         this._listingSoldTransaction = new ChainTransaction();
         this._listingSoldTransaction.transactionId = transactionHash;
         this._listingSoldTransaction.blockNumber = blockNumber;
