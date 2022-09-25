@@ -1,6 +1,11 @@
 import { Logger } from "@nestjs/common";
 import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
-import { NftCreatedEvent, NftMintedEvent, UploadedNftMetadataEvent } from "../../domain/nft/nft-events";
+import {
+    NftChangeUserEvent,
+    NftCreatedEvent,
+    NftMintedEvent,
+    UploadedNftMetadataEvent
+} from "../../domain/nft/nft-events";
 import { getLogger, LogAsyncMethod } from "../../infrastructure/logging";
 import { NftView } from "./nft-view";
 import { NftViewRepository } from "./nft-view-repository";
@@ -42,6 +47,11 @@ export class NftProjector implements IEventHandler<NftCreatedEvent | NftMintedEv
             view.transactionId = event.transactionId;
             view.tokenContractAddress = event.tokenAddress;
             view.tokenId = event.tokenId;
+        }
+
+        if (event instanceof NftChangeUserEvent) {
+            view.userId = event.userId;
+            view.userWalletId = event.userWalletId;
         }
 
         return this._repository.save(view);

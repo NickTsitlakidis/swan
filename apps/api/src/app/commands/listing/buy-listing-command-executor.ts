@@ -10,11 +10,14 @@ import { UserWalletViewRepository } from "../../views/user-wallet/user-wallet-vi
 import { isNil } from "lodash";
 import { SwanMarketplaceFactory } from "@swan/contracts";
 import { ethers } from "ethers";
+import { NftFactory } from "../../domain/nft/nft-factory";
+import { Nft } from "../../domain/nft/nft";
 
 @CommandHandler(BuyListingCommand)
 export class BuyListingCommandExecutor implements ICommandHandler<BuyListingCommand> {
     constructor(
         private _factory: ListingFactory,
+        private _nftFactory: NftFactory,
         private _eventStore: EventStore,
         private _userWalletRepository: UserWalletViewRepository,
         private _swanMarketplaceFactory: SwanMarketplaceFactory,
@@ -32,7 +35,7 @@ export class BuyListingCommandExecutor implements ICommandHandler<BuyListingComm
 
         const userWallet = await this._userWalletRepository.findByUserIdAndWalletIdAndChainId(
             command.userId,
-            listing.walletId,
+            command.walletId,
             listing.blockchainId
         );
 
@@ -63,9 +66,19 @@ export class BuyListingCommandExecutor implements ICommandHandler<BuyListingComm
             buyer,
             fee,
             CurrencyList[blockchain.mainTokenName],
+            command.walletId,
             command.blockNumber
         );
         await listing.commit();
+
+        let nft: Nft;
+        if (listing.nftId) {
+            const nftEvents = await this._eventStore.findEventByAggregateId(listing.nftId);
+            nft = this._nftFactory.createFromEvents(listing.nftId, nftEvents);
+            nft.changeUser(command.userId, userWallet.id);
+        } else {
+            nft = this._nftFactory.createNew(command.userId, listing.blockchainId, listing.categoryId, userWallet.id);
+        }
         return new EntityDto(listing.id, listing.version);
     }
 }

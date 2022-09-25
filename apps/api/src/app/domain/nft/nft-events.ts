@@ -25,3 +25,10 @@ export class NftCreatedEvent extends EventPayload {
         super();
     }
 }
+
+@SerializedEvent("nft-change-user-event")
+export class NftChangeUserEvent extends EventPayload {
+    constructor(public userId: string, public userWalletId: string) {
+        super();
+    }
+}

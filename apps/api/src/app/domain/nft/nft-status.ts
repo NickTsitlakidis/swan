@@ -1,5 +1,6 @@
 export enum NftStatus {
     UPLOADED_FILES = "UploadedFiles",
     CREATED = "Created",
-    MINTED = "Minted"
+    MINTED = "Minted",
+    CHANGE_USER = "ChangeUser"
 }

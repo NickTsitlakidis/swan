@@ -2,6 +2,8 @@ import { MongoDocument } from "../../infrastructure/mongo-document";
 import { Embedded, Entity, Property } from "@mikro-orm/core";
 import { ListingStatus } from "../../domain/listing/listing-status";
 import { ChainTransactionView } from "./chain-transaction-view";
+import { TransactionFeeView } from "./transaction-fee-view";
+import { BuyerView } from "./buyer-view";
 
 @Entity({ collection: "listing-views" })
 export class ListingView extends MongoDocument {
@@ -37,7 +39,16 @@ export class ListingView extends MongoDocument {
     status: ListingStatus;
 
     @Embedded(() => ChainTransactionView, { object: true, nullable: true })
-    chainTransaction: ChainTransactionView;
+    listingCreatedTransaction: ChainTransactionView;
+
+    @Embedded(() => ChainTransactionView, { object: true, nullable: true })
+    listingSoldTransaction: ChainTransactionView;
+
+    @Embedded(() => TransactionFeeView, { object: true, nullable: true })
+    transactionFee: TransactionFeeView;
+
+    @Embedded(() => BuyerView, { object: true, nullable: true })
+    buyer: BuyerView;
 
     @Property()
     chainListingId: string;

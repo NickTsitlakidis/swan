@@ -46,7 +46,7 @@ export class ListingController {
     @Post("buy-listing")
     buy(@RequestUserId() userId: string, @Body() dto: BuyListingDto): Promise<EntityDto> {
         return this._commandBus.execute(
-            new BuyListingCommand(dto.listingId, userId, dto.chainTransactionHash, dto.blockNumber)
+            new BuyListingCommand(dto.listingId, userId, dto.chainTransactionHash, dto.blockNumber, dto.walletId)
         );
     }
 
