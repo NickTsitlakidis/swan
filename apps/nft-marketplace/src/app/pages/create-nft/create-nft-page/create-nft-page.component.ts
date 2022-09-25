@@ -1,7 +1,14 @@
 import { CategoriesFacade } from "../../../@core/store/categories-facade";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
-import { BlockchainWalletDto, CategoryDto, CollectionDto, NftMetadataAttributeDto, UserWalletDto } from "@swan/dto";
+import {
+    BlockchainDto,
+    BlockchainWalletDto,
+    CategoryDto,
+    CollectionDto,
+    NftMetadataAttributeDto,
+    UserWalletDto
+} from "@swan/dto";
 import { fade } from "../../../@core/animations/enter-leave.animation";
 import { CreateNft } from "../../../@core/services/chains/create-nft";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
@@ -14,6 +21,7 @@ import { SelectWalletDialogComponent } from "../../../@theme/components/select-w
 import { UserFacade } from "../../../@core/store/user-facade";
 import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets-facade";
 import { Janitor } from "../../../@core/components/janitor";
+import { EvmContractsFacade } from "../../../@core/store/evm-contracts-facade";
 
 @Component({
     selector: "nft-marketplace-create-nft-page",
@@ -78,6 +86,7 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
 
     constructor(
         private _fb: UntypedFormBuilder,
+        private _evmContractsFacade: EvmContractsFacade,
         private _userFacade: UserFacade,
         private _blockchainWalletsFacade: BlockchainWalletsFacade,
         private _cd: ChangeDetectorRef,
@@ -194,6 +203,9 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
             });
         }
 
+        const erc721Contracts = await firstValueFrom(this._evmContractsFacade.streamErc721Contracts());
+        const erc721Match = erc721Contracts.find((c) => c.blockchainId === chainId);
+
         this._supportService
             .uploadFileToS3(this.uploadedFile)
             .pipe(
@@ -224,8 +236,9 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
                         resellPercentage: this.createNFTForm.get("royalties")?.value,
                         maxSupply: this.createNFTForm.get("maxSupply")?.value,
                         metadata,
-                        blockchain: matchingWallets?.blockchain
-                    } as CreateNft;
+                        blockchain: matchingWallets?.blockchain as BlockchainDto,
+                        contract: erc721Match
+                    };
                     if (walletService) {
                         return walletService.mint(nft);
                     } else {

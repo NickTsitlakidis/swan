@@ -232,7 +232,7 @@ export class SolanaWalletService implements WalletService {
         return EMPTY;
     }
 
-    getListingResult(transactionHash: string, blockchainId: string): Observable<ListingResult> {
+    getListingResult(transactionHash: string, marketplaceContractAddress: string): Observable<ListingResult> {
         return EMPTY;
     }
 }
