@@ -78,6 +78,8 @@ export class BuyListingCommandExecutor implements ICommandHandler<BuyListingComm
         } else {
             nft = this._nftFactory.createNew(command.userId, listing.blockchainId, listing.categoryId, userWallet.id);
         }
+
+        await nft.commit();
         return new EntityDto(listing.id, listing.version);
     }
 }
