@@ -70,14 +70,9 @@ export class BuyListingCommandExecutor implements ICommandHandler<BuyListingComm
         );
         await listing.commit();
 
-        let nft: Nft;
-        if (listing.nftId) {
-            const nftEvents = await this._eventStore.findEventByAggregateId(listing.nftId);
-            nft = this._nftFactory.createFromEvents(listing.nftId, nftEvents);
-            nft.changeUser(command.userId, userWallet.id);
-        } else {
-            nft = this._nftFactory.createNew(command.userId, listing.blockchainId, listing.categoryId, userWallet.id);
-        }
+        const nftEvents = await this._eventStore.findEventByAggregateId(listing.nftId);
+        const nft = this._nftFactory.createFromEvents(listing.nftId, nftEvents);
+        nft.changeUser(command.userId, userWallet.id);
 
         await nft.commit();
         return new EntityDto(listing.id, listing.version);
