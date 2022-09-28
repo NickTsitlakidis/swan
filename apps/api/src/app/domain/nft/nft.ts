@@ -1,5 +1,5 @@
 import { EventProcessor, EventSourcedEntity } from "../../infrastructure/event-sourced-entity";
-import { NftCreatedEvent, NftMintedEvent, UploadedNftMetadataEvent } from "./nft-events";
+import { NftChangeUserEvent, NftCreatedEvent, NftMintedEvent, UploadedNftMetadataEvent } from "./nft-events";
 import { NftStatus } from "./nft-status";
 import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
 import { getLogger } from "../../infrastructure/logging";
@@ -16,6 +16,9 @@ export class Nft extends EventSourcedEntity {
     private _categoryId: string;
     private _metadataUri: string;
     private _userWalletId: string;
+    private _tokenId: string;
+    private _mintTransactionId: string;
+    private _tokenAddress: string;
 
     static fromEvents(id: string, events: Array<SourcedEvent>): Nft {
         const nft = new Nft(id);
@@ -88,6 +91,9 @@ export class Nft extends EventSourcedEntity {
             throw new BadRequestException(`Wrong nft status : ${this._status}`);
         }
         this._status = NftStatus.MINTED;
+        this._tokenId = mintTransaction.tokenId;
+        this._tokenAddress = mintTransaction.tokenContractAddress;
+        this._mintTransactionId = mintTransaction.transactionId;
         this.apply(
             new NftMintedEvent(
                 mintTransaction.transactionId,
@@ -95,6 +101,15 @@ export class Nft extends EventSourcedEntity {
                 mintTransaction.tokenId
             )
         );
+    }
+
+    changeUser(userId: string, userWalletId: string) {
+        if (this._status !== NftStatus.MINTED) {
+            throw new BadRequestException(`Wrong nft status : ${this._status}`);
+        }
+        this._userId = userId;
+        this._userWalletId = userWalletId;
+        this.apply(new NftChangeUserEvent(userId, userWalletId));
     }
 
     @EventProcessor(NftCreatedEvent)
@@ -115,5 +130,14 @@ export class Nft extends EventSourcedEntity {
     @EventProcessor(NftMintedEvent)
     private processNftMintedEvent = (event: NftMintedEvent) => {
         this._status = NftStatus.MINTED;
+        this._tokenId = event.tokenId;
+        this._tokenAddress = event.tokenAddress;
+        this._mintTransactionId = event.transactionId;
+    };
+
+    @EventProcessor(NftChangeUserEvent)
+    private processNftChangeUserEvent = (event: NftChangeUserEvent) => {
+        this._userId = event.userId;
+        this._userWalletId = event.userWalletId;
     };
 }

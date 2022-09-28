@@ -51,6 +51,7 @@ export class HomePageComponent implements OnInit {
                     const dto = new BuyListingDto();
                     dto.chainTransactionHash = hash;
                     dto.listingId = listing.id;
+                    dto.walletId = listing.walletId;
                     return this._listingService.buyListing(dto);
                 })
             )

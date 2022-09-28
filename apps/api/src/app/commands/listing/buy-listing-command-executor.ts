@@ -9,12 +9,14 @@ import { Buyer } from "../../domain/listing/buyer";
 import { UserWalletViewRepository } from "../../views/user-wallet/user-wallet-view-repository";
 import { isNil } from "lodash";
 import { ethers } from "ethers";
+import { NftFactory } from "../../domain/nft/nft-factory";
 import { ContractFactory } from "@swan/contracts";
 
 @CommandHandler(BuyListingCommand)
 export class BuyListingCommandExecutor implements ICommandHandler<BuyListingCommand> {
     constructor(
         private _factory: ListingFactory,
+        private _nftFactory: NftFactory,
         private _eventStore: EventStore,
         private _userWalletRepository: UserWalletViewRepository,
         private _contractFactory: ContractFactory,
@@ -32,7 +34,7 @@ export class BuyListingCommandExecutor implements ICommandHandler<BuyListingComm
 
         const userWallet = await this._userWalletRepository.findByUserIdAndWalletIdAndChainId(
             command.userId,
-            listing.walletId,
+            command.walletId,
             listing.blockchainId
         );
 
@@ -69,6 +71,12 @@ export class BuyListingCommandExecutor implements ICommandHandler<BuyListingComm
             command.blockNumber
         );
         await listing.commit();
+
+        const nftEvents = await this._eventStore.findEventByAggregateId(listing.nftId);
+        const nft = this._nftFactory.createFromEvents(listing.nftId, nftEvents);
+        nft.changeUser(command.userId, userWallet.id);
+
+        await nft.commit();
         return new EntityDto(listing.id, listing.version);
     }
 }

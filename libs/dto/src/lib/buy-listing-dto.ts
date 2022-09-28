@@ -9,6 +9,10 @@ export class BuyListingDto {
     @IsNotEmpty()
     chainTransactionHash: string;
 
+    @IsString()
+    @IsNotEmpty()
+    walletId: string;
+
     @IsInt()
     @IsNotEmpty()
     @IsOptional()
