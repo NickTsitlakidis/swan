@@ -13,7 +13,9 @@ import { CovalentHqResponse } from "./covalent-hq-response";
 import { cloneDeep } from "lodash";
 import { Category } from "../categories/category";
 import { ChainNft } from "./chain-nft";
-import { Erc721DeploymentHistory } from "@swan/contracts";
+import { EvmContractsRepository } from "../evm-contracts/evm-contracts-repository";
+import { EvmContract } from "../evm-contracts/evm-contract";
+import { EvmContractType } from "../evm-contracts/evm-contract-type";
 
 let service: EvmActionsService;
 let configService: ConfigService;
@@ -21,7 +23,7 @@ let blockchainRepo: BlockchainRepository;
 let categoryRepo: CategoryRepository;
 let httpService: HttpService;
 let validator: MetadataValidator;
-let deploymentHistory: Erc721DeploymentHistory;
+let contractsRepo: EvmContractsRepository;
 
 const covalentResponse: CovalentHqResponse = {
     error: false,
@@ -238,7 +240,7 @@ beforeEach(async () => {
     httpService = testModule.get(HttpService);
     validator = testModule.get(MetadataValidator);
     categoryRepo = testModule.get(CategoryRepository);
-    deploymentHistory = testModule.get(Erc721DeploymentHistory);
+    contractsRepo = testModule.get(EvmContractsRepository);
 });
 
 test("getUserNfts - throws if blockchainId parameter is missing", async () => {
@@ -287,7 +289,9 @@ test("getUserNfts - returns empty array if all nfts are invalid", async () => {
     const blockchain = new Blockchain();
     blockchain.chainIdDecimal = 1000;
 
-    const historySpy = jest.spyOn(deploymentHistory, "getAllAddresses").mockReturnValue(["swan-contract"]);
+    const contracts = [new EvmContract()];
+    contracts[0].deploymentAddress = "swan-contract";
+    const historySpy = jest.spyOn(contractsRepo, "findByType").mockResolvedValue(contracts);
 
     const blockchainRepoSpy = jest.spyOn(blockchainRepo, "findById").mockResolvedValue(blockchain);
 
@@ -323,6 +327,7 @@ test("getUserNfts - returns empty array if all nfts are invalid", async () => {
     expect(validatorSpy).nthCalledWith(3, covalentResponse.data.items.at(1).nft_data.at(1).external_data);
 
     expect(historySpy).toHaveBeenCalledTimes(1);
+    expect(historySpy).toHaveBeenCalledWith(EvmContractType.ERC721);
 });
 
 test("getUserNfts - returns empty array if all nfts are erc20", async () => {
@@ -404,7 +409,7 @@ test("getUserNfts - returns empty array if user has no items", async () => {
 });
 
 test("getUserNfts - returns array of valid erc721 or valid erc1155", async () => {
-    const historySpy = jest.spyOn(deploymentHistory, "getAllAddresses").mockReturnValue([]);
+    const historySpy = jest.spyOn(contractsRepo, "findByType").mockResolvedValue([]);
 
     const blockchain = new Blockchain();
     blockchain.chainIdDecimal = 1000;
@@ -518,10 +523,13 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
     expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items.at(1).nft_data.at(1).external_data);
 
     expect(historySpy).toHaveBeenCalledTimes(1);
+    expect(historySpy).toHaveBeenCalledWith(EvmContractType.ERC721);
 });
 
 test("getUserNfts - returns array with excluded nfts of swan contracts", async () => {
-    const historySpy = jest.spyOn(deploymentHistory, "getAllAddresses").mockReturnValue(["swan-contract"]);
+    const contracts = [new EvmContract()];
+    contracts[0].deploymentAddress = "swan-contract";
+    const historySpy = jest.spyOn(contractsRepo, "findByType").mockResolvedValue(contracts);
 
     const blockchain = new Blockchain();
     blockchain.chainIdDecimal = 1000;
@@ -634,4 +642,5 @@ test("getUserNfts - returns array with excluded nfts of swan contracts", async (
     expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items.at(1).nft_data.at(1).external_data);
 
     expect(historySpy).toHaveBeenCalledTimes(1);
+    expect(historySpy).toHaveBeenCalledWith(EvmContractType.ERC721);
 });

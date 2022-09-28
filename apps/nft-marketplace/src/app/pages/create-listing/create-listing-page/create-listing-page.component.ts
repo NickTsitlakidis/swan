@@ -8,6 +8,7 @@ import { isEqual } from "lodash";
 import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets-facade";
 import { Janitor } from "../../../@core/components/janitor";
 import { UserFacade } from "../../../@core/store/user-facade";
+import { EvmContractsFacade } from "../../../@core/store/evm-contracts-facade";
 
 @Component({
     selector: "nft-marketplace-create-listing-page",
@@ -22,6 +23,7 @@ export class CreateListingPageComponent extends Janitor implements OnInit {
 
     constructor(
         private _blockchainWalletsFacade: BlockchainWalletsFacade,
+        private _evmContractsFacade: EvmContractsFacade,
         private _fb: UntypedFormBuilder,
         private _cd: ChangeDetectorRef,
         private _listingsService: ListingsService,
@@ -76,14 +78,18 @@ export class CreateListingPageComponent extends Janitor implements OnInit {
                     return zip(
                         of(listingEntity),
                         this._walletRegistryService.getWalletService(nft.walletId),
-                        this._blockchainWalletsFacade.streamWallets()
+                        this._blockchainWalletsFacade.streamWallets(),
+                        this._evmContractsFacade.streamMarketplaceContracts()
                     );
                 }),
-                mergeMap(([listingEntity, walletService, blockchainWallets]) => {
+                mergeMap(([listingEntity, walletService, blockchainWallets, marketplaceContracts]) => {
                     if (walletService) {
                         const matchingWallets = blockchainWallets.find(
                             (wallets) => wallets.blockchain.id === nft.blockchain.id
                         ) as BlockchainWalletDto;
+
+                        const matchingContract = marketplaceContracts.find((c) => c.blockchainId === nft.blockchain.id);
+
                         return zip(
                             of(listingEntity),
                             of(walletService),
@@ -91,20 +97,33 @@ export class CreateListingPageComponent extends Janitor implements OnInit {
                                 price: dto.price,
                                 blockchain: matchingWallets.blockchain,
                                 tokenContractAddress: dto.tokenContractAddress,
-                                tokenId: parseInt(dto.chainTokenId || "")
-                            })
+                                tokenId: parseInt(dto.chainTokenId || ""),
+                                marketplaceContract: matchingContract
+                            }),
+                            of(matchingContract)
                         );
                     }
                     return EMPTY;
                 }),
-                mergeMap(([listingEntity, walletService, transactionHash]) => {
+                mergeMap(([listingEntity, walletService, transactionHash, marketplaceContract]) => {
                     const dto = new SubmitListingDto();
                     dto.listingId = listingEntity.id;
                     dto.chainTransactionId = transactionHash;
-                    return zip(of(walletService), of(transactionHash), this._listingsService.submitListing(dto));
+                    return zip(
+                        of(walletService),
+                        of(transactionHash),
+                        this._listingsService.submitListing(dto),
+                        of(marketplaceContract)
+                    );
                 }),
-                mergeMap(([walletService, transactionHash, listingEntity]) => {
-                    return zip(walletService.getListingResult(transactionHash, nft.blockchain.id), of(listingEntity));
+                mergeMap(([walletService, transactionHash, listingEntity, marketplaceContract]) => {
+                    return zip(
+                        walletService.getListingResult(
+                            transactionHash,
+                            marketplaceContract?.deploymentAddress as string
+                        ),
+                        of(listingEntity)
+                    );
                 }),
                 mergeMap(([result, listingEntity]) => {
                     const dto = new ActivateListingDto();
