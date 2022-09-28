@@ -99,6 +99,10 @@ export class Listing extends EventSourcedEntity {
         return this._categoryId;
     }
 
+    get marketPlaceContractAddress(): string {
+        return this._marketPlaceContractAddress;
+    }
+
     submitToChain(chainTransactionId: string) {
         if (this._status !== ListingStatus.CREATED) {
             throw new BadRequestException(`Listing with id ${this.id} is not CREATED`);
