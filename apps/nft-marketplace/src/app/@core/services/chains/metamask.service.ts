@@ -7,7 +7,7 @@ import { CreateNft } from "./create-nft";
 import { Injectable } from "@angular/core";
 import { ChainsModule } from "./chains.module";
 import { BlockchainDto, ListingDto, NftMintTransactionDto } from "@swan/dto";
-import { ContractFactory, ListingResult } from "@swan/contracts";
+import { ContractFactory, MarketplaceResult } from "@swan/contracts";
 import { CreateListing } from "./create-listing";
 
 @Injectable({
@@ -111,7 +111,7 @@ export class MetamaskService implements WalletService {
         );
     }
 
-    getListingResult(transactionHash: string, marketplaceContractAddress: string): Observable<ListingResult> {
+    getListingResult(transactionHash: string, marketplaceContractAddress: string): Observable<MarketplaceResult> {
         const marketplaceContract = this._contractFactory.createMarketplace(
             this._ethersProvider,
             marketplaceContractAddress
@@ -143,6 +143,16 @@ export class MetamaskService implements WalletService {
                     )
                 );
             })
+        );
+    }
+
+    getBuyResult(transactionHash: string, marketplaceContractAddress: string): Observable<MarketplaceResult> {
+        const marketplaceContract = this._contractFactory.createMarketplace(
+            this._ethersProvider,
+            marketplaceContractAddress
+        );
+        return from(this._ethersProvider.getSigner().getAddress()).pipe(
+            switchMap((address) => from(marketplaceContract.getBuyResult(transactionHash, address)))
         );
     }
 

@@ -1,4 +1,4 @@
-export interface ListingResult {
+export interface MarketplaceResult {
     chainListingId: number;
     blockNumber: number;
 }

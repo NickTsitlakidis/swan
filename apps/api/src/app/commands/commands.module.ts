@@ -20,6 +20,7 @@ import { CreateListingCommandExecutor } from "./listing/create-listing-command-e
 import { SubmitListingCommandExecutor } from "./listing/submit-listing-command-executor";
 import { ActivateListingCommandExecutor } from "./listing/activate-listing-command-executor";
 import { ContractsModule } from "../contracts.module";
+import { ConfirmListingSaleCommandExecutor } from "./listing/confirm-listing-sale-command-executor";
 
 @Module({
     providers: [
@@ -33,7 +34,8 @@ import { ContractsModule } from "../contracts.module";
         CreateListingCommandExecutor,
         SubmitListingCommandExecutor,
         ActivateListingCommandExecutor,
-        BuyListingCommandExecutor
+        BuyListingCommandExecutor,
+        ConfirmListingSaleCommandExecutor
     ],
     exports: [
         StartSignatureAuthenticationExecutor,
@@ -45,7 +47,8 @@ import { ContractsModule } from "../contracts.module";
         CreateListingCommandExecutor,
         SubmitListingCommandExecutor,
         ActivateListingCommandExecutor,
-        BuyListingCommandExecutor
+        BuyListingCommandExecutor,
+        ConfirmListingSaleCommandExecutor
     ],
     imports: [
         InfrastructureModule,

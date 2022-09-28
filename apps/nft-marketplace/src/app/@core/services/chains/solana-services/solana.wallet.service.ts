@@ -17,7 +17,7 @@ import { CreateNftInput } from "@metaplex-foundation/js";
 import { MetaplexService } from "./metaplex.service";
 import { SwanError } from "../../../interfaces/swan-error";
 import { ListingDto, NftMintTransactionDto } from "@swan/dto";
-import { ListingResult } from "@swan/contracts";
+import { MarketplaceResult } from "@swan/contracts";
 import { CreateListing } from "../create-listing";
 
 export const isNotNull = <T>(source: Observable<T | null>) =>
@@ -232,7 +232,7 @@ export class SolanaWalletService implements WalletService {
         return EMPTY;
     }
 
-    getListingResult(transactionHash: string, marketplaceContractAddress: string): Observable<ListingResult> {
+    getListingResult(transactionHash: string, marketplaceContractAddress: string): Observable<MarketplaceResult> {
         return EMPTY;
     }
 
