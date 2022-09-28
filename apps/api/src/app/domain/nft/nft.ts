@@ -104,7 +104,9 @@ export class Nft extends EventSourcedEntity {
     }
 
     changeUser(userId: string, userWalletId: string) {
-        this._status = NftStatus.CHANGE_USER;
+        if (this._status !== NftStatus.MINTED) {
+            throw new BadRequestException(`Wrong nft status : ${this._status}`);
+        }
         this._userId = userId;
         this._userWalletId = userWalletId;
         this.apply(new NftChangeUserEvent(userId, userWalletId));
@@ -135,7 +137,6 @@ export class Nft extends EventSourcedEntity {
 
     @EventProcessor(NftChangeUserEvent)
     private processNftChangeUserEvent = (event: NftChangeUserEvent) => {
-        this._status = NftStatus.CHANGE_USER;
         this._userId = event.userId;
         this._userWalletId = event.userWalletId;
     };
