@@ -20,6 +20,7 @@
   },
   "private": true,
   "dependencies": {
+    "@agent-ly/nestjs-agenda":"2.0.4",
     "@angular/animations": "14.2.4",
     "@angular/cdk": "14.2.3",
     "@angular/common": "14.2.4",
@@ -59,6 +60,7 @@
     "@solana/wallet-adapter-base": "0.9.5",
     "@solana/wallet-adapter-wallets": "0.16.1",
     "@solana/web3.js": "1.44.2",
+    "agenda": "4.3.0",
     "assert": "2.0.0",
     "aws-sdk": "2.1162.0",
     "bcrypt": "5.0.1",
