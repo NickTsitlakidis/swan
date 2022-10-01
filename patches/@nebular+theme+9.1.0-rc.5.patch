@@ -1,0 +1,13 @@
+diff --git a/node_modules/@nebular/theme/components/layout/_layout.component.theme.scss b/node_modules/@nebular/theme/components/layout/_layout.component.theme.scss
+index e4a53df..fe5c072 100644
+--- a/node_modules/@nebular/theme/components/layout/_layout.component.theme.scss
++++ b/node_modules/@nebular/theme/components/layout/_layout.component.theme.scss
+@@ -96,7 +96,7 @@
+       }
+     }
+ 
+-    @media screen and(min-width: $layout-window-mode-max-width + 150px) {
++    @media screen and (min-width: $layout-window-mode-max-width + 150px) {
+       $padding-top: calc(#{nb-theme(layout-window-mode-padding-top)} * 0.5);
+ 
+       @include window-mode($padding-top);

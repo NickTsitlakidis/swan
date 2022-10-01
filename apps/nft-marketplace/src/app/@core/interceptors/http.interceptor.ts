@@ -23,10 +23,7 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
 
     public clientLogin = "/client/login";
 
-    constructor(
-        private _clientAuthService: ClientAuthService,
-        private _userFacade: UserFacade
-    ) {}
+    constructor(private _clientAuthService: ClientAuthService, private _userFacade: UserFacade) {}
 
     intercept(req: HttpRequest<unknown>, next: HttpHandler) {
         const url = req.url;
@@ -57,8 +54,8 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
         if (isUserRequest) {
             toRun = this._userFacade.streamToken().pipe(
                 map((tokenState) => {
-                    if(isNil(tokenState.state)) {
-                        return fullUrlReq
+                    if (isNil(tokenState.state)) {
+                        return fullUrlReq;
                     } else {
                         return this._addBearerToken(fullUrlReq, tokenState.state.tokenValue);
                     }
@@ -78,8 +75,8 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
 
                 if (isClientRequest) {
                     withNewToken = this._clientAuthService.getAndStoreClientToken().pipe(
-                        map((token) => ComplexState<TokenDto>.fromSuccess(token)),
-                        catchError((error) => of(ComplexState<TokenDto>.fromError(error) as ComplexState<TokenDto>))
+                        map((token) => ComplexState.fromSuccess(token)),
+                        catchError((error) => of(ComplexState.fromError(error) as ComplexState<TokenDto>))
                     );
                 }
 

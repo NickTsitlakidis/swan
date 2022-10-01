@@ -2,8 +2,8 @@
     "version": 2,
     "projects": {
         "api": "apps/api",
-        "dto": "libs/dto",
         "contracts": "libs/contracts",
+        "dto": "libs/dto",
         "nft-marketplace": "apps/nft-marketplace",
         "nft-marketplace-e2e": "apps/nft-marketplace-e2e"
     }
