@@ -8,6 +8,7 @@ import { NftMetadata } from "./nft-metadata";
 import { MintNftCommand } from "../../commands/nft/mint-nft-command";
 import { BlockchainActionsRegistryService } from "../../support/blockchains/blockchain-actions-registry-service";
 import { isNil } from "lodash";
+import { NftCreateExternal } from "./nft-create-external";
 
 export class Nft extends EventSourcedEntity {
     private _status: NftStatus;
@@ -34,6 +35,32 @@ export class Nft extends EventSourcedEntity {
         nft._status = NftStatus.CREATED;
         nft._userWalletId = userWalletId;
         nft.apply(new NftCreatedEvent(userId, blockchainId, categoryId, userWalletId));
+        return nft;
+    }
+
+    static createExternal(id: string, userId: string, createExternalNft: NftCreateExternal): Nft {
+        const nft = new Nft(id);
+        nft._blockchainId = createExternalNft.blockchainId;
+        nft._categoryId = createExternalNft.categoryId;
+        nft._userId = userId;
+        nft._status = NftStatus.CREATED;
+        nft._userWalletId = createExternalNft.userWalletId;
+        nft.apply(
+            new NftCreatedEvent(
+                userId,
+                createExternalNft.blockchainId,
+                createExternalNft.categoryId,
+                createExternalNft.userWalletId
+            )
+        );
+
+        nft.apply(
+            new NftMintedEvent(
+                createExternalNft.transactionId,
+                createExternalNft.tokenAddress,
+                createExternalNft.tokenId
+            )
+        );
         return nft;
     }
 

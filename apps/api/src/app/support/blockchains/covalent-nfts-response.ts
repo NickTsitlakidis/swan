@@ -54,7 +54,7 @@ export interface Data {
     pagination?: any;
 }
 
-export interface CovalentHqResponse {
+export interface CovalentNftsResponse {
     data: Data;
     error: boolean;
     error_message?: string;

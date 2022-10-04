@@ -13,6 +13,7 @@ export class ProfileNftDto {
     public nftAddress?: string;
     public tokenId?: string;
     public walletId: string;
+    public metadataUri: string;
 
     @Type(() => BlockchainDto)
     public blockchain: BlockchainDto;

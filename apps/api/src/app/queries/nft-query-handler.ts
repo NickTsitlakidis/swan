@@ -52,6 +52,7 @@ export class NftQueryHandler {
             dto.tokenContractAddress = view.tokenContractAddress;
 
             dto.nftAddress = view.nftAddress;
+            dto.metadataUri = view.metadataUri;
 
             const collection = collections.find((c) => c.id === view.collectionId);
             if (!isNil(collection)) {
@@ -103,6 +104,7 @@ export class NftQueryHandler {
                     profileNftDto.tokenContractAddress = nft.tokenContractAddress;
                     profileNftDto.nftAddress = nft.nftAddress;
                     profileNftDto.walletId = wallet.walletId;
+                    profileNftDto.metadataUri = nft.metadataUri;
                     return profileNftDto;
                 })
             );
