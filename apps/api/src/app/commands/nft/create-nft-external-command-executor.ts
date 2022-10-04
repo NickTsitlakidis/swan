@@ -8,8 +8,6 @@ import { NftDto } from "@swan/dto";
 import { isNil } from "lodash";
 import { LogAsyncMethod } from "../../infrastructure/logging";
 import { CreateNftExternalCommand } from "./create-nft-external-command";
-import { CovalentService } from "../../support/blockchains/covalent-service";
-import { SolanaActionsService } from "../../support/blockchains/solana-actions-service";
 import { BlockchainActionsRegistryService } from "../../support/blockchains/blockchain-actions-registry-service";
 
 @CommandHandler(CreateNftExternalCommand)
@@ -19,8 +17,6 @@ export class CreateNftExternalCommandExecutor implements ICommandHandler<CreateN
         private _blockchainRepository: BlockchainRepository,
         private _walletRepository: UserWalletViewRepository,
         private _factory: NftFactory,
-        private _covalentService: CovalentService,
-        private _solanaActionsService: SolanaActionsService,
         private _blockchainActionsRegistryService: BlockchainActionsRegistryService
     ) {}
 
@@ -36,6 +32,10 @@ export class CreateNftExternalCommandExecutor implements ICommandHandler<CreateN
             this._blockchainRepository.findById(command.blockchainId)
         ]);
 
+        if (isNil(category) || isNil(wallet) || isNil(blockchain)) {
+            throw new BadRequestException("Missing category, wallet, blockchain or collection");
+        }
+
         const blockChainService = await this._blockchainActionsRegistryService.getService(blockchain.id);
         const transactions = await blockChainService.fetchNftTransactions({
             tokenAdress: command.nftAddress || command.tokenContractAddress,
@@ -46,15 +46,11 @@ export class CreateNftExternalCommandExecutor implements ICommandHandler<CreateN
 
         const transactionId = transactions.at(0).transactionId;
 
-        if (isNil(category) || isNil(wallet) || isNil(blockchain)) {
-            throw new BadRequestException("Missing category, wallet, or blockchain");
-        }
-
         const newNft = this._factory.createExternal(command.userId, {
             blockchainId: command.blockchainId,
             categoryId: command.categoryId,
             userWalletId: wallet.id,
-            tokenId: command.tokenId.toString(),
+            tokenId: command.tokenId?.toString(),
             tokenAddress: command.nftAddress || command.tokenContractAddress,
             transactionId: transactionId
         });
