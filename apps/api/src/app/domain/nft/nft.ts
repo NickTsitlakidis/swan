@@ -54,6 +54,7 @@ export class Nft extends EventSourcedEntity {
             )
         );
 
+        nft._status = NftStatus.MINTED;
         nft.apply(
             new NftMintedEvent(
                 createExternalNft.transactionId,
