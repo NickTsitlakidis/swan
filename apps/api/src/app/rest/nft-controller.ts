@@ -6,6 +6,7 @@ import { CreateNftCommand } from "../commands/nft/create-nft-command";
 import { CommandBus } from "@nestjs/cqrs";
 import { MintNftCommand } from "../commands/nft/mint-nft-command";
 import { NftQueryHandler } from "../queries/nft-query-handler";
+import { CreateNftExternalCommand } from "../commands/nft/create-nft-external-command";
 
 @Controller("nft")
 export class NftController {
@@ -15,6 +16,14 @@ export class NftController {
     @UseGuards(UserGuard)
     async create(@RequestUserId() userId: string, @Body() dto: NftMetadataDto): Promise<NftDto> {
         const command = CreateNftCommand.fromDto(dto);
+        command.userId = userId;
+        return this._commandBus.execute(command);
+    }
+
+    @Post("/create-external")
+    @UseGuards(UserGuard)
+    async createExternal(@RequestUserId() userId: string, @Body() dto: ProfileNftDto): Promise<NftDto> {
+        const command = CreateNftExternalCommand.fromDto(dto, userId);
         command.userId = userId;
         return this._commandBus.execute(command);
     }

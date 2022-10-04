@@ -1,5 +1,5 @@
 import { Nft } from "./nft";
-import { NftCreatedEvent, NftMintedEvent, UploadedNftMetadataEvent } from "./nft-events";
+import { NftChangeUserEvent, NftCreatedEvent, NftMintedEvent, UploadedNftMetadataEvent } from "./nft-events";
 import { NftStatus } from "./nft-status";
 import { SourcedEvent } from "../../infrastructure/sourced-event";
 import { MintNftCommand } from "../../commands/nft/mint-nft-command";
@@ -8,6 +8,7 @@ import { BlockchainActionsRegistryService } from "../../support/blockchains/bloc
 import { createMock } from "@golevelup/ts-jest";
 import { NftMetadata } from "./nft-metadata";
 import { EvmActionsService } from "../../support/blockchains/evm-actions-service";
+import { NftCreateExternal } from "./nft-create-external";
 
 test("create - sets properties and applies NftCreatedEvent", () => {
     const nft = Nft.create("the-id", "the-user", "the-chain", "category", "wallet");
@@ -23,6 +24,36 @@ test("create - sets properties and applies NftCreatedEvent", () => {
     expect(nft.userId).toBe("the-user");
     expect(nft.blockchainId).toBe("the-chain");
     expect(nft.status).toBe(NftStatus.CREATED);
+    expect(nft.userWalletId).toBe("wallet");
+    expect(nft.id).toBe("the-id");
+});
+
+test("createExternal - sets properties and applies NftCreatedEvent & NftMintedEvent", () => {
+    const nftExternal: NftCreateExternal = {
+        blockchainId: "the-chain",
+        categoryId: "category",
+        userWalletId: "wallet",
+        tokenId: "333",
+        tokenAddress: "address",
+        transactionId: "transactionId"
+    };
+    const nft = Nft.createExternal("the-id", "the-user", nftExternal);
+
+    expect(nft.appliedEvents.length).toBe(2);
+    expect(nft.appliedEvents[0]).toBeInstanceOf(NftCreatedEvent);
+    expect((nft.appliedEvents[0] as NftCreatedEvent).blockchainId).toBe("the-chain");
+    expect((nft.appliedEvents[0] as NftCreatedEvent).categoryId).toBe("category");
+    expect((nft.appliedEvents[0] as NftCreatedEvent).userId).toBe("the-user");
+    expect((nft.appliedEvents[0] as NftCreatedEvent).userWalletId).toBe("wallet");
+    expect((nft.appliedEvents[0] as NftCreatedEvent).aggregateId).toBe("the-id");
+
+    expect((nft.appliedEvents[1] as NftMintedEvent).tokenId).toBe("333");
+    expect((nft.appliedEvents[1] as NftMintedEvent).tokenAddress).toBe("address");
+    expect((nft.appliedEvents[1] as NftMintedEvent).transactionId).toBe("transactionId");
+
+    expect(nft.userId).toBe("the-user");
+    expect(nft.blockchainId).toBe("the-chain");
+    expect(nft.status).toBe(NftStatus.MINTED);
     expect(nft.userWalletId).toBe("wallet");
     expect(nft.id).toBe("the-id");
 });
@@ -80,6 +111,40 @@ test("mint - successfully applies the event to the store", () => {
 
     expect(nft.status).toBe(NftStatus.MINTED);
     expect(nft.appliedEvents[0]).toEqual(nftMintedEvent);
+    expect(nft.appliedEvents.length).toBe(1);
+});
+
+test("changeUser - successfully changes user of the nft", () => {
+    const sourcedEvents = [
+        new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id", "category", "wallet")),
+        new SourcedEvent("nft-id", new UploadedNftMetadataEvent("metadata-uri", "image-uri"))
+    ];
+    const nft = Nft.fromEvents("nft-id", sourcedEvents);
+
+    const newUser = "user-2";
+    const userWalletId = "wallet-2";
+
+    expect(() => nft.changeUser(newUser, userWalletId)).toThrow(BadRequestException);
+});
+
+test("changeUser - successfully changes user of the nft", () => {
+    const sourcedEvents = [
+        new SourcedEvent("nft-id", new NftCreatedEvent("user-1", "chain-id", "category", "wallet")),
+        new SourcedEvent("nft-id", new UploadedNftMetadataEvent("metadata-uri", "image-uri")),
+        new SourcedEvent("nft-id", new NftMintedEvent("transactionId", "address", "555"))
+    ];
+    const nft = Nft.fromEvents("nft-id", sourcedEvents);
+
+    const newUser = "user-2";
+    const userWalletId = "wallet-2";
+
+    const nftChangeUserEvent = new NftChangeUserEvent(newUser, userWalletId);
+    nftChangeUserEvent.aggregateId = "nft-id";
+
+    nft.changeUser(newUser, userWalletId);
+
+    expect(nft.status).toBe(NftStatus.MINTED);
+    expect(nft.appliedEvents[0]).toEqual(nftChangeUserEvent);
     expect(nft.appliedEvents.length).toBe(1);
 });
 

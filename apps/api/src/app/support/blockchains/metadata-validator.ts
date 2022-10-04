@@ -7,6 +7,8 @@ export class MetadataValidator {
     validate(metadata: unknown): boolean {
         const schema = Joi.object({
             name: Joi.string().required(),
+            metadataUri: Joi.string().allow(null),
+            nftAddress: Joi.string().allow(null),
             description: Joi.string().allow("").required(),
             image: Joi.string().uri().required(),
             animation_url: Joi.string().allow(null).uri(),
