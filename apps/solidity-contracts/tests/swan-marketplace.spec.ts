@@ -75,6 +75,7 @@ describe("SwanMarketplace", () => {
             .withArgs(seller.address, deployedNft.address, 2, ethers.utils.parseEther("0.5"), 1);
 
         expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(true);
+        const listing = await deployedMarketplace.getListing(deployedNft.address, 1);
         expect(await deployedNft.ownerOf(1)).to.equal(seller.address);
     });
 

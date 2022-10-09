@@ -25,4 +25,8 @@ export * from "./lib/activate-listing-dto";
 export * from "./lib/user-dto";
 export * from "./lib/listing-dto";
 export * from "./lib/pagination-dto";
+export * from "./lib/currency";
+export * from "./lib/buy-listing-dto";
+export * from "./lib/page-dto";
 export * from "./lib/evm-contract-dto";
+export * from "./lib/confirm-listing-sale-dto";

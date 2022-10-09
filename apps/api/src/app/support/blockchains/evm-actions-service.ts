@@ -1,5 +1,5 @@
 import { CategoryRepository } from "../categories/category-repository";
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
 import { EvmMetadata } from "./evm-metadata";
 import { UploadedFiles } from "./uploaded-files";
@@ -10,13 +10,14 @@ import { MetaplexService } from "../metaplex/metaplex-service";
 import { BlockchainRepository } from "./blockchain-repository";
 import { MetadataValidator } from "./metadata-validator";
 import { HttpService } from "@nestjs/axios";
-import { firstValueFrom } from "rxjs";
-import { CovalentHqResponse, NftData } from "./covalent-hq-response";
+import { NftData } from "./covalent-nfts-response";
 import { getLogger, LogAsyncMethod } from "../../infrastructure/logging";
 import { ChainNft } from "./chain-nft";
 import { CategoryByFileType } from "./category-by-file-type";
 import { EvmContractsRepository } from "../evm-contracts/evm-contracts-repository";
 import { EvmContractType } from "../evm-contracts/evm-contract-type";
+import { CovalentService } from "./covalent-service";
+import { BlockchainNftTransactionsBody, BlockchainNftTransactionsResponse } from "./blockchain-nft-transactions";
 
 @Injectable()
 export class EvmActionsService extends BlockchainActions {
@@ -27,6 +28,7 @@ export class EvmActionsService extends BlockchainActions {
         categoryRepository: CategoryRepository,
         httpService: HttpService,
         validator: MetadataValidator,
+        private _covalentService: CovalentService,
         private readonly _blockchainRepository: BlockchainRepository,
         private readonly _evmContractsRepository: EvmContractsRepository
     ) {
@@ -68,13 +70,7 @@ export class EvmActionsService extends BlockchainActions {
             throw new InternalServerErrorException("Missing blockchain");
         }
 
-        const url = `https://api.covalenthq.com/v1/${
-            blockchain.chainIdDecimal
-        }/address/${pubKey}/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=${this._configService.get(
-            "COVALENTHQ_KEY"
-        )}`;
-
-        const nfts = await firstValueFrom(this.httpService.get<CovalentHqResponse>(url));
+        const nfts = await this._covalentService.fetchNfts(blockchain.chainIdDecimal, pubKey);
 
         if (nfts.status !== 200) {
             this.logger.error(`Got error response from CovalentHQ API. Status : ${nfts.status}`);
@@ -125,6 +121,7 @@ export class EvmActionsService extends BlockchainActions {
                     description: metadataNft.description,
                     animation_url: metadataNft.animation_url,
                     external_url: metadataNft.external_url,
+                    metadataUri: nft.token_url,
                     categoryId: foundCategories[index]?.id,
                     properties: {
                         files: []
@@ -133,5 +130,21 @@ export class EvmActionsService extends BlockchainActions {
                 return metaplex;
             })
             .filter((nft) => nft.categoryId);
+    }
+
+    async fetchNftTransactions(body: BlockchainNftTransactionsBody) {
+        const { tokenAdress, tokenId, chainId } = body;
+        if (!tokenId || !chainId) {
+            throw new BadRequestException(`Missing tokenId or chainId to fetch NFT's transactions: ${body}`);
+        }
+        const transactions = await this._covalentService.fetchNftTransactions(chainId, tokenId, tokenAdress);
+
+        return transactions.data.data.items.at(0).nft_transactions.map((tx) => {
+            const returnObject: BlockchainNftTransactionsResponse = {
+                transactionId: tx.tx_hash,
+                blockNumber: tx.block_height
+            };
+            return returnObject;
+        });
     }
 }

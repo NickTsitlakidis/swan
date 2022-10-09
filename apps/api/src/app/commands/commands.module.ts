@@ -1,3 +1,4 @@
+import { BuyListingCommandExecutor } from "./listing/buy-listing-command-executor";
 import { Module } from "@nestjs/common";
 import { InfrastructureModule } from "../infrastructure/infrastructure.module";
 import { UserModule } from "../domain/user/user.module";
@@ -18,6 +19,8 @@ import { ListingModule } from "../domain/listing/listing.module";
 import { CreateListingCommandExecutor } from "./listing/create-listing-command-executor";
 import { SubmitListingCommandExecutor } from "./listing/submit-listing-command-executor";
 import { ActivateListingCommandExecutor } from "./listing/activate-listing-command-executor";
+import { ContractsModule } from "../contracts.module";
+import { ConfirmListingSaleCommandExecutor } from "./listing/confirm-listing-sale-command-executor";
 
 @Module({
     providers: [
@@ -30,7 +33,9 @@ import { ActivateListingCommandExecutor } from "./listing/activate-listing-comma
         MintNftCommandExecutor,
         CreateListingCommandExecutor,
         SubmitListingCommandExecutor,
-        ActivateListingCommandExecutor
+        ActivateListingCommandExecutor,
+        BuyListingCommandExecutor,
+        ConfirmListingSaleCommandExecutor
     ],
     exports: [
         StartSignatureAuthenticationExecutor,
@@ -41,7 +46,9 @@ import { ActivateListingCommandExecutor } from "./listing/activate-listing-comma
         MintNftCommandExecutor,
         CreateListingCommandExecutor,
         SubmitListingCommandExecutor,
-        ActivateListingCommandExecutor
+        ActivateListingCommandExecutor,
+        BuyListingCommandExecutor,
+        ConfirmListingSaleCommandExecutor
     ],
     imports: [
         InfrastructureModule,
@@ -52,7 +59,8 @@ import { ActivateListingCommandExecutor } from "./listing/activate-listing-comma
         CollectionModule,
         SupportModule,
         NftModule,
-        ListingModule
+        ListingModule,
+        ContractsModule
     ]
 })
 export class CommandsModule {}

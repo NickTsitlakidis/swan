@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { MetaplexMetadata } from "@nftstorage/metaplex-auth";
 import { ConfigService } from "@nestjs/config";
 import { AwsService } from "../aws/aws-service";
@@ -11,6 +11,9 @@ import { HttpService } from "@nestjs/axios";
 import { CategoryRepository } from "../categories/category-repository";
 import { CategoryByFileType } from "./category-by-file-type";
 import { MetadataValidator } from "./metadata-validator";
+import { SolanaTransactionSignatures } from "./solana-transaction-signatures";
+import { firstValueFrom } from "rxjs";
+import { BlockchainNftTransactionsBody, BlockchainNftTransactionsResponse } from "./blockchain-nft-transactions";
 
 @Injectable()
 export class SolanaActionsService extends BlockchainActions {
@@ -88,5 +91,33 @@ export class SolanaActionsService extends BlockchainActions {
             metadataIPFSUri: metadataUri,
             imageIPFSUri: imageUri
         };
+    }
+
+    async fetchNftTransactions(body: BlockchainNftTransactionsBody) {
+        const { tokenAdress, rpcUrl } = body;
+        if (!rpcUrl) {
+            throw new BadRequestException(`Missing rpcUrl to fetch NFT's transactions: ${body}`);
+        }
+
+        const url = rpcUrl;
+        const transactions = await firstValueFrom(
+            this.httpService.post<SolanaTransactionSignatures>(
+                url,
+                JSON.stringify({
+                    jsonrpc: "2.0",
+                    id: "get-signatures",
+                    method: "getSignaturesForAddress",
+                    params: [tokenAdress]
+                })
+            )
+        );
+
+        return transactions.data.result.map((tx) => {
+            const returnObject: BlockchainNftTransactionsResponse = {
+                transactionId: tx.signature,
+                blockNumber: tx.blockTime
+            };
+            return returnObject;
+        });
     }
 }

@@ -86,12 +86,12 @@ export class ListingProjector
         }
 
         if (event instanceof ListingSubmittedEvent) {
-            view.chainTransaction = new ChainTransactionView(event.chainTransactionId);
+            view.listingCreatedTransaction = new ChainTransactionView(event.chainTransactionId);
             view.status = ListingStatus.SUBMITTED;
         }
 
         if (event instanceof ListingActivatedEvent) {
-            view.chainTransaction.blockNumber = event.blockNumber;
+            view.listingCreatedTransaction.blockNumber = event.blockNumber;
             view.status = ListingStatus.ACTIVE;
         }
 
@@ -101,6 +101,9 @@ export class ListingProjector
 
         if (event instanceof ListingSoldEvent) {
             view.status = ListingStatus.SOLD;
+            view.listingSoldTransaction = new ChainTransactionView(event.transactionHash, event.blockNumber);
+            view.buyer = event.buyer;
+            view.transactionFee = event.transactionFee;
         }
 
         return this._repository.save(view);

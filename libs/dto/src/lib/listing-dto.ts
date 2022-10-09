@@ -7,6 +7,7 @@ export class ListingDto {
     imageUrl: string;
     tokenContractAddress?: string;
     nftAddress?: string;
-    chainTokenId?: string;
+    chainTokenId?: number;
     animationUrl?: string;
+    walletId: string;
 }

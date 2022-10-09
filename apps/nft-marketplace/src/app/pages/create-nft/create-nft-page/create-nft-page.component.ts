@@ -7,6 +7,7 @@ import {
     CategoryDto,
     CollectionDto,
     NftMetadataAttributeDto,
+    NftMetadataDto,
     UserWalletDto
 } from "@swan/dto";
 import { fade } from "../../../@core/animations/enter-leave.animation";
@@ -210,20 +211,19 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
             .uploadFileToS3(this.uploadedFile)
             .pipe(
                 switchMap((signedUriResponse) => {
-                    const nftMetadataDto = {
-                        imageType: this.uploadedFile.type,
-                        imageName: this.uploadedFile.name,
-                        categoryId: this.createNFTForm.get("category")?.value.id,
-                        s3uri: signedUriResponse,
-                        name: this.createNFTForm.get("title")?.value,
-                        description: this.createNFTForm.get("description")?.value,
-                        resellPercentage: this.createNFTForm.get("royalties")?.value,
-                        maxSupply: this.createNFTForm.get("maxSupply")?.value,
-                        chainId,
-                        walletId: walletId,
-                        attributes: metadata,
-                        collectionId: this.createNFTForm.get("collection")?.value?.id || undefined
-                    };
+                    const nftMetadataDto = new NftMetadataDto();
+                    nftMetadataDto.imageType = this.uploadedFile.type;
+                    nftMetadataDto.imageName = this.uploadedFile.name;
+                    nftMetadataDto.categoryId = this.createNFTForm.get("category")?.value.id;
+                    nftMetadataDto.s3uri = signedUriResponse;
+                    nftMetadataDto.name = this.createNFTForm.get("title")?.value;
+                    nftMetadataDto.description = this.createNFTForm.get("description")?.value;
+                    nftMetadataDto.resellPercentage = this.createNFTForm.get("royalties")?.value;
+                    nftMetadataDto.maxSupply = this.createNFTForm.get("maxSupply")?.value;
+                    nftMetadataDto.chainId;
+                    nftMetadataDto.walletId = walletId;
+                    nftMetadataDto.attributes = metadata;
+                    nftMetadataDto.collectionId = this.createNFTForm.get("collection")?.value?.id || undefined;
                     return this._nftService.createNft(nftMetadataDto);
                 }),
                 switchMap((nftResponse) => {

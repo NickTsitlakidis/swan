@@ -24,8 +24,8 @@ test("getActiveListings - returns empty array when no active listings are found"
         skip: 0,
         limit: 50
     };
-    const { listingDtos } = await handler.getActiveListings(dto);
-    expect(listingDtos.length).toBe(0);
+    const { items } = await handler.getActiveListings(dto);
+    expect(items.length).toBe(0);
 
     expect(repoSpy).toHaveBeenCalledTimes(1);
 
@@ -38,8 +38,8 @@ test("getActiveListings - returns two valid active listings", async () => {
     listingViews[0].blockchainId = "block1";
     listingViews[0].categoryId = "cat1";
     listingViews[0].chainListingId = "chainListingId";
-    listingViews[0].chainTokenId = "chainTokenId";
-    listingViews[0].chainTransaction = new ChainTransactionView("transactionId", 333);
+    listingViews[0].chainTokenId = "1";
+    listingViews[0].listingCreatedTransaction = new ChainTransactionView("transactionId", 333);
     listingViews[0].nftAddress = "nftAddress";
     listingViews[0].nftId = "nftId";
     listingViews[0].price = 22;
@@ -52,8 +52,8 @@ test("getActiveListings - returns two valid active listings", async () => {
     listingViews[1].blockchainId = "block2";
     listingViews[1].categoryId = "cat2";
     listingViews[1].chainListingId = "chainListingId2";
-    listingViews[1].chainTokenId = "chainTokenId2";
-    listingViews[1].chainTransaction = new ChainTransactionView("transactionId2", 333);
+    listingViews[1].chainTokenId = "2";
+    listingViews[1].listingCreatedTransaction = new ChainTransactionView("transactionId2", 333);
     listingViews[1].nftAddress = "nftAddress2";
     listingViews[1].nftId = "nftId2";
     listingViews[1].price = 25;
@@ -69,28 +69,28 @@ test("getActiveListings - returns two valid active listings", async () => {
         skip: 0,
         limit: 50
     };
-    const { listingDtos, listingsCount } = await handler.getActiveListings(dto);
-    expect(listingDtos.length).toBe(2);
+    const { items, count } = await handler.getActiveListings(dto);
+    expect(items.length).toBe(2);
 
-    expect(listingDtos[0].id).toBe(listingViews[0].id);
-    expect(listingDtos[0].blockchainId).toBe("block1");
-    expect(listingDtos[0].categoryId).toBe("cat1");
-    expect(listingDtos[0].chainTokenId).toBe("chainTokenId");
-    expect(listingDtos[0].nftAddress).toBe("nftAddress");
-    expect(listingDtos[0].price).toBe(22);
-    expect(listingDtos[0].sellerAddress).toBe("sellerAddress");
-    expect(listingDtos[0].tokenContractAddress).toBe("tokenContractAddress");
+    expect(items[0].id).toBe(listingViews[0].id);
+    expect(items[0].blockchainId).toBe("block1");
+    expect(items[0].categoryId).toBe("cat1");
+    expect(items[0].chainTokenId).toBe(1);
+    expect(items[0].nftAddress).toBe("nftAddress");
+    expect(items[0].price).toBe(22);
+    expect(items[0].sellerAddress).toBe("sellerAddress");
+    expect(items[0].tokenContractAddress).toBe("tokenContractAddress");
 
-    expect(listingDtos[1].id).toBe(listingViews[1].id);
-    expect(listingDtos[1].blockchainId).toBe("block2");
-    expect(listingDtos[1].categoryId).toBe("cat2");
-    expect(listingDtos[1].chainTokenId).toBe("chainTokenId2");
-    expect(listingDtos[1].nftAddress).toBe("nftAddress2");
-    expect(listingDtos[1].price).toBe(25);
-    expect(listingDtos[1].sellerAddress).toBe("sellerAddress2");
-    expect(listingDtos[1].tokenContractAddress).toBe("tokenContractAddress2");
+    expect(items[1].id).toBe(listingViews[1].id);
+    expect(items[1].blockchainId).toBe("block2");
+    expect(items[1].categoryId).toBe("cat2");
+    expect(items[1].chainTokenId).toBe(2);
+    expect(items[1].nftAddress).toBe("nftAddress2");
+    expect(items[1].price).toBe(25);
+    expect(items[1].sellerAddress).toBe("sellerAddress2");
+    expect(items[1].tokenContractAddress).toBe("tokenContractAddress2");
 
-    expect(listingsCount).toBe(2);
+    expect(count).toBe(2);
 
     expect(countSpy).toHaveBeenCalledTimes(1);
 
