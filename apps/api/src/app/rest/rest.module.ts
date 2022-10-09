@@ -9,7 +9,6 @@ import { SupportController } from "./support-controller";
 import { QueriesModule } from "../queries/queries.module";
 import { CollectionController } from "./collection-controller";
 import { NftController } from "./nft-controller";
-import { ConfigModule } from "@nestjs/config";
 import { SupportModule } from "../support/support.module";
 import { ListingController } from "./listing-controller";
 
@@ -22,15 +21,7 @@ import { ListingController } from "./listing-controller";
         NftController,
         ListingController
     ],
-    imports: [
-        CqrsModule,
-        ViewsModule,
-        InfrastructureModule,
-        SecurityModule,
-        QueriesModule,
-        ConfigModule,
-        SupportModule
-    ],
+    imports: [CqrsModule, ViewsModule, InfrastructureModule, SecurityModule, QueriesModule, SupportModule],
     providers: []
 })
 export class RestModule {}

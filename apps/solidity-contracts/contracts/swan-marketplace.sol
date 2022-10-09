@@ -165,7 +165,7 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         payable(found.seller).transfer(sellerFee);
         payable(swanWallet).transfer(swanFee);
 
-        IERC721(found.tokenContractAddress).transferFrom(found.seller, msg.sender, found.tokenId);
+        IERC721(found.tokenContractAddress).safeTransferFrom(found.seller, msg.sender, found.tokenId);
 
         delete (listings[tokenContractAddress][tokenId]);
 
