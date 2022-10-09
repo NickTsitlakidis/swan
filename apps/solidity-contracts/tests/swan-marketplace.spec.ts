@@ -60,7 +60,7 @@ describe("SwanMarketplace", () => {
         expect(await deployedMarketplace.isTokenListed(deployedNft.address, 1)).to.equal(false);
     });
 
-    it.only("createListing - creates listing, and emits event when approved", async () => {
+    it("createListing - creates listing, and emits event when approved", async () => {
         const [deployer, seller] = await ethers.getSigners();
 
         await deployedNft.createItem(seller.address, "the-uri");
