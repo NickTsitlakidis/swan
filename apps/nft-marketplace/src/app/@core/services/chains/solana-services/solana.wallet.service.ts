@@ -224,7 +224,7 @@ export class SolanaWalletService implements WalletService {
                 if (!listing.nftAddress) {
                     return EMPTY;
                 }
-                return from(this._metaplexService.createListing(listing.nftAddress, wallet));
+                return from(this._metaplexService.createListing(listing.nftAddress, listing.price));
             }),
             switchMap((listingOutput) => {
                 if (!listingOutput) {

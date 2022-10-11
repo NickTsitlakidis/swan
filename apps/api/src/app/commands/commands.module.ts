@@ -21,6 +21,7 @@ import { SubmitListingCommandExecutor } from "./listing/submit-listing-command-e
 import { ActivateListingCommandExecutor } from "./listing/activate-listing-command-executor";
 import { ContractsModule } from "../contracts.module";
 import { ConfirmListingSaleCommandExecutor } from "./listing/confirm-listing-sale-command-executor";
+import { CreateNftExternalCommandExecutor } from "./nft/create-nft-external-command-executor";
 
 @Module({
     providers: [
@@ -35,7 +36,8 @@ import { ConfirmListingSaleCommandExecutor } from "./listing/confirm-listing-sal
         SubmitListingCommandExecutor,
         ActivateListingCommandExecutor,
         BuyListingCommandExecutor,
-        ConfirmListingSaleCommandExecutor
+        ConfirmListingSaleCommandExecutor,
+        CreateNftExternalCommandExecutor
     ],
     exports: [
         StartSignatureAuthenticationExecutor,
@@ -48,7 +50,8 @@ import { ConfirmListingSaleCommandExecutor } from "./listing/confirm-listing-sal
         SubmitListingCommandExecutor,
         ActivateListingCommandExecutor,
         BuyListingCommandExecutor,
-        ConfirmListingSaleCommandExecutor
+        ConfirmListingSaleCommandExecutor,
+        CreateNftExternalCommandExecutor
     ],
     imports: [
         InfrastructureModule,
