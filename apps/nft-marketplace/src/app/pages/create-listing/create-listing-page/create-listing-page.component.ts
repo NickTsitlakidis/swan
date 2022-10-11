@@ -67,6 +67,8 @@ export class CreateListingPageComponent extends Janitor implements OnInit {
         dto.tokenContractAddress = nft.tokenContractAddress;
         dto.chainTokenId = nft.tokenId;
         dto.blockchainId = nft.blockchain.id;
+        // TODO better handling
+        dto.nftAddress = nft.nftAddress || nft.tokenContractAddress;
         dto.categoryId = nft.category.id;
         dto.walletId = nft.walletId;
         dto.animationUrl = nft.animationUri;
@@ -103,6 +105,7 @@ export class CreateListingPageComponent extends Janitor implements OnInit {
                     price: dto.price,
                     blockchain: matchingWallets.blockchain,
                     tokenContractAddress: dto.tokenContractAddress,
+                    nftAddress: dto.nftAddress,
                     tokenId: parseInt(dto.chainTokenId || ""),
                     marketplaceContract: matchingContract
                 })

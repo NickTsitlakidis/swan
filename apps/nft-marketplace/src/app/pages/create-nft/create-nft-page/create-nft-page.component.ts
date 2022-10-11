@@ -220,7 +220,7 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
                     nftMetadataDto.description = this.createNFTForm.get("description")?.value;
                     nftMetadataDto.resellPercentage = this.createNFTForm.get("royalties")?.value;
                     nftMetadataDto.maxSupply = this.createNFTForm.get("maxSupply")?.value;
-                    nftMetadataDto.chainId;
+                    nftMetadataDto.chainId = chainId;
                     nftMetadataDto.walletId = walletId;
                     nftMetadataDto.attributes = metadata;
                     nftMetadataDto.collectionId = this.createNFTForm.get("collection")?.value?.id || undefined;

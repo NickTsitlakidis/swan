@@ -5,7 +5,7 @@ import { firstValueFrom } from "rxjs";
 import { CovalentNftsResponse } from "./covalent-nfts-response";
 import { CovalentTransactionsResponse } from "./covalent-transactions-response";
 
-Injectable();
+@Injectable()
 export class CovalentService {
     constructor(private _configService: ConfigService, private _httpService: HttpService) {}
 
