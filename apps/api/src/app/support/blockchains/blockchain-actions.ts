@@ -16,6 +16,7 @@ import { parallel } from "radash";
 import { CategoryByFileType } from "./category-by-file-type";
 import { Logger } from "@nestjs/common";
 import { getLogger } from "../../infrastructure/logging";
+import { BlockchainNftTransactionsBody, BlockchainNftTransactionsResponse } from "./blockchain-nft-transactions";
 
 export abstract class BlockchainActions {
     protected logger: Logger;
@@ -34,6 +35,8 @@ export abstract class BlockchainActions {
     abstract uploadMetadata(metadata: NftMetadata): Promise<UploadedFiles>;
 
     abstract getUserNfts(pubKey: string, blockchainId?: string): Promise<ChainNft[]>;
+
+    abstract fetchNftTransactions(body: BlockchainNftTransactionsBody): Promise<BlockchainNftTransactionsResponse[]>;
 
     protected async uploadImage(s3Uri: string): Promise<string> {
         const params = this.getS3ParamsFromMetadataURI(s3Uri);

@@ -1,4 +1,4 @@
-import { BlockchainDto } from "@swan/dto";
+import { BlockchainDto, EvmContractDto } from "@swan/dto";
 
 export interface CreateListing {
     price: number;
@@ -6,4 +6,5 @@ export interface CreateListing {
     tokenId?: number;
     blockchain: BlockchainDto;
     nftAddress?: string | undefined;
+    marketplaceContract?: EvmContractDto;
 }

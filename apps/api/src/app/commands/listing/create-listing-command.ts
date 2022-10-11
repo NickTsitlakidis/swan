@@ -11,6 +11,7 @@ export class CreateListingCommand {
     userId: string;
     walletId: string;
     animationUrl?: string;
+    marketPlaceContractAddress?: string;
     imageUrl: string;
 
     static fromDto(dto: CreateListingDto, userId: string) {
@@ -26,6 +27,7 @@ export class CreateListingCommand {
         command.walletId = dto.walletId;
         command.animationUrl = dto.animationUrl;
         command.imageUrl = dto.imageUrl;
+        command.marketPlaceContractAddress = dto.marketPlaceContractAddress;
         return command;
     }
 }

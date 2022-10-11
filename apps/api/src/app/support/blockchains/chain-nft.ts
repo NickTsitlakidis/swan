@@ -5,4 +5,5 @@ export interface ChainNft extends MetaplexMetadata {
     tokenContractAddress?: string;
     tokenId?: string;
     categoryId: string;
+    metadataUri: string;
 }

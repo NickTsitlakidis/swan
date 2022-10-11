@@ -30,7 +30,9 @@ export class MetaplexService {
         return this._metaplexor;
     }
 
-    public async getUserNFTs(pubKey: string): Promise<MetaplexMetadata[]> {
+    public async getUserNFTs(
+        pubKey: string
+    ): Promise<(MetaplexMetadata & { nftAddress: string; metadataUri: string })[]> {
         const lazyNfts = await this._metaplex
             .nfts()
             .findAllByOwner({ owner: new PublicKey(pubKey) })
@@ -40,7 +42,8 @@ export class MetaplexService {
         return nfts.map((nft, index) => {
             const chainNftData = {
                 ...nft.data,
-                nftAddress: lazyNfts[index].address.toString()
+                nftAddress: lazyNfts[index].address.toString(),
+                metadataUri: lazyNfts[index].uri
             };
             return chainNftData;
         });

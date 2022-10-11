@@ -25,4 +25,8 @@ export class UserWalletViewRepository {
     findByUserId(userId: string): Promise<Array<UserWalletView>> {
         return this._entityManager.fork().find(UserWalletView, { userId });
     }
+
+    findByIds(ids: string[]): Promise<Array<UserWalletView>> {
+        return this._entityManager.fork().find(UserWalletView, { id: { $in: ids } });
+    }
 }

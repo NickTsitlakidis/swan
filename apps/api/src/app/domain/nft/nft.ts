@@ -1,5 +1,5 @@
 import { EventProcessor, EventSourcedEntity } from "../../infrastructure/event-sourced-entity";
-import { NftCreatedEvent, NftMintedEvent, UploadedNftMetadataEvent } from "./nft-events";
+import { NftChangeUserEvent, NftCreatedEvent, NftMintedEvent, UploadedNftMetadataEvent } from "./nft-events";
 import { NftStatus } from "./nft-status";
 import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
 import { getLogger } from "../../infrastructure/logging";
@@ -8,6 +8,7 @@ import { NftMetadata } from "./nft-metadata";
 import { MintNftCommand } from "../../commands/nft/mint-nft-command";
 import { BlockchainActionsRegistryService } from "../../support/blockchains/blockchain-actions-registry-service";
 import { isNil } from "lodash";
+import { NftCreateExternal } from "./nft-create-external";
 
 export class Nft extends EventSourcedEntity {
     private _status: NftStatus;
@@ -16,6 +17,9 @@ export class Nft extends EventSourcedEntity {
     private _categoryId: string;
     private _metadataUri: string;
     private _userWalletId: string;
+    private _tokenId: string;
+    private _mintTransactionId: string;
+    private _tokenAddress: string;
 
     static fromEvents(id: string, events: Array<SourcedEvent>): Nft {
         const nft = new Nft(id);
@@ -31,6 +35,33 @@ export class Nft extends EventSourcedEntity {
         nft._status = NftStatus.CREATED;
         nft._userWalletId = userWalletId;
         nft.apply(new NftCreatedEvent(userId, blockchainId, categoryId, userWalletId));
+        return nft;
+    }
+
+    static createExternal(id: string, userId: string, createExternalNft: NftCreateExternal): Nft {
+        const nft = new Nft(id);
+        nft._blockchainId = createExternalNft.blockchainId;
+        nft._categoryId = createExternalNft.categoryId;
+        nft._userId = userId;
+        nft._status = NftStatus.CREATED;
+        nft._userWalletId = createExternalNft.userWalletId;
+        nft.apply(
+            new NftCreatedEvent(
+                userId,
+                createExternalNft.blockchainId,
+                createExternalNft.categoryId,
+                createExternalNft.userWalletId
+            )
+        );
+
+        nft._status = NftStatus.MINTED;
+        nft.apply(
+            new NftMintedEvent(
+                createExternalNft.transactionId,
+                createExternalNft.tokenAddress,
+                createExternalNft.tokenId
+            )
+        );
         return nft;
     }
 
@@ -88,6 +119,9 @@ export class Nft extends EventSourcedEntity {
             throw new BadRequestException(`Wrong nft status : ${this._status}`);
         }
         this._status = NftStatus.MINTED;
+        this._tokenId = mintTransaction.tokenId;
+        this._tokenAddress = mintTransaction.tokenContractAddress;
+        this._mintTransactionId = mintTransaction.transactionId;
         this.apply(
             new NftMintedEvent(
                 mintTransaction.transactionId,
@@ -95,6 +129,15 @@ export class Nft extends EventSourcedEntity {
                 mintTransaction.tokenId
             )
         );
+    }
+
+    changeUser(userId: string, userWalletId: string) {
+        if (this._status !== NftStatus.MINTED) {
+            throw new BadRequestException(`Wrong nft status : ${this._status}`);
+        }
+        this._userId = userId;
+        this._userWalletId = userWalletId;
+        this.apply(new NftChangeUserEvent(userId, userWalletId));
     }
 
     @EventProcessor(NftCreatedEvent)
@@ -115,5 +158,14 @@ export class Nft extends EventSourcedEntity {
     @EventProcessor(NftMintedEvent)
     private processNftMintedEvent = (event: NftMintedEvent) => {
         this._status = NftStatus.MINTED;
+        this._tokenId = event.tokenId;
+        this._tokenAddress = event.tokenAddress;
+        this._mintTransactionId = event.transactionId;
+    };
+
+    @EventProcessor(NftChangeUserEvent)
+    private processNftChangeUserEvent = (event: NftChangeUserEvent) => {
+        this._userId = event.userId;
+        this._userWalletId = event.userWalletId;
     };
 }

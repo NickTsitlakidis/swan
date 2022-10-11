@@ -1,11 +1,14 @@
-import { ListingQueryHandler } from "./../queries/listing-query-handler";
-import { ClientGuard } from "./../security/guards/client-guard";
+import { ListingQueryHandler } from "../queries/listing-query-handler";
+import { ClientGuard } from "../security/guards/client-guard";
 import { Body, Controller, Get, Post, Query, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import {
     ActivateListingDto,
+    BuyListingDto,
+    ConfirmListingSaleDto,
     CreateListingDto,
     EntityDto,
     ListingDto,
+    PageDto,
     PaginationDto,
     SubmitListingDto
 } from "@swan/dto";
@@ -15,6 +18,8 @@ import { CreateListingCommand } from "../commands/listing/create-listing-command
 import { CommandBus } from "@nestjs/cqrs";
 import { SubmitListingCommand } from "../commands/listing/submit-listing-command";
 import { ActivateListingCommand } from "../commands/listing/activate-listing-command";
+import { BuyListingCommand } from "../commands/listing/buy-listing-command";
+import { ConfirmListingSaleCommand } from "../commands/listing/confirm-listing-sale-command";
 
 @Controller("listings")
 export class ListingController {
@@ -39,12 +44,26 @@ export class ListingController {
         return this._commandBus.execute(new SubmitListingCommand(dto.chainTransactionId, dto.listingId));
     }
 
+    @UseGuards(UserGuard)
+    @Post("buy-listing")
+    buy(@RequestUserId() userId: string, @Body() dto: BuyListingDto): Promise<EntityDto> {
+        return this._commandBus.execute(
+            new BuyListingCommand(dto.listingId, userId, dto.chainTransactionHash, dto.blockNumber, dto.walletId)
+        );
+    }
+
+    @UseGuards(UserGuard)
+    @Post("confirm-sale")
+    confirmSale(@RequestUserId() userId: string, @Body() dto: ConfirmListingSaleDto): Promise<EntityDto> {
+        return this._commandBus.execute(
+            new ConfirmListingSaleCommand(dto.blockNumber, dto.listingId, dto.chainListingId)
+        );
+    }
+
     @UseGuards(ClientGuard)
     @UsePipes(new ValidationPipe({ transform: true }))
     @Get("get-active-listings")
-    getActiveListings(
-        @Query() queryParams: PaginationDto
-    ): Promise<{ listingDtos: ListingDto[]; listingsCount: number }> {
+    getActiveListings(@Query() queryParams: PaginationDto): Promise<PageDto<ListingDto>> {
         return this._listingQueryHandler.getActiveListings(queryParams);
     }
 }

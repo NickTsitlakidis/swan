@@ -1,29 +1,31 @@
+import { CovalentService } from "./covalent-service";
 import { CategoryRepository } from "../categories/category-repository";
 import { BlockchainRepository } from "./blockchain-repository";
 import { getUnitTestingModule } from "../../test-utils/test-modules";
 import { EvmActionsService } from "./evm-actions-service";
-import { ConfigService } from "@nestjs/config";
 import { HttpService } from "@nestjs/axios";
 import { MetadataValidator } from "./metadata-validator";
 import { InternalServerErrorException } from "@nestjs/common";
-import { of } from "rxjs";
 import { AxiosResponse } from "axios";
 import { Blockchain } from "./blockchain";
-import { CovalentHqResponse } from "./covalent-hq-response";
+import { CovalentNftsResponse } from "./covalent-nfts-response";
 import { cloneDeep } from "lodash";
 import { Category } from "../categories/category";
 import { ChainNft } from "./chain-nft";
-import { Erc721DeploymentHistory } from "@swan/contracts";
+import { EvmContractsRepository } from "../evm-contracts/evm-contracts-repository";
+import { EvmContract } from "../evm-contracts/evm-contract";
+import { EvmContractType } from "../evm-contracts/evm-contract-type";
+import { of } from "rxjs";
 
 let service: EvmActionsService;
-let configService: ConfigService;
 let blockchainRepo: BlockchainRepository;
 let categoryRepo: CategoryRepository;
+let covalentService: CovalentService;
 let httpService: HttpService;
 let validator: MetadataValidator;
-let deploymentHistory: Erc721DeploymentHistory;
+let contractsRepo: EvmContractsRepository;
 
-const covalentResponse: CovalentHqResponse = {
+const covalentResponse: CovalentNftsResponse = {
     error: false,
     error_message: null,
     error_code: null,
@@ -233,12 +235,12 @@ const covalentResponse: CovalentHqResponse = {
 beforeEach(async () => {
     const testModule = await getUnitTestingModule(EvmActionsService);
     service = testModule.get(EvmActionsService);
-    configService = testModule.get(ConfigService);
     blockchainRepo = testModule.get(BlockchainRepository);
+    covalentService = testModule.get(CovalentService);
     httpService = testModule.get(HttpService);
     validator = testModule.get(MetadataValidator);
     categoryRepo = testModule.get(CategoryRepository);
-    deploymentHistory = testModule.get(Erc721DeploymentHistory);
+    contractsRepo = testModule.get(EvmContractsRepository);
 });
 
 test("getUserNfts - throws if blockchainId parameter is missing", async () => {
@@ -267,27 +269,24 @@ test("getUserNfts - throws if covalent response is not 200 OK", async () => {
         request: {},
         statusText: ""
     };
-    const httpServiceSpy = jest.spyOn(httpService, "get").mockReturnValue(of(fakeResponse));
-    const configSpy = jest.spyOn(configService, "get").mockReturnValue("api-key");
+    const covalentServiceSpy = jest.spyOn(covalentService, "fetchNfts").mockResolvedValue(fakeResponse);
 
     await expect(service.getUserNfts("otinanai", "the-chain-id")).rejects.toThrow(InternalServerErrorException);
 
     expect(blockchainRepoSpy).toHaveBeenCalledTimes(1);
     expect(blockchainRepoSpy).toHaveBeenCalledWith("the-chain-id");
 
-    expect(configSpy).toHaveBeenCalledTimes(1);
-    expect(configSpy).toHaveBeenCalledWith("COVALENTHQ_KEY");
-
-    const expectedUrl = `https://api.covalenthq.com/v1/1000/address/otinanai/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=api-key`;
-    expect(httpServiceSpy).toHaveBeenCalledTimes(1);
-    expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
+    expect(covalentServiceSpy).toHaveBeenCalledTimes(1);
+    expect(covalentServiceSpy).toHaveBeenCalledWith(blockchain.chainIdDecimal, "otinanai");
 });
 
 test("getUserNfts - returns empty array if all nfts are invalid", async () => {
     const blockchain = new Blockchain();
     blockchain.chainIdDecimal = 1000;
 
-    const historySpy = jest.spyOn(deploymentHistory, "getAllAddresses").mockReturnValue(["swan-contract"]);
+    const contracts = [new EvmContract()];
+    contracts[0].deploymentAddress = "swan-contract";
+    const historySpy = jest.spyOn(contractsRepo, "findByType").mockResolvedValue(contracts);
 
     const blockchainRepoSpy = jest.spyOn(blockchainRepo, "findById").mockResolvedValue(blockchain);
 
@@ -299,8 +298,7 @@ test("getUserNfts - returns empty array if all nfts are invalid", async () => {
         request: {},
         statusText: ""
     };
-    const httpServiceSpy = jest.spyOn(httpService, "get").mockReturnValue(of(fakeResponse));
-    const configSpy = jest.spyOn(configService, "get").mockReturnValue("api-key");
+    const covalentServiceSpy = jest.spyOn(covalentService, "fetchNfts").mockResolvedValue(fakeResponse);
 
     const validatorSpy = jest.spyOn(validator, "validate").mockReturnValue(false);
 
@@ -310,12 +308,8 @@ test("getUserNfts - returns empty array if all nfts are invalid", async () => {
     expect(blockchainRepoSpy).toHaveBeenCalledTimes(1);
     expect(blockchainRepoSpy).toHaveBeenCalledWith("the-chain-id");
 
-    expect(configSpy).toHaveBeenCalledTimes(1);
-    expect(configSpy).toHaveBeenCalledWith("COVALENTHQ_KEY");
-
-    const expectedUrl = `https://api.covalenthq.com/v1/1000/address/otinanai/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=api-key`;
-    expect(httpServiceSpy).toHaveBeenCalledTimes(1);
-    expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
+    expect(covalentServiceSpy).toHaveBeenCalledTimes(1);
+    expect(covalentServiceSpy).toHaveBeenCalledWith(blockchain.chainIdDecimal, "otinanai");
 
     expect(validatorSpy).toHaveBeenCalledTimes(3);
     expect(validatorSpy).nthCalledWith(1, covalentResponse.data.items.at(0).nft_data.at(0).external_data);
@@ -323,6 +317,7 @@ test("getUserNfts - returns empty array if all nfts are invalid", async () => {
     expect(validatorSpy).nthCalledWith(3, covalentResponse.data.items.at(1).nft_data.at(1).external_data);
 
     expect(historySpy).toHaveBeenCalledTimes(1);
+    expect(historySpy).toHaveBeenCalledWith(EvmContractType.ERC721);
 });
 
 test("getUserNfts - returns empty array if all nfts are erc20", async () => {
@@ -344,8 +339,7 @@ test("getUserNfts - returns empty array if all nfts are erc20", async () => {
         request: {},
         statusText: ""
     };
-    const httpServiceSpy = jest.spyOn(httpService, "get").mockReturnValue(of(fakeResponse));
-    const configSpy = jest.spyOn(configService, "get").mockReturnValue("api-key");
+    const covalentServiceSpy = jest.spyOn(covalentService, "fetchNfts").mockResolvedValue(fakeResponse);
 
     const validatorSpy = jest.spyOn(validator, "validate").mockReturnValue(false);
 
@@ -355,12 +349,8 @@ test("getUserNfts - returns empty array if all nfts are erc20", async () => {
     expect(blockchainRepoSpy).toHaveBeenCalledTimes(1);
     expect(blockchainRepoSpy).toHaveBeenCalledWith("the-chain-id");
 
-    expect(configSpy).toHaveBeenCalledTimes(1);
-    expect(configSpy).toHaveBeenCalledWith("COVALENTHQ_KEY");
-
-    const expectedUrl = `https://api.covalenthq.com/v1/1000/address/otinanai/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=api-key`;
-    expect(httpServiceSpy).toHaveBeenCalledTimes(1);
-    expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
+    expect(covalentServiceSpy).toHaveBeenCalledTimes(1);
+    expect(covalentServiceSpy).toHaveBeenCalledWith(blockchain.chainIdDecimal, "otinanai");
 
     expect(validatorSpy).toHaveBeenCalledTimes(0);
 });
@@ -382,8 +372,7 @@ test("getUserNfts - returns empty array if user has no items", async () => {
         request: {},
         statusText: ""
     };
-    const httpServiceSpy = jest.spyOn(httpService, "get").mockReturnValue(of(fakeResponse));
-    const configSpy = jest.spyOn(configService, "get").mockReturnValue("api-key");
+    const covalentServiceSpy = jest.spyOn(covalentService, "fetchNfts").mockResolvedValue(fakeResponse);
 
     const validatorSpy = jest.spyOn(validator, "validate").mockReturnValue(false);
 
@@ -393,18 +382,14 @@ test("getUserNfts - returns empty array if user has no items", async () => {
     expect(blockchainRepoSpy).toHaveBeenCalledTimes(1);
     expect(blockchainRepoSpy).toHaveBeenCalledWith("the-chain-id");
 
-    expect(configSpy).toHaveBeenCalledTimes(1);
-    expect(configSpy).toHaveBeenCalledWith("COVALENTHQ_KEY");
-
-    const expectedUrl = `https://api.covalenthq.com/v1/1000/address/otinanai/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=api-key`;
-    expect(httpServiceSpy).toHaveBeenCalledTimes(1);
-    expect(httpServiceSpy).toHaveBeenCalledWith(expectedUrl);
+    expect(covalentServiceSpy).toHaveBeenCalledTimes(1);
+    expect(covalentServiceSpy).toHaveBeenCalledWith(blockchain.chainIdDecimal, "otinanai");
 
     expect(validatorSpy).toHaveBeenCalledTimes(0);
 });
 
 test("getUserNfts - returns array of valid erc721 or valid erc1155", async () => {
-    const historySpy = jest.spyOn(deploymentHistory, "getAllAddresses").mockReturnValue([]);
+    const historySpy = jest.spyOn(contractsRepo, "findByType").mockResolvedValue([]);
 
     const blockchain = new Blockchain();
     blockchain.chainIdDecimal = 1000;
@@ -449,10 +434,10 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
 
     const httpServiceSpy = jest
         .spyOn(httpService, "get")
-        .mockReturnValueOnce(of(fakeResponse))
         .mockReturnValueOnce(of(fakeResponseForFileTypeCategories))
         .mockReturnValueOnce(of(fakeResponseForFileTypeCategories));
-    const configSpy = jest.spyOn(configService, "get").mockReturnValue("api-key");
+
+    const covalentServiceSpy = jest.spyOn(covalentService, "fetchNfts").mockResolvedValueOnce(fakeResponse);
 
     const categorySpy = jest.spyOn(categoryRepo, "findAll").mockResolvedValue([category]);
 
@@ -474,7 +459,8 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
         external_url: covalentResponse.data.items[1].nft_data[0].external_data.external_url,
         properties: {
             files: []
-        }
+        },
+        metadataUri: "https://artion1.mypinata.cloud/ipfs/QmRZGMTyrLfPna9WiKRLw5iXdP1VT6jUAKi8CZkRUnr32G"
     };
 
     const expectedNft2: ChainNft = {
@@ -489,7 +475,8 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
         external_url: covalentResponse.data.items[1].nft_data[1].external_data.external_url,
         properties: {
             files: []
-        }
+        },
+        metadataUri: "https://artion1.mypinata.cloud/ipfs/QmRZGMTyrLfPna9WiKRLw5iXdP1VT6jUAKi8CZkRUnr32G"
     };
     expect(returned[0]).toEqual(expectedNft1);
     expect(returned[1]).toEqual(expectedNft2);
@@ -497,31 +484,33 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
     expect(blockchainRepoSpy).toHaveBeenCalledTimes(1);
     expect(blockchainRepoSpy).toHaveBeenCalledWith("the-chain-id");
 
-    expect(configSpy).toHaveBeenCalledTimes(1);
-    expect(configSpy).toHaveBeenCalledWith("COVALENTHQ_KEY");
-
     expect(categorySpy).toHaveBeenCalledTimes(1);
 
-    const expectedUrl = `https://api.covalenthq.com/v1/1000/address/otinanai/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=api-key`;
+    expect(covalentServiceSpy).toHaveBeenCalledTimes(1);
+    expect(covalentServiceSpy).toHaveBeenCalledWith(blockchain.chainIdDecimal, "otinanai");
+
     const imageUrl = "https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx";
     const imageHeaders = {
         headers: { "Content-Type": "application/json", Range: "bytes=0-300" },
         responseType: "arraybuffer"
     };
-    expect(httpServiceSpy).toHaveBeenCalledTimes(3);
-    expect(httpServiceSpy).toHaveBeenNthCalledWith(1, expectedUrl);
+
+    expect(httpServiceSpy).toHaveBeenCalledTimes(2);
+    expect(httpServiceSpy).toHaveBeenNthCalledWith(1, imageUrl, imageHeaders);
     expect(httpServiceSpy).toHaveBeenNthCalledWith(2, imageUrl, imageHeaders);
-    expect(httpServiceSpy).toHaveBeenNthCalledWith(3, imageUrl, imageHeaders);
 
     expect(validatorSpy).toHaveBeenCalledTimes(2);
     expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items.at(1).nft_data.at(0).external_data);
     expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items.at(1).nft_data.at(1).external_data);
 
     expect(historySpy).toHaveBeenCalledTimes(1);
+    expect(historySpy).toHaveBeenCalledWith(EvmContractType.ERC721);
 });
 
 test("getUserNfts - returns array with excluded nfts of swan contracts", async () => {
-    const historySpy = jest.spyOn(deploymentHistory, "getAllAddresses").mockReturnValue(["swan-contract"]);
+    const contracts = [new EvmContract()];
+    contracts[0].deploymentAddress = "swan-contract";
+    const historySpy = jest.spyOn(contractsRepo, "findByType").mockResolvedValue(contracts);
 
     const blockchain = new Blockchain();
     blockchain.chainIdDecimal = 1000;
@@ -565,10 +554,10 @@ test("getUserNfts - returns array with excluded nfts of swan contracts", async (
 
     const httpServiceSpy = jest
         .spyOn(httpService, "get")
-        .mockReturnValueOnce(of(fakeResponse))
         .mockReturnValueOnce(of(fakeResponseForFileTypeCategories))
         .mockReturnValueOnce(of(fakeResponseForFileTypeCategories));
-    const configSpy = jest.spyOn(configService, "get").mockReturnValue("api-key");
+
+    const covalentServiceSpy = jest.spyOn(covalentService, "fetchNfts").mockResolvedValueOnce(fakeResponse);
 
     const categorySpy = jest.spyOn(categoryRepo, "findAll").mockResolvedValue([category]);
 
@@ -590,7 +579,8 @@ test("getUserNfts - returns array with excluded nfts of swan contracts", async (
         external_url: covalentResponse.data.items[1].nft_data[0].external_data.external_url,
         properties: {
             files: []
-        }
+        },
+        metadataUri: "https://artion1.mypinata.cloud/ipfs/QmRZGMTyrLfPna9WiKRLw5iXdP1VT6jUAKi8CZkRUnr32G"
     };
 
     const expectedNft2: ChainNft = {
@@ -605,7 +595,8 @@ test("getUserNfts - returns array with excluded nfts of swan contracts", async (
         external_url: covalentResponse.data.items[1].nft_data[1].external_data.external_url,
         properties: {
             files: []
-        }
+        },
+        metadataUri: "https://artion1.mypinata.cloud/ipfs/QmRZGMTyrLfPna9WiKRLw5iXdP1VT6jUAKi8CZkRUnr32G"
     };
     expect(returned[0]).toEqual(expectedNft1);
     expect(returned[1]).toEqual(expectedNft2);
@@ -613,25 +604,23 @@ test("getUserNfts - returns array with excluded nfts of swan contracts", async (
     expect(blockchainRepoSpy).toHaveBeenCalledTimes(1);
     expect(blockchainRepoSpy).toHaveBeenCalledWith("the-chain-id");
 
-    expect(configSpy).toHaveBeenCalledTimes(1);
-    expect(configSpy).toHaveBeenCalledWith("COVALENTHQ_KEY");
-
     expect(categorySpy).toHaveBeenCalledTimes(1);
 
-    const expectedUrl = `https://api.covalenthq.com/v1/1000/address/otinanai/balances_v2/?quote-currency=USD&format=JSON&nft=true&no-nft-fetch=false&key=api-key`;
     const imageUrl = "https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx";
     const imageHeaders = {
         headers: { "Content-Type": "application/json", Range: "bytes=0-300" },
         responseType: "arraybuffer"
     };
-    expect(httpServiceSpy).toHaveBeenCalledTimes(3);
-    expect(httpServiceSpy).toHaveBeenNthCalledWith(1, expectedUrl);
+    expect(covalentServiceSpy).toHaveBeenCalledTimes(1);
+    expect(covalentServiceSpy).toHaveBeenCalledWith(blockchain.chainIdDecimal, "otinanai");
+    expect(httpServiceSpy).toHaveBeenCalledTimes(2);
+    expect(httpServiceSpy).toHaveBeenNthCalledWith(1, imageUrl, imageHeaders);
     expect(httpServiceSpy).toHaveBeenNthCalledWith(2, imageUrl, imageHeaders);
-    expect(httpServiceSpy).toHaveBeenNthCalledWith(3, imageUrl, imageHeaders);
 
     expect(validatorSpy).toHaveBeenCalledTimes(2);
     expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items.at(1).nft_data.at(0).external_data);
     expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items.at(1).nft_data.at(1).external_data);
 
     expect(historySpy).toHaveBeenCalledTimes(1);
+    expect(historySpy).toHaveBeenCalledWith(EvmContractType.ERC721);
 });

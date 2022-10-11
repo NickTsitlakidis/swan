@@ -19,8 +19,8 @@
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
         "paths": {
-            "@swan/dto": ["libs/dto/src/index.ts"],
             "@swan/contracts": ["libs/contracts/src/index.ts"],
+            "@swan/dto": ["libs/dto/src/index.ts"],
             "assert": ["node_modules/assert"],
             "crypto": ["node_modules/crypto-browserify"],
             "stream": ["node_modules/stream-browserify"],

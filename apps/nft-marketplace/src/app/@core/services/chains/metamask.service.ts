@@ -6,8 +6,8 @@ import { isNil } from "lodash";
 import { CreateNft } from "./create-nft";
 import { Injectable } from "@angular/core";
 import { ChainsModule } from "./chains.module";
-import { NftMintTransactionDto } from "@swan/dto";
-import { Erc721Factory, ListingResult, SwanMarketplaceFactory, SwanNftFactory } from "@swan/contracts";
+import { BlockchainDto, ListingDto, NftMintTransactionDto } from "@swan/dto";
+import { ContractFactory, MarketplaceResult } from "@swan/contracts";
 import { CreateListing } from "./create-listing";
 
 @Injectable({
@@ -17,11 +17,7 @@ export class MetamaskService implements WalletService {
     private _events: Subject<WalletEvent>;
     private _ethersProvider: ethers.providers.Web3Provider;
 
-    constructor(
-        private _swanNftFactory: SwanNftFactory,
-        private _erc721Factory: Erc721Factory,
-        private _swanMarketplaceFactory: SwanMarketplaceFactory
-    ) {
+    constructor(private _contractFactory: ContractFactory) {
         this._events = new Subject<WalletEvent>();
     }
 
@@ -43,7 +39,14 @@ export class MetamaskService implements WalletService {
                 return zip(of(publicKey), from(this.switchNetwork(nft.blockchain.chainId)));
             }),
             switchMap(([publicKey]) => {
-                const contract = this._swanNftFactory.create(this._ethersProvider, nft.blockchain.id);
+                if (isNil(nft.contract)) {
+                    return throwError(() => "Contract is required on EVM mint");
+                }
+
+                const contract = this._contractFactory.createSwanErc721(
+                    this._ethersProvider,
+                    nft.contract.deploymentAddress
+                );
                 return zip(of(contract), from(contract.createItem(publicKey, nft.metadataUri)));
             }),
             map(([contract, result]) => {
@@ -67,38 +70,89 @@ export class MetamaskService implements WalletService {
     }
 
     createListing(listing: CreateListing): Observable<string> {
+        if (isNil(listing.marketplaceContract) || isNil(listing.tokenContractAddress)) {
+            return throwError(() => "Evm listings require contract information");
+        }
+
         return this.getEthersProvider().pipe(
             switchMap((provider) => {
                 return zip(of(provider), from(this.switchNetwork(listing.blockchain.chainId)));
             }),
-            switchMap(([provider]) => {
+            switchMap(() => {
                 if (!listing.tokenContractAddress || !listing.tokenId) {
                     return throwError(() => "oops");
                 }
-                const contract = this._erc721Factory.create(
-                    provider,
-                    listing.tokenContractAddress,
-                    listing.blockchain.id
+
+                const externalERC721Contract = this._contractFactory.createExternalErc721(
+                    this._ethersProvider,
+                    listing.tokenContractAddress
                 );
-                return from(contract.approve(listing.tokenId));
+                return from(
+                    externalERC721Contract.approve(
+                        listing.tokenId,
+                        listing.marketplaceContract?.deploymentAddress as string
+                    )
+                );
             }),
             switchMap(() => {
-                const contract = this._swanMarketplaceFactory.create(this._ethersProvider, listing.blockchain.id);
-                return of(contract);
-            }),
-            switchMap((contract) => {
                 if (!listing.tokenContractAddress || !listing.tokenId) {
                     return throwError(() => "oops");
                 }
-                return from(contract.createListing(listing.tokenContractAddress, listing.tokenId, listing.price));
+
+                const marketplaceContract = this._contractFactory.createMarketplace(
+                    this._ethersProvider,
+                    listing.marketplaceContract?.deploymentAddress as string
+                );
+
+                return from(
+                    marketplaceContract.createListing(listing.tokenContractAddress, listing.tokenId, listing.price)
+                );
             })
         );
     }
 
-    getListingResult(transactionHash: string, blockchainId: string): Observable<ListingResult> {
-        const contract = this._swanMarketplaceFactory.create(this._ethersProvider, blockchainId);
+    getListingResult(transactionHash: string, marketplaceContractAddress: string): Observable<MarketplaceResult> {
+        const marketplaceContract = this._contractFactory.createMarketplace(
+            this._ethersProvider,
+            marketplaceContractAddress
+        );
         return from(this._ethersProvider.getSigner().getAddress()).pipe(
-            switchMap((address) => from(contract.getListingResult(transactionHash, address)))
+            switchMap((address) => from(marketplaceContract.getListingResult(transactionHash, address)))
+        );
+    }
+
+    buyToken(listing: ListingDto, blockchain: BlockchainDto, marketplaceContractAddress: string): Observable<string> {
+        if (isNil(blockchain)) {
+            return throwError(() => "Blockchain info is required in evm");
+        }
+
+        return this.getEthersProvider().pipe(
+            switchMap((provider) => {
+                return zip(of(provider), from(this.switchNetwork(blockchain.chainId)));
+            }),
+            switchMap(() => {
+                const contract = this._contractFactory.createMarketplace(
+                    this._ethersProvider,
+                    marketplaceContractAddress
+                );
+                return from(
+                    contract.buyToken(
+                        listing.tokenContractAddress as string,
+                        listing.chainTokenId as number,
+                        listing.price
+                    )
+                );
+            })
+        );
+    }
+
+    getBuyResult(transactionHash: string, marketplaceContractAddress: string): Observable<MarketplaceResult> {
+        const marketplaceContract = this._contractFactory.createMarketplace(
+            this._ethersProvider,
+            marketplaceContractAddress
+        );
+        return from(this._ethersProvider.getSigner().getAddress()).pipe(
+            switchMap((address) => from(marketplaceContract.getBuyResult(transactionHash, address)))
         );
     }
 

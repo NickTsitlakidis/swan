@@ -1,4 +1,4 @@
-import { BlockchainDto, NftMetadataAttributeDto } from "@swan/dto";
+import { BlockchainDto, EvmContractDto, NftMetadataAttributeDto } from "@swan/dto";
 import { Collection } from "../collections/collection";
 
 export interface CreateNft {
@@ -11,4 +11,5 @@ export interface CreateNft {
     maxSupply?: number;
     metadata: Array<NftMetadataAttributeDto>;
     blockchain: BlockchainDto;
+    contract?: EvmContractDto;
 }
