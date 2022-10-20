@@ -482,4 +482,265 @@ describe("SwanMarketplace", () => {
         expect(eventResult.currentPrice).to.equal(ethers.utils.parseEther("0.7"));
         expect(eventResult.previousPrice).to.equal(ethers.utils.parseEther("0.5"));
     });
+
+    it("filterForInvalid - returns invalid when one approval changes", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 2);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 2, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 3);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 3, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.connect(seller).approve(ethers.constants.AddressZero, 3);
+
+        const invalid = await deployedMarketplace.filterForInvalid([
+            {
+                listingId: 3,
+                tokenId: 2,
+                tokenContractAddress: deployedNft.address,
+                price: 0,
+                seller: seller.address
+            },
+            {
+                listingId: 4,
+                tokenId: 3,
+                tokenContractAddress: deployedNft.address,
+                price: 0,
+                seller: seller.address
+            }
+        ]);
+
+        expect(invalid.length).to.equal(2);
+        expect(invalid[0].toNumber()).to.equal(0);
+        expect(invalid[1].toNumber()).to.equal(4);
+    });
+
+    it("filterForInvalid - returns invalid when one owner changes", async () => {
+        const [deployer, seller, other] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 2);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 2, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 3);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 3, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.connect(seller).transferFrom(seller.address, other.address, 1);
+
+        const invalid = await deployedMarketplace.filterForInvalid([
+            {
+                listingId: 2,
+                tokenId: 1,
+                tokenContractAddress: deployedNft.address,
+                price: 0,
+                seller: seller.address
+            },
+            {
+                listingId: 3,
+                tokenId: 2,
+                tokenContractAddress: deployedNft.address,
+                price: 0,
+                seller: seller.address
+            },
+            {
+                listingId: 4,
+                tokenId: 3,
+                tokenContractAddress: deployedNft.address,
+                price: 0,
+                seller: seller.address
+            }
+        ]);
+
+        expect(invalid.length).to.equal(3);
+        expect(invalid[0].toNumber()).to.equal(2);
+        expect(invalid[1].toNumber()).to.equal(0);
+        expect(invalid[2].toNumber()).to.equal(0);
+    });
+
+    it("filterForInvalid - returns invalid when one owner changes and one approval changes", async () => {
+        const [deployer, seller, other] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 2);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 2, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 3);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 3, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.connect(seller).transferFrom(seller.address, other.address, 1);
+        await deployedNft.connect(seller).approve(ethers.constants.AddressZero, 3);
+
+        const invalid = await deployedMarketplace.filterForInvalid([
+            {
+                listingId: 2,
+                tokenId: 1,
+                tokenContractAddress: deployedNft.address,
+                price: 0,
+                seller: seller.address
+            },
+            {
+                listingId: 3,
+                tokenId: 2,
+                tokenContractAddress: deployedNft.address,
+                price: 0,
+                seller: seller.address
+            },
+            {
+                listingId: 4,
+                tokenId: 3,
+                tokenContractAddress: deployedNft.address,
+                price: 0,
+                seller: seller.address
+            }
+        ]);
+
+        expect(invalid.length).to.equal(3);
+        expect(invalid[0].toNumber()).to.equal(2);
+        expect(invalid[1].toNumber()).to.equal(0);
+        expect(invalid[2].toNumber()).to.equal(4);
+    });
+
+    it("filterForInvalid - returns zeros array when nothing is invalid", async () => {
+        const [deployer, seller, other] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 2);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 2, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 3);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 3, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.connect(seller).approve(ethers.constants.AddressZero, 3);
+
+        const invalid = await deployedMarketplace.filterForInvalid([
+            {
+                listingId: 2,
+                tokenId: 1,
+                tokenContractAddress: deployedNft.address,
+                price: 0,
+                seller: seller.address
+            },
+            {
+                listingId: 3,
+                tokenId: 2,
+                tokenContractAddress: deployedNft.address,
+                price: 0,
+                seller: seller.address
+            }
+        ]);
+
+        expect(invalid.length).to.equal(2);
+        expect(invalid[0].toNumber()).to.equal(0);
+        expect(invalid[1].toNumber()).to.equal(0);
+    });
+
+    it("filterForInvalid - returns zeros array when there are invalid listings but not included in the parameter", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 2);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 2, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 3);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 3, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.connect(seller).approve(ethers.constants.AddressZero, 1);
+
+        const invalid = await deployedMarketplace.filterForInvalid([
+            {
+                listingId: 3,
+                tokenId: 2,
+                tokenContractAddress: deployedNft.address,
+                price: 0,
+                seller: seller.address
+            },
+            {
+                listingId: 4,
+                tokenId: 3,
+                tokenContractAddress: deployedNft.address,
+                price: 0,
+                seller: seller.address
+            }
+        ]);
+
+        expect(invalid.length).to.equal(2);
+        expect(invalid[0].toNumber()).to.equal(0);
+        expect(invalid[1].toNumber()).to.equal(0);
+    });
+
+    it("filterForInvalid - returns invalid when all are invalid", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 1);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 1, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 2);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 2, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.createItem(seller.address, "the-uri");
+        await deployedNft.connect(seller).approve(deployedMarketplace.address, 3);
+        await deployedMarketplace.connect(seller).createListing(deployedNft.address, 3, ethers.utils.parseEther("0.5"));
+
+        await deployedNft.connect(seller).approve(ethers.constants.AddressZero, 1);
+        await deployedNft.connect(seller).approve(ethers.constants.AddressZero, 2);
+        await deployedNft.connect(seller).approve(ethers.constants.AddressZero, 3);
+
+        const invalid = await deployedMarketplace.filterForInvalid([
+            {
+                listingId: 2,
+                tokenId: 1,
+                tokenContractAddress: deployedNft.address,
+                price: 0,
+                seller: seller.address
+            },
+            {
+                listingId: 3,
+                tokenId: 2,
+                tokenContractAddress: deployedNft.address,
+                price: 0,
+                seller: seller.address
+            },
+            {
+                listingId: 4,
+                tokenId: 3,
+                tokenContractAddress: deployedNft.address,
+                price: 0,
+                seller: seller.address
+            }
+        ]);
+
+        expect(invalid.length).to.equal(3);
+        expect(invalid[0].toNumber()).to.equal(2);
+        expect(invalid[1].toNumber()).to.equal(3);
+        expect(invalid[2].toNumber()).to.equal(4);
+    });
 });
