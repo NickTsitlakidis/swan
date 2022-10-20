@@ -1,10 +1,11 @@
-.imageUrl {
+.image-url {
     max-height: 400px;
     max-width: 400px;
     border-radius: 10px;
     min-height: 350px;
     min-width: 350px;
     object-fit: cover;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
 .custom-upload {

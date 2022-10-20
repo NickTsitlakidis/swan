@@ -1,7 +1,7 @@
 <div *ngIf="listings?.length">
-    <div class="row">
+    <div class="columns">
         <nft-marketplace-product-card
-            class="col"
+            class="column"
             *ngFor="let listing of listings"
             [imageUrl]="listing.imageUrl"
             [animationUrl]="listing.animationUrl"
