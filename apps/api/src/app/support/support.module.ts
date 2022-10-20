@@ -19,6 +19,7 @@ import { HttpModule } from "@nestjs/axios";
 import { ContractsModule } from "../contracts.module";
 import { EvmContract } from "./evm-contracts/evm-contract";
 import { EvmContractsRepository } from "./evm-contracts/evm-contracts-repository";
+import { CovalentService } from "./blockchains/covalent-service";
 
 @Module({
     imports: [
@@ -37,6 +38,7 @@ import { EvmContractsRepository } from "./evm-contracts/evm-contracts-repository
         MetaplexService,
         EvmActionsService,
         BlockchainActionsRegistryService,
+        CovalentService,
         SolanaActionsService,
         MetadataValidator,
         EvmContractsRepository
@@ -50,6 +52,7 @@ import { EvmContractsRepository } from "./evm-contracts/evm-contracts-repository
         MetaplexService,
         EvmActionsService,
         BlockchainActionsRegistryService,
+        CovalentService,
         SolanaActionsService,
         MetadataValidator,
         EvmContractsRepository

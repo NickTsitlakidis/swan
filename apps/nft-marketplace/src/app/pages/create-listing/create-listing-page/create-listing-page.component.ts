@@ -1,5 +1,5 @@
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
-import { mergeMap, zip, of, EMPTY } from "rxjs";
+import { mergeMap, zip, of, EMPTY, firstValueFrom } from "rxjs";
 import { ListingsService } from "../../../@core/services/listings/listings.service";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { ActivateListingDto, BlockchainWalletDto, CreateListingDto, ProfileNftDto, SubmitListingDto } from "@swan/dto";
@@ -9,6 +9,7 @@ import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets
 import { Janitor } from "../../../@core/components/janitor";
 import { UserFacade } from "../../../@core/store/user-facade";
 import { EvmContractsFacade } from "../../../@core/store/evm-contracts-facade";
+import { NftService } from "../../../@core/services/chains/nfts/nft.service";
 
 @Component({
     selector: "nft-marketplace-create-listing-page",
@@ -28,7 +29,8 @@ export class CreateListingPageComponent extends Janitor implements OnInit {
         private _cd: ChangeDetectorRef,
         private _listingsService: ListingsService,
         private _walletRegistryService: WalletRegistryService,
-        private _userFacade: UserFacade
+        private _userFacade: UserFacade,
+        private _nftService: NftService
     ) {
         super();
     }
@@ -55,7 +57,7 @@ export class CreateListingPageComponent extends Janitor implements OnInit {
         this._cd.detectChanges();
     }
 
-    onSubmit() {
+    async onSubmit() {
         if (!this.selectedForListingNft) {
             return;
         }
@@ -65,15 +67,21 @@ export class CreateListingPageComponent extends Janitor implements OnInit {
         dto.tokenContractAddress = nft.tokenContractAddress;
         dto.chainTokenId = nft.tokenId;
         dto.blockchainId = nft.blockchain.id;
+        // TODO better handling
+        dto.nftAddress = nft.nftAddress || nft.tokenContractAddress;
         dto.categoryId = nft.category.id;
         dto.walletId = nft.walletId;
         dto.animationUrl = nft.animationUri;
         dto.imageUrl = nft.imageUri;
+        dto.nftId = nft.id;
         console.log(dto, nft);
 
-        this._listingsService
-            .createListing(dto)
-            .pipe(
+        if (!nft.id) {
+            await firstValueFrom(this._nftService.createExternalNft(nft).pipe(mergeMap(() => EMPTY)));
+        }
+
+        const [listingEntity, walletService, blockchainWallets, marketplaceContracts] = await firstValueFrom(
+            this._listingsService.createListing(dto).pipe(
                 mergeMap((listingEntity) => {
                     return zip(
                         of(listingEntity),
@@ -81,59 +89,45 @@ export class CreateListingPageComponent extends Janitor implements OnInit {
                         this._blockchainWalletsFacade.streamWallets(),
                         this._evmContractsFacade.streamMarketplaceContracts()
                     );
-                }),
-                mergeMap(([listingEntity, walletService, blockchainWallets, marketplaceContracts]) => {
-                    if (walletService) {
-                        const matchingWallets = blockchainWallets.find(
-                            (wallets) => wallets.blockchain.id === nft.blockchain.id
-                        ) as BlockchainWalletDto;
-
-                        const matchingContract = marketplaceContracts.find((c) => c.blockchainId === nft.blockchain.id);
-
-                        return zip(
-                            of(listingEntity),
-                            of(walletService),
-                            walletService.createListing({
-                                price: dto.price,
-                                blockchain: matchingWallets.blockchain,
-                                tokenContractAddress: dto.tokenContractAddress,
-                                tokenId: parseInt(dto.chainTokenId || ""),
-                                marketplaceContract: matchingContract
-                            }),
-                            of(matchingContract)
-                        );
-                    }
-                    return EMPTY;
-                }),
-                mergeMap(([listingEntity, walletService, transactionHash, marketplaceContract]) => {
-                    const dto = new SubmitListingDto();
-                    dto.listingId = listingEntity.id;
-                    dto.chainTransactionId = transactionHash;
-                    return zip(
-                        of(walletService),
-                        of(transactionHash),
-                        this._listingsService.submitListing(dto),
-                        of(marketplaceContract)
-                    );
-                }),
-                mergeMap(([walletService, transactionHash, listingEntity, marketplaceContract]) => {
-                    return zip(
-                        walletService.getListingResult(
-                            transactionHash,
-                            marketplaceContract?.deploymentAddress as string
-                        ),
-                        of(listingEntity)
-                    );
-                }),
-                mergeMap(([result, listingEntity]) => {
-                    const dto = new ActivateListingDto();
-                    dto.chainListingId = result.chainListingId;
-                    dto.blockNumber = result.blockNumber;
-                    dto.listingId = listingEntity.id;
-
-                    return this._listingsService.activateListing(dto);
                 })
             )
-            .subscribe((r) => console.log(r));
+        );
+
+        if (walletService) {
+            const matchingWallets = blockchainWallets.find(
+                (wallets) => wallets.blockchain.id === nft.blockchain.id
+            ) as BlockchainWalletDto;
+
+            const matchingContract = marketplaceContracts.find((c) => c.blockchainId === nft.blockchain.id);
+
+            const transactionHash = await firstValueFrom(
+                walletService.createListing({
+                    price: dto.price,
+                    blockchain: matchingWallets.blockchain,
+                    tokenContractAddress: dto.tokenContractAddress,
+                    nftAddress: dto.nftAddress,
+                    tokenId: parseInt(dto.chainTokenId || ""),
+                    marketplaceContract: matchingContract
+                })
+            );
+
+            const submitListingDto = new SubmitListingDto();
+            submitListingDto.listingId = listingEntity.id;
+            submitListingDto.chainTransactionId = transactionHash;
+            const submittedListingEntity = await firstValueFrom(this._listingsService.submitListing(submitListingDto));
+
+            const result = await firstValueFrom(
+                walletService.getListingResult(transactionHash, matchingContract?.deploymentAddress as string)
+            );
+
+            const activateListingDto = new ActivateListingDto();
+            activateListingDto.chainListingId = result.chainListingId;
+            activateListingDto.blockNumber = result.blockNumber;
+            activateListingDto.listingId = submittedListingEntity.id;
+
+            return this._listingsService.activateListing(activateListingDto);
+        } else {
+            return EMPTY;
+        }
     }
 }
