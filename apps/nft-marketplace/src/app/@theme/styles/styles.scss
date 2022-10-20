@@ -1,37 +1,39 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap');
+@import "bulma/sass/utilities/_all.sass";
+@import "bulma/sass/grid/columns.sass";
 
 // themes - our custom or/and out of the box themes
-@import 'themes';
+//@import 'themes';
 
 // framework component themes (styles tied to theme variables)
-@import '~@nebular/theme/styles/globals';
+//@import '~@nebular/theme/styles/globals';
 
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-@import '~bootstrap/scss/mixins';
-@import '~bootstrap/scss/grid';
+//@import '~bootstrap/scss/functions';
+//@import '~bootstrap/scss/variables';
+//@import '~bootstrap/scss/mixins';
+//@import '~bootstrap/scss/grid';
 
 // loading progress bar theme
-@import './pace.theme';
+//@import './pace.theme';
 
 @import './layout';
-@import './overrides';
+//@import './overrides';
 
 // install the framework and custom global styles
-@include nb-install() {
-
-  // framework global styles
-  @include nb-theme-global();
-
-  @include ngx-layout();
-  // loading progress bar
-  @include ngx-pace-theme();
-
-  @include nb-overrides();
-
-  .text-description {
-      color: nb-theme(text-hint-color);
-      font-weight: nb-theme(text-caption-font-weight);
-      font-size: nb-theme(text-caption-font-size);
-  }
-};
+//@include nb-install() {
+//
+//  // framework global styles
+//  @include nb-theme-global();
+//
+//  @include ngx-layout();
+//  // loading progress bar
+//  @include ngx-pace-theme();
+//
+//  @include nb-overrides();
+//
+//  .text-description {
+//      color: nb-theme(text-hint-color);
+//      font-weight: nb-theme(text-caption-font-weight);
+//      font-size: nb-theme(text-caption-font-size);
+//  }
+//};

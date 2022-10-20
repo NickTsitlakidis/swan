@@ -2,16 +2,16 @@
 
 
 @import '../../../@theme/styles/styles.scss';
-@import '~@nebular/theme/styles/global/breakpoints';
-@import '~bootstrap/scss/mixins/breakpoints';
+//@import '~@nebular/theme/styles/global/breakpoints';
+//@import '~bootstrap/scss/mixins/breakpoints';
 
-@include nb-install-component() {
-  .add-attribute-button {
-      background-color: transparent !important;
-      color: white !important;
-      border-style: dashed;
-      &:hover {
-          color: #a1b4ff !important;
-      }
-  }
-}
+//@include nb-install-component() {
+//  .add-attribute-button {
+//      background-color: transparent !important;
+//      color: white !important;
+//      border-style: dashed;
+//      &:hover {
+//          color: #a1b4ff !important;
+//      }
+//  }
+//}
