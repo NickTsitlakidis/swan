@@ -40,7 +40,7 @@ export class CancelEvmListingsJob {
     @Define("cancel-evm-listings-job")
     @Every("minute")
     confirmApprovalsAndOwners() {
-        const pageSize = this._configService.get<number>("JOB_PAGE_SIZE");
+        const pageSize = this._configService.getOrThrow<number>("JOB_PAGE_SIZE");
         let skip = 0;
         const streamPage = (newSkip) => from(this._listingViewRepository.findAllActive(newSkip, pageSize));
 

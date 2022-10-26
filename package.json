@@ -47,7 +47,7 @@
     "@nebular/theme": "9.1.0-rc.5",
     "@nestjs/axios": "0.1.0",
     "@nestjs/common": "9.1.2",
-    "@nestjs/config": "2.0.1",
+    "@nestjs/config": "2.2.0",
     "@nestjs/core": "9.1.2",
     "@nestjs/cqrs": "8.0.1",
     "@nestjs/jwt": "8.0.1",
