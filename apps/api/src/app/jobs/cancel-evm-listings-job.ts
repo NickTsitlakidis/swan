@@ -2,7 +2,7 @@ import { Define, Every, Processor } from "@agent-ly/nestjs-agenda";
 import { Logger } from "@nestjs/common";
 import { getLogger } from "../infrastructure/logging";
 import { ListingViewRepository } from "../views/listing/listing-view-repository";
-import { concat, defer, EMPTY, from, mergeMap, Observable, of } from "rxjs";
+import { defer, EMPTY, expand, from, map, mergeMap, Observable } from "rxjs";
 import { ConfigService } from "@nestjs/config";
 import { ListingView } from "../views/listing/listing-view";
 import { ContractFactory } from "@swan/contracts";
@@ -13,9 +13,12 @@ import { group } from "radash";
 import { EvmContractsRepository } from "../support/evm-contracts/evm-contracts-repository";
 import { EvmContract } from "../support/evm-contracts/evm-contract";
 import { EvmContractType } from "../support/evm-contracts/evm-contract-type";
+import { EventStore } from "../infrastructure/event-store";
+import { ListingFactory } from "../domain/listing/listing-factory";
+import { Listing } from "../domain/listing/listing";
 
 @Processor()
-export class ConfirmEvmApprovalsJob {
+export class CancelEvmListingsJob {
     private _logger: Logger;
     private _allChains: Array<Blockchain>;
     private _activeMarketplaceContracts: Array<EvmContract>;
@@ -25,29 +28,53 @@ export class ConfirmEvmApprovalsJob {
         private readonly _contractFactory: ContractFactory,
         private readonly _blockchainRepository: BlockchainRepository,
         private readonly _configService: ConfigService,
-        private readonly _evmContractsRepository: EvmContractsRepository
+        private readonly _evmContractsRepository: EvmContractsRepository,
+        private readonly _eventStore: EventStore,
+        private readonly _listingFactory: ListingFactory
     ) {
-        this._logger = getLogger(ConfirmEvmApprovalsJob);
+        this._logger = getLogger(CancelEvmListingsJob);
         this._allChains = [];
         this._activeMarketplaceContracts = [];
     }
 
-    @Define("confirm-approvals-job")
+    @Define("cancel-evm-listings-job")
     @Every("minute")
     confirmApprovalsAndOwners() {
         const pageSize = this._configService.get<number>("JOB_PAGE_SIZE");
         let skip = 0;
         const streamPage = (newSkip) => from(this._listingViewRepository.findAllActive(newSkip, pageSize));
 
-        const streamAll = defer(() => streamPage(skip)).pipe(
-            mergeMap(([views, count]) => {
+        const streamAll: Observable<Array<ListingView>> = defer(() => streamPage(skip)).pipe(
+            expand(([views, count]) => {
                 skip += pageSize;
-                const next = count === 0 ? EMPTY : streamPage(skip);
-                return concat(from(views), next);
+                return count === 0 ? EMPTY : streamPage(skip).pipe(map((result) => result[0]));
             })
         );
 
-        streamAll.subscribe();
+        streamAll
+            .pipe(
+                mergeMap((listingsBatch) => from(this.findInvalid(listingsBatch))),
+                mergeMap((invalid) => from(this.cancelListings(invalid)))
+            )
+            .subscribe({
+                next: (canceled) => this._logger.debug(`Canceled ${canceled.length} listings`),
+                error: (error) => this._logger.error(`job stream stopped due to error : ${error.message}`),
+                complete: () => this._logger.log("all listing batches have been processed")
+            });
+    }
+
+    private async cancelListings(listings: Array<ListingView>) {
+        const events = await this._eventStore.findEventsByAggregateIds(listings.map((l) => l.id));
+        const groupedEvents = group(events, (ev) => ev.aggregateId);
+
+        const toCommit: Array<Listing> = [];
+        for (const [aggregateId, events] of Object.entries(groupedEvents)) {
+            const entity = this._listingFactory.createFromEvents(aggregateId, events);
+            entity.cancel(true);
+            toCommit.push(entity);
+        }
+
+        return Promise.all(toCommit.map((entity) => entity.commit()));
     }
 
     private async findInvalid(listings: Array<ListingView>): Promise<Array<ListingView>> {

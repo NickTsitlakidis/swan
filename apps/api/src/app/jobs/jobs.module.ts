@@ -1,9 +1,9 @@
 import { ConfigService } from "@nestjs/config";
 import { AgendaModule, AgendaModuleOptions } from "@agent-ly/nestjs-agenda";
 import { Module } from "@nestjs/common";
-import { ConfirmEvmApprovalsJob } from "./confirm-evm-approvals-job";
 import { InfrastructureModule } from "../infrastructure/infrastructure.module";
 import { ListingModule } from "../domain/listing/listing.module";
+import { CancelEvmListingsJob } from "./cancel-evm-listings-job";
 
 const agendaFactory = async (configService: ConfigService): Promise<AgendaModuleOptions> => {
     return {
@@ -22,6 +22,6 @@ const agendaFactory = async (configService: ConfigService): Promise<AgendaModule
         InfrastructureModule,
         ListingModule
     ],
-    providers: [ConfirmEvmApprovalsJob]
+    providers: [CancelEvmListingsJob]
 })
 export class JobsModule {}

@@ -149,6 +149,15 @@ export class Listing extends EventSourcedEntity {
         this.apply(new ListingSoldEvent(transactionHash, buyer, this._transactionFee, blockNumber));
     }
 
+    cancel(isInternalCancel = false) {
+        if (this._status !== ListingStatus.ACTIVE) {
+            throw new BadRequestException(`Listing with id ${this.id} is not ACTIVE`);
+        }
+
+        this._status = ListingStatus.CANCELED;
+        this.apply(new ListingCanceledEvent(isInternalCancel));
+    }
+
     @EventProcessor(ListingCreatedEvent)
     private processListingCreatedEvent = (event: ListingCreatedEvent) => {
         this._price = event.price;

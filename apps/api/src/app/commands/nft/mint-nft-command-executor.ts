@@ -24,7 +24,7 @@ export class MintNftCommandExecutor implements ICommandHandler<MintNftCommand> {
             throw new NotFoundException();
         }
 
-        const events = await this._eventStore.findEventByAggregateId(command.id);
+        const events = await this._eventStore.findEventsByAggregateId(command.id);
 
         const nft = this._nftFactory.createFromEvents(command.id, events);
 

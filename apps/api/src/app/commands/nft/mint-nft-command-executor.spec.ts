@@ -60,7 +60,7 @@ test("execute - create nft functionality", async () => {
     ];
 
     const viewRepositorySpy = jest.spyOn(viewRepository, "findByIdAndUserId").mockResolvedValue(nftView);
-    const eventStoreSpy = jest.spyOn(eventStore, "findEventByAggregateId").mockResolvedValue(sourcedEvents);
+    const eventStoreSpy = jest.spyOn(eventStore, "findEventsByAggregateId").mockResolvedValue(sourcedEvents);
     const nftFactorySpy = jest.spyOn(nftFactory, "createFromEvents").mockReturnValue(nft);
     const nftMintSpy = jest.spyOn(nft, "mint").mockImplementation(() => {});
     const nftMintCommitSpy = jest.spyOn(nft, "commit").mockResolvedValue(nft);
