@@ -50,6 +50,7 @@ export class ListingView extends MongoDocument {
     @Embedded(() => BuyerView, { object: true, nullable: true })
     buyer: BuyerView;
 
+    //todo refactor this to number
     @Property()
     chainListingId: string;
 
