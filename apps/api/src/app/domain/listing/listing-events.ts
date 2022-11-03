@@ -38,7 +38,7 @@ export class ListingActivatedEvent extends EventPayload {
 
 @SerializedEvent("listing-canceled-event")
 export class ListingCanceledEvent extends EventPayload {
-    constructor() {
+    constructor(public isInternal: boolean) {
         super();
     }
 }

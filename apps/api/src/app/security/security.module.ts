@@ -1,7 +1,7 @@
 import { RefreshToken } from "./refresh-token";
 import { Module } from "@nestjs/common";
 import { JwtModule, JwtModuleOptions } from "@nestjs/jwt";
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ConfigService } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
 import { ViewsModule } from "../views/views.module";
 import { InfrastructureModule } from "../infrastructure/infrastructure.module";
@@ -28,7 +28,6 @@ const jwtFactory = async (configService: ConfigService): Promise<JwtModuleOption
 @Module({
     imports: [
         JwtModule.registerAsync({
-            imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: jwtFactory
         }),

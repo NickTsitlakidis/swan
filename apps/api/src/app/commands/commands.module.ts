@@ -6,7 +6,6 @@ import { ViewsModule } from "../views/views.module";
 import { StartSignatureAuthenticationExecutor } from "./user/start-signature-authentication-executor";
 import { CompleteSignatureAuthenticationExecutor } from "./user/complete-signature-authentication-executor";
 import { SecurityModule } from "../security/security.module";
-import { ConfigModule } from "@nestjs/config";
 import { SignatureValidator } from "./user/signature-validator";
 import { CompleteWalletAdditionCommandExecutor } from "./user/complete-wallet-addition-command-executor";
 import { CollectionModule } from "../domain/collection/collection.module";
@@ -58,7 +57,6 @@ import { CreateNftExternalCommandExecutor } from "./nft/create-nft-external-comm
         UserModule,
         ViewsModule,
         SecurityModule,
-        ConfigModule,
         CollectionModule,
         SupportModule,
         NftModule,

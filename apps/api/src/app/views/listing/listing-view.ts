@@ -51,7 +51,7 @@ export class ListingView extends MongoDocument {
     buyer: BuyerView;
 
     @Property()
-    chainListingId: string;
+    chainListingId: number;
 
     @Property()
     walletId: string;

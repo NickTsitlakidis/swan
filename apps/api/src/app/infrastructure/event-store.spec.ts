@@ -143,7 +143,7 @@ test("save - increases version and stores events and aggregate", async () => {
     expect(saved[1].aggregateVersion).toBe(7);
 });
 
-test("findEventByAggregateId - returns sorted events", async () => {
+test("findEventsByAggregateId - returns sorted events", async () => {
     const aggregateId = new ObjectId().toHexString();
 
     await eventsCollection.insertMany([
@@ -181,7 +181,7 @@ test("findEventByAggregateId - returns sorted events", async () => {
         }
     ]);
 
-    const result = await eventStore.findEventByAggregateId(aggregateId);
+    const result = await eventStore.findEventsByAggregateId(aggregateId);
 
     expect(result.length).toBe(3);
     expect(result[0].aggregateVersion).toBe(5);
@@ -190,6 +190,53 @@ test("findEventByAggregateId - returns sorted events", async () => {
     expect(result[1].eventName).toBe("one");
     expect(result[2].aggregateVersion).toBe(15);
     expect(result[2].eventName).toBe("three");
+});
+
+test("findEventsByAggregateIds - returns matching entity events", async () => {
+    const aggregateId1 = new ObjectId().toHexString();
+    const aggregateId2 = new ObjectId().toHexString();
+    const aggregateId3 = new ObjectId().toHexString();
+
+    await eventsCollection.insertMany([
+        {
+            _id: new ObjectId(),
+            createdAt: new Date(),
+            aggregateId: aggregateId1,
+            aggregateVersion: 10,
+            eventName: "one",
+            payload: "payload-1"
+        },
+        {
+            _id: new ObjectId(),
+            createdAt: new Date(),
+            aggregateId: aggregateId2,
+            aggregateVersion: 5,
+            eventName: "two",
+            payload: "payload-2"
+        },
+        {
+            _id: new ObjectId(),
+            createdAt: new Date(),
+            aggregateId: aggregateId3,
+            aggregateVersion: 15,
+            eventName: "three",
+            payload: "payload-3"
+        },
+        {
+            _id: new ObjectId(),
+            createdAt: new Date(),
+            aggregateId: new ObjectId().toHexString(),
+            aggregateVersion: 15,
+            eventName: "four",
+            payload: "payload-4"
+        }
+    ]);
+
+    const result = await eventStore.findEventsByAggregateIds([aggregateId1, aggregateId2]);
+
+    expect(result.length).toBe(2);
+    expect(result[0].eventName).toBe("one");
+    expect(result[1].eventName).toBe("two");
 });
 
 test("connectEntity - sets a publish that returns for empty events", async () => {

@@ -93,10 +93,12 @@ export class ListingProjector
         if (event instanceof ListingActivatedEvent) {
             view.listingCreatedTransaction.blockNumber = event.blockNumber;
             view.status = ListingStatus.ACTIVE;
+            view.chainListingId = event.chainListingId;
         }
 
         if (event instanceof ListingCanceledEvent) {
             view.status = ListingStatus.CANCELED;
+            //todo it would be cool to send user notifications if the cancel is internal and we have user info.
         }
 
         if (event instanceof ListingSoldEvent) {

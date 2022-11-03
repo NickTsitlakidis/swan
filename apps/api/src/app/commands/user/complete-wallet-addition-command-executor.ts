@@ -61,7 +61,7 @@ export class CompleteWalletAdditionCommandExecutor implements ICommandHandler<Co
             }
         }
 
-        const userEvents = await this._eventStore.findEventByAggregateId(command.userId);
+        const userEvents = await this._eventStore.findEventsByAggregateId(command.userId);
         const user = this._userFactory.createFromEvents(command.userId, userEvents);
         const wallet = new UserWallet(
             this._idGenerator.generateEntityId(),

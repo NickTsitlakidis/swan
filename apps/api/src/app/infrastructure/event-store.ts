@@ -57,10 +57,19 @@ export class EventStore {
      * @param id
      */
     @LogAsyncMethod
-    findEventByAggregateId(id: string): Promise<Array<SourcedEvent>> {
+    findEventsByAggregateId(id: string): Promise<Array<SourcedEvent>> {
         return this._entityManager
             .fork()
             .find(SourcedEvent, { aggregateId: id }, { orderBy: { aggregateVersion: "ASC" } });
+    }
+
+    /**
+     * Finds and returns all the events that match any of the aggregate ids
+     * @param ids
+     */
+    @LogAsyncMethod
+    findEventsByAggregateIds(ids: Array<string>): Promise<Array<SourcedEvent>> {
+        return this._entityManager.fork().find(SourcedEvent, { aggregateId: { $in: ids } });
     }
 
     /**

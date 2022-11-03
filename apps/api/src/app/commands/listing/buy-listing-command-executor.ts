@@ -24,7 +24,7 @@ export class BuyListingCommandExecutor implements ICommandHandler<BuyListingComm
     ) {}
 
     async execute(command: BuyListingCommand): Promise<EntityDto> {
-        const events = await this._eventStore.findEventByAggregateId(command.listingId);
+        const events = await this._eventStore.findEventsByAggregateId(command.listingId);
 
         if (events.length == 0) {
             throw new BadRequestException(`No listing with id ${command.listingId}`);
@@ -72,7 +72,7 @@ export class BuyListingCommandExecutor implements ICommandHandler<BuyListingComm
         );
         await listing.commit();
 
-        const nftEvents = await this._eventStore.findEventByAggregateId(listing.nftId);
+        const nftEvents = await this._eventStore.findEventsByAggregateId(listing.nftId);
         const nft = this._nftFactory.createFromEvents(listing.nftId, nftEvents);
         nft.changeUser(command.userId, userWallet.id);
 
