@@ -24,6 +24,8 @@ export class ListingViewRepository {
     }
 
     findAllActive(skip = 0, limit = 50): Promise<[ListingView[], number]> {
-        return this._entityManager.findAndCount(ListingView, { status: ListingStatus.ACTIVE }, { limit, offset: skip });
+        return this._entityManager
+            .fork()
+            .findAndCount(ListingView, { status: ListingStatus.ACTIVE }, { limit, offset: skip });
     }
 }

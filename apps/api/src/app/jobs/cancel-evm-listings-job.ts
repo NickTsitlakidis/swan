@@ -28,7 +28,7 @@ export class CancelEvmListingsJob {
     @Define("cancel-evm-listings-job")
     @Every("minute")
     confirmApprovalsAndOwners(): Subscription {
-        const pageSize = this._configService.getOrThrow<number>("JOB_PAGE_SIZE");
+        const pageSize = +this._configService.getOrThrow<number>("JOB_PAGE_SIZE");
         let skip = 0;
         const streamPage = (newSkip) => {
             return from(this._listingViewRepository.findAllActive(newSkip, pageSize));
@@ -50,7 +50,9 @@ export class CancelEvmListingsJob {
             )
             .subscribe({
                 next: (canceled) => this._logger.debug(`Canceled ${canceled.length} listings`),
-                error: (error) => this._logger.error(`job stream stopped due to error : ${error.message}`),
+                error: (error) => {
+                    this._logger.error(`job stream stopped due to error : ${error.message}`);
+                },
                 complete: () => this._logger.log("all listing batches have been processed")
             });
     }

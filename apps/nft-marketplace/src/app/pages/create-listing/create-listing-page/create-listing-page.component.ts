@@ -125,7 +125,9 @@ export class CreateListingPageComponent extends Janitor implements OnInit {
             activateListingDto.blockNumber = result.blockNumber;
             activateListingDto.listingId = submittedListingEntity.id;
 
-            return this._listingsService.activateListing(activateListingDto);
+            return this._listingsService.activateListing(activateListingDto).subscribe((activated) => {
+                console.log(activated);
+            });
         } else {
             return EMPTY;
         }

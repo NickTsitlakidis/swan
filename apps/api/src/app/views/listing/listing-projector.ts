@@ -93,6 +93,7 @@ export class ListingProjector
         if (event instanceof ListingActivatedEvent) {
             view.listingCreatedTransaction.blockNumber = event.blockNumber;
             view.status = ListingStatus.ACTIVE;
+            view.chainListingId = event.chainListingId;
         }
 
         if (event instanceof ListingCanceledEvent) {

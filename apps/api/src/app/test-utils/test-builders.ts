@@ -79,7 +79,7 @@ export function buildListingView(): ListingView {
     view.blockchainId = uid(5);
     view.categoryId = uid(5);
     view.animationUrl = uid(5);
-    view.chainListingId = random(1, 100).toString();
+    view.chainListingId = random(1, 100);
     view.chainTokenId = random(1, 100).toString();
     view.imageUrl = uid(5);
     view.nftAddress = uid(5);

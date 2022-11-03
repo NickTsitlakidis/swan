@@ -4,6 +4,10 @@ import { Module } from "@nestjs/common";
 import { InfrastructureModule } from "../infrastructure/infrastructure.module";
 import { ListingModule } from "../domain/listing/listing.module";
 import { CancelEvmListingsJob } from "./cancel-evm-listings-job";
+import { ListingFilters } from "./listing-filters";
+import { ViewsModule } from "../views/views.module";
+import { ContractsModule } from "../contracts.module";
+import { SupportModule } from "../support/support.module";
 
 const agendaFactory = async (configService: ConfigService): Promise<AgendaModuleOptions> => {
     return {
@@ -20,8 +24,11 @@ const agendaFactory = async (configService: ConfigService): Promise<AgendaModule
             useFactory: agendaFactory
         }),
         InfrastructureModule,
-        ListingModule
+        ListingModule,
+        ViewsModule,
+        ContractsModule,
+        SupportModule
     ],
-    providers: [CancelEvmListingsJob]
+    providers: [CancelEvmListingsJob, ListingFilters]
 })
 export class JobsModule {}

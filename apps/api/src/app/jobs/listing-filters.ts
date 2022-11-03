@@ -39,14 +39,14 @@ export class ListingFilters {
                 listings.map((listing) => ({
                     seller: listing.sellerAddress,
                     price: listing.price,
-                    listingId: parseInt(listing.chainListingId),
+                    listingId: listing.chainListingId,
                     tokenId: listing.chainTokenId,
                     tokenContractAddress: listing.tokenContractAddress
                 }))
             );
 
             const invalidListings = listings.filter((listing) =>
-                invalidIds.some((id) => id === parseInt(listing.chainListingId))
+                invalidIds.some((id) => id === listing.chainListingId)
             );
 
             allInvalid = allInvalid.concat(invalidListings);
