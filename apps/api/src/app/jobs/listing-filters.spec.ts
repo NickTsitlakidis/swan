@@ -64,7 +64,7 @@ test("filterForInvalidUsingContract - return empty array if all listings are val
         [listings[0], listings[1], listings[2]].map((listing) => ({
             seller: listing.sellerAddress,
             price: listing.price,
-            listingId: parseInt(listing.chainListingId),
+            listingId: listing.chainListingId,
             tokenId: listing.chainTokenId,
             tokenContractAddress: listing.tokenContractAddress
         }))
@@ -74,7 +74,7 @@ test("filterForInvalidUsingContract - return empty array if all listings are val
         [listings[3]].map((listing) => ({
             seller: listing.sellerAddress,
             price: listing.price,
-            listingId: parseInt(listing.chainListingId),
+            listingId: listing.chainListingId,
             tokenId: listing.chainTokenId,
             tokenContractAddress: listing.tokenContractAddress
         }))
@@ -100,8 +100,8 @@ test("filterForInvalidUsingContract - return invalids array from multiple chains
     const contractFactorySpy = jest.spyOn(contractFactory, "createMarketplace").mockReturnValue(contract);
     const filterInvalidSpy = jest.spyOn(contract, "filterForInvalid").mockImplementation((toFilter) => {
         return toFilter.length === 1
-            ? Promise.resolve([parseInt(listings[3].chainListingId)])
-            : Promise.resolve([parseInt(listings[0].chainListingId)]);
+            ? Promise.resolve([listings[3].chainListingId])
+            : Promise.resolve([listings[0].chainListingId]);
     });
 
     const invalid = await listingFilters.filterForInvalidUsingContract(listings);
@@ -129,7 +129,7 @@ test("filterForInvalidUsingContract - return invalids array from multiple chains
         [listings[0], listings[1], listings[2]].map((listing) => ({
             seller: listing.sellerAddress,
             price: listing.price,
-            listingId: parseInt(listing.chainListingId),
+            listingId: listing.chainListingId,
             tokenId: listing.chainTokenId,
             tokenContractAddress: listing.tokenContractAddress
         }))
@@ -139,7 +139,7 @@ test("filterForInvalidUsingContract - return invalids array from multiple chains
         [listings[3]].map((listing) => ({
             seller: listing.sellerAddress,
             price: listing.price,
-            listingId: parseInt(listing.chainListingId),
+            listingId: listing.chainListingId,
             tokenId: listing.chainTokenId,
             tokenContractAddress: listing.tokenContractAddress
         }))
@@ -164,7 +164,7 @@ test("filterForInvalidUsingContract - return invalids array from one chain", asy
     const contract = createMock<SwanMarketplaceContract>();
     const contractFactorySpy = jest.spyOn(contractFactory, "createMarketplace").mockReturnValue(contract);
     const filterInvalidSpy = jest.spyOn(contract, "filterForInvalid").mockImplementation((toFilter) => {
-        return toFilter.length === 1 ? Promise.resolve([parseInt(listings[3].chainListingId)]) : Promise.resolve([]);
+        return toFilter.length === 1 ? Promise.resolve([listings[3].chainListingId]) : Promise.resolve([]);
     });
 
     const invalid = await listingFilters.filterForInvalidUsingContract(listings);
@@ -191,7 +191,7 @@ test("filterForInvalidUsingContract - return invalids array from one chain", asy
         [listings[0], listings[1], listings[2]].map((listing) => ({
             seller: listing.sellerAddress,
             price: listing.price,
-            listingId: parseInt(listing.chainListingId),
+            listingId: listing.chainListingId,
             tokenId: listing.chainTokenId,
             tokenContractAddress: listing.tokenContractAddress
         }))
@@ -201,7 +201,7 @@ test("filterForInvalidUsingContract - return invalids array from one chain", asy
         [listings[3]].map((listing) => ({
             seller: listing.sellerAddress,
             price: listing.price,
-            listingId: parseInt(listing.chainListingId),
+            listingId: listing.chainListingId,
             tokenId: listing.chainTokenId,
             tokenContractAddress: listing.tokenContractAddress
         }))
