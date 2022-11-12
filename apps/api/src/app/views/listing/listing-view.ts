@@ -11,9 +11,6 @@ export class ListingView extends MongoDocument {
     createdAt: Date = new Date();
 
     @Property()
-    userId: string;
-
-    @Property()
     price: number;
 
     @Property()
@@ -50,14 +47,11 @@ export class ListingView extends MongoDocument {
     @Embedded(() => BuyerView, { object: true, nullable: true })
     buyer: BuyerView;
 
+    @Embedded(() => BuyerView, { object: true, nullable: true })
+    seller: BuyerView;
+
     @Property()
     chainListingId: number;
-
-    @Property()
-    walletId: string;
-
-    @Property()
-    sellerAddress?: string;
 
     @Property()
     animationUrl?: string;

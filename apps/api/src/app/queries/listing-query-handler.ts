@@ -22,11 +22,11 @@ export class ListingQueryHandler {
             lto.chainTokenId = parseInt(listing.chainTokenId);
             lto.nftAddress = listing.nftAddress;
             lto.price = listing.price;
-            lto.sellerAddress = listing.sellerAddress;
+            lto.sellerAddress = listing.seller.address;
             lto.tokenContractAddress = listing.tokenContractAddress;
             lto.animationUrl = listing.animationUrl;
             lto.imageUrl = listing.imageUrl;
-            lto.walletId = listing.walletId;
+            lto.walletId = listing.seller.walletId;
             listingDtos.push(lto);
         });
 

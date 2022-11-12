@@ -40,7 +40,7 @@ export class BuyListingCommandExecutor implements ICommandHandler<BuyListingComm
 
         if (isNil(userWallet)) {
             throw new BadRequestException(
-                `No user-wallet was found. Input: User (${command.userId}) - Wallet (${listing.walletId}) - Blockchain (${listing.blockchainId})`
+                `No user-wallet was found. Input: User (${command.userId}) - Wallet (${command.walletId}) - Blockchain (${listing.blockchainId})`
             );
         }
 
@@ -50,19 +50,14 @@ export class BuyListingCommandExecutor implements ICommandHandler<BuyListingComm
             throw new BadRequestException(`No blockchain was found. Input: Blockchain (${listing.blockchainId})`);
         }
 
-        const buyer: Buyer = {
-            userId: command.userId,
-            userWalletId: userWallet.id
-        };
-
         const customHttpProvider = new ethers.providers.JsonRpcProvider(blockchain.rpcUrl);
-
         const swanMarketPlace = this._contractFactory.createMarketplace(
             customHttpProvider,
             listing.marketPlaceContractAddress
         );
         const fee = await swanMarketPlace.getFeePercentage();
 
+        const buyer: Buyer = new Buyer(command.userId, userWallet.walletId, userWallet.address);
         listing.buy(
             command.chainTransactionHash,
             buyer,

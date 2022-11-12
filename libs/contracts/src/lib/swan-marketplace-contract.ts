@@ -33,7 +33,7 @@ export class SwanMarketplaceContract {
     }
 
     async getBuyResult(transactionHash: string, buyerAddress: string): Promise<MarketplaceResult> {
-        const eventFilter = this._contractInstance.filters["TokenSold"](null, null, buyerAddress);
+        const eventFilter = this._contractInstance.filters.TokenSold(null, null, buyerAddress);
 
         const mappedEventObservable = new Observable<any>((subscriber) => {
             this._contractInstance.on(
@@ -69,8 +69,8 @@ export class SwanMarketplaceContract {
         return fee.toNumber();
     }
 
-    async getListingResult(transactionHash: string, signerAddress: string): Promise<MarketplaceResult> {
-        const eventFilter = this._contractInstance.filters["ListingCreated"](signerAddress);
+    async getListingResult(transactionHash: string, sellerAddress: string): Promise<MarketplaceResult> {
+        const eventFilter = this._contractInstance.filters.ListingCreated(sellerAddress);
 
         const mappedEventObservable = new Observable<any>((subscriber) => {
             this._contractInstance.on(eventFilter, (seller, tokenContractAddress, tokenId, price, listingId, event) => {

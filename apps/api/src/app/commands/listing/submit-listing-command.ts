@@ -1,3 +1,3 @@
 export class SubmitListingCommand {
-    constructor(public chainTransactionId: string, public listingId: string) {}
+    constructor(public transactionHash: string, public listingId: string) {}
 }
