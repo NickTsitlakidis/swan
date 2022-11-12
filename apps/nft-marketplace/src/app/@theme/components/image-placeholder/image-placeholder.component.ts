@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from "@angular/core";
-import { faImage } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
     selector: "nft-marketplace-image-placeholder",
@@ -8,7 +7,6 @@ import { faImage } from "@fortawesome/free-solid-svg-icons";
     templateUrl: "image-placeholder.component.html"
 })
 export class ImagePlaceholderComponent {
-    public faImage = faImage;
     public filePath: string;
     public selectedFile: File | null;
 

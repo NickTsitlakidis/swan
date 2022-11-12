@@ -1,49 +1,46 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap');
-@import "bulma/sass/utilities/_all.sass";
-@import "bulma/sass/grid/columns.sass";
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap");
+//@import "bulma/sass/utilities/_all.sass";
+//@import "bulma/sass/grid/columns.sass";
+//@import "bulma/sass/helpers/flexbox.sass";
+@import "primeng/resources/primeng.min.css";
+@import "primeflex/primeflex.css";
+@import "primeicons/primeicons.css";
+@import "bulma/css/bulma.css";
 
-// themes - our custom or/and out of the box themes
-//@import 'themes';
-
-// framework component themes (styles tied to theme variables)
-//@import '~@nebular/theme/styles/globals';
-
-//@import '~bootstrap/scss/functions';
-//@import '~bootstrap/scss/variables';
-//@import '~bootstrap/scss/mixins';
-//@import '~bootstrap/scss/grid';
-
-// loading progress bar theme
-//@import './pace.theme';
-
-@import './layout';
-//@import './overrides';
-
-// install the framework and custom global styles
-//@include nb-install() {
-//
-//  // framework global styles
-//  @include nb-theme-global();
-//
-//  @include ngx-layout();
-//  // loading progress bar
-//  @include ngx-pace-theme();
-//
-//  @include nb-overrides();
-//
-
-//};
-
-.w-100 {
-    width: 100%;
-}
-
-.h-100 {
+html {
+    font-size: 1rem;
     height: 100%;
 }
 
+body {
+    font-family: var(--font-family);
+    background-color: var(--surface-ground);
+    color: var(--text-color);
+    padding: 0;
+    margin: 0;
+    min-height: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+@for $i from 1 through 100 {
+    .w-#{$i} {
+        width: percentage(calc($i / 100)) !important;
+    }
+}
+
+@for $i from 1 through 100 {
+    .h-#{$i} {
+        height: percentage(calc($i / 100)) !important;
+    }
+}
+
 .text-description {
-    //color: nb-theme(text-hint-color);
-    //font-weight: nb-theme(text-caption-font-weight);
-    //font-size: nb-theme(text-caption-font-size);
+    color: #b4b4db;
+    font-weight: 400;
+    font-size: 0.75rem;
+}
+
+.rounded {
+    border-radius: 5px;
 }

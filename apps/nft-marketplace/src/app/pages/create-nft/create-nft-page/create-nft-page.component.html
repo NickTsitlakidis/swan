@@ -1,251 +1,270 @@
-<div class="col-md-6 col-12 offset-md-3 offset-1">
-    <nft-marketplace-upload (uploadFiles)="uploadFiles($event)"></nft-marketplace-upload>
-    <form class="row" [formGroup]="createNFTForm">
-        <!-- NFT's title -->
-        <div class="col-12 mt-4">
-            <nft-marketplace-title-subtitle [title]="labelsAndPlaceholders.title.name"></nft-marketplace-title-subtitle>
-            <input
-                class="w-100"
-                nbInput
-                type="text"
-                [placeholder]="labelsAndPlaceholders.title.placeholder"
-                formControlName="title"
-            />
-            <div
-                class="text-danger mt-2 mb-2"
-                *ngIf="
-                    createNFTForm.get('title')?.invalid &&
-                    (createNFTForm.get('title')?.dirty || createNFTForm.get('title')?.touched)
-                "
-            >
-                The maximum length of the title should be 50 characters
-            </div>
-        </div>
-
-        <!-- NFT's symbol -->
-        <div class="col-12 mt-4">
-            <nft-marketplace-title-subtitle
-                [title]="labelsAndPlaceholders.symbol.name"
-            ></nft-marketplace-title-subtitle>
-            <input
-                class="w-100"
-                nbInput
-                type="text"
-                [placeholder]="labelsAndPlaceholders.symbol.placeholder"
-                formControlName="symbol"
-            />
-            <div
-                class="text-danger mt-2 mb-2"
-                *ngIf="
-                    createNFTForm.get('symbol')?.invalid &&
-                    (createNFTForm.get('symbol')?.dirty || createNFTForm.get('symbol')?.touched)
-                "
-            >
-                The maximum length of the symbol should be 10 characters
-            </div>
-        </div>
-
-        <!-- NFT's is parent collection -->
-        <div class="col-12 mt-4">
-            <nft-marketplace-title-subtitle
-                [title]="labelsAndPlaceholders.isParentCollection"
-            ></nft-marketplace-title-subtitle>
-            <nb-toggle formControlName="isParentCollection" status="warning"></nb-toggle>
-        </div>
-
-        <!-- NFT's Description -->
-        <div class="col-12 mt-4">
-            <nft-marketplace-title-subtitle
-                [title]="labelsAndPlaceholders.description.title"
-            ></nft-marketplace-title-subtitle>
-            <textarea
-                class="w-50"
-                formControlName="description"
-                [placeholder]="labelsAndPlaceholders.description.placeholder"
-                nbInput
-            ></textarea>
-            <div
-                class="text-danger mt-2 mb-2"
-                *ngIf="
-                    createNFTForm.get('description')?.invalid &&
-                    (createNFTForm.get('description')?.dirty || createNFTForm.get('description')?.touched)
-                "
-            >
-                The maximum length of the description should be 500 characters
-            </div>
-        </div>
-
-        <!-- NFT's Collection -->
-        <div class="col-12 mt-4">
-            <div *ngIf="collections?.length">
-                <nft-marketplace-title-subtitle
-                    [title]="labelsAndPlaceholders.collection.title"
-                    [subtitle]="labelsAndPlaceholders.collection.subtitle"
-                ></nft-marketplace-title-subtitle>
-                <div class="d-flex align-items-center">
-                    <nb-select
-                        #collectionSelect
-                        shape="semi-round"
-                        formControlName="collection"
-                        (selectedChange)="collectionSelected($event)"
+<div class="columns">
+    <div class="column is-three-fifths is-offset-one-fifth">
+        <nft-marketplace-upload (uploadFiles)="uploadFiles($event)"></nft-marketplace-upload>
+        <form [formGroup]="createNFTForm">
+            <!-- NFT's title -->
+            <div class="columns">
+                <div class="column mt-4">
+                    <nft-marketplace-title-subtitle
+                        [title]="labelsAndPlaceholders.title.name"
+                    ></nft-marketplace-title-subtitle>
+                    <input
+                        class="w-100"
+                        type="text"
+                        [placeholder]="labelsAndPlaceholders.title.placeholder"
+                        formControlName="title"
+                    />
+                    <div
+                        class="has-text-danger mt-2 mb-2"
+                        *ngIf="
+                            createNFTForm.get('title')?.invalid &&
+                            (createNFTForm.get('title')?.dirty || createNFTForm.get('title')?.touched)
+                        "
                     >
-                        <nb-option *ngFor="let collection of collections" [value]="collection">{{
-                            collection.name
-                        }}</nb-option>
-                    </nb-select>
-                    <button
-                        class="ml-2"
-                        nbButton
-                        hero
-                        shape="semi-round"
-                        status="primary"
-                        (click)="resetSelectionOfCollection()"
+                        The maximum length of the title should be 50 characters
+                    </div>
+                </div>
+            </div>
+
+            <!-- NFT's symbol -->
+            <div class="columns">
+                <div class="column mt-4">
+                    <nft-marketplace-title-subtitle
+                        [title]="labelsAndPlaceholders.symbol.name"
+                    ></nft-marketplace-title-subtitle>
+                    <input
+                        class="w-100"
+                        type="text"
+                        [placeholder]="labelsAndPlaceholders.symbol.placeholder"
+                        formControlName="symbol"
+                    />
+                    <div
+                        class="has-text-danger mt-2 mb-2"
+                        *ngIf="
+                            createNFTForm.get('symbol')?.invalid &&
+                            (createNFTForm.get('symbol')?.dirty || createNFTForm.get('symbol')?.touched)
+                        "
                     >
-                        Clear
+                        The maximum length of the symbol should be 10 characters
+                    </div>
+                </div>
+            </div>
+
+            <!-- NFT's is parent collection -->
+            <div class="columns">
+                <div class="column mt-4">
+                    <nft-marketplace-title-subtitle
+                        [title]="labelsAndPlaceholders.isParentCollection"
+                    ></nft-marketplace-title-subtitle>
+                    <p-inputSwitch formControlName="isParentCollection"></p-inputSwitch>
+                </div>
+            </div>
+
+            <!-- NFT's Description -->
+            <div class="columns">
+                <div class="column mt-4">
+                    <nft-marketplace-title-subtitle
+                        [title]="labelsAndPlaceholders.description.title"
+                    ></nft-marketplace-title-subtitle>
+                    <textarea
+                        class="w-50"
+                        formControlName="description"
+                        [placeholder]="labelsAndPlaceholders.description.placeholder"
+                    ></textarea>
+                    <div
+                        class="has-text-danger mt-2 mb-2"
+                        *ngIf="
+                            createNFTForm.get('description')?.invalid &&
+                            (createNFTForm.get('description')?.dirty || createNFTForm.get('description')?.touched)
+                        "
+                    >
+                        The maximum length of the description should be 500 characters
+                    </div>
+                </div>
+            </div>
+
+            <!-- NFT's Collection -->
+            <div class="columns">
+                <div class="column mt-4">
+                    <div *ngIf="collections?.length">
+                        <nft-marketplace-title-subtitle
+                            [title]="labelsAndPlaceholders.collection.title"
+                            [subtitle]="labelsAndPlaceholders.collection.subtitle"
+                        ></nft-marketplace-title-subtitle>
+                        <div class="is-flex is-align-content-center">
+                            <p-dropdown
+                                #collectionSelect
+                                formControlName="collection"
+                                [options]="collections"
+                                (onChange)="collectionSelected($event)"
+                                optionLabel="name"
+                                placeholder="Collection"
+                            ></p-dropdown>
+                            <button
+                                pButton
+                                class="ml-2"
+                                hero
+                                shape="semi-round"
+                                status="primary"
+                                (click)="resetSelectionOfCollection()"
+                            >
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                    <div *ngIf="!collections?.length">
+                        <nft-marketplace-title-subtitle
+                            [title]="labelsAndPlaceholders.collection.title"
+                            [subtitle]="labelsAndPlaceholders.collection.emptyCategory"
+                        ></nft-marketplace-title-subtitle>
+                        <a href="./create-collection">Create</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NFT's Chain -->
+            <div class="columns">
+                <div class="column mt-4" *ngIf="blockchains?.length">
+                    <nft-marketplace-title-subtitle
+                        [title]="labelsAndPlaceholders.chain.title"
+                        [subtitle]="labelsAndPlaceholders.chain.subtitle"
+                    ></nft-marketplace-title-subtitle>
+                    <p-dropdown
+                        formControlName="blockchain"
+                        [options]="blockchains"
+                        optionLabel="name"
+                        placeholder="Blockchain"
+                    ></p-dropdown>
+                    <div
+                        class="has-text-danger mt-2 mb-2"
+                        *ngIf="
+                            createNFTForm.get('blockchain')?.invalid &&
+                            createNFTForm.get('blockchain')?.hasError('required') &&
+                            (createNFTForm.get('blockchain')?.dirty || createNFTForm.get('blockchain')?.touched)
+                        "
+                    >
+                        This field is required *
+                    </div>
+                </div>
+            </div>
+
+            <!-- NFT's Category -->
+            <div class="columns">
+                <div class="column mt-4" *ngIf="categories?.length">
+                    <nft-marketplace-title-subtitle
+                        [title]="labelsAndPlaceholders.category.title"
+                        [subtitle]="labelsAndPlaceholders.category.subtitle"
+                    ></nft-marketplace-title-subtitle>
+                    <p-dropdown
+                        formControlName="category"
+                        [options]="categories"
+                        optionLabel="name"
+                        placeholder="Add category"
+                    ></p-dropdown>
+                    <div
+                        class="has-text-danger mt-2 mb-2"
+                        *ngIf="
+                            createNFTForm.get('category')?.invalid &&
+                            createNFTForm.get('category')?.hasError('required') &&
+                            (createNFTForm.get('category')?.dirty || createNFTForm.get('category')?.touched)
+                        "
+                    >
+                        This field is required *
+                    </div>
+                </div>
+            </div>
+
+            <!-- NFT's max supply -->
+            <div class="columns">
+                <div class="column mt-4">
+                    <nft-marketplace-title-subtitle
+                        [title]="labelsAndPlaceholders.maxSupply.title"
+                    ></nft-marketplace-title-subtitle>
+                    <input
+                        type="number"
+                        [placeholder]="labelsAndPlaceholders.maxSupply.placeholder"
+                        formControlName="maxSupply"
+                    />
+                </div>
+            </div>
+
+            <!-- NFT's custom attributes -->
+            <div class="columns">
+                <div class="column mt-4">
+                    <div @fade *ngFor="let attribute of attributes; let i = index">
+                        <input
+                            class="m-2"
+                            type="text"
+                            [placeholder]="labelsAndPlaceholders.attributeTrait"
+                            [formControlName]="'attributeTrait' + (i + 1)"
+                        />
+
+                        <input
+                            class="m-2"
+                            type="text"
+                            [placeholder]="labelsAndPlaceholders.attributeValue"
+                            [formControlName]="'attributeValue' + (i + 1)"
+                        />
+                        <div
+                            class="has-text-danger mt-2 mb-2"
+                            *ngIf="
+                                createNFTForm.get('attributeValue' + (i + 1))?.invalid &&
+                                createNFTForm.get('attributeValue' + (i + 1))?.hasError('required') &&
+                                (createNFTForm.get('attributeValue' + (i + 1))?.dirty ||
+                                    createNFTForm.get('attributeValue' + (i + 1))?.touched)
+                            "
+                        >
+                            This field is required *
+                        </div>
+
+                        <input
+                            class="m-2"
+                            type="text"
+                            [placeholder]="labelsAndPlaceholders.attributeDisplay"
+                            [formControlName]="'attributeDisplay' + (i + 1)"
+                        />
+                    </div>
+                    <nft-marketplace-title-subtitle
+                        [title]="labelsAndPlaceholders.attributes"
+                    ></nft-marketplace-title-subtitle>
+                    <button pButton type="text" (click)="addAtrribute()" class="add-attribute-button">
+                        + Add attribute
                     </button>
                 </div>
             </div>
-            <div *ngIf="!collections?.length">
-                <nft-marketplace-title-subtitle
-                    [title]="labelsAndPlaceholders.collection.title"
-                    [subtitle]="labelsAndPlaceholders.collection.emptyCategory"
-                ></nft-marketplace-title-subtitle>
-                <a href="./create-collection">Create</a>
-            </div>
-        </div>
 
-        <!-- NFT's Chain -->
-        <div class="col-12 mt-4" *ngIf="blockchains?.length">
-            <nft-marketplace-title-subtitle
-                [title]="labelsAndPlaceholders.chain.title"
-                [subtitle]="labelsAndPlaceholders.chain.subtitle"
-            ></nft-marketplace-title-subtitle>
-            <nb-select shape="semi-round" formControlName="blockchain" [ngModel]="blockchains[0]">
-                <nb-option *ngFor="let blockchain of blockchains" [value]="blockchain">{{ blockchain.name }}</nb-option>
-            </nb-select>
-            <div
-                class="text-danger mt-2 mb-2"
-                *ngIf="
-                    createNFTForm.get('blockchain')?.invalid &&
-                    createNFTForm.get('blockchain')?.hasError('required') &&
-                    (createNFTForm.get('blockchain')?.dirty || createNFTForm.get('blockchain')?.touched)
-                "
-            >
-                This field is required *
-            </div>
-        </div>
-
-        <!-- NFT's Category -->
-        <div class="col-12 mt-4" *ngIf="categories?.length">
-            <nft-marketplace-title-subtitle
-                [title]="labelsAndPlaceholders.category.title"
-                [subtitle]="labelsAndPlaceholders.category.subtitle"
-            ></nft-marketplace-title-subtitle>
-            <nb-select
-                placeholder="Add category"
-                shape="semi-round"
-                formControlName="category"
-                [ngModel]="categories[0]"
-            >
-                <nb-option *ngFor="let category of categories" [value]="category">{{ category.name }}</nb-option>
-            </nb-select>
-            <div
-                class="text-danger mt-2 mb-2"
-                *ngIf="
-                    createNFTForm.get('category')?.invalid &&
-                    createNFTForm.get('category')?.hasError('required') &&
-                    (createNFTForm.get('category')?.dirty || createNFTForm.get('category')?.touched)
-                "
-            >
-                This field is required *
-            </div>
-        </div>
-
-        <!-- NFT's max supply -->
-        <div class="col-12 mt-4">
-            <nft-marketplace-title-subtitle
-                [title]="labelsAndPlaceholders.maxSupply.title"
-            ></nft-marketplace-title-subtitle>
-            <input
-                nbInput
-                type="number"
-                [placeholder]="labelsAndPlaceholders.maxSupply.placeholder"
-                formControlName="maxSupply"
-            />
-        </div>
-
-        <!-- NFT's custom attributes -->
-        <div class="col-12 mt-4">
-            <div @fade *ngFor="let attribute of attributes; let i = index">
-                <input
-                    class="m-2"
-                    nbInput
-                    type="text"
-                    [placeholder]="labelsAndPlaceholders.attributeTrait"
-                    [formControlName]="'attributeTrait' + (i + 1)"
-                />
-
-                <input
-                    class="m-2"
-                    nbInput
-                    type="text"
-                    [placeholder]="labelsAndPlaceholders.attributeValue"
-                    [formControlName]="'attributeValue' + (i + 1)"
-                />
-                <div
-                    class="text-danger mt-2 mb-2"
-                    *ngIf="
-                        createNFTForm.get('attributeValue' + (i + 1))?.invalid &&
-                        createNFTForm.get('attributeValue' + (i + 1))?.hasError('required') &&
-                        (createNFTForm.get('attributeValue' + (i + 1))?.dirty ||
-                            createNFTForm.get('attributeValue' + (i + 1))?.touched)
-                    "
-                >
-                    This field is required *
+            <!-- Collection's percentage fee -->
+            <div class="columns">
+                <div class="column mt-4">
+                    <nft-marketplace-title-subtitle
+                        [title]="labelsAndPlaceholders.royalties.title"
+                        [subtitle]="labelsAndPlaceholders.royalties.subtitle"
+                    ></nft-marketplace-title-subtitle>
+                    <input
+                        type="number"
+                        [placeholder]="labelsAndPlaceholders.royalties.placeholder"
+                        formControlName="royalties"
+                        [min]="0"
+                        [max]="100"
+                    />
                 </div>
-
-                <input
-                    class="m-2"
-                    nbInput
-                    type="text"
-                    [placeholder]="labelsAndPlaceholders.attributeDisplay"
-                    [formControlName]="'attributeDisplay' + (i + 1)"
-                />
             </div>
-            <nft-marketplace-title-subtitle [title]="labelsAndPlaceholders.attributes"></nft-marketplace-title-subtitle>
-            <button type="text" (click)="addAtrribute()" nbButton class="add-attribute-button">+ Add attribute</button>
-        </div>
 
-        <!-- Collection's percentage fee -->
-        <div class="col-12 mt-4">
-            <nft-marketplace-title-subtitle
-                [title]="labelsAndPlaceholders.royalties.title"
-                [subtitle]="labelsAndPlaceholders.royalties.subtitle"
-            ></nft-marketplace-title-subtitle>
-            <nb-form-field>
-                <input
-                    nbInput
-                    type="number"
-                    [placeholder]="labelsAndPlaceholders.royalties.placeholder"
-                    formControlName="royalties"
-                    [min]="0"
-                    [max]="100"
-                />
-            </nb-form-field>
-        </div>
-
-        <div class="col-12 mt-4">
-            <button
-                nbButton
-                hero
-                status="success"
-                type="submit"
-                [ngClass]="{ 'opacity-50': !createNFTForm.valid }"
-                class="bg-blue-600 p-2 text-white rounded w-32"
-                (click)="onSubmit()"
-            >
-                Create NFT
-            </button>
-        </div>
-    </form>
+            <div class="columns">
+                <div class="column mt-4">
+                    <button
+                        pButton
+                        hero
+                        status="success"
+                        type="submit"
+                        [ngClass]="{ 'opacity-50': !createNFTForm.valid }"
+                        class="has-background-link-dark p-2 has-background-white rounded w-32"
+                        (click)="onSubmit()"
+                    >
+                        Create NFT
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>

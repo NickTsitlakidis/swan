@@ -12,7 +12,7 @@
         #dropzoneContainer
         [class.overflow-x-auto]="multiple"
         [ngClass]="class"
-        [class.hover-dropzone]="imageAsBackground || (hoverAnimation && !files?.length)"
+        [class.hover-dropzone]="imageAsBackground || (hoverAnimation && !files.length)"
         [ngStyle]="{
             width: width ? width + 'px' : null,
             height: height ? height + 'px' : null,

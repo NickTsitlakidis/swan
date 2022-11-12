@@ -1,3 +1,4 @@
+import { BlockchainDto } from "./../../../../../../../libs/dto/src/lib/blockchain-dto";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import {
     BlockchainWalletDto,
@@ -7,7 +8,6 @@ import {
     WalletDto
 } from "@swan/dto";
 
-import { faPaintBrush } from "@fortawesome/free-solid-svg-icons";
 import { Router } from "@angular/router";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
 import { firstValueFrom, of } from "rxjs";
@@ -24,7 +24,6 @@ import { Janitor } from "../../../@core/components/janitor";
 export class HeaderComponent extends Janitor implements OnInit {
     public walletName: SupportedWallets;
     public selectedWallets: WalletDto[] | undefined;
-    public faPaintBrush = faPaintBrush;
     public chainsNew: BlockchainWalletDto[];
 
     public menuitems = [
@@ -96,8 +95,8 @@ export class HeaderComponent extends Janitor implements OnInit {
         this.addSubscription(blockchainsSub);
     }
 
-    public async walletSelected(wallets: WalletDto[]) {
-        const wallet = wallets.pop();
+    public async walletSelected(event: { originalEvent: PointerEvent; value: BlockchainDto }) {
+        const wallet = event.value;
         if (!wallet) {
             // TODO handle it
             return;

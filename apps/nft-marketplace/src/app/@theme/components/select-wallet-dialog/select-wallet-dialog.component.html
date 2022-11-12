@@ -2,7 +2,7 @@
     <div *ngIf="wallets.length" class="body">
         <ul>
             <li *ngFor="let wallet of wallets">
-                <button type="button" (click)="close(wallet.title)">
+                <button pButton type="button" (click)="close(wallet.title)">
                     <div size="24" class="logo">
                         <img alt="" height="30px" [src]="wallet.img" size="24" />
                     </div>

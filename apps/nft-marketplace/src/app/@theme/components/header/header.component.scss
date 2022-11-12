@@ -1,11 +1,18 @@
-@import '~bootstrap/scss/mixins/breakpoints';
-@import '~@nebular/theme/styles/global/breakpoints';
-@import '../../styles/themes';
+@import "../../styles/themes";
 
-@include nb-install-component() {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
+.header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    position: sticky;
+    box-shadow: rgb(21 27 34 / 0%) 0px 1px 0px 0px;
+    max-width: 100vw;
+    height: 72px;
+    top: 0px;
+    position: sticky;
+    z-index: 11;
+    padding: 1rem;
+    background-color: var(--surface-ground);
 
     .header-container {
         display: flex;
@@ -25,11 +32,10 @@
             cursor: pointer;
         }
     }
-
 }
 
 .wallet-icon {
-    margin-right: .75rem;
+    margin-right: 0.75rem;
     width: 20px;
     height: 20px;
 }

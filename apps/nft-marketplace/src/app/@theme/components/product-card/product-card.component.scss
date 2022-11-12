@@ -1,10 +1,10 @@
-@import '../../styles/themes';
+@import "../../styles/themes";
 
 .product-card {
     width: 100%;
     max-width: 250px;
     height: 330px;
-    border: 1px solid #E5E5EA;
+    border: 1px solid #e5e5ea;
     box-sizing: border-box;
     border-radius: 12px;
     position: relative;
@@ -67,7 +67,7 @@
                 height: 36px;
                 width: 100%;
                 display: inline-flex;
-                flex-direction: row;
+                flex-direction: columns;
                 align-items: center;
                 border-radius: 12px;
                 justify-content: center;

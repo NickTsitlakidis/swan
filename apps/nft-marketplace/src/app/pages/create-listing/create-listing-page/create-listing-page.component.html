@@ -1,34 +1,40 @@
-<div class="col-md-6 col-12 offset-md-3 offset-1">
-    <div class="row">
-        <nft-marketplace-product-card
-            class="col-3"
-            *ngFor="let nft of userNfts"
-            [imageUrl]="nft.imageUri"
-            [animationUrl]="nft.animationUri"
-            [productTitle]="nft.name"
-            (click)="onSelectNft(nft)"
-        ></nft-marketplace-product-card>
+<div class="columns">
+    <div class="column is-three-fifths is-offset-one-fifth">
+        <div class="columns">
+            <nft-marketplace-product-card
+                class="column"
+                *ngFor="let nft of userNfts"
+                [imageUrl]="nft.imageUri"
+                [animationUrl]="nft.animationUri"
+                [productTitle]="nft.name"
+                (click)="onSelectNft(nft)"
+            ></nft-marketplace-product-card>
+        </div>
+
+        <form *ngIf="selectedForListingNft" [formGroup]="createListingForm">
+            <!-- NFT's max supply -->
+            <div class="columns">
+                <div class="column mt-4">
+                    <nft-marketplace-title-subtitle [title]="'NFT listing price'"></nft-marketplace-title-subtitle>
+                    <input type="number" formControlName="price" />
+                </div>
+            </div>
+
+            <div class="columns">
+                <div class="column mt-4">
+                    <button
+                        pButton
+                        hero
+                        status="success"
+                        type="submit"
+                        [ngClass]="{ 'opacity-50': !createListingForm.valid }"
+                        class="has-background-link-dark p-2 has-background-white rounded w-32"
+                        (click)="onSubmit()"
+                    >
+                        Create NFT
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
-
-    <form *ngIf="selectedForListingNft" class="row" [formGroup]="createListingForm">
-        <!-- NFT's max supply -->
-        <div class="col-12 mt-4">
-            <nft-marketplace-title-subtitle [title]="'NFT listing price'"></nft-marketplace-title-subtitle>
-            <input nbInput type="number" formControlName="price" />
-        </div>
-
-        <div class="col-12 mt-4">
-            <button
-                nbButton
-                hero
-                status="success"
-                type="submit"
-                [ngClass]="{ 'opacity-50': !createListingForm.valid }"
-                class="bg-blue-600 p-2 text-white rounded w-32"
-                (click)="onSubmit()"
-            >
-                Create NFT
-            </button>
-        </div>
-    </form>
 </div>
