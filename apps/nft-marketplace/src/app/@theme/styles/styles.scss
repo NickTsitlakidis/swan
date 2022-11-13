@@ -1,11 +1,11 @@
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap");
-//@import "bulma/sass/utilities/_all.sass";
-//@import "bulma/sass/grid/columns.sass";
-//@import "bulma/sass/helpers/flexbox.sass";
+@import "bulma/sass/utilities/_all.sass";
+@import "bulma/sass/grid/columns.sass";
+@import "bulma/sass/helpers/flexbox.sass";
 @import "primeng/resources/primeng.min.css";
 @import "primeflex/primeflex.css";
 @import "primeicons/primeicons.css";
-@import "bulma/css/bulma.css";
+// @import "bulma/css/bulma.css";
 
 html {
     font-size: 1rem;
@@ -43,6 +43,10 @@ body {
 
 .d-none {
     display: none;
+}
+
+.is-flex {
+    display: flex;
 }
 
 .rounded {
