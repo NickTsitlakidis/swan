@@ -1,15 +1,8 @@
+import { DropdownModule } from "primeng/dropdown";
 import { NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from "@angular/material/dialog";
 
-import {
-    NbButtonModule,
-    NbFormFieldModule,
-    NbInputModule,
-    NbOptionModule,
-    NbSelectModule,
-    NbToggleModule
-} from "@nebular/theme";
 import { TitleSubTitleModule } from "../../@theme/components/title-subtitle/title-subtitle.module";
 import { UploadModule } from "../../@theme/components/upload/upload.module";
 
@@ -19,23 +12,26 @@ import { CreateNFTRoutingModule } from "./create-nft-routing.module";
 import { CreateNFTComponent } from "./create-nft.component";
 import { ChainsModule } from "../../@core/services/chains/chains.module";
 import { SelectWalletDialogModule } from "../../@theme/components/select-wallet-dialog/select-wallet-dialog.module";
+import { InputSwitchModule } from "primeng/inputswitch";
+import { ButtonModule } from "primeng/button";
+import { InputTextModule } from "primeng/inputtext";
+import { InputTextareaModule } from "primeng/inputtextarea";
 
 @NgModule({
     imports: [
         ThemeModule,
         CreateNFTRoutingModule,
         ReactiveFormsModule,
-        NbInputModule,
-        NbButtonModule,
-        NbToggleModule,
-        NbOptionModule,
         UploadModule,
-        NbFormFieldModule,
-        NbSelectModule,
         TitleSubTitleModule,
         ChainsModule,
         MatDialogModule,
-        SelectWalletDialogModule
+        SelectWalletDialogModule,
+        DropdownModule,
+        InputSwitchModule,
+        ButtonModule,
+        InputTextModule,
+        InputTextareaModule
     ],
     declarations: [CreateNFTComponent, CreateNFTPageComponent],
     providers: [{ provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {} }]

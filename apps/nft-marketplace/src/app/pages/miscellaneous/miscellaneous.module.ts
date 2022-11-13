@@ -1,21 +1,14 @@
-import { NgModule } from '@angular/core';
-import { NbButtonModule, NbCardModule } from '@nebular/theme';
+import { NgModule } from "@angular/core";
 
-import { ThemeModule } from '../../@theme/theme.module';
-import { MiscellaneousRoutingModule } from './miscellaneous-routing.module';
-import { MiscellaneousComponent } from './miscellaneous.component';
-import { NotFoundComponent } from './not-found/not-found.component';
+import { ThemeModule } from "../../@theme/theme.module";
+import { MiscellaneousRoutingModule } from "./miscellaneous-routing.module";
+import { MiscellaneousComponent } from "./miscellaneous.component";
+import { NotFoundComponent } from "./not-found/not-found.component";
+import { MatCardModule } from "@angular/material/card";
+import { ButtonModule } from "primeng/button";
 
 @NgModule({
-  imports: [
-    ThemeModule,
-    NbCardModule,
-    NbButtonModule,
-    MiscellaneousRoutingModule,
-  ],
-  declarations: [
-    MiscellaneousComponent,
-    NotFoundComponent,
-  ],
+    imports: [ThemeModule, MiscellaneousRoutingModule, MatCardModule, ButtonModule],
+    declarations: [MiscellaneousComponent, NotFoundComponent]
 })
-export class MiscellaneousModule { }
+export class MiscellaneousModule {}

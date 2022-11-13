@@ -1,6 +1,5 @@
 import { CreateListing } from "./../create-listing";
 import { SolanaWalletService } from "./solana.wallet.service";
-import { LocalStorageService } from "ngx-webstorage";
 
 import { ConnectionStore, WalletStore } from "@heavy-duty/wallet-adapter";
 import { MetaplexService } from "./metaplex.service";
@@ -13,12 +12,7 @@ import { WalletName } from "@solana/wallet-adapter-base";
     providedIn: ChainsModule
 })
 export class PhantomWalletService extends SolanaWalletService {
-    constructor(
-        private _lcStorage: LocalStorageService,
-        connectionStore: ConnectionStore,
-        walletStore: WalletStore,
-        metaplexService: MetaplexService
-    ) {
+    constructor(connectionStore: ConnectionStore, walletStore: WalletStore, metaplexService: MetaplexService) {
         super(connectionStore, walletStore, metaplexService);
     }
 

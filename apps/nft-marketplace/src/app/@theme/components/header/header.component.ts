@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import {
+    BlockchainDto,
     BlockchainWalletDto,
     StartSignatureAuthenticationDto,
     SupportedWallets,
-    UserWalletDto,
-    WalletDto
+    UserWalletDto
 } from "@swan/dto";
 
-import { faPaintBrush } from "@fortawesome/free-solid-svg-icons";
 import { Router } from "@angular/router";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
 import { firstValueFrom, of } from "rxjs";
@@ -23,8 +22,7 @@ import { Janitor } from "../../../@core/components/janitor";
 })
 export class HeaderComponent extends Janitor implements OnInit {
     public walletName: SupportedWallets;
-    public selectedWallets: WalletDto[] | undefined;
-    public faPaintBrush = faPaintBrush;
+    public selectedWallets: BlockchainDto[] | undefined;
     public chainsNew: BlockchainWalletDto[];
 
     public menuitems = [
@@ -55,6 +53,7 @@ export class HeaderComponent extends Janitor implements OnInit {
     ];
     public isSelected: { [name: string]: { [name: string]: boolean } } = {};
     public userWallets: UserWalletDto[];
+    public selectedWallet: BlockchainDto | undefined;
 
     constructor(
         private _blockchainWalletsFacade: BlockchainWalletsFacade,
@@ -87,6 +86,8 @@ export class HeaderComponent extends Janitor implements OnInit {
                         }
                         this.isSelected[wal.chainId][wal.name] = true;
                     });
+                    // TODO previously used wallet functionality?
+                    this.selectedWallet = this.selectedWallets[0];
                 }
                 this._cd.detectChanges();
             });
@@ -96,8 +97,8 @@ export class HeaderComponent extends Janitor implements OnInit {
         this.addSubscription(blockchainsSub);
     }
 
-    public async walletSelected(wallets: WalletDto[]) {
-        const wallet = wallets.pop();
+    public async walletSelected(event: { originalEvent: PointerEvent; value: BlockchainDto }) {
+        const wallet = event.value;
         if (!wallet) {
             // TODO handle it
             return;

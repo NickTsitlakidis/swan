@@ -1,57 +1,59 @@
-<div class="header-container w-100">
-    <div class="row w-100">
-        <div class="col-2 d-flex align-items-center" (click)="navigateTo('home')">
-            <span class="header-title">NFT Marketplace</span>
-        </div>
-        <div class="col">
-            <button nbButton hero shape="semi-round" status="primary" (click)="navigateTo('/create-collection')">
-                <fa-icon class="mr-2" [icon]="faPaintBrush"></fa-icon>Create collection
-            </button>
-            <button class="ml-4" nbButton hero shape="semi-round" status="primary" (click)="navigateTo('/create-nft')">
-                <fa-icon class="mr-2" [icon]="faPaintBrush"></fa-icon>Create nft
-            </button>
-            <button
-                class="ml-4"
-                nbButton
-                hero
-                shape="semi-round"
-                status="primary"
-                (click)="navigateTo('/create-listing')"
-            >
-                <fa-icon class="mr-2" [icon]="faPaintBrush"></fa-icon>LISTING
-            </button>
-        </div>
-        <div class="col d-flex justify-content-end align-items-center">
-            <nb-select
-                (selectedChange)="walletSelected($event)"
-                class="mr-4"
-                hero
-                multiple
-                placeholder="Select your wallet"
-                shape="semi-round"
-                status="info"
-                [selected]="selectedWallets"
-            >
-                <nb-option-group *ngFor="let chain of chainsNew" [title]="chain.blockchain.name">
-                    <nb-option
-                        *ngFor="let wallet of chain.wallets"
-                        [value]="wallet"
-                        [disabled]="isSelected[chain.blockchain.id] && isSelected[chain.blockchain.id][wallet.name]"
-                        >{{ wallet.name }}</nb-option
-                    >
-                </nb-option-group>
-            </nb-select>
-            <i [matMenuTriggerFor]="menu" class="fa-solid fa-user profile-thumb"></i>
-            <mat-menu #menu="matMenu">
-                <button
-                    mat-menu-item
-                    *ngFor="let item of menuitems"
-                    [disabled]="item.disabled"
-                    (click)="navigateTo(item.link)"
-                >
-                    <span>{{ item.label }}</span>
+<div class="header">
+    <div class="header-container w-100">
+        <div class="columns w-100">
+            <div class="column is-flex is-align-content-center" (click)="navigateTo('home')">
+                <span class="header-title">NFT Marketplace</span>
+            </div>
+            <div class="column">
+                <button pButton hero shape="semi-round" status="primary" (click)="navigateTo('/create-collection')">
+                    <i class="fa-regular fa-square-plus mr-3"></i>Create collection
                 </button>
-            </mat-menu>
+                <button
+                    pButton
+                    class="ml-4"
+                    hero
+                    shape="semi-round"
+                    status="primary"
+                    (click)="navigateTo('/create-nft')"
+                >
+                    <i class="fa-regular fa-square-plus mr-3"></i>Create nft
+                </button>
+                <button
+                    pButton
+                    class="ml-4"
+                    hero
+                    shape="semi-round"
+                    status="primary"
+                    (click)="navigateTo('/create-listing')"
+                >
+                    <i class="fa-regular fa-square-plus mr-3"></i>Create listing
+                </button>
+            </div>
+            <div class="column is-flex is-justify-content-center is-align-content-center">
+                <p-cascadeSelect
+                    class="mr-4"
+                    placeholder="Select a wallet"
+                    [(ngModel)]="selectedWallet"
+                    (onChange)="walletSelected($event)"
+                    [options]="chainsNew"
+                    optionLabel="name"
+                    optionGroupLabel="blockchain.name"
+                    [optionGroupChildren]="['wallets']"
+                ></p-cascadeSelect>
+
+                <i [matMenuTriggerFor]="menu" class="fa-solid fa-user profile-thumb"></i>
+                <mat-menu #menu="matMenu">
+                    <button
+                        pButton
+                        mat-menu-item
+                        *ngFor="let item of menuitems"
+                        [disabled]="item.disabled"
+                        (click)="navigateTo(item.link)"
+                    >
+                        <span>{{ item.label }}</span>
+                    </button>
+                </mat-menu>
+            </div>
         </div>
     </div>
 </div>

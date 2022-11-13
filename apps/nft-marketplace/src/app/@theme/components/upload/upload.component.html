@@ -1,5 +1,5 @@
 <img
-    class="imageUrl shadow"
+    class="image-url"
     [width]="width"
     [height]="height"
     *ngIf="imageUrl && !imageAsBackground; else imagePreview"
@@ -8,11 +8,11 @@
 
 <ng-template #imagePreview>
     <div
-        class="custom-dropzone overflow-hidden custom-upload"
+        class="custom-dropzone is-clipped custom-upload"
         #dropzoneContainer
         [class.overflow-x-auto]="multiple"
         [ngClass]="class"
-        [class.hover-dropzone]="imageAsBackground || (hoverAnimation && !files?.length)"
+        [class.hover-dropzone]="imageAsBackground || (hoverAnimation && !files.length)"
         [ngStyle]="{
             width: width ? width + 'px' : null,
             height: height ? height + 'px' : null,
@@ -41,14 +41,14 @@
             </ng-container>
 
             <ngx-dropzone-label *ngIf="!files?.length">
-                <div class="row">
-                    <div class="col-12 float-left">
+                <div class="columns">
+                    <div class="column is-pulled-left">
                         <h4>Upload your cover image (PNG, JPG, GIF, SVG)</h4>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12 p-2">
-                        <span class="text-secondary" *ngIf="uploadMessage">
+                <div class="columns">
+                    <div class="column p-2">
+                        <span *ngIf="uploadMessage">
                             {{ uploadMessage }}
                         </span>
                     </div>
@@ -56,8 +56,8 @@
             </ngx-dropzone-label>
         </ng-container>
         <ng-template #bgImage>
-            <div class="text-center w-100 h-100">
-                <img [src]="backgroundBase64 || imageUrl" height="100%" class="scale-down" />
+            <div class="has-text-centered w-100 h-100">
+                <img [src]="backgroundBase64 || imageUrl" class="h-100" />
             </div>
         </ng-template>
     </div>

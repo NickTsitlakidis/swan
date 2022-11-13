@@ -1,20 +1,17 @@
-.flex-centered {
-  margin: auto;
-}
-nb-card-body {
-  display: flex;
+mat-card-content {
+    display: flex;
 }
 
 .title {
-  text-align: center;
+    text-align: center;
 }
 
 .sub-title {
-  text-align: center;
-  display: block;
-  margin-bottom: 3rem;
+    text-align: center;
+    display: block;
+    margin-bottom: 3rem;
 }
 
 .home-button {
-  margin-bottom: 2rem;
+    margin-bottom: 2rem;
 }

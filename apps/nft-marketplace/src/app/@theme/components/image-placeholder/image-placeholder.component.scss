@@ -1,16 +1,12 @@
-@import '../../styles/themes';
-@import '~@nebular/theme/styles/global/breakpoints';
-@import '~bootstrap/scss/mixins/breakpoints';
+@import "../../styles/themes";
 
-@include nb-install-component() {
-
-  .image-placeholder {
+.image-placeholder {
     position: relative;
     padding: 0.1rem;
     margin-top: 0.1rem;
     margin-bottom: 0.1rem;
     cursor: pointer;
-    border: 3px dashed nb-theme(color-primary-100);
+    border: 3px dashed #faf7ff;
     border-radius: 50%;
     align-items: center;
     justify-content: center;
@@ -20,8 +16,8 @@
     width: 175px;
 
     .image {
-        font-size: nb-theme(placeholder-image-size);
-        color: nb-theme(color-primary-transparent-500);
+        font-size: 0.9375rem;
+        color: rgba(161, 110, 255, 0.4);
     }
 
     .loaded-image {
@@ -32,7 +28,6 @@
 
     &:hover {
         transition: all 0.333s ease;
-        background-color: nb-theme(color-primary-transparent-100);
+        background-color: rgba(161, 110, 255, 0.08);
     }
-  }
 }

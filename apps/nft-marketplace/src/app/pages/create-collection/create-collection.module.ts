@@ -1,7 +1,5 @@
 import { NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
-import { FaIconLibrary, FontAwesomeModule } from "@fortawesome/angular-fontawesome";
-import { NbButtonModule, NbFormFieldModule, NbInputModule, NbSelectModule, NbToggleModule } from "@nebular/theme";
 import { ImagePlaceholderModule } from "../../@theme/components/image-placeholder/image-placeholder.module";
 import { TitleSubTitleModule } from "../../@theme/components/title-subtitle/title-subtitle.module";
 
@@ -10,31 +8,27 @@ import { CreateCollectionPageComponent } from "./create-collection-page/create-c
 import { CreateCollectionRoutingModule } from "./create-collection-routing.module";
 import { CreateCollectionComponent } from "./create-collection.component";
 
-import { faInstagram, faMedium, faDiscord, faTelegram } from "@fortawesome/free-brands-svg-icons";
-import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import { ValidateName, ValidateUrl } from "./create-collection-page/create-collection-page.validator";
 import { CollectionsModule } from "../../@core/services/collections/collections.module";
+import { DropdownModule } from "primeng/dropdown";
+import { InputSwitchModule } from "primeng/inputswitch";
+import { InputTextModule } from "primeng/inputtext";
+import { InputTextareaModule } from "primeng/inputtextarea";
 
 @NgModule({
     imports: [
         ThemeModule,
         CreateCollectionRoutingModule,
-        NbInputModule,
-        NbButtonModule,
-        NbSelectModule,
-        NbFormFieldModule,
-        FontAwesomeModule,
         ReactiveFormsModule,
-        NbToggleModule,
         TitleSubTitleModule,
         ImagePlaceholderModule,
-        CollectionsModule
+        CollectionsModule,
+        DropdownModule,
+        InputSwitchModule,
+        InputTextModule,
+        InputTextareaModule
     ],
     declarations: [CreateCollectionComponent, CreateCollectionPageComponent],
     providers: [ValidateName, ValidateUrl]
 })
-export class CreateCollectionModule {
-    constructor(library: FaIconLibrary) {
-        library.addIcons(faInstagram, faMedium, faDiscord, faTelegram, faGlobe);
-    }
-}
+export class CreateCollectionModule {}

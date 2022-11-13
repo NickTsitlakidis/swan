@@ -1,8 +1,6 @@
 import { NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 
-import { NbInputModule } from "@nebular/theme";
-
 import { ThemeModule } from "../../@theme/theme.module";
 import { TitleSubTitleModule } from "../../@theme/components/title-subtitle/title-subtitle.module";
 import { ProductCardModule } from "../../@theme/components/product-card/product-card.module";
@@ -10,15 +8,16 @@ import { ProductCardModule } from "../../@theme/components/product-card/product-
 import { CreateListingPageComponent } from "./create-listing-page/create-listing-page.component";
 import { CreateListingRoutingModule } from "./create-listing-routing.module";
 import { CreateListingComponent } from "./create-listing.component";
+import { InputTextModule } from "primeng/inputtext";
 
 @NgModule({
     imports: [
         ThemeModule,
         CreateListingRoutingModule,
         ReactiveFormsModule,
-        NbInputModule,
         TitleSubTitleModule,
-        ProductCardModule
+        ProductCardModule,
+        InputTextModule
     ],
     declarations: [CreateListingComponent, CreateListingPageComponent]
 })
