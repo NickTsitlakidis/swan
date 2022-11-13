@@ -9,6 +9,7 @@ import { CommandsModule } from "./commands/commands.module";
 import { RestModule } from "./rest/rest.module";
 import { MikroOrmModule, MikroOrmModuleOptions } from "@mikro-orm/nestjs";
 import { MongoOrmSubscriber } from "./infrastructure/mongo-orm-subscriber";
+import { JobsModule } from "./jobs/jobs.module";
 
 const mikroOrmFactory = async (configService: ConfigService): Promise<MikroOrmModuleOptions> => {
     return {
@@ -35,20 +36,19 @@ const winstonFactory = async (configService: ConfigService): Promise<LoggerOptio
 
 @Module({
     imports: [
-        ConfigModule.forRoot({}),
+        ConfigModule.forRoot({ isGlobal: true }),
         WinstonModule.forRootAsync({
-            imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: winstonFactory
         }),
         MikroOrmModule.forRootAsync({
-            imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: mikroOrmFactory
         }),
         InfrastructureModule,
         CommandsModule,
-        RestModule
+        RestModule,
+        JobsModule
     ]
 })
 export class AppModule {}

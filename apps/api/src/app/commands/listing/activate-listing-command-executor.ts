@@ -10,7 +10,7 @@ export class ActivateListingCommandExecutor implements ICommandHandler<ActivateL
     constructor(private _factory: ListingFactory, private _eventStore: EventStore) {}
 
     async execute(command: ActivateListingCommand): Promise<EntityDto> {
-        const events = await this._eventStore.findEventByAggregateId(command.listingId);
+        const events = await this._eventStore.findEventsByAggregateId(command.listingId);
 
         if (events.length == 0) {
             throw new BadRequestException(`No listing with id ${command.listingId}`);

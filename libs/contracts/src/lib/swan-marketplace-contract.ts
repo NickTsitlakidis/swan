@@ -58,6 +58,12 @@ export class SwanMarketplaceContract {
         return firstValueFrom(mappedEventObservable);
     }
 
+    async filterForInvalid(toFilter: Array<SwanMarketplace.TokenListingStruct>): Promise<Array<number>> {
+        return this._contractInstance.filterForInvalid(toFilter).then((invalid) => {
+            return invalid.filter((listingId) => listingId.toNumber() !== 0).map((listingId) => listingId.toNumber());
+        });
+    }
+
     async getFeePercentage(): Promise<number> {
         const fee = await this._contractInstance["getFeePercentage"]();
         return fee.toNumber();

@@ -53,6 +53,7 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         address payable seller;
     }
 
+
     address public immutable swanWallet;
 
     bytes4 private constant INTERFACE_ID_ERC721 = 0x80ac58cd;
@@ -94,6 +95,17 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
     function updateFeePercentage(uint newFeePercentage) external onlyOwner {
         require(newFeePercentage > 0, "Fee value should be greater than 0");
         feePercentage = newFeePercentage;
+    }
+
+    function filterForInvalid(TokenListing[] memory toFilter) external view returns (uint[] memory) {
+        uint[] memory invalid = new uint[](toFilter.length);
+        for(uint i=0; i<toFilter.length; i++) {
+            IERC721 nft = IERC721(toFilter[i].tokenContractAddress);
+            if(nft.ownerOf(toFilter[i].tokenId) != toFilter[i].seller || nft.getApproved(toFilter[i].tokenId) != address(this)) {
+                invalid[i] = toFilter[i].listingId;
+            }
+        }
+        return invalid;
     }
 
     function createListing(address tokenContractAddress, uint tokenId, uint price) external nonReentrant {
@@ -165,7 +177,7 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         payable(found.seller).transfer(sellerFee);
         payable(swanWallet).transfer(swanFee);
 
-        IERC721(found.tokenContractAddress).transferFrom(found.seller, msg.sender, found.tokenId);
+        IERC721(found.tokenContractAddress).safeTransferFrom(found.seller, msg.sender, found.tokenId);
 
         delete (listings[tokenContractAddress][tokenId]);
 

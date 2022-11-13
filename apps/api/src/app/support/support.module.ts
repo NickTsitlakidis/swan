@@ -9,7 +9,6 @@ import { WalletRepository } from "./blockchains/wallet-repository";
 import { BlockchainRepository } from "./blockchains/blockchain-repository";
 import { BlockchainWalletRepository } from "./blockchains/blockchain-wallet-repository";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
-import { ConfigModule } from "@nestjs/config";
 import { AwsService } from "./aws/aws-service";
 import { MetaplexService } from "./metaplex/metaplex-service";
 import { EvmActionsService } from "./blockchains/evm-actions-service";
@@ -26,7 +25,6 @@ import { CovalentService } from "./blockchains/covalent-service";
     imports: [
         ContractsModule,
         InfrastructureModule,
-        ConfigModule,
         HttpModule,
         ContractsModule,
         MikroOrmModule.forFeature([Category, Wallet, Blockchain, BlockchainWallet, EvmContract])
