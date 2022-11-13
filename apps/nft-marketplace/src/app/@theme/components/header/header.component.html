@@ -33,6 +33,7 @@
                 <p-cascadeSelect
                     class="mr-4"
                     placeholder="Select a wallet"
+                    [(ngModel)]="selectedWallet"
                     (onChange)="walletSelected($event)"
                     [options]="chainsNew"
                     optionLabel="name"

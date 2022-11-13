@@ -1,12 +1,6 @@
 import { BlockchainDto } from "./../../../../../../../libs/dto/src/lib/blockchain-dto";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import {
-    BlockchainWalletDto,
-    StartSignatureAuthenticationDto,
-    SupportedWallets,
-    UserWalletDto,
-    WalletDto
-} from "@swan/dto";
+import { BlockchainWalletDto, StartSignatureAuthenticationDto, SupportedWallets, UserWalletDto } from "@swan/dto";
 
 import { Router } from "@angular/router";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
@@ -23,7 +17,7 @@ import { Janitor } from "../../../@core/components/janitor";
 })
 export class HeaderComponent extends Janitor implements OnInit {
     public walletName: SupportedWallets;
-    public selectedWallets: WalletDto[] | undefined;
+    public selectedWallets: BlockchainDto[] | undefined;
     public chainsNew: BlockchainWalletDto[];
 
     public menuitems = [
@@ -54,6 +48,7 @@ export class HeaderComponent extends Janitor implements OnInit {
     ];
     public isSelected: { [name: string]: { [name: string]: boolean } } = {};
     public userWallets: UserWalletDto[];
+    public selectedWallet: BlockchainDto | undefined;
 
     constructor(
         private _blockchainWalletsFacade: BlockchainWalletsFacade,
@@ -86,6 +81,8 @@ export class HeaderComponent extends Janitor implements OnInit {
                         }
                         this.isSelected[wal.chainId][wal.name] = true;
                     });
+                    // TODO previously used wallet functionality?
+                    this.selectedWallet = this.selectedWallets[0];
                 }
                 this._cd.detectChanges();
             });
