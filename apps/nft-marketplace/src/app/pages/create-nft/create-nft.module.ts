@@ -14,6 +14,8 @@ import { ChainsModule } from "../../@core/services/chains/chains.module";
 import { SelectWalletDialogModule } from "../../@theme/components/select-wallet-dialog/select-wallet-dialog.module";
 import { InputSwitchModule } from "primeng/inputswitch";
 import { ButtonModule } from "primeng/button";
+import { InputTextModule } from "primeng/inputtext";
+import { InputTextareaModule } from "primeng/inputtextarea";
 
 @NgModule({
     imports: [
@@ -27,7 +29,9 @@ import { ButtonModule } from "primeng/button";
         SelectWalletDialogModule,
         DropdownModule,
         InputSwitchModule,
-        ButtonModule
+        ButtonModule,
+        InputTextModule,
+        InputTextareaModule
     ],
     declarations: [CreateNFTComponent, CreateNFTPageComponent],
     providers: [{ provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {} }]

@@ -1,5 +1,8 @@
+<div class="container">
+    <h2 class="has-text-centered is-size-2 m-4 has-text-weight-bold">Explore, collect, and sell NFTs</h2>
+</div>
 <div *ngIf="listings?.length">
-    <div class="columns">
+    <div class="columns p-4">
         <nft-marketplace-product-card
             class="column"
             *ngFor="let listing of listings"

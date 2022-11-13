@@ -1,5 +1,9 @@
-<div class="columns" *ngIf="blockchains?.length">
-    <div class="column is-three-fifths is-offset-one-fifth">
+<div class="container">
+    <h2 class="has-text-centered is-size-2 m-4 has-text-weight-bold">Create your collection</h2>
+</div>
+
+<div class="container" *ngIf="blockchains?.length">
+    <div class="is-offset-one-fifth">
         <form [formGroup]="createCollectionForm" (ngSubmit)="onSubmit()">
             <div class="columns">
                 <div class="column text-description">* Required fields</div>
@@ -25,7 +29,8 @@
                         [title]="labelsAndPlaceholders.collectionName.title"
                     ></nft-marketplace-title-subtitle>
                     <input
-                        class="w-100"
+                        pInputText
+                        class="w-50"
                         type="text"
                         [placeholder]="labelsAndPlaceholders.collectionName.placeholder"
                         formControlName="collectionName"
@@ -63,6 +68,8 @@
                         [subtitle]="labelsAndPlaceholders.marketPlaceUrl.subtitle"
                     ></nft-marketplace-title-subtitle>
                     <input
+                        class="w-50"
+                        pInputText
                         type="text"
                         [placeholder]="labelsAndPlaceholders.marketPlaceUrl.placeholder"
                         formControlName="marketPlaceUrl"
@@ -88,7 +95,7 @@
                         [title]="labelsAndPlaceholders.description.title"
                         [subtitle]="labelsAndPlaceholders.description.subtitle"
                     ></nft-marketplace-title-subtitle>
-                    <textarea class="w-50" formControlName="description"></textarea>
+                    <textarea pInputTextarea class="w-50" formControlName="description"></textarea>
                     <div
                         class="has-text-danger mt-2 mb-2"
                         *ngIf="
@@ -132,51 +139,82 @@
             </div>
 
             <!-- Collection's Social links -->
-            <div class="columns">
-                <div class="column is-12" formGroupName="socialLinks">
+            <div class="columns is-multiline">
+                <div formGroupName="socialLinks">
                     <nft-marketplace-title-subtitle
+                        class="column is-12 pb-0"
                         [title]="labelsAndPlaceholders.socialLinks.title"
                     ></nft-marketplace-title-subtitle>
 
-                    <!-- Your site -->
-                    <i class="fas fas-globe"></i>
-                    <input
-                        type="text"
-                        [placeholder]="labelsAndPlaceholders.socialLinks.customUrl.placeholder"
-                        formControlName="customUrl"
-                    />
+                    <div class="column is-12">
+                        <!-- Your site -->
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon"><i class="fa-solid fa-globe"></i></span>
 
-                    <!-- Discord -->
-                    <i class="fab fab-discord"></i>
-                    <input
-                        type="text"
-                        [placeholder]="labelsAndPlaceholders.socialLinks.discord.placeholder"
-                        formControlName="discord"
-                    />
+                            <input
+                                pInputText
+                                type="text"
+                                [placeholder]="labelsAndPlaceholders.socialLinks.customUrl.placeholder"
+                                formControlName="customUrl"
+                            />
+                        </div>
+                    </div>
 
-                    <!-- Instagram -->
-                    <i class="fab fab-instagram"></i>
-                    <input
-                        type="text"
-                        [placeholder]="labelsAndPlaceholders.socialLinks.instagram.placeholder"
-                        formControlName="instagram"
-                    />
+                    <div class="column is-12">
+                        <!-- Discord -->
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon"><i class="fa-brands fa-discord"></i></span>
 
-                    <!-- Medium -->
-                    <i class="fab fab-medium"></i>
-                    <input
-                        type="text"
-                        [placeholder]="labelsAndPlaceholders.socialLinks.medium.placeholder"
-                        formControlName="medium"
-                    />
+                            <input
+                                pInputText
+                                type="text"
+                                [placeholder]="labelsAndPlaceholders.socialLinks.discord.placeholder"
+                                formControlName="discord"
+                            />
+                        </div>
+                    </div>
 
-                    <!-- Telegram -->
-                    <i class="fab fab-telegram"></i>
-                    <input
-                        type="text"
-                        [placeholder]="labelsAndPlaceholders.socialLinks.telegram.placeholder"
-                        formControlName="telegram"
-                    />
+                    <div class="column is-12">
+                        <!-- Instagram -->
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon"><i class="fa-brands fa-square-instagram"></i></span>
+
+                            <input
+                                pInputText
+                                type="text"
+                                [placeholder]="labelsAndPlaceholders.socialLinks.instagram.placeholder"
+                                formControlName="instagram"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="column is-12">
+                        <!-- Medium -->
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon"><i class="fa-brands fa-medium"></i></span>
+
+                            <input
+                                pInputText
+                                type="text"
+                                [placeholder]="labelsAndPlaceholders.socialLinks.medium.placeholder"
+                                formControlName="medium"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="column is-12">
+                        <!-- Telegram -->
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon"><i class="fa-brands fa-telegram"></i></span>
+
+                            <input
+                                pInputText
+                                type="text"
+                                [placeholder]="labelsAndPlaceholders.socialLinks.telegram.placeholder"
+                                formControlName="telegram"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -230,6 +268,8 @@
                         [subtitle]="labelsAndPlaceholders.percentageFee.subtitle"
                     ></nft-marketplace-title-subtitle>
                     <input
+                        pInputText
+                        class="w-15"
                         type="number"
                         [placeholder]="labelsAndPlaceholders.percentageFee.placeholder"
                         formControlName="percentageFee"

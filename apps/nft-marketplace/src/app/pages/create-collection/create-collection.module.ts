@@ -12,6 +12,8 @@ import { ValidateName, ValidateUrl } from "./create-collection-page/create-colle
 import { CollectionsModule } from "../../@core/services/collections/collections.module";
 import { DropdownModule } from "primeng/dropdown";
 import { InputSwitchModule } from "primeng/inputswitch";
+import { InputTextModule } from "primeng/inputtext";
+import { InputTextareaModule } from "primeng/inputtextarea";
 
 @NgModule({
     imports: [
@@ -22,7 +24,9 @@ import { InputSwitchModule } from "primeng/inputswitch";
         ImagePlaceholderModule,
         CollectionsModule,
         DropdownModule,
-        InputSwitchModule
+        InputSwitchModule,
+        InputTextModule,
+        InputTextareaModule
     ],
     declarations: [CreateCollectionComponent, CreateCollectionPageComponent],
     providers: [ValidateName, ValidateUrl]

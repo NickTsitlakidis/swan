@@ -1,7 +1,7 @@
 <div *ngIf="userNfts?.length">
-    <div class="columns">
+    <div class="columns p-4 is-multiline">
         <nft-marketplace-product-card
-            class="column"
+            class="column is-1"
             *ngFor="let prod of userNfts"
             [imageUrl]="prod.imageUri"
             [animationUrl]="prod.animationUri"

@@ -1,5 +1,9 @@
-<div class="columns">
-    <div class="column is-three-fifths is-offset-one-fifth">
+<div class="container">
+    <h2 class="has-text-centered is-size-2 m-4 has-text-weight-bold">Create your NFT</h2>
+</div>
+
+<div class="container">
+    <div class="is-offset-one-fifth">
         <nft-marketplace-upload (uploadFiles)="uploadFiles($event)"></nft-marketplace-upload>
         <form [formGroup]="createNFTForm">
             <!-- NFT's title -->
@@ -9,6 +13,7 @@
                         [title]="labelsAndPlaceholders.title.name"
                     ></nft-marketplace-title-subtitle>
                     <input
+                        pInputText
                         class="w-100"
                         type="text"
                         [placeholder]="labelsAndPlaceholders.title.placeholder"
@@ -33,6 +38,7 @@
                         [title]="labelsAndPlaceholders.symbol.name"
                     ></nft-marketplace-title-subtitle>
                     <input
+                        pInputText
                         class="w-100"
                         type="text"
                         [placeholder]="labelsAndPlaceholders.symbol.placeholder"
@@ -67,6 +73,7 @@
                         [title]="labelsAndPlaceholders.description.title"
                     ></nft-marketplace-title-subtitle>
                     <textarea
+                        pInputTextarea
                         class="w-50"
                         formControlName="description"
                         [placeholder]="labelsAndPlaceholders.description.placeholder"
@@ -181,6 +188,7 @@
                         [title]="labelsAndPlaceholders.maxSupply.title"
                     ></nft-marketplace-title-subtitle>
                     <input
+                        pInputText
                         type="number"
                         [placeholder]="labelsAndPlaceholders.maxSupply.placeholder"
                         formControlName="maxSupply"
@@ -193,6 +201,7 @@
                 <div class="column mt-4">
                     <div @fade *ngFor="let attribute of attributes; let i = index">
                         <input
+                            pInputText
                             class="m-2"
                             type="text"
                             [placeholder]="labelsAndPlaceholders.attributeTrait"
@@ -200,6 +209,7 @@
                         />
 
                         <input
+                            pInputText
                             class="m-2"
                             type="text"
                             [placeholder]="labelsAndPlaceholders.attributeValue"
@@ -218,6 +228,7 @@
                         </div>
 
                         <input
+                            pInputText
                             class="m-2"
                             type="text"
                             [placeholder]="labelsAndPlaceholders.attributeDisplay"
@@ -241,6 +252,8 @@
                         [subtitle]="labelsAndPlaceholders.royalties.subtitle"
                     ></nft-marketplace-title-subtitle>
                     <input
+                        class="w-15"
+                        pInputText
                         type="number"
                         [placeholder]="labelsAndPlaceholders.royalties.placeholder"
                         formControlName="royalties"
