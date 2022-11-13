@@ -2,6 +2,7 @@ import { QueueEventBus } from "./queue-event-bus";
 import { IEventHandler } from "@nestjs/cqrs";
 import { IEvent } from "@nestjs/cqrs/dist/interfaces";
 import { firstValueFrom, of, switchMap, throwError, timer } from "rxjs";
+import { EVENT_METADATA } from "@nestjs/cqrs/dist/decorators/constants";
 
 class TestEvent1 implements IEvent {}
 
@@ -27,11 +28,11 @@ test("bind - adds pair", () => {
         handle: () => undefined
     };
 
-    bus.bind(handler, TestEvent1.name);
+    bus.bind(handler, "ev1");
 
     expect(bus.handlerPairs.length).toBe(1);
     expect(bus.handlerPairs[0].handler).toBe(handler);
-    expect(bus.handlerPairs[0].eventName).toBe(TestEvent1.name);
+    expect(bus.handlerPairs[0].eventId).toBe("ev1");
 });
 
 test("bind - adds multiple pairs", () => {
@@ -45,15 +46,15 @@ test("bind - adds multiple pairs", () => {
         handle: () => undefined
     };
 
-    bus.bind(handler, TestEvent1.name);
-    bus.bind(handler2, TestEvent2.name);
+    bus.bind(handler, "ev1");
+    bus.bind(handler2, "ev2");
 
     expect(bus.handlerPairs.length).toEqual(2);
     expect(bus.handlerPairs[0].handler).toBe(handler);
-    expect(bus.handlerPairs[0].eventName).toBe(TestEvent1.name);
+    expect(bus.handlerPairs[0].eventId).toBe("ev1");
 
     expect(bus.handlerPairs[1].handler).toBe(handler2);
-    expect(bus.handlerPairs[1].eventName).toBe(TestEvent2.name);
+    expect(bus.handlerPairs[1].eventId).toBe("ev2");
 });
 
 test("publish - resolves empty when event doesnt match", async () => {
@@ -84,9 +85,10 @@ test("publish - resolves when matched", async () => {
         }
     };
 
-    bus.bind(handler, TestEvent1.name);
+    bus.bind(handler, "ev1");
 
     const e = new TestEvent1();
+    Reflect.defineMetadata(EVENT_METADATA, { id: "ev1" }, TestEvent1);
     const result = await bus.publish(e);
     expect(result).toBe(true);
     expect(calledWith).toBe(e);
@@ -110,10 +112,13 @@ test("publishAll - ignores events without handlers", async () => {
         }
     };
 
-    bus.bind(handler, TestEvent1.name);
+    bus.bind(handler, "ev1");
 
     const e = new TestEvent1();
     const e2 = new TestEvent2();
+
+    Reflect.defineMetadata(EVENT_METADATA, { id: "ev1" }, TestEvent1);
+    Reflect.defineMetadata(EVENT_METADATA, { id: "ev2" }, TestEvent2);
     const results: Array<unknown> = await bus.publishAll([e2, e]);
 
     expect(handlerParameters.length).toBe(1);
@@ -148,9 +153,11 @@ test("publishAll - stops after error on handler", (endTest) => {
         }
     };
 
-    bus.bind(handler1, TestEvent1.name);
-    bus.bind(handler2, TestEvent2.name);
+    bus.bind(handler1, "ev1");
+    bus.bind(handler2, "ev2");
 
+    Reflect.defineMetadata(EVENT_METADATA, { id: "ev1" }, TestEvent1);
+    Reflect.defineMetadata(EVENT_METADATA, { id: "ev2" }, TestEvent2);
     const e = new TestEvent1();
     const e2 = new TestEvent2();
 
@@ -193,8 +200,11 @@ test("publishAll - runs all handlers sequentially when all match", async () => {
         }
     };
 
-    bus.bind(handler2, TestEvent2.name);
-    bus.bind(handler1, TestEvent1.name);
+    bus.bind(handler2, "ev2");
+    bus.bind(handler1, "ev1");
+
+    Reflect.defineMetadata(EVENT_METADATA, { id: "ev1" }, TestEvent1);
+    Reflect.defineMetadata(EVENT_METADATA, { id: "ev2" }, TestEvent2);
 
     const e = new TestEvent1();
     const e2 = new TestEvent2();
@@ -237,8 +247,10 @@ test("publishAll - runs multiple handlers for the same event", async () => {
         }
     };
 
-    bus.bind(handler1, TestEvent1.name);
-    bus.bind(handler2, TestEvent1.name);
+    bus.bind(handler1, "ev1");
+    bus.bind(handler2, "ev1");
+
+    Reflect.defineMetadata(EVENT_METADATA, { id: "ev1" }, TestEvent1);
 
     const e = new TestEvent1();
     const results: Array<unknown> = await bus.publishAll([e]);
