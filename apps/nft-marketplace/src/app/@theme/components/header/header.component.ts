@@ -1,6 +1,11 @@
-import { BlockchainDto } from "./../../../../../../../libs/dto/src/lib/blockchain-dto";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import { BlockchainWalletDto, StartSignatureAuthenticationDto, SupportedWallets, UserWalletDto } from "@swan/dto";
+import {
+    BlockchainDto,
+    BlockchainWalletDto,
+    StartSignatureAuthenticationDto,
+    SupportedWallets,
+    UserWalletDto
+} from "@swan/dto";
 
 import { Router } from "@angular/router";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
