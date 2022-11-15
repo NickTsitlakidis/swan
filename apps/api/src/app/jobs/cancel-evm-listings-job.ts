@@ -2,7 +2,7 @@ import { Define, Every, Processor } from "@agent-ly/nestjs-agenda";
 import { Logger } from "@nestjs/common";
 import { getLogger } from "../infrastructure/logging";
 import { ListingViewRepository } from "../views/listing/listing-view-repository";
-import { defer, EMPTY, expand, from, map, mergeMap, Observable, of, Subscription } from "rxjs";
+import { defer, EMPTY, expand, from, mergeMap, Observable, of, Subscription } from "rxjs";
 import { ConfigService } from "@nestjs/config";
 import { ListingView } from "../views/listing/listing-view";
 import { group } from "radash";
@@ -64,8 +64,12 @@ export class CancelEvmListingsJob {
         const toCommit: Array<Listing> = [];
         for (const [aggregateId, events] of Object.entries(groupedEvents)) {
             const entity = this._listingFactory.createFromEvents(aggregateId, events);
-            entity.cancel(true);
-            toCommit.push(entity);
+            try {
+                entity.cancel(true);
+                toCommit.push(entity);
+            } catch (error) {
+                this._logger.debug(`Error during listing cancellation : ${error.message}`);
+            }
         }
 
         return Promise.all(toCommit.map((entity) => entity.commit()));

@@ -12,11 +12,11 @@ import {
     ListingSubmittedEvent,
     ListingUpdatedPriceEvent
 } from "./listing-events";
-import { BadRequestException } from "@nestjs/common";
 import { EMPTY } from "rxjs";
 import { Buyer } from "./buyer";
-import { CurrencyList } from "@swan/dto";
+import { CurrencyList, INVALID_LISTING_STATUS } from "@swan/dto";
 import { TransactionFee } from "./transaction-fee";
+import { ApiException } from "../../infrastructure/api-exception";
 
 export class Listing extends EventSourcedEntity {
     private _price: number;
@@ -102,7 +102,7 @@ export class Listing extends EventSourcedEntity {
 
     submitToChain(transactionHash: string) {
         if (this._status !== ListingStatus.CREATED) {
-            throw new BadRequestException(`Listing with id ${this.id} is not CREATED`);
+            throw new ApiException(`Listing with id ${this.id} is not CREATED`, true, INVALID_LISTING_STATUS);
         }
 
         this._listingCreatedTransaction = new ChainTransaction();
@@ -113,7 +113,7 @@ export class Listing extends EventSourcedEntity {
 
     activate(blockNumber: number, chainListingId: number) {
         if (this._status !== ListingStatus.SUBMITTED) {
-            throw new BadRequestException(`Listing with id ${this.id} is not SUBMITTED`);
+            throw new ApiException(`Listing with id ${this.id} is not SUBMITTED`, true, INVALID_LISTING_STATUS);
         }
 
         this._listingCreatedTransaction.blockNumber = blockNumber;
@@ -130,7 +130,7 @@ export class Listing extends EventSourcedEntity {
         blockNumber?: number
     ) {
         if (this._status !== ListingStatus.ACTIVE) {
-            throw new BadRequestException(`Listing with id ${this.id} is not ACTIVE`);
+            throw new ApiException(`Listing with id ${this.id} is not ACTIVE`, true, INVALID_LISTING_STATUS);
         }
 
         this._listingSoldTransaction = new ChainTransaction();
@@ -147,7 +147,7 @@ export class Listing extends EventSourcedEntity {
 
     cancel(isInternalCancel = false) {
         if (this._status !== ListingStatus.ACTIVE) {
-            throw new BadRequestException(`Listing with id ${this.id} is not ACTIVE`);
+            throw new ApiException(`Listing with id ${this.id} is not ACTIVE`, true, INVALID_LISTING_STATUS);
         }
 
         this._status = ListingStatus.CANCELED;

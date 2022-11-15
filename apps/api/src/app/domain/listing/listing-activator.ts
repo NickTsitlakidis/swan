@@ -2,7 +2,7 @@ import { EventsHandler, IEventHandler } from "@nestjs/cqrs";
 import { ListingSubmittedEvent } from "./listing-events";
 import { EventStore } from "../../infrastructure/event-store";
 import { ListingFactory } from "./listing-factory";
-import { LogAsyncMethod } from "../../infrastructure/logging";
+import { getLogger, LogAsyncMethod } from "../../infrastructure/logging";
 import { ContractFactory } from "@swan/contracts";
 import { BlockchainRepository } from "../../support/blockchains/blockchain-repository";
 import { ethers } from "ethers";
@@ -12,10 +12,12 @@ import { ListingViewRepository } from "../../views/listing/listing-view-reposito
 import { EvmContractsRepository } from "../../support/evm-contracts/evm-contracts-repository";
 import { EvmContractType } from "../../support/evm-contracts/evm-contract-type";
 import { isNil } from "lodash";
-import { InternalServerErrorException } from "@nestjs/common";
+import { InternalServerErrorException, Logger } from "@nestjs/common";
 
 @EventsHandler(ListingSubmittedEvent)
 export class ListingActivator implements IEventHandler<ListingSubmittedEvent> {
+    private _logger: Logger;
+
     constructor(
         private _eventStore: EventStore,
         private _listingFactory: ListingFactory,
@@ -24,7 +26,9 @@ export class ListingActivator implements IEventHandler<ListingSubmittedEvent> {
         private _blockchainRepository: BlockchainRepository,
         private _userWalletRepository: UserWalletViewRepository,
         private _evmContractsRepository: EvmContractsRepository
-    ) {}
+    ) {
+        this._logger = getLogger(ListingActivator);
+    }
 
     @LogAsyncMethod
     async handle(event: ListingSubmittedEvent): Promise<unknown> {
@@ -54,7 +58,11 @@ export class ListingActivator implements IEventHandler<ListingSubmittedEvent> {
         const events = await this._eventStore.findEventsByAggregateId(event.aggregateId);
         const listing = this._listingFactory.createFromEvents(event.aggregateId, events);
 
-        listing.activate(chainResult.blockNumber, chainResult.chainListingId);
-        await listing.commit();
+        try {
+            listing.activate(chainResult.blockNumber, chainResult.chainListingId);
+            await listing.commit();
+        } catch (error) {
+            this._logger.debug(`Error during listing activation from EVM event : ${error.message}`);
+        }
     }
 }

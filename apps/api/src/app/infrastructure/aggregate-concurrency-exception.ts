@@ -1,7 +1,10 @@
-import { InternalServerErrorException } from "@nestjs/common";
+import { ApiException } from "./api-exception";
 
-export class AggregateConcurrencyException extends InternalServerErrorException {
+export class AggregateConcurrencyException extends ApiException {
     constructor(aggregateId: string, expectedVersion: number, databaseVersion: number) {
-        super(`Concurrency issue for aggregate ${aggregateId}. Expected ${expectedVersion}. Stored ${databaseVersion}`);
+        super(
+            `Concurrency issue for aggregate ${aggregateId}. Expected ${expectedVersion}. Stored ${databaseVersion}`,
+            false
+        );
     }
 }
