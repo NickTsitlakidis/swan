@@ -12,7 +12,6 @@ import { CreateNft } from "../create-nft";
 import { WalletEvent, WalletEventType } from "../wallet-event";
 import { CreateNftInput } from "@metaplex-foundation/js";
 import { MetaplexService } from "./metaplex.service";
-import { SwanError } from "../../../interfaces/swan-error";
 import { ListingDto, NftMintTransactionDto } from "@swan/dto";
 import { MarketplaceResult } from "@swan/contracts";
 import { CreateListing } from "../create-listing";
@@ -113,7 +112,7 @@ export class SolanaWalletService implements WalletService {
                     return from(this._metaplexService.mintNFT(nftInput, wallet));
                 } else {
                     return throwError(() => {
-                        return new SwanError("Could not found wallet");
+                        return new Error("Could not found wallet");
                     });
                 }
             }),
@@ -129,7 +128,7 @@ export class SolanaWalletService implements WalletService {
                     );
                 } else {
                     return throwError(() => {
-                        return new SwanError("Could not mint token");
+                        return new Error("Could not mint token");
                     });
                 }
             })

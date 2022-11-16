@@ -14,6 +14,7 @@ import { NgxWebstorageModule } from "ngx-webstorage";
 import { ChainsModule } from "./@core/services/chains/chains.module";
 import { SupportModule } from "./@core/services/support/support.module";
 import { ContractsModule } from "./@core/contracts.module";
+import { ToastModule } from "primeng/toast";
 
 @NgModule({
     declarations: [AppComponent],
@@ -31,7 +32,8 @@ import { ContractsModule } from "./@core/contracts.module";
         HttpClientModule,
         ChainsModule,
         SupportModule,
-        ContractsModule
+        ContractsModule,
+        ToastModule
     ],
     providers: [{ provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true }, WalletStore],
     bootstrap: [AppComponent]

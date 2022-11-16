@@ -1,15 +1,15 @@
-import { HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
+import { HttpErrorResponse, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-
 import { catchError, mergeMap } from "rxjs/operators";
-
 import { environment } from "../../../environments/environment";
 import { ClientAuthService } from "../services/authentication/client_auth.service";
 import { from, map, Observable, of, switchMap, throwError } from "rxjs";
-import { TokenDto } from "@swan/dto";
+import { HttpErrorDto, TokenDto } from "@swan/dto";
 import { UserFacade } from "../store/user-facade";
 import { ComplexState } from "../store/complex-state";
 import { isNil } from "lodash";
+import { plainToClass } from "class-transformer";
+import { NotificationsService } from "../../@theme/services/notifications.service";
 
 @Injectable()
 export class HttpRequestsInterceptor implements HttpInterceptor {
@@ -23,7 +23,11 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
 
     public clientLogin = "/client/login";
 
-    constructor(private _clientAuthService: ClientAuthService, private _userFacade: UserFacade) {}
+    constructor(
+        private _clientAuthService: ClientAuthService,
+        private _userFacade: UserFacade,
+        private _notificationsService: NotificationsService
+    ) {}
 
     intercept(req: HttpRequest<unknown>, next: HttpHandler) {
         const url = req.url;
@@ -65,10 +69,11 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
         }
 
         return toRun.pipe(
-            catchError((error) => {
+            catchError((error: HttpErrorResponse) => {
                 if (error.status !== 401) {
-                    //todo some error handling here perhaps?
-                    return throwError(error);
+                    const mappedError = plainToClass(HttpErrorDto, error.error as unknown);
+                    this._notificationsService.displayHttpError(mappedError);
+                    return throwError(() => mappedError);
                 }
 
                 let withNewToken: Observable<ComplexState<TokenDto>> = throwError(error);
@@ -95,8 +100,9 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
                         }
                     }),
                     catchError((retriedError) => {
-                        //todo: maybe we should do something here when we have a nice structure for errors
-                        return throwError(retriedError);
+                        const mappedError = plainToClass(HttpErrorDto, retriedError.error as unknown);
+                        this._notificationsService.displayHttpError(mappedError);
+                        return throwError(() => mappedError);
                     })
                 );
             })
