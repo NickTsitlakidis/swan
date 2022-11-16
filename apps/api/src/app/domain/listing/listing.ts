@@ -100,6 +100,54 @@ export class Listing extends EventSourcedEntity {
         return this._seller;
     }
 
+    get price(): number {
+        return this._price;
+    }
+
+    get tokenContractAddress(): string {
+        return this._tokenContractAddress;
+    }
+
+    get nftAddress(): string {
+        return this._nftAddress;
+    }
+
+    get chainTokenId(): string {
+        return this._chainTokenId;
+    }
+
+    get status(): ListingStatus {
+        return this._status;
+    }
+
+    get listingSoldTransaction(): ChainTransaction {
+        return this._listingSoldTransaction;
+    }
+
+    get buyer(): Buyer {
+        return this._buyer;
+    }
+
+    get chainListingId(): number {
+        return this._chainListingId;
+    }
+
+    get animationUrl(): string {
+        return this._animationUrl;
+    }
+
+    get imageUrl(): string {
+        return this._imageUrl;
+    }
+
+    get transactionFee(): TransactionFee {
+        return this._transactionFee;
+    }
+
+    get listingCreatedTransaction(): ChainTransaction {
+        return this._listingCreatedTransaction;
+    }
+
     submitToChain(transactionHash: string) {
         if (this._status !== ListingStatus.CREATED) {
             throw new ApiException(`Listing with id ${this.id} is not CREATED`, true, INVALID_LISTING_STATUS);
