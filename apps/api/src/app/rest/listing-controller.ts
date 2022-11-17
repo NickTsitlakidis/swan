@@ -41,7 +41,7 @@ export class ListingController {
     @UseGuards(UserGuard)
     @Post("submit-listing")
     submit(@Body() dto: SubmitListingDto): Promise<EntityDto> {
-        return this._commandBus.execute(new SubmitListingCommand(dto.chainTransactionId, dto.listingId));
+        return this._commandBus.execute(new SubmitListingCommand(dto.transactionHash, dto.listingId));
     }
 
     @UseGuards(UserGuard)

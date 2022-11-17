@@ -3,7 +3,7 @@ import { SourcedEvent } from "../../infrastructure/sourced-event";
 import { getLogger } from "../../infrastructure/logging";
 import { CreateListingCommand } from "../../commands/listing/create-listing-command";
 import { ListingStatus } from "./listing-status";
-import { ChainTransaction } from "../../commands/listing/chain-transaction";
+import { ChainTransaction } from "./chain-transaction";
 import {
     ListingActivatedEvent,
     ListingCanceledEvent,
@@ -12,11 +12,11 @@ import {
     ListingSubmittedEvent,
     ListingUpdatedPriceEvent
 } from "./listing-events";
-import { BadRequestException } from "@nestjs/common";
 import { EMPTY } from "rxjs";
 import { Buyer } from "./buyer";
-import { TransactionFee } from "./transaction";
-import { CurrencyList } from "@swan/dto";
+import { CurrencyList, INVALID_LISTING_STATUS } from "@swan/dto";
+import { TransactionFee } from "./transaction-fee";
+import { ApiException } from "../../infrastructure/api-exception";
 
 export class Listing extends EventSourcedEntity {
     private _price: number;
@@ -27,13 +27,12 @@ export class Listing extends EventSourcedEntity {
     private _tokenContractAddress?: string;
     private _nftAddress?: string;
     private _chainTokenId?: string;
-    private _userId: string;
     private _status: ListingStatus;
     private _listingCreatedTransaction: ChainTransaction;
     private _listingSoldTransaction: ChainTransaction;
-    private _buyer: Buyer;
+    private _buyer: Buyer; // todo refactor the buyer to be a class for buyer and seller. also include wallet address there
+    private _seller: Buyer;
     private _chainListingId: number;
-    private _walletId: string;
     private _animationUrl: string;
     private _imageUrl: string;
     private _transactionFee: TransactionFee;
@@ -44,7 +43,7 @@ export class Listing extends EventSourcedEntity {
         return listing;
     }
 
-    static create(id: string, command: CreateListingCommand): Listing {
+    static create(id: string, command: CreateListingCommand, sellerAddress: string): Listing {
         const listing = new Listing(id);
         listing._price = command.price;
         listing._tokenContractAddress = command.tokenContractAddress;
@@ -52,20 +51,18 @@ export class Listing extends EventSourcedEntity {
         listing._blockchainId = command.blockchainId;
         listing._nftId = command.nftId;
         listing._categoryId = command.categoryId;
-        listing._userId = command.userId;
         listing._chainTokenId = command.chainTokenId;
         listing._status = ListingStatus.CREATED;
-        listing._walletId = command.walletId;
         listing._animationUrl = command.animationUrl;
         listing._imageUrl = command.imageUrl;
         listing._marketPlaceContractAddress = command.marketPlaceContractAddress;
+        listing._seller = new Buyer(command.userId, command.walletId, sellerAddress);
 
         const event = new ListingCreatedEvent(
+            listing._seller,
             listing._price,
-            listing._userId,
             listing._categoryId,
             listing._blockchainId,
-            listing._walletId,
             listing._imageUrl,
             listing._animationUrl,
             listing._tokenContractAddress,
@@ -81,10 +78,6 @@ export class Listing extends EventSourcedEntity {
 
     private constructor(id: string) {
         super(id, getLogger(Listing));
-    }
-
-    public get walletId(): string {
-        return this._walletId;
     }
 
     public get blockchainId(): string {
@@ -103,21 +96,72 @@ export class Listing extends EventSourcedEntity {
         return this._marketPlaceContractAddress;
     }
 
-    submitToChain(chainTransactionId: string) {
+    get seller(): Buyer {
+        return this._seller;
+    }
+
+    get price(): number {
+        return this._price;
+    }
+
+    get tokenContractAddress(): string {
+        return this._tokenContractAddress;
+    }
+
+    get nftAddress(): string {
+        return this._nftAddress;
+    }
+
+    get chainTokenId(): string {
+        return this._chainTokenId;
+    }
+
+    get status(): ListingStatus {
+        return this._status;
+    }
+
+    get listingSoldTransaction(): ChainTransaction {
+        return this._listingSoldTransaction;
+    }
+
+    get buyer(): Buyer {
+        return this._buyer;
+    }
+
+    get chainListingId(): number {
+        return this._chainListingId;
+    }
+
+    get animationUrl(): string {
+        return this._animationUrl;
+    }
+
+    get imageUrl(): string {
+        return this._imageUrl;
+    }
+
+    get transactionFee(): TransactionFee {
+        return this._transactionFee;
+    }
+
+    get listingCreatedTransaction(): ChainTransaction {
+        return this._listingCreatedTransaction;
+    }
+
+    submitToChain(transactionHash: string) {
         if (this._status !== ListingStatus.CREATED) {
-            throw new BadRequestException(`Listing with id ${this.id} is not CREATED`);
+            throw new ApiException(`Listing with id ${this.id} is not CREATED`, true, INVALID_LISTING_STATUS);
         }
 
         this._listingCreatedTransaction = new ChainTransaction();
-        this._listingCreatedTransaction.transactionId = chainTransactionId;
+        this._listingCreatedTransaction.transactionHash = transactionHash;
         this._status = ListingStatus.SUBMITTED;
-        this.apply(new ListingSubmittedEvent(chainTransactionId));
-        //todo run a listener for chain events here
+        this.apply(new ListingSubmittedEvent(transactionHash));
     }
 
     activate(blockNumber: number, chainListingId: number) {
         if (this._status !== ListingStatus.SUBMITTED) {
-            throw new BadRequestException(`Listing with id ${this.id} is not SUBMITTED`);
+            throw new ApiException(`Listing with id ${this.id} is not SUBMITTED`, true, INVALID_LISTING_STATUS);
         }
 
         this._listingCreatedTransaction.blockNumber = blockNumber;
@@ -134,11 +178,11 @@ export class Listing extends EventSourcedEntity {
         blockNumber?: number
     ) {
         if (this._status !== ListingStatus.ACTIVE) {
-            throw new BadRequestException(`Listing with id ${this.id} is not ACTIVE`);
+            throw new ApiException(`Listing with id ${this.id} is not ACTIVE`, true, INVALID_LISTING_STATUS);
         }
 
         this._listingSoldTransaction = new ChainTransaction();
-        this._listingSoldTransaction.transactionId = transactionHash;
+        this._listingSoldTransaction.transactionHash = transactionHash;
         this._listingSoldTransaction.blockNumber = blockNumber;
         this._buyer = buyer;
         this._transactionFee = {
@@ -151,7 +195,7 @@ export class Listing extends EventSourcedEntity {
 
     cancel(isInternalCancel = false) {
         if (this._status !== ListingStatus.ACTIVE) {
-            throw new BadRequestException(`Listing with id ${this.id} is not ACTIVE`);
+            throw new ApiException(`Listing with id ${this.id} is not ACTIVE`, true, INVALID_LISTING_STATUS);
         }
 
         this._status = ListingStatus.CANCELED;
@@ -166,19 +210,18 @@ export class Listing extends EventSourcedEntity {
         this._blockchainId = event.blockchainId;
         this._nftId = event.nftId;
         this._categoryId = event.categoryId;
-        this._walletId = event.walletId;
-        this._userId = event.userId;
         this._chainTokenId = event.chainTokenId;
         this._status = ListingStatus.CREATED;
         this._animationUrl = event.animationUrl;
         this._imageUrl = event.imageUrl;
         this._marketPlaceContractAddress = event.marketPlaceContractAddress;
+        this._seller = event.seller;
     };
 
     @EventProcessor(ListingSubmittedEvent)
     private processListingSubmittedEvent = (event: ListingSubmittedEvent) => {
         this._listingCreatedTransaction = {
-            transactionId: event.chainTransactionId
+            transactionHash: event.transactionHash
         };
         this._status = ListingStatus.SUBMITTED;
     };
@@ -203,7 +246,7 @@ export class Listing extends EventSourcedEntity {
     @EventProcessor(ListingSoldEvent)
     private processListingSoldEvent = (event: ListingSoldEvent) => {
         this._listingSoldTransaction = new ChainTransaction();
-        this._listingSoldTransaction.transactionId = event.transactionHash;
+        this._listingSoldTransaction.transactionHash = event.transactionHash;
         this._listingSoldTransaction.blockNumber = event.blockNumber;
         this._buyer = event.buyer;
         this._transactionFee = event.transactionFee;

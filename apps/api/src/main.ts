@@ -3,6 +3,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
 import { ClassSerializerInterceptor, Logger, ValidationPipe } from "@nestjs/common";
 import { AppModule } from "./app/app.module";
 import helmet from "helmet";
+import { ErrorInterceptor } from "./app/rest/error-interceptor";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -12,7 +13,7 @@ async function bootstrap() {
     app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
     app.useGlobalPipes(new ValidationPipe());
     app.use(helmet());
-    app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+    app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)), new ErrorInterceptor());
 
     const port = process.env.PORT || 3310;
     await app.listen(port, () => {

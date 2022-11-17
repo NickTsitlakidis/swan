@@ -4,15 +4,13 @@ import { EntityManager } from "@mikro-orm/mongodb";
 
 @Injectable()
 export class BlockchainWalletRepository {
-
-    constructor(private _entityManager: EntityManager) {
-    }
+    constructor(private _entityManager: EntityManager) {}
 
     findAll(): Promise<Array<BlockchainWallet>> {
-        return this._entityManager.find(BlockchainWallet,{});
+        return this._entityManager.fork().find(BlockchainWallet, {});
     }
 
     findByWalletIdAndBlockchainId(walletId: string, chainId: string): Promise<BlockchainWallet | undefined> {
-        return this._entityManager.findOne(BlockchainWallet,{ blockchainId: chainId, walletId: walletId });
+        return this._entityManager.fork().findOne(BlockchainWallet, { blockchainId: chainId, walletId: walletId });
     }
 }

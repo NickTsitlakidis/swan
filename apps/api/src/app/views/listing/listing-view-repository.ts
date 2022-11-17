@@ -8,10 +8,6 @@ import { Observable } from "rxjs";
 export class ListingViewRepository {
     constructor(private readonly _entityManager: MongoEntityManager) {}
 
-    findByIdAndUserId(id: string, userId: string): Promise<ListingView | undefined> {
-        return this._entityManager.fork().findOne(ListingView, { id: id, userId: userId });
-    }
-
     save(view: ListingView): Promise<ListingView> {
         return this._entityManager
             .fork()

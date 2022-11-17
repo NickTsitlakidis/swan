@@ -37,7 +37,7 @@ export class ListingFilters {
 
             const invalidIds = await contract.filterForInvalid(
                 listings.map((listing) => ({
-                    seller: listing.sellerAddress,
+                    seller: listing.seller.address,
                     price: listing.price,
                     listingId: listing.chainListingId,
                     tokenId: listing.chainTokenId,

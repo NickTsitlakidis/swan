@@ -13,7 +13,7 @@ export class ListingFactory {
         return this._store.connectEntity(Listing.fromEvents(id, events));
     }
 
-    createNew(command: CreateListingCommand): Listing {
-        return this._store.connectEntity(Listing.create(this._idGenerator.generateEntityId(), command));
+    createNew(command: CreateListingCommand, sellerAddress: string): Listing {
+        return this._store.connectEntity(Listing.create(this._idGenerator.generateEntityId(), command, sellerAddress));
     }
 }

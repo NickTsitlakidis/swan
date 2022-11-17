@@ -6,7 +6,7 @@ import { PrimeNGConfig } from "primeng/api";
 
 @Component({
     selector: "nft-marketplace-root",
-    template: "<nft-marketplace-header></nft-marketplace-header> <router-outlet></router-outlet>"
+    templateUrl: "./app.component.html"
 })
 export class AppComponent implements OnInit {
     constructor(

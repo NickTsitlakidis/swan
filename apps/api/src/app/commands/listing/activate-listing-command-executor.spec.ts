@@ -7,6 +7,7 @@ import { SourcedEvent } from "../../infrastructure/sourced-event";
 import { Listing } from "../../domain/listing/listing";
 import { ActivateListingCommandExecutor } from "./activate-listing-command-executor";
 import { ActivateListingCommand } from "./activate-listing-command";
+import { createMock } from "@golevelup/ts-jest";
 
 let factory: ListingFactory;
 let executor: ActivateListingCommandExecutor;
@@ -33,11 +34,11 @@ test("execute - throws bad request if listing is missing", async () => {
 test("execute - activates and commits", async () => {
     const command = new ActivateListingCommand(34, "listed", 65);
 
-    const events = [new SourcedEvent("id", new ListingCreatedEvent(34, "u", "c", "b", "t", "a"))];
+    const events = [new SourcedEvent("id", createMock<ListingCreatedEvent>())];
     events[0].aggregateVersion = 1;
     const eventsSpy = jest.spyOn(eventStore, "findEventsByAggregateId").mockResolvedValue(events);
 
-    const model = Listing.fromEvents("id", events);
+    const model = createMock<Listing>();
 
     const factorySpy = jest.spyOn(factory, "createFromEvents").mockReturnValue(model);
     const commitSpy = jest.spyOn(model, "commit").mockResolvedValue(model);

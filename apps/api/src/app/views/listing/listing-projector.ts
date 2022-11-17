@@ -13,7 +13,6 @@ import { getLogger, LogAsyncMethod } from "../../infrastructure/logging";
 import { ListingView } from "./listing-view";
 import { ListingViewRepository } from "./listing-view-repository";
 import { ChainTransactionView } from "./chain-transaction-view";
-import { UserWalletViewRepository } from "../user-wallet/user-wallet-view-repository";
 
 @EventsHandler(
     ListingActivatedEvent,
@@ -36,10 +35,7 @@ export class ListingProjector
 {
     private _logger: Logger;
 
-    constructor(
-        private readonly _repository: ListingViewRepository,
-        private _userWalletViewRepository: UserWalletViewRepository
-    ) {
+    constructor(private readonly _repository: ListingViewRepository) {
         this._logger = getLogger(ListingProjector);
     }
 
@@ -56,11 +52,6 @@ export class ListingProjector
         let view: ListingView;
 
         if (event instanceof ListingCreatedEvent) {
-            const userWallet = await this._userWalletViewRepository.findByUserIdAndWalletIdAndChainId(
-                event.userId,
-                event.walletId,
-                event.blockchainId
-            );
             view = new ListingView();
             view.id = event.aggregateId;
             view.price = event.price;
@@ -69,13 +60,11 @@ export class ListingProjector
             view.blockchainId = event.blockchainId;
             view.nftId = event.nftId;
             view.categoryId = event.categoryId;
-            view.userId = event.userId;
             view.chainTokenId = event.chainTokenId;
-            view.walletId = event.walletId;
-            view.sellerAddress = userWallet?.address;
             view.status = ListingStatus.CREATED;
             view.animationUrl = event.animationUrl;
             view.imageUrl = event.imageUrl;
+            view.seller = event.seller;
         } else {
             view = await this._repository.findById(event.aggregateId);
         }
@@ -86,7 +75,7 @@ export class ListingProjector
         }
 
         if (event instanceof ListingSubmittedEvent) {
-            view.listingCreatedTransaction = new ChainTransactionView(event.chainTransactionId);
+            view.listingCreatedTransaction = new ChainTransactionView(event.transactionHash);
             view.status = ListingStatus.SUBMITTED;
         }
 

@@ -62,7 +62,7 @@ test("filterForInvalidUsingContract - return empty array if all listings are val
     expect(filterInvalidSpy).toHaveBeenNthCalledWith(
         1,
         [listings[0], listings[1], listings[2]].map((listing) => ({
-            seller: listing.sellerAddress,
+            seller: listing.seller.address,
             price: listing.price,
             listingId: listing.chainListingId,
             tokenId: listing.chainTokenId,
@@ -72,7 +72,7 @@ test("filterForInvalidUsingContract - return empty array if all listings are val
     expect(filterInvalidSpy).toHaveBeenNthCalledWith(
         2,
         [listings[3]].map((listing) => ({
-            seller: listing.sellerAddress,
+            seller: listing.seller.address,
             price: listing.price,
             listingId: listing.chainListingId,
             tokenId: listing.chainTokenId,
@@ -127,7 +127,7 @@ test("filterForInvalidUsingContract - return invalids array from multiple chains
     expect(filterInvalidSpy).toHaveBeenNthCalledWith(
         1,
         [listings[0], listings[1], listings[2]].map((listing) => ({
-            seller: listing.sellerAddress,
+            seller: listing.seller.address,
             price: listing.price,
             listingId: listing.chainListingId,
             tokenId: listing.chainTokenId,
@@ -137,7 +137,7 @@ test("filterForInvalidUsingContract - return invalids array from multiple chains
     expect(filterInvalidSpy).toHaveBeenNthCalledWith(
         2,
         [listings[3]].map((listing) => ({
-            seller: listing.sellerAddress,
+            seller: listing.seller.address,
             price: listing.price,
             listingId: listing.chainListingId,
             tokenId: listing.chainTokenId,
@@ -189,7 +189,7 @@ test("filterForInvalidUsingContract - return invalids array from one chain", asy
     expect(filterInvalidSpy).toHaveBeenNthCalledWith(
         1,
         [listings[0], listings[1], listings[2]].map((listing) => ({
-            seller: listing.sellerAddress,
+            seller: listing.seller.address,
             price: listing.price,
             listingId: listing.chainListingId,
             tokenId: listing.chainTokenId,
@@ -199,7 +199,7 @@ test("filterForInvalidUsingContract - return invalids array from one chain", asy
     expect(filterInvalidSpy).toHaveBeenNthCalledWith(
         2,
         [listings[3]].map((listing) => ({
-            seller: listing.sellerAddress,
+            seller: listing.seller.address,
             price: listing.price,
             listingId: listing.chainListingId,
             tokenId: listing.chainTokenId,

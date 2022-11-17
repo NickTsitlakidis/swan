@@ -30,3 +30,5 @@ export * from "./lib/buy-listing-dto";
 export * from "./lib/page-dto";
 export * from "./lib/evm-contract-dto";
 export * from "./lib/confirm-listing-sale-dto";
+export * from "./lib/http-error-dto";
+export * from "./lib/error-codes";
