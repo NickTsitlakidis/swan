@@ -10,6 +10,7 @@ import { EventPayload } from "./serialized-event";
 import { EntityManager } from "@mikro-orm/mongodb";
 import { ConfigService } from "@nestjs/config";
 import * as moment from "moment";
+import { AggregateConcurrencyException } from "./aggregate-concurrency-exception";
 
 /**
  * The event store is the main way of saving and reading sourced events. It uses a mongo transaction
@@ -116,7 +117,7 @@ export class EventStore {
                 this._logger.error(
                     `Concurrency issue for aggregate ${aggregate.id}. Expected ${aggregate.version}. Stored ${foundAggregate.version}`
                 );
-                throw new InternalServerErrorException("Event concurrency issue");
+                throw new AggregateConcurrencyException(aggregate.id, aggregate.version, foundAggregate.version);
             }
 
             for (let i = 0; i < events.length; i++) {

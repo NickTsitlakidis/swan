@@ -10,6 +10,7 @@ import { BadRequestException } from "@nestjs/common";
 import { isNil } from "lodash";
 import { LogAsyncMethod } from "../../infrastructure/logging";
 import { BlockchainWalletRepository } from "../../support/blockchains/blockchain-wallet-repository";
+import { UserWalletViewRepository } from "../../views/user-wallet/user-wallet-view-repository";
 
 @CommandHandler(CreateListingCommand)
 export class CreateListingCommandExecutor implements ICommandHandler<CreateListingCommand> {
@@ -18,6 +19,7 @@ export class CreateListingCommandExecutor implements ICommandHandler<CreateListi
         private _categoryRepository: CategoryRepository,
         private _blockchainRepository: BlockchainRepository,
         private _nftRepository: NftViewRepository,
+        private _userWalletRepository: UserWalletViewRepository,
         private _blockchainWalletRepository: BlockchainWalletRepository
     ) {}
 
@@ -33,6 +35,16 @@ export class CreateListingCommandExecutor implements ICommandHandler<CreateListi
             command.walletId,
             command.blockchainId
         );
+
+        const userWallet = await this._userWalletRepository.findByUserIdAndWalletIdAndChainId(
+            command.userId,
+            command.walletId,
+            command.blockchainId
+        );
+
+        if (isNil(userWallet)) {
+            throw new BadRequestException(`User wallet is not found`);
+        }
 
         if (isNil(blockchain)) {
             throw new BadRequestException(`Blockchain is not found: ${command.blockchainId}`);
@@ -68,7 +80,7 @@ export class CreateListingCommandExecutor implements ICommandHandler<CreateListi
                 throw new BadRequestException(`Empty Solana nft address: Command ${command}`);
             }
         }
-        const created = this._factory.createNew(command);
+        const created = this._factory.createNew(command, userWallet.address);
         await created.commit();
         return new EntityDto(created.id, created.version);
     }

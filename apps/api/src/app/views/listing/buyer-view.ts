@@ -6,10 +6,14 @@ export class BuyerView {
     userId: string;
 
     @Property()
-    userWalletId: string;
+    walletId: string;
 
-    constructor(userWalletId: string, userId: string) {
+    @Property()
+    address: string;
+
+    constructor(walletId: string, userId: string, address: string) {
         this.userId = userId;
-        this.userWalletId = userWalletId;
+        this.walletId = walletId;
+        this.address = address;
     }
 }

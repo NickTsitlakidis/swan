@@ -9,6 +9,7 @@ import { CapitalizePipe, PluralPipe, RoundPipe, TimingPipe, NumberWithCommasPipe
 import { ImagesModule } from "../@core/services/images/images.module";
 import { CascadeSelectModule } from "primeng/cascadeselect";
 import { ButtonModule } from "primeng/button";
+import { MessageService } from "primeng/api";
 
 const MATERIAL_MODULES = [MatMenuModule];
 const PRIME_NG_MODULES = [CascadeSelectModule, ButtonModule];
@@ -18,7 +19,8 @@ const PIPES = [CapitalizePipe, PluralPipe, RoundPipe, TimingPipe, NumberWithComm
 @NgModule({
     imports: [CommonModule, FormsModule, ImagesModule, ...MATERIAL_MODULES, ...PRIME_NG_MODULES],
     exports: [CommonModule, ...PIPES, ...COMPONENTS],
-    declarations: [...COMPONENTS, ...PIPES]
+    declarations: [...COMPONENTS, ...PIPES],
+    providers: [MessageService]
 })
 export class ThemeModule {
     static forRoot(): ModuleWithProviders<ThemeModule> {

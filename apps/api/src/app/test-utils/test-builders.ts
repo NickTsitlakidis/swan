@@ -11,6 +11,7 @@ import { BuyerView } from "../views/listing/buyer-view";
 import { ListingStatus } from "../domain/listing/listing-status";
 import { ChainTransactionView } from "../views/listing/chain-transaction-view";
 import { ethers } from "ethers";
+import { UserWalletView } from "../views/user-wallet/user-wallet-view";
 
 export function buildNftView(): NftView {
     const view = new NftView();
@@ -75,7 +76,7 @@ export function buildEvmContract(): EvmContract {
 export function buildListingView(): ListingView {
     const view = new ListingView();
     view._id = new ObjectId();
-    view.userId = uid(5);
+    view.seller = new BuyerView(uid(5), uid(5), ethers.constants.AddressZero);
     view.blockchainId = uid(5);
     view.categoryId = uid(5);
     view.animationUrl = uid(5);
@@ -84,13 +85,21 @@ export function buildListingView(): ListingView {
     view.imageUrl = uid(5);
     view.nftAddress = uid(5);
     view.nftId = uid(5);
-    view.sellerAddress = uid(5);
     view.tokenContractAddress = ethers.constants.AddressZero;
-    view.walletId = uid(5);
     view.price = random(1, 100);
-    view.buyer = new BuyerView(uid(5), uid(5));
+    view.buyer = new BuyerView(uid(5), uid(5), ethers.constants.AddressZero);
     view.status = ListingStatus.ACTIVE;
     view.listingCreatedTransaction = new ChainTransactionView(uid(5), random(1, 200));
 
+    return view;
+}
+
+export function buildUserWalletView(): UserWalletView {
+    const view = new UserWalletView();
+    view.walletId = uid(5);
+    view.userId = uid(5);
+    view._id = new ObjectId();
+    view.blockchainId = uid(5);
+    view.address = ethers.constants.AddressZero;
     return view;
 }

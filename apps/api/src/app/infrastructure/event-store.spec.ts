@@ -12,6 +12,7 @@ import { QueueEventBus } from "./queue-event-bus";
 import { instanceToPlain } from "class-transformer";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { ConfigModule } from "@nestjs/config";
+import { AggregateConcurrencyException } from "./aggregate-concurrency-exception";
 
 let eventStore: EventStore;
 let eventsCollection: Collection<any>;
@@ -81,7 +82,7 @@ test("save - throws for concurrency issue", async () => {
     });
 
     await expect(eventStore.save([new SourcedEvent(ag.id, new TestEvent1())], ag)).rejects.toThrow(
-        InternalServerErrorException
+        AggregateConcurrencyException
     );
 
     const eventsCount = await eventsCollection.countDocuments();

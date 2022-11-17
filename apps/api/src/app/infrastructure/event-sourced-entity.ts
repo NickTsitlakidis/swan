@@ -61,7 +61,7 @@ export abstract class EventSourcedEntity {
 
     /**
      * Publishes all the provided events using a connected event publisher. To connect a publisher, use the
-     * EventStoreConnector. Normally this should never be called by application logic once the connector is used.
+     * EventStore. Normally this should never be called by application logic.
      * If a publisher is not connected, the method will return a rejected promise.
      * @param events The events to be published
      */

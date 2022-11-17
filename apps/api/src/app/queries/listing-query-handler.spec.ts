@@ -6,6 +6,7 @@ import { ListingViewRepository } from "../views/listing/listing-view-repository"
 import { ListingQueryHandler } from "./listing-query-handler";
 import { ChainTransactionView } from "../views/listing/chain-transaction-view";
 import { ListingStatus } from "../domain/listing/listing-status";
+import { BuyerView } from "../views/listing/buyer-view";
 
 let repoMock: ListingViewRepository;
 let handler: ListingQueryHandler;
@@ -35,6 +36,7 @@ test("getActiveListings - returns empty array when no active listings are found"
 test("getActiveListings - returns two valid active listings", async () => {
     const listingViews = [new ListingView(), new ListingView()];
     listingViews[0].id = new ObjectID().toHexString();
+    listingViews[0].seller = new BuyerView("walletId", "user1", "sellerAddress");
     listingViews[0].blockchainId = "block1";
     listingViews[0].categoryId = "cat1";
     listingViews[0].chainListingId = 1;
@@ -43,12 +45,10 @@ test("getActiveListings - returns two valid active listings", async () => {
     listingViews[0].nftAddress = "nftAddress";
     listingViews[0].nftId = "nftId";
     listingViews[0].price = 22;
-    listingViews[0].sellerAddress = "sellerAddress";
     listingViews[0].status = ListingStatus.ACTIVE;
     listingViews[0].tokenContractAddress = "tokenContractAddress";
-    listingViews[0].userId = "user1";
-    listingViews[0].walletId = "walletId";
     listingViews[1].id = new ObjectID().toHexString();
+    listingViews[1].seller = new BuyerView("walletId2", "user1", "sellerAddress2");
     listingViews[1].blockchainId = "block2";
     listingViews[1].categoryId = "cat2";
     listingViews[1].chainListingId = 2;
@@ -57,11 +57,8 @@ test("getActiveListings - returns two valid active listings", async () => {
     listingViews[1].nftAddress = "nftAddress2";
     listingViews[1].nftId = "nftId2";
     listingViews[1].price = 25;
-    listingViews[1].sellerAddress = "sellerAddress2";
     listingViews[1].status = ListingStatus.ACTIVE;
     listingViews[1].tokenContractAddress = "tokenContractAddress2";
-    listingViews[1].userId = "user1";
-    listingViews[1].walletId = "walletId2";
 
     const countSpy = jest.spyOn(repoMock, "findAllActive").mockResolvedValue([listingViews, 2]);
 

@@ -113,7 +113,7 @@ export class CreateListingPageComponent extends Janitor implements OnInit {
 
             const submitListingDto = new SubmitListingDto();
             submitListingDto.listingId = listingEntity.id;
-            submitListingDto.chainTransactionId = transactionHash;
+            submitListingDto.transactionHash = transactionHash;
             const submittedListingEntity = await firstValueFrom(this._listingsService.submitListing(submitListingDto));
 
             const result = await firstValueFrom(

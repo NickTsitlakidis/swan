@@ -7,6 +7,8 @@ import { BadRequestException } from "@nestjs/common";
 import { ListingCreatedEvent } from "../../domain/listing/listing-events";
 import { SourcedEvent } from "../../infrastructure/sourced-event";
 import { Listing } from "../../domain/listing/listing";
+import { Buyer } from "../../domain/listing/buyer";
+import { createMock } from "@golevelup/ts-jest";
 
 let factory: ListingFactory;
 let executor: SubmitListingCommandExecutor;
@@ -33,11 +35,11 @@ test("execute - throws if listing is missing", async () => {
 test("execute - submits and commits", async () => {
     const command = new SubmitListingCommand("chained", "listed");
 
-    const events = [new SourcedEvent("id", new ListingCreatedEvent(34, "u", "c", "b", "t", "a"))];
+    const events = [new SourcedEvent("id", createMock<ListingCreatedEvent>())];
     events[0].aggregateVersion = 1;
     const eventsSpy = jest.spyOn(eventStore, "findEventsByAggregateId").mockResolvedValue(events);
 
-    const model = Listing.fromEvents("id", events);
+    const model = createMock<Listing>();
 
     const factorySpy = jest.spyOn(factory, "createFromEvents").mockReturnValue(model);
     const commitSpy = jest.spyOn(model, "commit").mockResolvedValue(model);

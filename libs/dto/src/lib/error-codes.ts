@@ -1,0 +1,1 @@
+export const INVALID_LISTING_STATUS = "000001";

@@ -19,7 +19,10 @@ export class UserWalletViewRepository {
     }
 
     save(view: UserWalletView): Promise<UserWalletView> {
-        return this._entityManager.persistAndFlush(view).then(() => view);
+        return this._entityManager
+            .fork()
+            .persistAndFlush(view)
+            .then(() => view);
     }
 
     findByUserId(userId: string): Promise<Array<UserWalletView>> {
