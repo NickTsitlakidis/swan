@@ -17,8 +17,6 @@ import { SupportService } from "../../../@core/services/support/support.service"
 import { firstValueFrom, of, switchMap } from "rxjs";
 import { NftService } from "../../../@core/services/chains/nfts/nft.service";
 import { CollectionsService } from "../../../@core/services/collections/collections.service";
-import { MatDialog } from "@angular/material/dialog";
-import { SelectWalletDialogComponent } from "../../../@theme/components/select-wallet-dialog/select-wallet-dialog.component";
 import { UserFacade } from "../../../@core/store/user-facade";
 import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets-facade";
 import { Janitor } from "../../../@core/components/janitor";
@@ -95,8 +93,7 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
         private _supportService: SupportService,
         private _categoriesFacade: CategoriesFacade,
         private _nftService: NftService,
-        private _collectionsService: CollectionsService,
-        private _dialog: MatDialog
+        private _collectionsService: CollectionsService
     ) {
         super();
     }
@@ -261,15 +258,15 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
             // @ts-ignore: Object is possibly 'undefined'
             walletId = userWallets.at(0).wallet.id;
         } else if (userWallets.length > 1) {
-            const allWallets = this.blockchainWallets
-                .filter((wal) => wal.blockchain.id === chainId)
-                .filter((wal) => {
-                    wal.wallets = wal.wallets.filter((w) =>
-                        userWallets.find((userWallet) => userWallet.wallet.id === w.id)
-                    );
-                    return wal;
-                });
-            walletId = await this._getWallet(chainId, allWallets);
+            // const allWallets = this.blockchainWallets
+            //     .filter((wal) => wal.blockchain.id === chainId)
+            //     .filter((wal) => {
+            //         wal.wallets = wal.wallets.filter((w) =>
+            //             userWallets.find((userWallet) => userWallet.wallet.id === w.id)
+            //         );
+            //         return wal;
+            //     });
+            // walletId = await this._getWallet(chainId, allWallets);
         }
 
         if (!walletId) {
@@ -280,32 +277,32 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
         return walletId;
     }
 
-    private async _getWallet(chainId: string, wallets: BlockchainWalletDto[]): Promise<string | undefined> {
-        const selectWalletsInput = wallets
-            .filter((wallet) => wallet.blockchain.id === chainId)
-            .flatMap((wallet) => wallet.wallets)
-            .map((wallet) => {
-                return {
-                    img: `assets/images/${wallet.name}.png`,
-                    title: wallet.name,
-                    chain: this.blockchains.find((chain) => chain.id === wallet.chainId)?.name || ""
-                };
-            });
-        const dialogRef = this._openDialog(selectWalletsInput);
-        const walletName = await firstValueFrom(dialogRef.afterClosed());
-        const wallet = wallets
-            .filter((wallet) => wallet.blockchain.id === chainId)
-            .flatMap((wallet) => wallet.wallets)
-            .find((wallet) => wallet.name === walletName);
-        return wallet?.id;
-    }
+    // private async _getWallet(chainId: string, wallets: BlockchainWalletDto[]): Promise<string | undefined> {
+    //     const selectWalletsInput = wallets
+    //         .filter((wallet) => wallet.blockchain.id === chainId)
+    //         .flatMap((wallet) => wallet.wallets)
+    //         .map((wallet) => {
+    //             return {
+    //                 img: `assets/images/${wallet.name}.png`,
+    //                 title: wallet.name,
+    //                 chain: this.blockchains.find((chain) => chain.id === wallet.chainId)?.name || ""
+    //             };
+    //         });
+    //     const dialogRef = this._openDialog(selectWalletsInput);
+    //     const walletName = await firstValueFrom(dialogRef.afterClosed());
+    //     const wallet = wallets
+    //         .filter((wallet) => wallet.blockchain.id === chainId)
+    //         .flatMap((wallet) => wallet.wallets)
+    //         .find((wallet) => wallet.name === walletName);
+    //     return wallet?.id;
+    // }
 
-    private _openDialog(wallets: { img: string; title: string; chain: string }[]) {
-        return this._dialog.open(SelectWalletDialogComponent, {
-            width: "500px",
-            data: {
-                wallets
-            }
-        });
-    }
+    // private _openDialog(wallets: { img: string; title: string; chain: string }[]) {
+    //     return this._dialog.open(SelectWalletDialogComponent, {
+    //         width: "500px",
+    //         data: {
+    //             wallets
+    //         }
+    //     });
+    // }
 }

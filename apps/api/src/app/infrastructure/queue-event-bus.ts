@@ -8,12 +8,10 @@ import { getLogger, LogAsyncMethod } from "./logging";
  * Cases where the processing of an event depends on a previous, require sequential publishing.
  */
 export class QueueEventBus extends EventBus {
-    private _handlerPairs: Array<{ eventName: string; handler: IEventHandler<IEvent> }>;
-
-    private _logger = getLogger(QueueEventBus);
+    private _handlerPairs: Array<{ eventId: string; handler: IEventHandler<IEvent> }>;
 
     publish<T extends IEvent>(event: T) {
-        const found = find(this._handlerPairs, { eventName: this.getEventName(event) });
+        const found = find(this._handlerPairs, { eventId: this.getEventId(event) });
         if (isNil(found)) {
             return Promise.resolve();
         }
@@ -24,14 +22,14 @@ export class QueueEventBus extends EventBus {
     @LogAsyncMethod
     publishAll<T extends IEvent>(events: T[]) {
         const withHandlers = events.filter((event) => {
-            const found = find(this._handlerPairs, { eventName: this.getEventName(event) });
+            const found = find(this._handlerPairs, { eventId: this.getEventId(event) });
             return !isNil(found);
         });
 
         const promises = [];
         for (let i = 0; i < withHandlers.length; i++) {
             const event = withHandlers[i];
-            const handlerMatches = this._handlerPairs.filter((pair) => pair.eventName === this.getEventName(event));
+            const handlerMatches = this._handlerPairs.filter((pair) => pair.eventId === this.getEventId(event));
             for (let j = 0; j < handlerMatches.length; j++) {
                 const eventPromise = async () =>
                     new Promise((resolve, reject) => {
@@ -50,13 +48,14 @@ export class QueueEventBus extends EventBus {
         return this.executeSequentially(promises);
     }
 
-    bind(handler: IEventHandler<IEvent>, name: string) {
+    bind(handler: IEventHandler<IEvent>, eventId: string) {
+        const logger = getLogger(QueueEventBus);
         if (isNil(this._handlerPairs)) {
             this._handlerPairs = [];
         }
-        this._logger.log(`Binding event [${name}] to handler class [${handler.constructor.name}]`);
+        logger.log(`Binding event [${eventId}] to handler class [${handler.constructor.name}]`);
         this._handlerPairs.push({
-            eventName: name,
+            eventId: eventId,
             handler: handler
         });
     }
@@ -66,17 +65,18 @@ export class QueueEventBus extends EventBus {
         this._handlerPairs = [];
     }
 
-    get handlerPairs(): Array<{ eventName: string; handler: IEventHandler<IEvent> }> {
+    get handlerPairs(): Array<{ eventId: string; handler: IEventHandler<IEvent> }> {
         return this._handlerPairs.slice(0);
     }
 
     private async executeSequentially(promises: Array<() => Promise<unknown>>): Promise<unknown[]> {
         const results = [];
+        const logger = getLogger(QueueEventBus);
         for (let i = 0; i < promises.length; i++) {
             try {
                 results.push(await promises[i]());
             } catch (error) {
-                this._logger.error("Failed to execute sequential promise with error: " + error.message);
+                logger.error("Failed to execute sequential promise with error: " + error.message);
                 throw error;
             }
         }

@@ -41,18 +41,8 @@
                     [optionGroupChildren]="['wallets']"
                 ></p-cascadeSelect>
 
-                <i [matMenuTriggerFor]="menu" class="fa-solid fa-user profile-thumb"></i>
-                <mat-menu #menu="matMenu">
-                    <button
-                        pButton
-                        mat-menu-item
-                        *ngFor="let item of menuitems"
-                        [disabled]="item.disabled"
-                        (click)="navigateTo(item.link)"
-                    >
-                        <span>{{ item.label }}</span>
-                    </button>
-                </mat-menu>
+                <button type="button" pButton icon="pi pi-bars" (click)="menu.toggle($event)"></button>
+                <p-menu #menu [popup]="true" [model]="menuitems"></p-menu>
             </div>
         </div>
     </div>
