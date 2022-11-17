@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, ViewEncapsulation } from "@angular/core";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { ChangeDetectionStrategy, Component, ViewEncapsulation } from "@angular/core";
 
 @Component({
     selector: "nft-marketplace-select-wallet-dialog",
@@ -11,14 +10,11 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 export class SelectWalletDialogComponent {
     public wallets: { img: string; title: string; chain: string }[];
 
-    constructor(
-        public dialogRef: MatDialogRef<SelectWalletDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: { wallets: { img: string; title: string; chain: string }[] }
-    ) {
-        this.wallets = data.wallets;
+    constructor() {
+        //this.wallets = data.wallets;
     }
 
     close(walletName: string) {
-        this.dialogRef.close(walletName);
+        //this.dialogRef.close(walletName);
     }
 }

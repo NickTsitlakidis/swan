@@ -1,8 +1,6 @@
 import { DropdownModule } from "primeng/dropdown";
 import { NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
-import { MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from "@angular/material/dialog";
-
 import { TitleSubTitleModule } from "../../@theme/components/title-subtitle/title-subtitle.module";
 import { UploadModule } from "../../@theme/components/upload/upload.module";
 
@@ -25,7 +23,6 @@ import { InputTextareaModule } from "primeng/inputtextarea";
         UploadModule,
         TitleSubTitleModule,
         ChainsModule,
-        MatDialogModule,
         SelectWalletDialogModule,
         DropdownModule,
         InputSwitchModule,
@@ -33,7 +30,6 @@ import { InputTextareaModule } from "primeng/inputtextarea";
         InputTextModule,
         InputTextareaModule
     ],
-    declarations: [CreateNFTComponent, CreateNFTPageComponent],
-    providers: [{ provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {} }]
+    declarations: [CreateNFTComponent, CreateNFTPageComponent]
 })
 export class CreateNFTModule {}

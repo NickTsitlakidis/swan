@@ -28,26 +28,26 @@ export class HeaderComponent extends Janitor implements OnInit {
     public menuitems = [
         {
             label: "Profile",
-            link: "/profile"
+            routerLink: "/profile"
         },
         {
             label: "Favorites",
-            link: "/favorites",
+            routerLink: "/favorites",
             disabled: true
         },
         {
             label: "Watchlist",
-            link: "/watchlist",
+            routerLink: "/watchlist",
             disabled: true
         },
         {
             label: "My collections",
-            link: "/collections",
+            routerLink: "/collections",
             disabled: true
         },
         {
             label: "Settings",
-            link: "/settings",
+            routerLink: "/settings",
             disabled: true
         }
     ];
