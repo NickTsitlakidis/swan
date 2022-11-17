@@ -9,6 +9,7 @@ import { CollectionViewRepository } from "../views/collection/collection-view-re
 import { unique } from "radash";
 import { LogAsyncMethod } from "../infrastructure/logging";
 import { isNil } from "lodash";
+import { SignatureTypes } from "../support/blockchains/signature-types";
 
 @Injectable()
 export class NftQueryHandler {
@@ -49,9 +50,12 @@ export class NftQueryHandler {
             dto.imageUri = view.fileUri;
 
             dto.tokenId = view.tokenId;
-            dto.tokenContractAddress = view.tokenContractAddress;
+            if (blockchain.signatureType === SignatureTypes.EVM) {
+                dto.tokenContractAddress = view.tokenContractAddress;
+            } else {
+                dto.nftAddress = view.tokenContractAddress;
+            }
 
-            dto.nftAddress = view.nftAddress;
             dto.metadataUri = view.metadataUri;
 
             const collection = collections.find((c) => c.id === view.collectionId);
@@ -99,10 +103,14 @@ export class NftQueryHandler {
                     }; */
                     profileNftDto.animationUri = nft.animation_url;
                     profileNftDto.imageUri = nft.image;
-                    // TODO
-                    profileNftDto.tokenId = nft.tokenId;
-                    profileNftDto.tokenContractAddress = nft.tokenContractAddress;
-                    profileNftDto.nftAddress = nft.nftAddress;
+
+                    if (chain.signatureType === SignatureTypes.EVM) {
+                        profileNftDto.tokenId = nft.tokenId;
+                        profileNftDto.tokenContractAddress = nft.tokenContractAddress;
+                    } else {
+                        profileNftDto.nftAddress = nft.nftAddress;
+                        profileNftDto.mintAddress = nft.mintAddress;
+                    }
                     profileNftDto.walletId = wallet.walletId;
                     profileNftDto.metadataUri = nft.metadataUri;
                     return profileNftDto;

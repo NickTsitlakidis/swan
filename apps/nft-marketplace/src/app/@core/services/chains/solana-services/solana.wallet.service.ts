@@ -221,10 +221,10 @@ export class SolanaWalletService implements WalletService {
     createListing(listing: CreateListing): Observable<string> {
         return this._completeWalletObservable().pipe(
             switchMap((wallet) => {
-                if (!listing.nftAddress) {
+                if (!listing.nftAddress || !wallet) {
                     return EMPTY;
                 }
-                return from(this._metaplexService.createListing(listing.nftAddress, listing.price));
+                return from(this._metaplexService.createListing(listing.nftAddress, listing.price, wallet));
             }),
             switchMap((listingOutput) => {
                 if (!listingOutput) {
