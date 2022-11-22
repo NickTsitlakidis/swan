@@ -2,6 +2,7 @@ import { CallHandler, ExecutionContext, HttpException, HttpStatus, Injectable, N
 import { catchError, Observable, throwError } from "rxjs";
 import { ApiException } from "../infrastructure/api-exception";
 import { HttpErrorDto } from "@swan/dto";
+import { isNil } from "lodash";
 
 @Injectable()
 export class ErrorInterceptor implements NestInterceptor {
@@ -19,10 +20,13 @@ export class ErrorInterceptor implements NestInterceptor {
                 }
 
                 if (thrown instanceof HttpException) {
-                    return throwError(
-                        () =>
-                            new HttpException(new HttpErrorDto(thrown.message, thrown.getStatus()), thrown.getStatus())
-                    );
+                    return throwError(() => {
+                        const message =
+                            isNil(thrown.getResponse()) || isNil((thrown.getResponse() as any).message)
+                                ? thrown.message
+                                : (thrown.getResponse() as any).message;
+                        return new HttpException(new HttpErrorDto(message, thrown.getStatus()), thrown.getStatus());
+                    });
                 }
 
                 return throwError(

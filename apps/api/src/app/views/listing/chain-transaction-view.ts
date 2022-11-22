@@ -6,10 +6,10 @@ export class ChainTransactionView {
     blockNumber?: number;
 
     @Property()
-    transactionId: string;
+    transactionHash: string;
 
     constructor(transactionId: string, blockNumber?: number) {
         this.blockNumber = blockNumber;
-        this.transactionId = transactionId;
+        this.transactionHash = transactionId;
     }
 }

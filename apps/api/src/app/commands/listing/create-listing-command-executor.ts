@@ -69,15 +69,15 @@ export class CreateListingCommandExecutor implements ICommandHandler<CreateListi
 
         if (blockchain.signatureType === SignatureTypes.EVM) {
             if (!command.tokenContractAddress) {
-                throw new BadRequestException(`Empty EVM nft contract address: Command ${command}`);
+                throw new BadRequestException(`Empty EVM nft contract address`);
             }
 
             if (!command.chainTokenId) {
-                throw new BadRequestException(`Empty EVM nft chain token id: Command ${command}`);
+                throw new BadRequestException(`Empty EVM nft chain token id`);
             }
         } else if (blockchain.signatureType === SignatureTypes.SOLANA) {
             if (!command.nftAddress) {
-                throw new BadRequestException(`Empty Solana nft address: Command ${command}`);
+                throw new BadRequestException(`Empty Solana nft address`);
             }
         }
         const created = this._factory.createNew(command, userWallet.address);

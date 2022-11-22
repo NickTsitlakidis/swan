@@ -53,6 +53,9 @@ export class ListingActivator implements IEventHandler<ListingSubmittedEvent> {
 
         const provider = new ethers.providers.JsonRpcProvider(blockchain.rpcUrl);
         const contract = this._contractFactory.createMarketplace(provider, found.deploymentAddress);
+        this._logger.debug(
+            `Listening for EVM listing event. Seller :  ${view.seller.address} Transaction hash: ${event.transactionHash}`
+        );
         const chainResult = await contract.getListingResult(event.transactionHash, view.seller.address);
 
         const events = await this._eventStore.findEventsByAggregateId(event.aggregateId);
