@@ -1,16 +1,19 @@
-import { BuyListingDto, PageDto, PaginationDto } from "@swan/dto";
-import { HttpClient } from "@angular/common/http";
+import { BuyListingDto, HttpErrorDto, INVALID_LISTING_STATUS, PageDto, PaginationDto } from "@swan/dto";
+import { HttpClient, HttpContext, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { ActivateListingDto, CreateListingDto, EntityDto, ListingDto, SubmitListingDto } from "@swan/dto";
 import { CoreModule } from "../../core.module";
-import { map, Observable } from "rxjs";
+import { map, Observable, throwError } from "rxjs";
 import { plainToInstance } from "class-transformer";
+import { SKIP_ERROR_TOAST } from "../../interceptors/http-context-tokens";
+import { catchError } from "rxjs/operators";
+import { NotificationsService } from "../../../@theme/services/notifications.service";
 
 @Injectable({
     providedIn: CoreModule
 })
 export class ListingsService {
-    constructor(private _httpClient: HttpClient) {}
+    constructor(private _httpClient: HttpClient, private _notificationsService: NotificationsService) {}
 
     public createListing(body: CreateListingDto) {
         return this._httpClient.post<EntityDto>("/listings/create-listing", body);
@@ -20,8 +23,19 @@ export class ListingsService {
         return this._httpClient.post<EntityDto>("/listings/submit-listing", body);
     }
 
-    public activateListing(body: ActivateListingDto) {
-        return this._httpClient.post<EntityDto>("/listings/activate-listing", body);
+    public activateListing(body: ActivateListingDto): Observable<EntityDto> {
+        const request = new HttpRequest("POST", "/listings/activate-listing", body, {
+            context: new HttpContext().set(SKIP_ERROR_TOAST, true)
+        });
+        return this._httpClient.request(request).pipe(
+            map((result) => plainToInstance(EntityDto, result)),
+            catchError((error: HttpErrorDto) => {
+                if (error.code !== INVALID_LISTING_STATUS) {
+                    this._notificationsService.displayHttpError(error);
+                }
+                return throwError(() => error);
+            })
+        );
     }
 
     public getActiveListings(query: PaginationDto): Observable<PageDto<ListingDto>> {

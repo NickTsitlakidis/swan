@@ -10,6 +10,7 @@ import { ComplexState } from "../store/complex-state";
 import { isNil } from "lodash";
 import { plainToClass } from "class-transformer";
 import { NotificationsService } from "../../@theme/services/notifications.service";
+import { SKIP_ERROR_TOAST } from "./http-context-tokens";
 
 @Injectable()
 export class HttpRequestsInterceptor implements HttpInterceptor {
@@ -72,7 +73,9 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
             catchError((error: HttpErrorResponse) => {
                 if (error.status !== 401) {
                     const mappedError = plainToClass(HttpErrorDto, error.error as unknown);
-                    this._notificationsService.displayHttpError(mappedError);
+                    if (!req.context.get(SKIP_ERROR_TOAST)) {
+                        this._notificationsService.displayHttpError(mappedError);
+                    }
                     return throwError(() => mappedError);
                 }
 
@@ -101,7 +104,9 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
                     }),
                     catchError((retriedError) => {
                         const mappedError = plainToClass(HttpErrorDto, retriedError.error as unknown);
-                        this._notificationsService.displayHttpError(mappedError);
+                        if (!req.context.get(SKIP_ERROR_TOAST)) {
+                            this._notificationsService.displayHttpError(mappedError);
+                        }
                         return throwError(() => mappedError);
                     })
                 );
