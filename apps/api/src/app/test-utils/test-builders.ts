@@ -12,6 +12,8 @@ import { ListingStatus } from "../domain/listing/listing-status";
 import { ChainTransactionView } from "../views/listing/chain-transaction-view";
 import { ethers } from "ethers";
 import { UserWalletView } from "../views/user-wallet/user-wallet-view";
+import { Wallet } from "../support/blockchains/wallet";
+import { BlockchainWallet } from "../support/blockchains/blockchain-wallet";
 
 export function buildNftView(): NftView {
     const view = new NftView();
@@ -59,6 +61,22 @@ export function buildBlockchain(): Blockchain {
     b.scanSiteUrl = uid(5);
     b.rpcUrl = "https://rpc.testnet.fantom.network/";
     return b;
+}
+
+export function buildWallet(): Wallet {
+    const w = new Wallet();
+    w.name = uid(5);
+    w._id = new ObjectId();
+    w.supportsSignatureAuthentication = false;
+    return w;
+}
+
+export function buildBlockchainWallet(): BlockchainWallet {
+    const w = new BlockchainWallet();
+    w._id = new ObjectId();
+    w.blockchainId = uid(5);
+    w.walletId = uid(5);
+    return w;
 }
 
 export function buildEvmContract(): EvmContract {
