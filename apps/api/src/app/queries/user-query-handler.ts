@@ -27,12 +27,14 @@ export class UserQueryHandler {
             this._walletRepository.findAll()
         ]);
 
-        const walletDtos = views.map((view) => {
-            const walletMatch = wallets.find((supportedWallet) => supportedWallet.id === view.walletId);
+        const walletDtos = views
+            .filter((view) => wallets.some((w) => w.id === view.walletId))
+            .map((view) => {
+                const walletMatch = wallets.find((supportedWallet) => supportedWallet.id === view.walletId);
 
-            const walletDto = new WalletDto(view.walletId, walletMatch.name, view.blockchainId);
-            return new UserWalletDto(view.userId, view.id, view.address, walletDto);
-        });
+                const walletDto = new WalletDto(view.walletId, walletMatch.name, view.blockchainId);
+                return new UserWalletDto(view.userId, view.id, view.address, walletDto);
+            });
 
         return new UserDto(userId, walletDtos);
     }
