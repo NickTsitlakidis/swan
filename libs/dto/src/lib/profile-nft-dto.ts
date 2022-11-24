@@ -7,7 +7,7 @@ export class ProfileNftDto {
     public id?: string;
     //todo check this: where should this get values?
     public name: string;
-    public animationUri?: string;
+    public animationUri?: string; //todo this is not set for our nfts
     public imageUri: string;
     public tokenContractAddress?: string;
     public nftAddress?: string;

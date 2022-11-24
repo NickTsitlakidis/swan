@@ -10,7 +10,7 @@ export class BlockchainWalletRepository {
         return this._entityManager.fork().find(BlockchainWallet, {});
     }
 
-    findByWalletIdAndBlockchainId(walletId: string, chainId: string): Promise<BlockchainWallet | undefined> {
+    findByWalletIdAndBlockchainId(walletId: string, chainId: string): Promise<BlockchainWallet | null> {
         return this._entityManager.fork().findOne(BlockchainWallet, { blockchainId: chainId, walletId: walletId });
     }
 }

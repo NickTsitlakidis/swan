@@ -40,6 +40,6 @@ export class CollectionController {
     @Get("/")
     @UseGuards(ClientGuard)
     fetchCollection(@Query("id") id: string): Promise<CollectionDto> {
-        return this._collectionQueryHandler.fetchOneCollection(id);
+        return this._collectionQueryHandler.getById(id);
     }
 }

@@ -25,6 +25,9 @@ export class NftQueryHandler {
     @LogAsyncMethod
     async getByUserId(userId: string): Promise<Array<ProfileNftDto>> {
         const nfts = await this._nftViewRepository.findByUserId(userId);
+        if (nfts.length === 0) {
+            return [];
+        }
 
         const collectionIds = unique(nfts.map((view) => view.collectionId));
         const userWalletIds = unique(nfts.map((view) => view.userWalletId));
@@ -36,45 +39,48 @@ export class NftQueryHandler {
             this._userWalletRepository.findByIds(userWalletIds)
         ]);
 
-        return nfts.map((view) => {
-            const dto = new ProfileNftDto();
+        return nfts
+            .filter((nft) => categories.some((cat) => nft.categoryId === cat.id))
+            .filter((nft) => blockchains.some((b) => nft.blockchainId === b.id))
+            .map((view) => {
+                const dto = new ProfileNftDto();
 
-            const category = categories.find((cat) => cat.id === view.categoryId);
-            dto.category = new CategoryDto(category.name, category.id, category.imageUrl);
+                const category = categories.find((cat) => cat.id === view.categoryId);
+                dto.category = new CategoryDto(category.name, category.id, category.imageUrl);
 
-            const blockchain = blockchains.find((b) => b.id === view.blockchainId);
-            dto.blockchain = new BlockchainDto(blockchain.name, blockchain.id, blockchain.chainIdHex);
+                const blockchain = blockchains.find((b) => b.id === view.blockchainId);
+                dto.blockchain = new BlockchainDto(blockchain.name, blockchain.id, blockchain.chainIdHex);
 
-            dto.id = view.id;
-            dto.walletId = userWallets.find((userWallet) => userWallet.id === view.userWalletId)?.walletId;
-            dto.imageUri = view.fileUri;
+                dto.id = view.id;
+                dto.walletId = userWallets.find((userWallet) => userWallet.id === view.userWalletId)?.walletId;
+                dto.imageUri = view.fileUri;
 
-            dto.tokenId = view.tokenId;
-            if (blockchain.signatureType === SignatureTypes.EVM) {
-                dto.tokenContractAddress = view.tokenContractAddress;
-            } else {
-                dto.nftAddress = view.tokenContractAddress;
-            }
+                dto.tokenId = view.tokenId;
+                if (blockchain.signatureType === SignatureTypes.EVM) {
+                    dto.tokenContractAddress = view.tokenContractAddress;
+                } else {
+                    dto.nftAddress = view.tokenContractAddress;
+                }
 
-            dto.metadataUri = view.metadataUri;
+                dto.metadataUri = view.metadataUri;
 
-            const collection = collections.find((c) => c.id === view.collectionId);
-            if (!isNil(collection)) {
-                dto.collection = new CollectionDto();
-                dto.collection.id = collection.id;
-                dto.collection.categoryId = collection.categoryId;
-                dto.collection.customUrl = collection.customUrl;
-                dto.collection.description = collection.description;
-                dto.collection.isExplicit = collection.isExplicit;
-                dto.collection.imageUrl = collection.imageUrl;
-                dto.collection.salePercentage = collection.salePercentage;
-                dto.collection.blockchainId = collection.blockchainId;
-                dto.collection.paymentToken = collection.imageUrl;
-                dto.collection.salePercentage = collection.salePercentage;
-            }
+                const collection = collections.find((c) => c.id === view.collectionId);
+                if (!isNil(collection)) {
+                    dto.collection = new CollectionDto();
+                    dto.collection.id = collection.id;
+                    dto.collection.categoryId = collection.categoryId;
+                    dto.collection.customUrl = collection.customUrl;
+                    dto.collection.description = collection.description;
+                    dto.collection.isExplicit = collection.isExplicit;
+                    dto.collection.imageUrl = collection.imageUrl;
+                    dto.collection.salePercentage = collection.salePercentage;
+                    dto.collection.blockchainId = collection.blockchainId;
+                    dto.collection.paymentToken = collection.imageUrl;
+                    dto.collection.salePercentage = collection.salePercentage;
+                }
 
-            return dto;
-        });
+                return dto;
+            });
     }
 
     @LogAsyncMethod

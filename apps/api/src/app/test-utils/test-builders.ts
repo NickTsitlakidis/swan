@@ -14,13 +14,14 @@ import { ethers } from "ethers";
 import { UserWalletView } from "../views/user-wallet/user-wallet-view";
 import { Wallet } from "../support/blockchains/wallet";
 import { BlockchainWallet } from "../support/blockchains/blockchain-wallet";
+import { SignatureTypes } from "../support/blockchains/signature-types";
 
 export function buildNftView(): NftView {
     const view = new NftView();
     view.userId = uid(5);
     view.fileUri = uid(5);
-    view.blockchainId = uid(5);
-    view.categoryId = uid(5);
+    view.blockchainId = new ObjectId().toHexString();
+    view.categoryId = new ObjectId().toHexString();
     view.collectionId = uid(5);
     view.metadataUri = uid(5);
     view.tokenContractAddress = ethers.constants.AddressZero;
@@ -28,6 +29,7 @@ export function buildNftView(): NftView {
     view.transactionId = uid(5);
     view._id = new ObjectId();
     view.createdAt = new Date();
+    view.userWalletId = new ObjectId().toHexString();
     return view;
 }
 
@@ -60,6 +62,7 @@ export function buildBlockchain(): Blockchain {
     b.mainTokenSymbol = uid(5);
     b.scanSiteUrl = uid(5);
     b.rpcUrl = "https://rpc.testnet.fantom.network/";
+    b.signatureType = SignatureTypes.EVM;
     return b;
 }
 
