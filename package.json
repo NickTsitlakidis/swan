@@ -8,7 +8,7 @@
         "start": "npm run create-solidity-types && nx serve",
         "start-api": "npm run create-solidity-types && nx serve api",
         "start-all": "concurrently --kill-others \"npm run start-api\" \"nx serve\"",
-        "build": "nx build",
+        "build": "npm run create-solidity-types && nx build",
         "build-api": "npm run create-solidity-types && nx build api",
         "lint-api": "nx lint api",
         "lint-nft-marketplace": "nx lint nft-marketplace",
