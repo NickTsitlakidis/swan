@@ -10,6 +10,8 @@ import { RestModule } from "./rest/rest.module";
 import { MikroOrmModule, MikroOrmModuleOptions } from "@mikro-orm/nestjs";
 import { MongoOrmSubscriber } from "./infrastructure/mongo-orm-subscriber";
 import { JobsModule } from "./jobs/jobs.module";
+import {ServeStaticModule} from "@nestjs/serve-static"
+import {join} from "path";
 
 const mikroOrmFactory = async (configService: ConfigService): Promise<MikroOrmModuleOptions> => {
     return {
@@ -48,7 +50,10 @@ const winstonFactory = async (configService: ConfigService): Promise<LoggerOptio
         InfrastructureModule,
         CommandsModule,
         RestModule,
-        JobsModule
+        JobsModule,
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, '..', 'nft-marketplace'),
+        }),
     ]
 })
 export class AppModule {}
