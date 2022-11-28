@@ -24,33 +24,34 @@ jobs:
             - name: Install
               run: npm ci
 
-            #            - name: Lint
-            #              run: npm run lint
-
-            #            - name: Test
-            #              run: npm run test
-
-            - name: Build
+            - name: Build front end
               run: npm run build
 
-            - name: Clear S3 bucket
-              env:
-                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
-              run: |
-                  aws s3 rm s3://test-serve \
-                    --recursive \
-                    --region eu-central-1
+            - name: Build back end
+              run: npm run build-api
 
-            - name: Deploy
-              env:
-                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
-              run: |
-                  aws s3 cp \
-                    --recursive \
-                    --region eu-central-1 \
-                    dist/apps/nft-marketplace s3://test-serve
+            - name: Build docker image
+              run: docker build -t swan .
+
+
+#            - name: Clear S3 bucket
+#              env:
+#                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+#                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
+#              run: |
+#                  aws s3 rm s3://test-serve \
+#                    --recursive \
+#                    --region eu-central-1
+#
+#            - name: Deploy
+#              env:
+#                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+#                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
+#              run: |
+#                  aws s3 cp \
+#                    --recursive \
+#                    --region eu-central-1 \
+#                    dist/apps/nft-marketplace s3://test-serve
 
 #            - name: Notification
 #              uses: 8398a7/action-slack@v2.6.0

@@ -53,7 +53,8 @@
                             "inlineCritical": false
                         },
                         "fonts": true
-                    }
+                    },
+                    "sourceMap": true
                 },
                 "development": {
                     "buildOptimizer": false,
