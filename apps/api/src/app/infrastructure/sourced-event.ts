@@ -1,9 +1,9 @@
 import { ClassConstructor, instanceToPlain, plainToClass } from "class-transformer";
-import * as moment from "moment";
 import { EventPayload, getEventNameForObject, hasEventName } from "./serialized-event";
 import { MongoDocument } from "./mongo-document";
 import { Entity, Property } from "@mikro-orm/core";
 import { ObjectId } from "mongodb";
+import {DateTime} from "luxon";
 
 /**
  * The main document that's saved as a sourced event in Mongo. It includes basic metadata like creation date, version
@@ -40,7 +40,7 @@ export class SourcedEvent extends MongoDocument {
             this.eventName = getEventNameForObject(serializable);
         }
         this._id = new ObjectId();
-        this.createdAt = moment.utc().toDate();
+        this.createdAt = DateTime.now().toUTC().toJSDate();
     }
 
     public getPayloadAs<T>(payloadClass: ClassConstructor<T>): T {

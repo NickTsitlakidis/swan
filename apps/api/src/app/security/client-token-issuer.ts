@@ -3,8 +3,8 @@ import { isNil, split } from "lodash";
 import { ClientRepository } from "./client-repository";
 import { compare } from "bcrypt";
 import { JwtService, JwtSignOptions } from "@nestjs/jwt";
-import * as moment from "moment";
 import { TokenDto } from "@swan/dto";
+import {DateTime} from "luxon";
 
 @Injectable()
 export class ClientTokenIssuer {
@@ -38,6 +38,6 @@ export class ClientTokenIssuer {
 
         const jwtAccessToken = this._signService.sign({}, accessSignOptions);
 
-        return new TokenDto(jwtAccessToken, moment.utc().add(120, "minutes"));
+        return new TokenDto(jwtAccessToken, DateTime.now().toUTC().plus({minutes: 120}));
     }
 }

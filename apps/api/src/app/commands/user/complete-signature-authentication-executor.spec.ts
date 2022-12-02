@@ -10,7 +10,6 @@ import { UnauthorizedException } from "@nestjs/common";
 import { SignatureAuthentication } from "../../security/signature-authentication";
 import { ObjectId } from "mongodb";
 import { UserWalletView } from "../../views/user-wallet/user-wallet-view";
-import * as moment from "moment";
 import { UserFactory } from "../../domain/user/user-factory";
 import { User } from "../../domain/user/user";
 import { BlockchainRepository } from "../../support/blockchains/blockchain-repository";
@@ -18,6 +17,7 @@ import { Blockchain } from "../../support/blockchains/blockchain";
 import { SignatureTypes } from "../../support/blockchains/signature-types";
 import { UserWallet } from "../../domain/user/user-wallet";
 import { getUnitTestingModule } from "../../test-utils/test-modules";
+import {DateTime} from "luxon";
 
 let validatorMock: SignatureValidator;
 let authenticationRepoMock: SignatureAuthenticationRepository;
@@ -165,7 +165,7 @@ test("execute - returns token of existing user", async () => {
     wallet.userId = "user1";
     const findWalletSpy = jest.spyOn(walletViewRepoMock, "findByAddressAndBlockchain").mockResolvedValue(wallet);
 
-    const token = new TokenDto("t", moment.utc());
+    const token = new TokenDto("t", DateTime.now());
     const issuerSpy = jest.spyOn(issuerMock, "issueFromId").mockResolvedValue(token);
 
     const result = await executor.execute(command);
@@ -216,7 +216,7 @@ test("execute - returns token of new user", async () => {
 
     const findWalletSpy = jest.spyOn(walletViewRepoMock, "findByAddressAndBlockchain").mockResolvedValue(undefined);
 
-    const token = new TokenDto("t", moment.utc());
+    const token = new TokenDto("t", DateTime.now());
     const issuerSpy = jest.spyOn(issuerMock, "issueFromId").mockResolvedValue(token);
 
     const idSpy = jest.spyOn(idGeneratorMock, "generateEntityId").mockReturnValue("mongo-id");

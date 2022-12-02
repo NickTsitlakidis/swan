@@ -1,5 +1,4 @@
 import { JwtService, JwtSignOptions } from "@nestjs/jwt";
-import * as moment from "moment";
 import { RefreshTokenRepository } from "./refresh-token-repository";
 import { IdGenerator } from "../infrastructure/id-generator";
 import { RefreshToken } from "./refresh-token";
@@ -7,6 +6,7 @@ import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { getLogger } from "../infrastructure/logging";
 import { isNil } from "lodash";
 import { TokenDto } from "@swan/dto";
+import {DateTime} from "luxon";
 
 @Injectable()
 export class UserTokenIssuer {
@@ -45,7 +45,7 @@ export class UserTokenIssuer {
 
         const jwtAccessToken = this._signService.sign({}, accessSignOptions);
 
-        return new TokenDto(jwtAccessToken, moment.utc().add(120, "minutes"), jwtRefreshToken);
+        return new TokenDto(jwtAccessToken, DateTime.now().toUTC().plus({minutes: 120}), jwtRefreshToken);
     }
 
     async issueFromRefreshToken(refreshTokenJwt: string): Promise<TokenDto> {
@@ -76,6 +76,6 @@ export class UserTokenIssuer {
         };
         const jwtAccessToken = this._signService.sign({}, accessSignOptions);
 
-        return new TokenDto(jwtAccessToken, moment.utc().add(120, "minutes"), refreshTokenJwt);
+        return new TokenDto(jwtAccessToken, DateTime.now().toUTC().plus({minutes: 120}), refreshTokenJwt);
     }
 }
