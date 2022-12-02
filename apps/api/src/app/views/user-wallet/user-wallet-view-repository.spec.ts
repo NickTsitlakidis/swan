@@ -1,4 +1,4 @@
-import { Collection, ObjectId } from "mongodb";
+import { Collection } from "mongodb";
 import { instanceToPlain } from "class-transformer";
 import { cleanUpMongo, getCollection, getMongoTestingModule } from "../../test-utils/test-modules";
 import { UserWalletViewRepository } from "./user-wallet-view-repository";

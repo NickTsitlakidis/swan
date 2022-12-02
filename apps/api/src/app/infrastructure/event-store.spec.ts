@@ -2,7 +2,6 @@ import { Collection, ObjectId } from "mongodb";
 import { Test, TestingModule } from "@nestjs/testing";
 import { EventStore } from "./event-store";
 import { Aggregate } from "./aggregate";
-import { InternalServerErrorException } from "@nestjs/common";
 import { cleanUpMongo, getCollection } from "../test-utils/test-modules";
 import { SourcedEvent } from "./sourced-event";
 import { EventPayload, SerializedEvent } from "./serialized-event";

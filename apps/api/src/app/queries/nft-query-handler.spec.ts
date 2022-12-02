@@ -5,7 +5,6 @@ import { BlockchainRepository } from "../support/blockchains/blockchain-reposito
 import { CategoryRepository } from "../support/categories/category-repository";
 import { NftViewRepository } from "../views/nft/nft-view-repository";
 import { CollectionViewRepository } from "../views/collection/collection-view-repository";
-import { BlockchainActionsRegistryService } from "../support/blockchains/blockchain-actions-registry-service";
 import { buildBlockchain, buildNftView, buildUserWalletView } from "../test-utils/test-builders";
 import { Category } from "../support/categories/category";
 import { ObjectId } from "mongodb";
@@ -13,7 +12,6 @@ import { ObjectId } from "mongodb";
 let handler: NftQueryHandler;
 let userWalletRepository: UserWalletViewRepository;
 let blockchainRepository: BlockchainRepository;
-let blockchainActions: BlockchainActionsRegistryService;
 let categoryRepository: CategoryRepository;
 let nftViewRepository: NftViewRepository;
 let collectionRepository: CollectionViewRepository;
@@ -24,7 +22,6 @@ beforeEach(async () => {
     handler = testModule.get(NftQueryHandler);
     userWalletRepository = testModule.get(UserWalletViewRepository);
     blockchainRepository = testModule.get(BlockchainRepository);
-    blockchainActions = testModule.get(BlockchainActionsRegistryService);
     categoryRepository = testModule.get(CategoryRepository);
     nftViewRepository = testModule.get(NftViewRepository);
     collectionRepository = testModule.get(CollectionViewRepository);

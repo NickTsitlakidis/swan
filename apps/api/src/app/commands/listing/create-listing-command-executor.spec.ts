@@ -13,7 +13,6 @@ import { BadRequestException } from "@nestjs/common";
 import { Listing } from "../../domain/listing/listing";
 import { SignatureTypes } from "../../support/blockchains/signature-types";
 import { BlockchainWalletRepository } from "../../support/blockchains/blockchain-wallet-repository";
-import { createMock } from "@golevelup/ts-jest";
 import { UserWalletViewRepository } from "../../views/user-wallet/user-wallet-view-repository";
 import { buildUserWalletView } from "../../test-utils/test-builders";
 
