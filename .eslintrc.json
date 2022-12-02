@@ -4,7 +4,8 @@
         "**/*"
     ],
     "plugins": [
-        "@nrwl/nx"
+        "@nrwl/nx",
+        "prettier"
     ],
     "overrides": [
         {
@@ -29,7 +30,8 @@
                             }
                         ]
                     }
-                ]
+                ],
+                "prettier/prettier": "error"
             }
         },
         {

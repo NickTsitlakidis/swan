@@ -139,6 +139,7 @@
         "eslint": "8.15.0",
         "eslint-config-prettier": "8.1.0",
         "eslint-plugin-cypress": "2.10.3",
+        "eslint-plugin-prettier": "^4.2.1",
         "ethereum-waffle": "3.2.2",
         "hardhat": "2.10.1",
         "hardhat-gas-reporter": "1.0.8",
