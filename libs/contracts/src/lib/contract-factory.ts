@@ -1,5 +1,7 @@
 import { ethers } from "ethers";
-import { Erc721Contract, SwanMarketplaceContract, SwanNftContract } from "@swan/contracts";
+import { Erc721Contract } from "./erc721-contract";
+import { SwanMarketplaceContract } from "./swan-marketplace-contract";
+import { SwanNftContract } from "./swan-nft-contract";
 
 export class ContractFactory {
     createSwanErc721(ethersProvider: ethers.providers.JsonRpcProvider, address: string): SwanNftContract {

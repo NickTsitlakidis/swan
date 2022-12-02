@@ -33,10 +33,7 @@ test("fromEvents - can process WalletAddedEvent", () => {
 
     const wallet2 = new UserWallet("uw-id", "addr2", "b-id2", "w-id2");
     const event2 = new WalletAddedEvent(wallet2);
-    const u = User.fromEvents("u-id", [
-        new SourcedEvent("u-id", event1),
-        new SourcedEvent("u-id", event2)
-    ]);
+    const u = User.fromEvents("u-id", [new SourcedEvent("u-id", event1), new SourcedEvent("u-id", event2)]);
 
     expect(u.id).toBe("u-id");
     expect(u.wallets.length).toBe(2);

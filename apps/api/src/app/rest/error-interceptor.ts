@@ -22,7 +22,8 @@ export class ErrorInterceptor implements NestInterceptor {
                 if (thrown instanceof HttpException) {
                     return throwError(() => {
                         const message =
-                            isNil(thrown.getResponse()) || isNil((thrown.getResponse() as Record<string, unknown>).message)
+                            isNil(thrown.getResponse()) ||
+                            isNil((thrown.getResponse() as Record<string, unknown>).message)
                                 ? thrown.message
                                 : (thrown.getResponse() as any).message;
                         return new HttpException(new HttpErrorDto(message, thrown.getStatus()), thrown.getStatus());
