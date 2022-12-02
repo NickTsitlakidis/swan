@@ -10,7 +10,7 @@ import { EventPayload } from "./serialized-event";
 import { EntityManager } from "@mikro-orm/mongodb";
 import { ConfigService } from "@nestjs/config";
 import { AggregateConcurrencyException } from "./aggregate-concurrency-exception";
-import {DateTime} from "luxon";
+import { DateTime } from "luxon";
 
 /**
  * The event store is the main way of saving and reading sourced events. It uses a mongo transaction

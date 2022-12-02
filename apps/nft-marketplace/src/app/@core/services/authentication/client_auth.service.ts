@@ -6,7 +6,7 @@ import { environment } from "../../../../environments/environment";
 import { Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { plainToClass } from "class-transformer";
-import {DateTime} from "luxon";
+import { DateTime } from "luxon";
 
 @Injectable({
     providedIn: "root"

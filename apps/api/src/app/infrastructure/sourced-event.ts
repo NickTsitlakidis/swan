@@ -3,7 +3,7 @@ import { EventPayload, getEventNameForObject, hasEventName } from "./serialized-
 import { MongoDocument } from "./mongo-document";
 import { Entity, Property } from "@mikro-orm/core";
 import { ObjectId } from "mongodb";
-import {DateTime} from "luxon";
+import { DateTime } from "luxon";
 
 /**
  * The main document that's saved as a sourced event in Mongo. It includes basic metadata like creation date, version

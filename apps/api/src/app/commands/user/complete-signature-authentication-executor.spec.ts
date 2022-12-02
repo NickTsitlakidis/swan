@@ -17,7 +17,7 @@ import { Blockchain } from "../../support/blockchains/blockchain";
 import { SignatureTypes } from "../../support/blockchains/signature-types";
 import { UserWallet } from "../../domain/user/user-wallet";
 import { getUnitTestingModule } from "../../test-utils/test-modules";
-import {DateTime} from "luxon";
+import { DateTime } from "luxon";
 
 let validatorMock: SignatureValidator;
 let authenticationRepoMock: SignatureAuthenticationRepository;

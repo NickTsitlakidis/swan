@@ -1,6 +1,6 @@
 import { Logger } from "@nestjs/common";
 import { isNil } from "lodash";
-import {DateTime} from "luxon";
+import { DateTime } from "luxon";
 
 export function LogAsyncMethod(target, propertyKey: string, descriptor: PropertyDescriptor) {
     if (isNil(descriptor)) {

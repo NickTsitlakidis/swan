@@ -14,7 +14,7 @@ import { isNil } from "lodash";
 import { LocalStorageService } from "ngx-webstorage";
 import { UserService } from "../services/user/user.service";
 import { ComplexState } from "./complex-state";
-import {DateTime} from "luxon";
+import { DateTime } from "luxon";
 
 @Injectable({ providedIn: "root" })
 export class UserFacade {
