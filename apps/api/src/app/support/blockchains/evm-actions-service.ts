@@ -91,7 +91,7 @@ export class EvmActionsService extends BlockchainActions {
             )
             .flatMap((contract) => {
                 return contract.nft_data.map((nft) => {
-                    const withAddress: NftData & { contractAddress: string } = nft as any;
+                    const withAddress: NftData & { contractAddress?: string } = nft;
                     withAddress.contractAddress = contract.contract_address;
                     return withAddress;
                 });

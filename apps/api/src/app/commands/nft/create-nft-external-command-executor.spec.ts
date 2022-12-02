@@ -1,7 +1,6 @@
-import { SolanaActionsService } from "./../../support/blockchains/solana-actions-service";
-import { EvmActionsService } from "./../../support/blockchains/evm-actions-service";
+import { SolanaActionsService } from "../../support/blockchains/solana-actions-service";
 import { CreateNftExternalCommandExecutor } from "./create-nft-external-command-executor";
-import { NftFactory } from "./../../domain/nft/nft-factory";
+import { NftFactory } from "../../domain/nft/nft-factory";
 import { TestingModule } from "@nestjs/testing";
 import { getUnitTestingModule } from "../../test-utils/test-modules";
 import { CategoryRepository } from "../../support/categories/category-repository";
@@ -18,7 +17,7 @@ import { ConfigService } from "@nestjs/config";
 import { MetaplexService } from "../../support/metaplex/metaplex-service";
 import { HttpService } from "@nestjs/axios";
 import { MetadataValidator } from "../../support/blockchains/metadata-validator";
-import { EntityManager, ObjectId } from "@mikro-orm/mongodb";
+import { ObjectId } from "@mikro-orm/mongodb";
 import { BlockchainNftTransactionsResponse } from "../../support/blockchains/blockchain-nft-transactions";
 import { Nft } from "../../domain/nft/nft";
 import { NftDto } from "@swan/dto";
