@@ -23,6 +23,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: install dependencies
         run: npm ci
+      - name: libs dto lint
+        run: npm run lint-libs-dto
+      - name: libs contracts lint
+        run: npm run lint-libs-contracts
       - name: api lint
         run: npm run lint-api
       - name: api unit tests

@@ -12,7 +12,8 @@
         "build-api": "npm run create-solidity-types && nx build api",
         "lint-api": "nx lint api",
         "lint-nft-marketplace": "nx lint nft-marketplace",
-        "test": "nx test",
+        "lint-libs-dto": "nx lint dto",
+        "lint-libs-contracts": "nx lint contracts",
         "test-api": "npm run create-solidity-types && nx test api --skip-nx-cache",
         "test-solidity": "cd ./apps/solidity-contracts && npx hardhat test",
         "create-solidity-types": "cd ./apps/solidity-contracts && npx hardhat typechain"
@@ -139,6 +140,7 @@
         "eslint": "8.15.0",
         "eslint-config-prettier": "8.1.0",
         "eslint-plugin-cypress": "2.10.3",
+        "eslint-plugin-prettier": "^4.2.1",
         "ethereum-waffle": "3.2.2",
         "hardhat": "2.10.1",
         "hardhat-gas-reporter": "1.0.8",
