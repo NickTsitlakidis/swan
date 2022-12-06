@@ -6,7 +6,7 @@
 /out-tsc
 
 # dependencies
-/node_modules
+node_modules
 
 # IDEs and editors
 /.idea
@@ -53,3 +53,14 @@ typechain
 typechain-types
 
 nft-game.code-workspace
+
+# package directories
+jspm_packages
+
+# Serverless directories
+.serverless
+
+# esbuild directories
+.esbuild
+
+.nvmrc
