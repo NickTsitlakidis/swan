@@ -17,9 +17,8 @@ export class WalletRegistryService {
         private _metamaskService: MetamaskService,
         private _solflareService: SolflareWalletService,
         private _phantomService: PhantomWalletService,
-        private _blockchainWalletsFacade: BlockchainWalletsFacade
-    ) //todo: facades can potentially use this class. maybe a better architecture to avoid cyclic dependency
-    {
+        private _blockchainWalletsFacade: BlockchainWalletsFacade //todo: facades can potentially use this class. maybe a better architecture to avoid cyclic dependency
+    ) {
         this._registry = new Map();
         this._registryPopulated = new Subject<boolean>();
     }

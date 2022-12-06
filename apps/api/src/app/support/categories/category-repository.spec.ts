@@ -115,4 +115,3 @@ test("countById - returns 0 for no match", async () => {
     const count = await repository.countById(new ObjectId().toHexString());
     expect(count).toBe(0);
 });
-

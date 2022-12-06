@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { Aggregate } from "./aggregate";
 import { MongoClient, ObjectId } from "mongodb";
 import { isNil } from "lodash";

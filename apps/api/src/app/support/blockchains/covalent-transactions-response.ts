@@ -64,7 +64,7 @@ export interface Item {
 export interface Data {
     updated_at: string;
     items: Item[];
-    pagination?: any;
+    pagination?: unknown;
 }
 
 export interface CovalentTransactionsResponse {

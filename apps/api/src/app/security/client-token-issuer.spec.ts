@@ -11,27 +11,26 @@ let repository: ClientRepository;
 let jwtService: JwtService;
 
 beforeEach(async () => {
-    const moduleRef = await getUnitTestingModule(ClientTokenIssuer)
+    const moduleRef = await getUnitTestingModule(ClientTokenIssuer);
 
     issuer = moduleRef.get(ClientTokenIssuer);
     repository = moduleRef.get(ClientRepository);
     jwtService = moduleRef.get(JwtService);
 });
 
-
 test("issueWithCredentials - throws for non base64 value", async () => {
     await expect(issuer.issueWithCredentials("app:secret")).rejects.toThrow(UnauthorizedException);
-})
+});
 
 test("issueWithCredentials - throws for value with no :", async () => {
-    const encoded = Buffer.from("appandsecret").toString('base64');
+    const encoded = Buffer.from("appandsecret").toString("base64");
     await expect(issuer.issueWithCredentials(encoded)).rejects.toThrow(UnauthorizedException);
 });
 
 test("issueWithCredentials - throws if client doesnt exist", async () => {
     const findSpy = jest.spyOn(repository, "findByApplicationId").mockResolvedValue(null);
 
-    const encoded = Buffer.from("app:secret").toString('base64');
+    const encoded = Buffer.from("app:secret").toString("base64");
     await expect(issuer.issueWithCredentials(encoded)).rejects.toThrow(UnauthorizedException);
 
     expect(findSpy).toHaveBeenCalledTimes(1);
@@ -43,7 +42,7 @@ test("issueWithCredentials - throws if client secret doesnt match", async () => 
     client.applicationSecret = hashSync("other-secret", 12);
     const findSpy = jest.spyOn(repository, "findByApplicationId").mockResolvedValue(client);
 
-    const encoded = Buffer.from("app:secret").toString('base64');
+    const encoded = Buffer.from("app:secret").toString("base64");
     await expect(issuer.issueWithCredentials(encoded)).rejects.toThrow(UnauthorizedException);
 
     expect(findSpy).toHaveBeenCalledTimes(1);
@@ -58,7 +57,7 @@ test("issueWithCredentials - issues jwt if credentials match", async () => {
 
     const signSpy = jest.spyOn(jwtService, "sign").mockReturnValue("jwt-token");
 
-    const encoded = Buffer.from(`app:secret`).toString('base64');
+    const encoded = Buffer.from(`app:secret`).toString("base64");
     const token = await issuer.issueWithCredentials(encoded);
 
     expect(token.tokenValue).toBe("jwt-token");
@@ -74,5 +73,5 @@ test("issueWithCredentials - issues jwt if credentials match", async () => {
     expect(findSpy).toHaveBeenCalledWith("app");
 
     expect(signSpy).toHaveBeenCalledTimes(1);
-    expect(signSpy).toHaveBeenCalledWith({}, expectedJwtSettings)
+    expect(signSpy).toHaveBeenCalledWith({}, expectedJwtSettings);
 });

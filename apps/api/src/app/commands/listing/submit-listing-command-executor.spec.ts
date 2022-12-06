@@ -7,7 +7,6 @@ import { BadRequestException } from "@nestjs/common";
 import { ListingCreatedEvent } from "../../domain/listing/listing-events";
 import { SourcedEvent } from "../../infrastructure/sourced-event";
 import { Listing } from "../../domain/listing/listing";
-import { Buyer } from "../../domain/listing/buyer";
 import { createMock } from "@golevelup/ts-jest";
 
 let factory: ListingFactory;
