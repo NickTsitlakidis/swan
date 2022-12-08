@@ -4,15 +4,9 @@ import { ClassSerializerInterceptor, Logger, ValidationPipe } from "@nestjs/comm
 import { AppModule } from "./app/app.module";
 import helmet from "helmet";
 import { ErrorInterceptor } from "./app/rest/error-interceptor";
-import * as fs from "fs";
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule, {
-        httpsOptions: {
-            cert: Buffer.from(process.env.SSL_CERT, "base64").toString("ascii"),
-            key: Buffer.from(process.env.SSL_PRIVATE_KEY, "base64").toString("ascii")
-        }
-    });
+    const app = await NestFactory.create(AppModule);
     const globalPrefix = "api";
     app.setGlobalPrefix(globalPrefix);
     app.enableCors();
