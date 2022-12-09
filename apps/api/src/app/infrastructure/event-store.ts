@@ -9,8 +9,8 @@ import { QueueEventBus } from "./queue-event-bus";
 import { EventPayload } from "./serialized-event";
 import { EntityManager } from "@mikro-orm/mongodb";
 import { ConfigService } from "@nestjs/config";
-import * as moment from "moment";
 import { AggregateConcurrencyException } from "./aggregate-concurrency-exception";
+import { DateTime } from "luxon";
 
 /**
  * The event store is the main way of saving and reading sourced events. It uses a mongo transaction
@@ -92,11 +92,11 @@ export class EventStore {
             id: aggregate.id
         });
 
-        const beforeConnect = moment.utc();
+        const beforeConnect = DateTime.now();
         if (!this._mongoClient.isConnected()) {
             await this._mongoClient.connect();
             this._logger.debug(
-                `EventStore Mongo client connected. Duration : ${moment.utc().diff(beforeConnect, "milliseconds")} ms`
+                `EventStore Mongo client connected. Duration : ${DateTime.now().diff(beforeConnect).milliseconds} ms`
             );
         }
 
