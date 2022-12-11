@@ -30,41 +30,33 @@ jobs:
             - name: Build back end
               run: npm run build-api
 
-            - name: Build, tag, and push docker image to Amazon ECR
-              env:
-                AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-                AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
-                REGISTRY: 705418884782.dkr.ecr.eu-central-1.amazonaws.com
-                REPOSITORY: swan-nft-marketplace
-                IMAGE_TAG: ${{ github.sha }}
-              run: |
-                docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-                docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+            - name: Log in to Docker Hub
+              uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+              with:
+                  username: ${{ secrets.DOCKERHUB_USERNAME }}
+                  password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-#            - name: Clear S3 bucket
-#              env:
-#                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-#                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
-#              run: |
-#                  aws s3 rm s3://test-serve \
-#                    --recursive \
-#                    --region eu-central-1
-#
-#            - name: Deploy
-#              env:
-#                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-#                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
-#              run: |
-#                  aws s3 cp \
-#                    --recursive \
-#                    --region eu-central-1 \
-#                    dist/apps/nft-marketplace s3://test-serve
+            - name: Extract metadata (tags, labels) for Docker
+              id: meta
+              uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+              with:
+                  images: agtzdimi/swan-images
 
-#            - name: Notification
-#              uses: 8398a7/action-slack@v2.6.0
-#              with:
-#                  status: ${{ job.status }}
-#                  author_name: Github Actions
-#              env:
-#                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#                  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+            - name: Build and push Docker image
+              uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+              with:
+                  context: .
+                  push: true
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+
+            - name: SSH to EC2 && stop and deploy the new version
+              uses: appleboy/ssh-action@master
+              with:
+                  host: 18.156.165.173
+                  username: ubuntu
+                  key: ${{ secrets.EC2_PEM }}
+                  script: |
+                      docker stop agtzdimi/swan-images
+                      docker rm agtzdimi/swan-images
+                      docker run --env-file .env -p 3310:3310 agtzdimi/swan-images
