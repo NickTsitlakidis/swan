@@ -42,7 +42,7 @@ jobs:
               with:
                   images: ${{ secrets.DOCKERHUB_USERNAME }}/swan-images
                   tags: |
-                      type=semver,pattern={{version}}
+                      type=raw,value=latest
 
             - name: Build and push Docker image
               uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
