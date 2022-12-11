@@ -10,45 +10,47 @@ jobs:
         #            run:
         #                working-directory: apps/nft-marketplace
         steps:
-            - name: Checkout source code
-              uses: actions/checkout@master
-
-            - name: Cache node modules
-              uses: actions/cache@v1
-              with:
-                  path: node_modules
-                  key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
-                  restore-keys: |
-                      ${{ runner.OS }}-build-
-                      ${{ runner.OS }}-
-            - name: Install
-              run: npm ci
-
-            - name: Build front end
-              run: npm run build
-
-            - name: Build back end
-              run: npm run build-api
-
-            - name: Log in to Docker Hub
-              uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-              with:
-                  username: ${{ secrets.DOCKERHUB_USERNAME }}
-                  password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-            - name: Extract metadata (tags, labels) for Docker
-              id: meta
-              uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-              with:
-                  images: agtzdimi/swan-images
-
-            - name: Build and push Docker image
-              uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-              with:
-                  context: .
-                  push: true
-                  tags: ${{ steps.meta.outputs.tags }}
-                  labels: ${{ steps.meta.outputs.labels }}
+            #- name: Checkout source code
+            #  uses: actions/checkout@master
+            #
+            #- name: Cache node modules
+            #  uses: actions/cache@v1
+            #  with:
+            #      path: node_modules
+            #      key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+            #      restore-keys: |
+            #          ${{ runner.OS }}-build-
+            #          ${{ runner.OS }}-
+            #- name: Install
+            #  run: npm ci
+            #
+            #- name: Build front end
+            #  run: npm run build
+            #
+            #- name: Build back end
+            #  run: npm run build-api
+            #
+            #- name: Log in to Docker Hub
+            #  uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+            #  with:
+            #      username: ${{ secrets.DOCKERHUB_USERNAME }}
+            #      password: ${{ secrets.DOCKERHUB_TOKEN }}
+            #
+            #- name: Extract metadata (tags, labels) for Docker
+            #  id: meta
+            #  uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+            #  with:
+            #      images: ${{ secrets.DOCKERHUB_USERNAME }}/swan-images
+            #      tags: |
+            #          type=semver,pattern={{version}}
+            #
+            #- name: Build and push Docker image
+            #  uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+            #  with:
+            #      context: .
+            #      push: true
+            #      tags: ${{ steps.meta.outputs.tags }}
+            #      labels: ${{ steps.meta.outputs.labels }}
 
             - name: SSH to EC2 && stop and deploy the new version
               uses: appleboy/ssh-action@master
@@ -57,6 +59,8 @@ jobs:
                   username: ubuntu
                   key: ${{ secrets.EC2_PEM }}
                   script: |
-                      docker stop agtzdimi/swan-images
-                      docker rm agtzdimi/swan-images
-                      docker run --env-file .env -p 3310:3310 agtzdimi/swan-images
+                      docker login
+                      docker pull ${{ secrets.DOCKERHUB_USERNAME }}/swan-images
+                      docker stop swan-marketplace
+                      docker rm swan-marketplace
+                      docker run --detach --name swan-marketplace --env-file .env -p 3310:3310 ${{secrets.DOCKERHUB_USERNAME}}/swan-images
