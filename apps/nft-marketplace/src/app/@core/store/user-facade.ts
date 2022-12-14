@@ -14,6 +14,7 @@ import { isNil } from "lodash";
 import { LocalStorageService } from "ngx-webstorage";
 import { UserService } from "../services/user/user.service";
 import { ComplexState } from "./complex-state";
+import { DateTime } from "luxon";
 
 @Injectable({ providedIn: "root" })
 export class UserFacade {
@@ -143,7 +144,7 @@ export class UserFacade {
 
     private saveTokenToStorage(token: TokenDto) {
         this._storageService.store("userTokenValue", token.tokenValue);
-        this._storageService.store("userExpiresAt", token.expiresAt.toISOString());
+        this._storageService.store("userExpiresAt", token.expiresAt.toISO());
         this._storageService.store("userRefreshToken", token.refreshToken);
     }
 
@@ -153,7 +154,7 @@ export class UserFacade {
         const refreshToken = this._storageService.retrieve("userRefreshToken");
 
         if (!isNil(userToken) && !isNil(expiresAt) && !isNil(refreshToken)) {
-            return new TokenDto(userToken, expiresAt, refreshToken);
+            return new TokenDto(userToken, DateTime.fromISO(expiresAt), refreshToken);
         }
 
         return undefined;

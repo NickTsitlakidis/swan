@@ -4,8 +4,8 @@ import { RefreshTokenRepository } from "./refresh-token-repository";
 import { UserTokenIssuer } from "./user-token-issuer";
 import { UnauthorizedException } from "@nestjs/common";
 import { RefreshToken } from "./refresh-token";
-import * as moment from "moment";
 import { getUnitTestingModule } from "../test-utils/test-modules";
+import { DateTime } from "luxon";
 
 let idGeneratorMock: IdGenerator;
 let jwtServiceMock: JwtService;
@@ -37,7 +37,7 @@ test("issueFromId - creates and stores token", async () => {
 
     expect(result.tokenValue).toBe("signed");
     expect(result.refreshToken).toBe("signed");
-    expect(result.expiresAt.isAfter(moment.utc()));
+    expect(result.expiresAt > DateTime.now().toUTC()).toBe(true);
 
     expect(generateDisplayIdSpy).toHaveBeenCalledTimes(1);
     expect(generateEntityIdSpy).toHaveBeenCalledTimes(1);
@@ -132,7 +132,7 @@ test("issueFromRefreshToken - creates and returns for valid refresh token", asyn
 
     expect(created.tokenValue).toBe("signed");
     expect(created.refreshToken).toBe("encoded-jwt");
-    expect(created.expiresAt.isAfter(moment.utc()));
+    expect(created.expiresAt > DateTime.now().toUTC()).toBe(true);
 
     expect(verifySpy).toHaveBeenCalledTimes(1);
     expect(verifySpy).toHaveBeenCalledWith("encoded-jwt");

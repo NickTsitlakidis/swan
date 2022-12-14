@@ -4,6 +4,7 @@ import { cleanUpMongo, getCollection, getMongoTestingModule } from "../../test-u
 import { BlockchainRepository } from "./blockchain-repository";
 import { Blockchain } from "./blockchain";
 import { instanceToPlain } from "class-transformer";
+import { buildBlockchain } from "../../test-utils/test-builders";
 
 let repository: BlockchainRepository;
 let collection: Collection<any>;
@@ -22,14 +23,9 @@ afterEach(async () => {
 });
 
 test("findByIds - returns multiple blockchain matches", async () => {
-    const view1 = new Blockchain();
-    view1._id = new ObjectId();
-
-    const view2 = new Blockchain();
-    view2._id = new ObjectId();
-
-    const view3 = new Blockchain();
-    view3._id = new ObjectId();
+    const view1 = buildBlockchain();
+    const view2 = buildBlockchain();
+    const view3 = buildBlockchain();
 
     await collection.insertOne(instanceToPlain(view1));
     await collection.insertOne(instanceToPlain(view2));
@@ -42,14 +38,9 @@ test("findByIds - returns multiple blockchain matches", async () => {
 });
 
 test("findByIds - returns empty array for no blockchain matches", async () => {
-    const view1 = new Blockchain();
-    view1._id = new ObjectId();
-
-    const view2 = new Blockchain();
-    view2._id = new ObjectId();
-
-    const view3 = new Blockchain();
-    view3._id = new ObjectId();
+    const view1 = buildBlockchain();
+    const view2 = buildBlockchain();
+    const view3 = buildBlockchain();
 
     await collection.insertOne(instanceToPlain(view1));
     await collection.insertOne(instanceToPlain(view2));
@@ -57,4 +48,47 @@ test("findByIds - returns empty array for no blockchain matches", async () => {
 
     const found = await repository.findByIds([new ObjectId().toHexString(), new ObjectId().toHexString()]);
     expect(found.length).toBe(0);
+});
+
+test("findAll - returns empty array for empty collection", async () => {
+    const found = await repository.findAll();
+    expect(found.length).toBe(0);
+});
+
+test("findAll - returns all blockchains", async () => {
+    const view1 = buildBlockchain();
+    const view2 = buildBlockchain();
+    const view3 = buildBlockchain();
+
+    await collection.insertOne(instanceToPlain(view1));
+    await collection.insertOne(instanceToPlain(view2));
+    await collection.insertOne(instanceToPlain(view3));
+
+    const found = await repository.findAll();
+    expect(found.length).toBe(3);
+    expect(found[0]).toMatchObject(view1);
+    expect(found[1]).toMatchObject(view2);
+    expect(found[2]).toMatchObject(view3);
+});
+
+test("findById - returns null for no blockchain match", async () => {
+    const view1 = buildBlockchain();
+    const view2 = buildBlockchain();
+
+    await collection.insertOne(instanceToPlain(view1));
+    await collection.insertOne(instanceToPlain(view2));
+
+    const found = await repository.findById(new ObjectId().toHexString());
+    expect(found).toBeNull();
+});
+
+test("findById - returns match for blockchain match", async () => {
+    const view1 = buildBlockchain();
+    const view2 = buildBlockchain();
+
+    await collection.insertOne(instanceToPlain(view1));
+    await collection.insertOne(instanceToPlain(view2));
+
+    const found = await repository.findById(view2.id);
+    expect(found).toMatchObject(view2);
 });

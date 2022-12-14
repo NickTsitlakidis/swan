@@ -1,7 +1,7 @@
-import moment = require("moment");
 import { EventPayload, SerializedEvent } from "./serialized-event";
 import { SourcedEvent } from "./sourced-event";
 import { keys } from "lodash";
+import { Settings } from "luxon";
 
 @SerializedEvent("test-event")
 class TestEvent extends EventPayload {
@@ -11,9 +11,7 @@ class TestEvent extends EventPayload {
 
 test("constructor - skips serializable", () => {
     const expectedDate = new Date();
-    moment.now = function () {
-        return +expectedDate;
-    };
+    Settings.now = () => expectedDate.valueOf();
 
     const event = new SourcedEvent("agr-id");
 
@@ -24,9 +22,7 @@ test("constructor - skips serializable", () => {
 
 test("constructor - handles serializable", () => {
     const expectedDate = new Date();
-    moment.now = function () {
-        return +expectedDate;
-    };
+    Settings.now = () => expectedDate.valueOf();
 
     const testEvent = new TestEvent();
     testEvent.field1 = "the-field";

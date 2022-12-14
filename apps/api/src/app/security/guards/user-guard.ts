@@ -4,7 +4,6 @@ import { getLogger } from "../../infrastructure/logging";
 import { UserViewRepository } from "../../views/user/user-view-repository";
 import { isNil } from "lodash";
 import { extractBearerValue, hasBearerToken } from "./token-utils";
-import { UserView } from "../../views/user/user-view";
 
 @Injectable()
 export class UserGuard implements CanActivate {
@@ -31,12 +30,7 @@ export class UserGuard implements CanActivate {
             throw new UnauthorizedException("Invalid or missing credentials");
         }
 
-        let found: UserView;
-        try {
-            found = await this._userViewRepository.findById(verified.sub);
-        } catch {
-            throw new UnauthorizedException("Invalid or missing user credentials");
-        }
+        const found = await this._userViewRepository.findById(verified.sub);
 
         if (isNil(found)) {
             throw new UnauthorizedException("Invalid or missing user credentials");
