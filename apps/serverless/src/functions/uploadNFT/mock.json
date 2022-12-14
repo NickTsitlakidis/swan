@@ -1,0 +1,6 @@
+{
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "body": "{\"key\": \"linux.png\",\"contentType\": \"image/jpg\"}"
+}

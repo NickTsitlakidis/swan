@@ -52,7 +52,8 @@ const winstonFactory = async (configService: ConfigService): Promise<LoggerOptio
         RestModule,
         JobsModule,
         ServeStaticModule.forRoot({
-            rootPath: join(__dirname, "..", "nft-marketplace")
+            rootPath: join(__dirname, "..", "nft-marketplace"),
+            exclude: ["/api"]
         })
     ]
 })
