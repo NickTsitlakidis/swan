@@ -1,4 +1,4 @@
-import { Collection, ObjectId } from "mongodb";
+import { Collection } from "mongodb";
 import { TestingModule } from "@nestjs/testing";
 import { cleanUpMongo, getCollection, getMongoTestingModule } from "../../test-utils/test-modules";
 import { BlockchainWalletRepository } from "./blockchain-wallet-repository";

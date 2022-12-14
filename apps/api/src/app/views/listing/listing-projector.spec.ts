@@ -4,10 +4,19 @@ import { getUnitTestingModule } from "../../test-utils/test-modules";
 import { ListingViewRepository } from "./listing-view-repository";
 import { ListingProjector } from "./listing-projector";
 import { ListingView } from "./listing-view";
-import { ListingCreatedEvent } from "../../domain/listing/listing-events";
+import {
+    ListingActivatedEvent,
+    ListingCanceledEvent,
+    ListingCreatedEvent,
+    ListingSoldEvent,
+    ListingSubmittedEvent
+} from "../../domain/listing/listing-events";
 import { ListingStatus } from "../../domain/listing/listing-status";
 import { Buyer } from "../../domain/listing/buyer";
 import { BuyerView } from "./buyer-view";
+import { buildListingView } from "../../test-utils/test-builders";
+import { cloneDeep } from "lodash";
+import { CurrencyList } from "@swan/dto";
 
 let repositoryMock: ListingViewRepository;
 let projector: ListingProjector;
@@ -17,6 +26,118 @@ beforeEach(async () => {
 
     projector = moduleRef.get(ListingProjector);
     repositoryMock = moduleRef.get(ListingViewRepository);
+});
+
+test("handle ListingSoldEvent - updates view", async () => {
+    const existingView = buildListingView();
+    delete existingView.status;
+
+    const saved = new ListingView();
+    const saveSpy = jest.spyOn(repositoryMock, "save").mockResolvedValue(saved);
+    const findSpy = jest.spyOn(repositoryMock, "findById").mockResolvedValue(existingView);
+
+    const event = new ListingSoldEvent(
+        "the-hash",
+        new Buyer("u", "w", "a"),
+        {
+            amount: 33,
+            currency: CurrencyList.Ethereum
+        },
+        99
+    );
+    event.aggregateId = existingView.id;
+
+    const result = await projector.handle(event);
+
+    expect(result).toBe(saved);
+
+    expect(findSpy).toHaveBeenCalledTimes(1);
+    expect(findSpy).toHaveBeenCalledWith(event.aggregateId);
+    const cloned = cloneDeep(existingView);
+    cloned.status = ListingStatus.SOLD;
+    cloned.listingSoldTransaction.blockNumber = 99;
+    cloned.listingSoldTransaction.transactionHash = "the-hash";
+    cloned.buyer = new BuyerView(event.buyer.walletId, event.buyer.userId, event.buyer.address);
+    cloned.transactionFee.amount = 33;
+    cloned.transactionFee.currency = CurrencyList.Ethereum;
+
+    expect(saveSpy).toHaveBeenCalledTimes(1);
+    expect(saveSpy).toHaveBeenCalledWith(cloned);
+});
+
+test("handle ListingActivatedEvent - updates status, block number and listing id", async () => {
+    const existingView = buildListingView();
+    delete existingView.status;
+
+    const saved = new ListingView();
+    const saveSpy = jest.spyOn(repositoryMock, "save").mockResolvedValue(saved);
+    const findSpy = jest.spyOn(repositoryMock, "findById").mockResolvedValue(existingView);
+
+    const event = new ListingActivatedEvent(44, 55);
+    event.aggregateId = existingView.id;
+
+    const result = await projector.handle(event);
+
+    expect(result).toBe(saved);
+
+    expect(findSpy).toHaveBeenCalledTimes(1);
+    expect(findSpy).toHaveBeenCalledWith(event.aggregateId);
+    const cloned = cloneDeep(existingView);
+    cloned.status = ListingStatus.ACTIVE;
+    cloned.chainListingId = 55;
+    cloned.listingCreatedTransaction.blockNumber = 44;
+
+    expect(saveSpy).toHaveBeenCalledTimes(1);
+    expect(saveSpy).toHaveBeenCalledWith(cloned);
+});
+
+test("handle ListingCanceledEvent - updates status", async () => {
+    const existingView = buildListingView();
+    delete existingView.status;
+
+    const saved = new ListingView();
+    const saveSpy = jest.spyOn(repositoryMock, "save").mockResolvedValue(saved);
+    const findSpy = jest.spyOn(repositoryMock, "findById").mockResolvedValue(existingView);
+
+    const event = new ListingCanceledEvent(true);
+    event.aggregateId = existingView.id;
+
+    const result = await projector.handle(event);
+
+    expect(result).toBe(saved);
+
+    expect(findSpy).toHaveBeenCalledTimes(1);
+    expect(findSpy).toHaveBeenCalledWith(event.aggregateId);
+    const cloned = cloneDeep(existingView);
+    cloned.status = ListingStatus.CANCELED;
+
+    expect(saveSpy).toHaveBeenCalledTimes(1);
+    expect(saveSpy).toHaveBeenCalledWith(cloned);
+});
+
+test("handle ListingSubmittedEvent - updates view with transaction and status", async () => {
+    const existingView = buildListingView();
+    delete existingView.status;
+
+    const saved = new ListingView();
+    const saveSpy = jest.spyOn(repositoryMock, "save").mockResolvedValue(saved);
+    const findSpy = jest.spyOn(repositoryMock, "findById").mockResolvedValue(existingView);
+
+    const event = new ListingSubmittedEvent("the-hash");
+    event.aggregateId = existingView.id;
+
+    const result = await projector.handle(event);
+
+    expect(result).toBe(saved);
+
+    expect(findSpy).toHaveBeenCalledTimes(1);
+    expect(findSpy).toHaveBeenCalledWith(event.aggregateId);
+    const cloned = cloneDeep(existingView);
+    cloned.status = ListingStatus.SUBMITTED;
+    cloned.listingCreatedTransaction.transactionHash = "the-hash";
+
+    expect(saveSpy).toHaveBeenCalledTimes(1);
+    expect(saveSpy).toHaveBeenCalledWith(cloned);
 });
 
 test("handle ListingCreatedEvent - Saves new ListingView", async () => {

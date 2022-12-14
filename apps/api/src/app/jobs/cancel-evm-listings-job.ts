@@ -26,7 +26,7 @@ export class CancelEvmListingsJob {
     }
 
     @Define("cancel-evm-listings-job")
-    @Every("minute")
+    @Every(`${process.env.CANCEL_EVM_LISTINGS_DURATION} minutes`)
     confirmApprovalsAndOwners(): Subscription {
         const pageSize = +this._configService.getOrThrow<number>("JOB_PAGE_SIZE");
         let skip = 0;

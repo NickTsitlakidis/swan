@@ -1,4 +1,5 @@
-import { UserWalletDto, WalletDto } from "@swan/dto";
+import { UserWalletDto } from "./user-wallet-dto";
+import { WalletDto } from "./wallet-dto";
 import { Type } from "class-transformer";
 
 export class UserDto {

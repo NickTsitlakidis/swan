@@ -6,7 +6,7 @@ import { environment } from "../../../../environments/environment";
 import { Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { plainToClass } from "class-transformer";
-import moment from "moment";
+import { DateTime } from "luxon";
 
 @Injectable({
     providedIn: "root"
@@ -17,7 +17,7 @@ export class ClientAuthService {
     public getClientTokenData(): TokenDto {
         return new TokenDto(
             this._lcStorage.retrieve("clientTokenValue"),
-            moment(this._lcStorage.retrieve("clientExpiresAt"))
+            DateTime.fromISO(this._lcStorage.retrieve("clientExpiresAt"))
         );
     }
 
@@ -34,7 +34,7 @@ export class ClientAuthService {
             }),
             tap((dto) => {
                 this._lcStorage.store("clientTokenValue", dto.tokenValue);
-                this._lcStorage.store("clientExpiresAt", dto.expiresAt.toISOString());
+                this._lcStorage.store("clientExpiresAt", dto.expiresAt.toISO());
             })
         );
     }

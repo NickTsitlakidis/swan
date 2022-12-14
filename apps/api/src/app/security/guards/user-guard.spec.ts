@@ -37,9 +37,7 @@ test("UserGuard canActivate - throws for missing token", async () => {
     };
 
     await expect(guard.canActivate(context)).rejects.toThrow(UnauthorizedException);
-
 });
-
 
 test("UserGuard canActivate - throws for expired token", async () => {
     const accessSignOptions: JwtSignOptions = {
@@ -133,8 +131,6 @@ test("UserGuard canActivate - returns true for all passing rules and updates req
             };
         }
     };
-
-
 
     const repositorySpy = jest.spyOn(clientRepo, "findById").mockResolvedValue(view);
 

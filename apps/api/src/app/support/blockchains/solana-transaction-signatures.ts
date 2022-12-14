@@ -1,8 +1,8 @@
 export interface Result {
     blockTime: number;
     confirmationStatus: string;
-    err?: any;
-    memo?: any;
+    err?: unknown;
+    memo?: unknown;
     signature: string;
     slot: number;
 }

@@ -12,7 +12,19 @@ async function bootstrap() {
     app.enableCors();
     app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
     app.useGlobalPipes(new ValidationPipe());
-    app.use(helmet());
+    app.use(
+        helmet({
+            crossOriginEmbedderPolicy: false,
+            contentSecurityPolicy: {
+                useDefaults: true,
+                directives: {
+                    defaultSrc: helmet.contentSecurityPolicy.dangerouslyDisableDefaultSrc,
+                    "script-src": ["'self'", "kit.fontawesome.com"],
+                    "img-src": null
+                }
+            }
+        })
+    );
     app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)), new ErrorInterceptor());
 
     const port = process.env.PORT || 3310;

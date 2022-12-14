@@ -10,7 +10,7 @@ export class BlockchainRepository {
         return this._entityManager.fork().find(Blockchain, {});
     }
 
-    findById(id: string): Promise<Blockchain | undefined> {
+    findById(id: string): Promise<Blockchain | null> {
         return this._entityManager.fork().findOne(Blockchain, { id: id });
     }
 

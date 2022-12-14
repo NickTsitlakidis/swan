@@ -2,12 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { ListingView } from "./listing-view";
 import { MongoEntityManager } from "@mikro-orm/mongodb";
 import { ListingStatus } from "../../domain/listing/listing-status";
-import { Observable } from "rxjs";
 
 @Injectable()
 export class ListingViewRepository {
     constructor(private readonly _entityManager: MongoEntityManager) {}
-
     save(view: ListingView): Promise<ListingView> {
         return this._entityManager
             .fork()

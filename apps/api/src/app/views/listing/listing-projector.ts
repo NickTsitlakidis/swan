@@ -13,6 +13,7 @@ import { getLogger, LogAsyncMethod } from "../../infrastructure/logging";
 import { ListingView } from "./listing-view";
 import { ListingViewRepository } from "./listing-view-repository";
 import { ChainTransactionView } from "./chain-transaction-view";
+import { BuyerView } from "./buyer-view";
 
 @EventsHandler(
     ListingActivatedEvent,
@@ -93,7 +94,7 @@ export class ListingProjector
         if (event instanceof ListingSoldEvent) {
             view.status = ListingStatus.SOLD;
             view.listingSoldTransaction = new ChainTransactionView(event.transactionHash, event.blockNumber);
-            view.buyer = event.buyer;
+            view.buyer = new BuyerView(event.buyer.walletId, event.buyer.userId, event.buyer.address);
             view.transactionFee = event.transactionFee;
         }
 

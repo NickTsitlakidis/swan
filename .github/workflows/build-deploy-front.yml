@@ -1,14 +1,13 @@
-name: Angular Deploy to S3
+name: Deploy image to ECR
 on:
     push:
-        branches: [ main ]
-
+        branches: [main]
 jobs:
     build:
         runs-on: ubuntu-latest
-#        defaults:
-#            run:
-#                working-directory: apps/nft-marketplace
+        #        defaults:
+        #            run:
+        #                working-directory: apps/nft-marketplace
         steps:
             - name: Checkout source code
               uses: actions/checkout@master
@@ -22,32 +21,45 @@ jobs:
                       ${{ runner.OS }}-build-
                       ${{ runner.OS }}-
             - name: Install
-              run: npm install --legacy-peer-deps
+              run: npm ci
 
-#            - name: Lint
-#              run: npm run lint
-
-#            - name: Test
-#              run: npm run test
-
-            - name: Build
+            - name: Build front end
               run: npm run build
 
-            - name: Deploy
-              env:
-                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
-              run: |
-                  aws s3 cp \
-                    --recursive \
-                    --region eu-central-1 \
-                    dist/apps/nft-marketplace s3://test-serve
+            - name: Build back end
+              run: npm run build-api
 
-#            - name: Notification
-#              uses: 8398a7/action-slack@v2.6.0
-#              with:
-#                  status: ${{ job.status }}
-#                  author_name: Github Actions
-#              env:
-#                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#                  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+            - name: Log in to Docker Hub
+              uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+              with:
+                  username: ${{ secrets.DOCKERHUB_USERNAME }}
+                  password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+            - name: Extract metadata (tags, labels) for Docker
+              id: meta
+              uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+              with:
+                  images: ${{ secrets.DOCKERHUB_USERNAME }}/swan-images
+                  tags: |
+                      type=raw,value=latest
+
+            - name: Build and push Docker image
+              uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+              with:
+                  context: .
+                  push: true
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+
+            - name: SSH to EC2 && stop and deploy the new version
+              uses: appleboy/ssh-action@master
+              with:
+                  host: 18.156.165.173
+                  username: ubuntu
+                  key: ${{ secrets.EC2_PEM }}
+                  script: |
+                      docker login
+                      docker pull ${{ secrets.DOCKERHUB_USERNAME }}/swan-images
+                      docker stop swan-marketplace
+                      docker rm swan-marketplace
+                      docker run --detach --name swan-marketplace --env-file .env -p 3310:3310 ${{secrets.DOCKERHUB_USERNAME}}/swan-images

@@ -8,6 +8,7 @@ import { CreateCollectionCommand } from "./create-collection-command";
 import { BadRequestException } from "@nestjs/common";
 import { Blockchain } from "../../support/blockchains/blockchain";
 import { Collection } from "../../domain/collection/collection";
+import { buildBlockchain } from "../../test-utils/test-builders";
 
 let factory: CollectionFactory;
 let collectionRepo: CollectionViewRepository;
@@ -22,6 +23,28 @@ beforeEach(async () => {
     categoryRepo = testModule.get(CategoryRepository);
     blockchainRepo = testModule.get(BlockchainRepository);
     executor = testModule.get(CreateCollectionCommandExecutor);
+});
+
+test("execute - throws bad request for missing category", async () => {
+    const collectionSpy = jest.spyOn(collectionRepo, "countByName").mockResolvedValue(0);
+    const categorySpy = jest.spyOn(categoryRepo, "countById").mockResolvedValue(0);
+    const blockchainSpy = jest.spyOn(blockchainRepo, "findById").mockResolvedValue(buildBlockchain());
+
+    const command = new CreateCollectionCommand();
+    command.blockchainId = "block";
+    command.categoryId = "category";
+    command.name = "name";
+
+    await expect(executor.execute(command)).rejects.toThrow(BadRequestException);
+
+    expect(blockchainSpy).toHaveBeenCalledWith("block");
+    expect(blockchainSpy).toHaveBeenCalledTimes(1);
+
+    expect(categorySpy).toHaveBeenCalledWith("category");
+    expect(categorySpy).toHaveBeenCalledTimes(1);
+
+    expect(collectionSpy).toHaveBeenCalledWith("name");
+    expect(collectionSpy).toHaveBeenCalledTimes(1);
 });
 
 test("execute - throws bad request for invalid blockchain id", async () => {

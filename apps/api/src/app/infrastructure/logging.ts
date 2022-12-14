@@ -1,6 +1,6 @@
-import * as moment from "moment";
 import { Logger } from "@nestjs/common";
 import { isNil } from "lodash";
+import { DateTime } from "luxon";
 
 export function LogAsyncMethod(target, propertyKey: string, descriptor: PropertyDescriptor) {
     if (isNil(descriptor)) {
@@ -11,10 +11,10 @@ export function LogAsyncMethod(target, propertyKey: string, descriptor: Property
     const methodName = `${target.constructor.name} : ${propertyKey}`;
     const originalMethod = descriptor.value;
     descriptor.value = async function (...args) {
-        const startedAt = moment.utc();
+        const startedAt = DateTime.now();
         try {
             const result = await originalMethod.apply(this, args);
-            const duration = moment.duration(moment.utc().diff(startedAt)).asMilliseconds();
+            const duration = DateTime.now().diff(startedAt).milliseconds;
             logger.debug(`Method {${methodName}} duration : ${duration} ms`);
             return result;
         } catch (err) {
