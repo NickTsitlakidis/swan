@@ -1,8 +1,7 @@
 name: Deploy image to ECR
 on:
     push:
-        branches: [main, build]
-
+        branches: [main]
 jobs:
     build:
         runs-on: ubuntu-latest
