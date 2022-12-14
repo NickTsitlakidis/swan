@@ -125,7 +125,7 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
 
         bool isERC721 = isIERC721(tokenContractAddress);
         bool isERC1155 = isIERC1155(tokenContractAddress);
-        require(isERC1155 == true || isERC1155 == true, "Contract is currently not supported");
+        require(isERC1155 != true && isERC1155 != true, "Contract is currently not supported");
 
         if (isERC721 == true) {
             IERC721 nft = IERC721(tokenContractAddress);
