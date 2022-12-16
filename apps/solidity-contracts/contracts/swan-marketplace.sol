@@ -58,6 +58,7 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
     address public immutable swanWallet;
 
     bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
+    bytes4 private constant _INTERFACE_ID_IERC721ENUMERABLE = 0x780e9d63;
     bytes4 private constant _INTERFACE_ID_ERC1155 = 0xd9b67a26;
     Counters.Counter private listingIds;
     uint private feePercentage;
@@ -125,14 +126,13 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
 
         bool isERC721 = isIERC721(tokenContractAddress);
         bool isERC1155 = isIERC1155(tokenContractAddress);
-        require(isERC1155 != true && isERC1155 != true, "Contract is currently not supported");
-
+        require(isERC721 == true || isERC1155 == true, "Contract is currently not supported");
         if (isERC721 == true) {
             IERC721 nft = IERC721(tokenContractAddress);
-            checkValidityOfIERC721(nft, tokenId);
+            checkValidityOfIERC721(nft, tokenId, msg.sender);
         } else if (isERC1155 == true) {
             IERC1155 nft = IERC1155(tokenContractAddress);
-            checkValidityOfIERC1155(nft, tokenId);
+            checkValidityOfIERC1155(nft, tokenId, msg.sender);
         }
 
         listingIds.increment();
@@ -184,10 +184,10 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         bool isERC1155 = isIERC1155(tokenContractAddress);
         if (isERC721 == true) {
             IERC721 nft = IERC721(tokenContractAddress);
-            checkValidityOfIERC721(nft, tokenId);
+            checkValidityOfIERC721(nft, tokenId, found.seller);
         } else if (isERC1155 == true) {
             IERC1155 nft = IERC1155(tokenContractAddress);
-            checkValidityOfIERC1155(nft, tokenId);
+            checkValidityOfIERC1155(nft, tokenId, found.seller);
         }
 
         //todo: use openzeppelin payment splitter here
@@ -227,21 +227,22 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
     }
 
     function isIERC721(address tokenContractAddress) internal view returns(bool) {
-        return tokenContractAddress.supportsERC165() && IERC165(tokenContractAddress).supportsInterface(_INTERFACE_ID_ERC721);
+        return tokenContractAddress.supportsERC165() && (IERC165(tokenContractAddress).supportsInterface(_INTERFACE_ID_ERC721) ||
+            IERC165(tokenContractAddress).supportsInterface(_INTERFACE_ID_IERC721ENUMERABLE));
     }
 
     function isIERC1155(address tokenContractAddress) internal view returns(bool) {
         return tokenContractAddress.supportsERC165() && IERC165(tokenContractAddress).supportsInterface(_INTERFACE_ID_ERC1155);
     }
 
-    function checkValidityOfIERC721(IERC721 nft, uint tokenId) internal view {
-        require(nft.ownerOf(tokenId) == msg.sender, "Incorrect owner of token");
+    function checkValidityOfIERC721(IERC721 nft, uint tokenId, address sender) internal view {
+        require(nft.ownerOf(tokenId) == sender, "Incorrect owner of token");
         require(nft.getApproved(tokenId) == address(this), "Token is not approved for transfer");
     }
 
-    function checkValidityOfIERC1155(IERC1155 nft, uint tokenId) internal view {
-        require(nft.balanceOf(msg.sender, tokenId) != 0, "Incorrect owner of token");
-        require(nft.isApprovedForAll(msg.sender, address(this)), "Token is not approved for transfer");
+    function checkValidityOfIERC1155(IERC1155 nft, uint tokenId, address sender) internal view {
+        require(nft.balanceOf(sender, tokenId) != 0, "Incorrect owner of token");
+        require(nft.isApprovedForAll(sender, address(this)), "Token is not approved for transfer");
     }
 
     function filterForInvalidIERC721(TokenListing memory toFilter) internal view returns(uint, int) {
