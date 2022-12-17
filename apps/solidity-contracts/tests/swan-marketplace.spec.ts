@@ -1,12 +1,14 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { SwanMarketplace, SwanNft, TestToken } from "../typechain-types";
+import { SwanMarketplace, SwanNft, TestToken, TestToken1155 } from "../typechain-types";
 import { firstValueFrom, Observable, take } from "rxjs";
+import { Address } from "ethereumjs-util";
 
 describe("SwanMarketplace", () => {
     let deployedMarketplace: SwanMarketplace;
     let deployedNft: SwanNft;
     let deployedTestToken: TestToken;
+    let deployedTestToken1155: TestToken1155;
 
     beforeEach(async () => {
         await ethers
@@ -26,6 +28,12 @@ describe("SwanMarketplace", () => {
             .then((factory) => factory.deploy())
             .then((deployed) => {
                 deployedTestToken = deployed;
+                return deployed.deployed();
+            })
+            .then(() => ethers.getContractFactory("TestToken1155"))
+            .then((factory) => factory.deploy())
+            .then((deployed) => {
+                deployedTestToken1155 = deployed;
                 return deployed.deployed();
             });
     });
@@ -79,6 +87,25 @@ describe("SwanMarketplace", () => {
         expect(await deployedNft.ownerOf(1)).to.equal(seller.address);
     });
 
+    it("createListing - creates listing (ERC1155), and emits event when approved", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedTestToken1155.mint(seller.address, 1, 1);
+        await deployedTestToken1155.connect(seller).setApprovalForAll(deployedMarketplace.address, true);
+
+        const result = await deployedMarketplace
+            .connect(seller)
+            .createListing(deployedTestToken1155.address, 1, ethers.utils.parseEther("0.5"));
+
+        expect(result)
+            .to.emit(deployedMarketplace, "ListingCreated")
+            .withArgs(seller.address, deployedTestToken1155.address, 2, ethers.utils.parseEther("0.5"), 1);
+
+        expect(await deployedMarketplace.isTokenListed(deployedTestToken1155.address, 1)).to.equal(true);
+        const listing = await deployedMarketplace.getListing(deployedTestToken1155.address, 1);
+        expect(await deployedTestToken1155.ownerOf(seller.address, 1)).to.equal(true);
+    });
+
     it("createListing - emits event with indexed address", async () => {
         const [deployer, seller] = await ethers.getSigners();
 
@@ -98,6 +125,32 @@ describe("SwanMarketplace", () => {
 
         expect(eventResult.seller).to.equal(seller.address);
         expect(eventResult.contractAddress).to.equal(deployedNft.address);
+        expect(eventResult.tokenId).to.equal(ethers.BigNumber.from(1));
+        expect(eventResult.price).to.equal(ethers.utils.parseEther("0.5"));
+        expect(eventResult.listingId).to.equal(ethers.BigNumber.from(2));
+    });
+
+    it("createListing - emits event with indexed address (ERC1155)", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedTestToken1155.mint(seller.address, 1, 1);
+        await deployedTestToken1155.connect(seller).setApprovalForAll(deployedMarketplace.address, true);
+        await deployedMarketplace
+            .connect(seller)
+            .createListing(deployedTestToken1155.address, 1, ethers.utils.parseEther("0.5"));
+
+        const eventFilter = deployedMarketplace.filters["ListingCreated"](seller.address);
+
+        const observable = new Observable<any>((subscriber) => {
+            deployedMarketplace.on(eventFilter, (seller, contractAddress, tokenId, price, listingId) => {
+                subscriber.next({ seller, contractAddress, tokenId, price, listingId });
+            });
+        }).pipe(take(1));
+
+        const eventResult = await firstValueFrom(observable);
+
+        expect(eventResult.seller).to.equal(seller.address);
+        expect(eventResult.contractAddress).to.equal(deployedTestToken1155.address);
         expect(eventResult.tokenId).to.equal(ethers.BigNumber.from(1));
         expect(eventResult.price).to.equal(ethers.utils.parseEther("0.5"));
         expect(eventResult.listingId).to.equal(ethers.BigNumber.from(2));
@@ -307,6 +360,23 @@ describe("SwanMarketplace", () => {
         ).to.be.revertedWith("Token is listed by the buyer");
     });
 
+    it("buyToken - reverts if token is listed by the buyer (ERC1155)", async () => {
+        const [deployer, seller] = await ethers.getSigners();
+
+        await deployedTestToken1155.mint(seller.address, 1, 1);
+        await deployedTestToken1155.connect(seller).setApprovalForAll(deployedMarketplace.address, true);
+
+        await deployedMarketplace
+            .connect(seller)
+            .createListing(deployedTestToken1155.address, 1, ethers.utils.parseEther("0.5"));
+
+        await expect(
+            deployedMarketplace
+                .connect(seller)
+                .buyToken(deployedTestToken1155.address, 1, { value: ethers.utils.parseEther("0.5") })
+        ).to.be.revertedWith("Token is listed by the buyer");
+    });
+
     it("buyToken - reverts if owner removed approval", async () => {
         const [deployer, seller, third] = await ethers.getSigners();
 
@@ -325,6 +395,29 @@ describe("SwanMarketplace", () => {
             deployedMarketplace
                 .connect(third)
                 .buyToken(deployedNft.address, 1, { value: ethers.utils.parseEther("0.5") })
+        ).to.be.revertedWith("Token is not approved for transfer");
+    });
+
+    it("buyToken - reverts if owner removed approval (ERC1155)", async () => {
+        const [deployer, seller, third] = await ethers.getSigners();
+
+        await deployedTestToken1155.mint(seller.address, 1, 1);
+        await deployedTestToken1155.connect(seller).setApprovalForAll(deployedMarketplace.address, true);
+
+        await deployedMarketplace
+            .connect(seller)
+            .createListing(deployedTestToken1155.address, 1, ethers.utils.parseEther("0.5"));
+
+        await deployedTestToken1155.connect(seller).setApprovalForAll(deployedMarketplace.address, false);
+
+        expect(
+            await deployedTestToken1155.connect(seller).isApprovedForAll(seller.address, deployedMarketplace.address)
+        ).to.be.equal(false);
+
+        await expect(
+            deployedMarketplace
+                .connect(third)
+                .buyToken(deployedTestToken1155.address, 1, { value: ethers.utils.parseEther("0.5") })
         ).to.be.revertedWith("Token is not approved for transfer");
     });
 
