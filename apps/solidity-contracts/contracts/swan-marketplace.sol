@@ -106,14 +106,14 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
             bool isERC721 = isIERC721(toFilter[i].tokenContractAddress);
             bool isERC1155 = isIERC1155(toFilter[i].tokenContractAddress);
             if (isERC721 == true) {
-                (uint invalidValue, int wasFound) = filterForInvalidIERC721(toFilter[i]);
-                if (wasFound == 1) {
-                    invalid[i] = invalidValue;
+                (bool wasFound) = isValidERC721Listing(toFilter[i]);
+                if (wasFound == true) {
+                    invalid[i] = toFilter[i].listingId;
                 }
             } else if (isERC1155 == true) {
-                (uint invalidValue, int wasFound) = filterForInvalidIERC1155(toFilter[i]);
-                if (wasFound == 1) {
-                    invalid[i] = invalidValue;
+                (bool wasFound) = isValidERC1155Listing(toFilter[i]);
+                if (wasFound == true) {
+                    invalid[i] = toFilter[i].listingId;
                 }
             }
         }
@@ -202,7 +202,7 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         if (isERC721 == true) {
             IERC721(found.tokenContractAddress).safeTransferFrom(found.seller, msg.sender, found.tokenId);
         } else if (isERC1155 == true) {
-            IERC1155(found.tokenContractAddress).safeTransferFrom(found.seller, msg.sender, found.tokenId, found.price, 'Swan-Marketplace');
+            IERC1155(found.tokenContractAddress).safeTransferFrom(found.seller, msg.sender, found.tokenId, 1, 'Swan-Marketplace');
         }
 
         delete (listings[tokenContractAddress][tokenId]);
@@ -245,19 +245,19 @@ contract SwanMarketplace is ReentrancyGuard, Ownable  {
         require(nft.isApprovedForAll(sender, address(this)), "Token is not approved for transfer");
     }
 
-    function filterForInvalidIERC721(TokenListing memory toFilter) internal view returns(uint, int) {
+    function isValidERC721Listing(TokenListing memory toFilter) internal view returns(bool) {
         IERC721 nft = IERC721(toFilter.tokenContractAddress);
         if (nft.ownerOf(toFilter.tokenId) != toFilter.seller || nft.getApproved(toFilter.tokenId) != address(this)) {
-            return (toFilter.listingId, 1);
+            return true;
         }
-        return (0, -1);
+        return false;
     }
 
-    function filterForInvalidIERC1155(TokenListing memory toFilter) internal view returns(uint, int) {
+    function isValidERC1155Listing(TokenListing memory toFilter) internal view returns(bool) {
         IERC1155 nft = IERC1155(toFilter.tokenContractAddress);
         if (nft.balanceOf(toFilter.seller, toFilter.tokenId) != 0 || nft.isApprovedForAll(toFilter.seller, address(this))) {
-            return (toFilter.listingId, 1);
+            return true;
         }
-        return (0, -1);
+        return false;
     }
 }
