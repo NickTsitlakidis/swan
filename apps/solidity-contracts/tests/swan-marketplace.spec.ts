@@ -1,23 +1,20 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
-import { SwanMarketplace, SwanNft, TestToken, TestToken1155 } from "../typechain-types";
+import { ethers, upgrades } from "hardhat";
+import { SwanERC721V1, SwanMarketplace, TestToken, TestToken1155 } from "../typechain-types";
 import { firstValueFrom, Observable, take } from "rxjs";
-import { Address } from "ethereumjs-util";
 
-describe("SwanMarketplace", () => {
+describe("Swan Marketplace Tests", () => {
     let deployedMarketplace: SwanMarketplace;
-    let deployedNft: SwanNft;
+    let deployedNft: SwanERC721V1;
     let deployedTestToken: TestToken;
     let deployedTestToken1155: TestToken1155;
 
     beforeEach(async () => {
+        const factory = await ethers.getContractFactory("SwanERC721V1");
+        deployedNft = (await upgrades.deployProxy(factory)) as SwanERC721V1;
+
         await ethers
-            .getContractFactory("SwanNft")
-            .then((factory) => factory.deploy())
-            .then((deployed) => {
-                deployedNft = deployed;
-                return deployed.deployed();
-            })
+            .getContractFactory("SwanMarketplace")
             .then(() => ethers.getContractFactory("SwanMarketplace"))
             .then((factory) => factory.deploy())
             .then((deployed) => {

@@ -117,6 +117,7 @@
         "@nrwl/workspace": "15.0.13",
         "@openzeppelin/contracts": "4.8.0",
         "@openzeppelin/contracts-upgradeable": "4.8.0",
+        "@openzeppelin/hardhat-upgrades": "1.22.0",
         "@schematics/angular": "14.2.4",
         "@shelf/jest-mongodb": "4.0.0",
         "@typechain/ethers-v5": "10.1.0",

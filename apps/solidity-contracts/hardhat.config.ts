@@ -2,6 +2,7 @@ import { HardhatUserConfig, task } from "hardhat/config";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
+import "@openzeppelin/hardhat-upgrades";
 import "hardhat-gas-reporter";
 
 // This is a sample Hardhat task. To learn how to create your own go to

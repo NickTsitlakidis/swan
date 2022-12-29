@@ -1,12 +1,12 @@
 import { ContractTransaction, ethers } from "ethers";
 import { firstValueFrom, map, Observable, skipWhile, take, tap } from "rxjs";
-import { SwanNft, SwanNft__factory } from "../../../../apps/solidity-contracts/typechain-types";
+import { SwanERC721V1, SwanERC721V1__factory } from "../../../../apps/solidity-contracts/typechain-types";
 
-export class SwanNftContract {
-    private readonly _contractInstance: SwanNft;
+export class SwanERC721 {
+    private readonly _contractInstance: SwanERC721V1;
 
     constructor(private readonly _ethersProvider: ethers.providers.JsonRpcProvider, private readonly _address: string) {
-        this._contractInstance = SwanNft__factory.connect(this._address, this._ethersProvider);
+        this._contractInstance = SwanERC721V1__factory.connect(this._address, this._ethersProvider);
     }
 
     get address(): string {
