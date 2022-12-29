@@ -1,3 +1,4 @@
+require("dotenv").config({ path: "../../.env" });
 import { HardhatUserConfig, task } from "hardhat/config";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
@@ -17,7 +18,7 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
-
+const deployerKey: string = process.env.EVM_DEPLOYER_KEY as string;
 const config: HardhatUserConfig = {
     solidity: "0.8.13",
     gasReporter: {
@@ -31,16 +32,16 @@ const config: HardhatUserConfig = {
         artifacts: "./artifacts"
     },
     networks: {
-        // fantomTestNet: {
-        //     url: `https://rpc.testnet.fantom.network`,
-        //     chainId: 4002,
-        //     accounts: ["key"]
-        // },
-        // fantomMainNet: {
-        //     url: `https://rpc.ankr.com/fantom/`,
-        //     chainId: 250,
-        //     accounts: ["key"]
-        // }
+        fantomTestNet: {
+            url: "https://rpc.ankr.com/fantom_testnet",
+            chainId: 4002,
+            accounts: [deployerKey]
+        },
+        fantomMainNet: {
+            url: `https://rpc.ankr.com/fantom/`,
+            chainId: 250,
+            accounts: [deployerKey]
+        }
     }
 };
 
