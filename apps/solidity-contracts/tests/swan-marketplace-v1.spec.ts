@@ -10,18 +10,14 @@ describe("Swan Marketplace Tests", () => {
     let deployedTestToken1155: TestToken1155;
 
     beforeEach(async () => {
-        const factory = await ethers.getContractFactory("SwanERC721V1");
-        deployedNft = (await upgrades.deployProxy(factory)) as SwanERC721V1;
+        const erc721Factory = await ethers.getContractFactory("SwanERC721V1");
+        const marketplaceFactory = await ethers.getContractFactory("SwanMarketplace");
+
+        deployedNft = (await upgrades.deployProxy(erc721Factory)) as SwanERC721V1;
+        deployedMarketplace = (await upgrades.deployProxy(marketplaceFactory)) as SwanMarketplace;
 
         await ethers
-            .getContractFactory("SwanMarketplace")
-            .then(() => ethers.getContractFactory("SwanMarketplace"))
-            .then((factory) => factory.deploy())
-            .then((deployed) => {
-                deployedMarketplace = deployed;
-                return deployed.deployed();
-            })
-            .then(() => ethers.getContractFactory("TestToken"))
+            .getContractFactory("TestToken")
             .then((factory) => factory.deploy())
             .then((deployed) => {
                 deployedTestToken = deployed;
@@ -35,7 +31,7 @@ describe("Swan Marketplace Tests", () => {
             });
     });
 
-    it("constructor - sets percentage and swan wallet correctly", async function () {
+    it("initialize - sets percentage and swan wallet", async function () {
         const [deployer] = await ethers.getSigners();
 
         expect(await deployedMarketplace.swanWallet()).to.equal(deployer.address);

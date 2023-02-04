@@ -1,8 +1,8 @@
 const hre = require("hardhat");
 
 async function deployMarketplace() {
-    const SwanMarketplace = await hre.ethers.getContractFactory("SwanMarketplace");
-    const marketplace = await SwanMarketplace.deploy();
+    const SwanMarketplaceFactory = await hre.ethers.getContractFactory("SwanMarketplace");
+    const marketplace = await hre.upgrades.deployProxy(SwanMarketplaceFactory);
     await marketplace.deployed();
     console.log("SwanMarketplace deployed to:", marketplace.address);
 }
