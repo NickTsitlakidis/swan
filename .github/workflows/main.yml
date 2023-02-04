@@ -23,6 +23,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: install dependencies
         run: npm ci
+      - name: create env file
+        run: |
+          touch .env
+          echo EVM_DEPLOYER_KEY=${{ secrets.TEST_EVM_DEPLOYER }} >> .env
       - name: libs dto lint
         run: npm run lint-libs-dto
       - name: libs contracts lint
