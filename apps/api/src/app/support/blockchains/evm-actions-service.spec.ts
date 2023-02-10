@@ -263,12 +263,8 @@ test("getUserNfts - throws if covalent response is not 200 OK", async () => {
     const blockchainRepoSpy = jest.spyOn(blockchainRepo, "findById").mockResolvedValue(blockchain);
     const fakeResponse: AxiosResponse = {
         status: 507,
-        data: {},
-        config: {},
-        headers: {},
-        request: {},
-        statusText: ""
-    };
+        data: {}
+    } as AxiosResponse;
     const covalentServiceSpy = jest.spyOn(covalentService, "fetchNfts").mockResolvedValue(fakeResponse);
 
     await expect(service.getUserNfts("otinanai", "the-chain-id")).rejects.toThrow(InternalServerErrorException);
@@ -293,11 +289,8 @@ test("getUserNfts - returns empty array if all nfts are invalid", async () => {
     const fakeResponse: AxiosResponse = {
         status: 200,
         data: covalentResponse,
-        config: {},
-        headers: {},
-        request: {},
         statusText: ""
-    };
+    } as AxiosResponse;
     const covalentServiceSpy = jest.spyOn(covalentService, "fetchNfts").mockResolvedValue(fakeResponse);
 
     const validatorSpy = jest.spyOn(validator, "validate").mockReturnValue(false);
@@ -334,11 +327,8 @@ test("getUserNfts - returns empty array if all nfts are erc20", async () => {
     const fakeResponse: AxiosResponse = {
         status: 200,
         data: clonedResponse,
-        config: {},
-        headers: {},
-        request: {},
         statusText: ""
-    };
+    } as AxiosResponse;
     const covalentServiceSpy = jest.spyOn(covalentService, "fetchNfts").mockResolvedValue(fakeResponse);
 
     const validatorSpy = jest.spyOn(validator, "validate").mockReturnValue(false);
@@ -367,11 +357,8 @@ test("getUserNfts - returns empty array if user has no items", async () => {
     const fakeResponse: AxiosResponse = {
         status: 200,
         data: clonedResponse,
-        config: {},
-        headers: {},
-        request: {},
         statusText: ""
-    };
+    } as AxiosResponse;
     const covalentServiceSpy = jest.spyOn(covalentService, "fetchNfts").mockResolvedValue(fakeResponse);
 
     const validatorSpy = jest.spyOn(validator, "validate").mockReturnValue(false);
@@ -403,19 +390,15 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
     const fakeResponse: AxiosResponse = {
         status: 200,
         data: clonesResponse,
-        config: {},
-        headers: {},
-        request: {},
         statusText: ""
-    };
+    } as AxiosResponse;
 
     const fakeResponseForFileTypeCategories: AxiosResponse = {
         headers: {
-            "content-type": "image/png"
+            "Content-Type": "image/png"
         },
         status: 206,
         statusText: "Partial Content",
-        config: {},
         data: new Uint8Array([
             137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 200, 0, 0, 0, 200, 8, 6, 0, 0, 0,
             173, 88, 174, 158, 0, 0, 0, 1, 115, 82, 71, 66, 0, 174, 206, 28, 233, 0, 0, 0, 68, 101, 88, 73, 102, 77, 77,
@@ -426,7 +409,7 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
             216, 191, 223, 2, 34, 32, 136, 93, 138, 34, 10, 98, 3, 84, 154, 160, 168, 180, 16, 154, 129, 116, 2, 36,
             244, 78, 10, 100, 255
         ])
-    };
+    } as AxiosResponse;
 
     const category = new Category();
     category.name = "image";
@@ -523,19 +506,15 @@ test("getUserNfts - returns array with excluded nfts of swan contracts", async (
     const fakeResponse: AxiosResponse = {
         status: 200,
         data: clonesResponse,
-        config: {},
-        headers: {},
-        request: {},
         statusText: ""
-    };
+    } as AxiosResponse;
 
     const fakeResponseForFileTypeCategories: AxiosResponse = {
         headers: {
-            "content-type": "image/png"
+            "Content-Type": "image/png"
         },
         status: 206,
         statusText: "Partial Content",
-        config: {},
         data: new Uint8Array([
             137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 200, 0, 0, 0, 200, 8, 6, 0, 0, 0,
             173, 88, 174, 158, 0, 0, 0, 1, 115, 82, 71, 66, 0, 174, 206, 28, 233, 0, 0, 0, 68, 101, 88, 73, 102, 77, 77,
@@ -546,7 +525,7 @@ test("getUserNfts - returns array with excluded nfts of swan contracts", async (
             216, 191, 223, 2, 34, 32, 136, 93, 138, 34, 10, 98, 3, 84, 154, 160, 168, 180, 16, 154, 129, 116, 2, 36,
             244, 78, 10, 100, 255
         ])
-    };
+    } as AxiosResponse;
 
     const category = new Category();
     category.name = "image";
