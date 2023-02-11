@@ -1,9 +1,8 @@
 export enum SupportedWallets {
     SOLFLARE = "Solflare",
     PHANTOM = "Phantom",
-    SLOPE = "Slope",
-    TORUS = "Torus",
-    LEDGER = "Ledger",
-    SOLLET = "Sollet",
+    BINANCE = "Binance",
+    COINBASE = "Coinbase",
+    TRUST = "Trust",
     METAMASK = "Metamask"
 }

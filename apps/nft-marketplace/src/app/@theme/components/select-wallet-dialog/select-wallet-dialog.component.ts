@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from "@angular/core";
+import { DynamicDialogConfig, DynamicDialogRef } from "primeng/dynamicdialog";
 
 @Component({
     selector: "nft-marketplace-select-wallet-dialog",
@@ -10,11 +11,11 @@ import { ChangeDetectionStrategy, Component, ViewEncapsulation } from "@angular/
 export class SelectWalletDialogComponent {
     public wallets: { img: string; title: string; chain: string }[];
 
-    constructor() {
-        //this.wallets = data.wallets;
+    constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig) {
+        this.wallets = this.config.data.wallets;
     }
 
     close(walletName: string) {
-        //this.dialogRef.close(walletName);
+        this.ref.close(walletName);
     }
 }
