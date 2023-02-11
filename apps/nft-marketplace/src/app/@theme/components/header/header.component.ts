@@ -10,9 +10,9 @@ import {
 import { Router } from "@angular/router";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
 import { firstValueFrom, of } from "rxjs";
-import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets-facade";
 import { UserFacade } from "../../../@core/store/user-facade";
 import { Janitor } from "../../../@core/components/janitor";
+import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
 
 @Component({
     selector: "nft-marketplace-header",
@@ -23,7 +23,7 @@ import { Janitor } from "../../../@core/components/janitor";
 export class HeaderComponent extends Janitor implements OnInit {
     public walletName: SupportedWallets;
     public selectedWallets: BlockchainDto[] | undefined;
-    public chainsNew: BlockchainWalletDto[];
+    public chainsNew: BlockchainWalletDto[]; //todo: replace with mobx
 
     public menuitems = [
         {
@@ -56,7 +56,7 @@ export class HeaderComponent extends Janitor implements OnInit {
     public selectedWallet: BlockchainDto | undefined;
 
     constructor(
-        private _blockchainWalletsFacade: BlockchainWalletsFacade,
+        private _blockchainWalletsStore: BlockchainWalletsStore,
         private _router: Router,
         private _cd: ChangeDetectorRef,
         private _walletRegistryService: WalletRegistryService,
@@ -67,34 +67,29 @@ export class HeaderComponent extends Janitor implements OnInit {
     }
 
     ngOnInit() {
-        const blockchainsSub = this._blockchainWalletsFacade.streamWallets().subscribe((blockchainWallets) => {
-            this.chainsNew = blockchainWallets;
+        this.chainsNew = this._blockchainWalletsStore.wallets;
 
-            const userSub = this._userFacade.streamUser().subscribe((user) => {
-                if (user) {
-                    this.userWallets = user.wallets;
-                    this.selectedWallets = this.chainsNew
-                        .flatMap((w) => w.wallets)
-                        .filter((wallet) =>
-                            this.userWallets.find(
-                                (w) => w.wallet.chainId === wallet.chainId && w.wallet.id === wallet.id
-                            )
-                        );
-                    this.selectedWallets.forEach((wal) => {
-                        if (!this.isSelected[wal.chainId]) {
-                            this.isSelected[wal.chainId] = {};
-                        }
-                        this.isSelected[wal.chainId][wal.name] = true;
-                    });
-                    // TODO previously used wallet functionality?
-                    this.selectedWallet = this.selectedWallets[0];
-                }
-                this._cd.detectChanges();
-            });
-            this.addSubscription(userSub);
+        const userSub = this._userFacade.streamUser().subscribe((user) => {
+            if (user) {
+                this.userWallets = user.wallets;
+                this.selectedWallets = this.chainsNew
+                    .flatMap((w) => w.wallets)
+                    .filter((wallet) =>
+                        this.userWallets.find((w) => w.wallet.chainId === wallet.chainId && w.wallet.id === wallet.id)
+                    );
+                this.selectedWallets.forEach((wal) => {
+                    if (!this.isSelected[wal.chainId]) {
+                        this.isSelected[wal.chainId] = {};
+                    }
+                    this.isSelected[wal.chainId][wal.name] = true;
+                });
+                // TODO previously used wallet functionality?
+                this.selectedWallet = this.selectedWallets[0];
+            }
+            this._cd.detectChanges();
         });
+        this.addSubscription(userSub);
         this._userFacade.refreshUser();
-        this.addSubscription(blockchainsSub);
     }
 
     public async walletSelected(event: { originalEvent: PointerEvent; value: BlockchainDto }) {

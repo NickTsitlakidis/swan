@@ -5,6 +5,12 @@ export class ComplexState<T> {
     private _error: Error;
     private _isLoading: boolean;
 
+    static fromLoading<T>(): ComplexState<T> {
+        const toReturn = new ComplexState<T>();
+        toReturn._isLoading = true;
+        return toReturn;
+    }
+
     static fromError<T>(error: Error): ComplexState<T> {
         const toReturn = new ComplexState<T>();
         toReturn._error = error;
@@ -33,5 +39,9 @@ export class ComplexState<T> {
 
     get isEmpty(): boolean {
         return isNil(this._state) && isNil(this._error);
+    }
+
+    get hasState(): boolean {
+        return !isNil(this._state);
     }
 }

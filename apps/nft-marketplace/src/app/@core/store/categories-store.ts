@@ -1,19 +1,37 @@
 import { CategoryDto } from "@swan/dto";
-import { action, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable, runInAction } from "mobx";
 import { Injectable } from "@angular/core";
+import { SupportService } from "../services/support/support.service";
+import { ComplexState } from "./complex-state";
 
 @Injectable({ providedIn: "root" })
 export class CategoriesStore {
     @observable
-    categories: Array<CategoryDto>;
+    categoriesState: ComplexState<Array<CategoryDto>>;
 
-    constructor() {
-        this.categories = [];
+    constructor(private _supportService: SupportService) {
+        this.categoriesState = new ComplexState<Array<CategoryDto>>();
         makeObservable(this);
+        this.fetchCategories();
+    }
+
+    @computed
+    get isLoading(): boolean {
+        return this.categoriesState.isLoading;
+    }
+
+    @computed
+    get categories(): Array<CategoryDto> {
+        return this.categoriesState.hasState ? this.categoriesState.state.slice(0) : [];
     }
 
     @action
-    setCategories(categories: Array<CategoryDto>) {
-        this.categories = [...categories];
+    fetchCategories() {
+        this.categoriesState = ComplexState.fromLoading();
+        this._supportService.getCategories().subscribe((categories) => {
+            runInAction(() => {
+                this.categoriesState = ComplexState.fromSuccess(categories);
+            });
+        });
     }
 }

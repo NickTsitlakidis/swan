@@ -79,19 +79,24 @@ export class SolanaWalletService implements WalletService {
         this._connectionStore.setEndpoint(endpoint);
     }
 
-    public signMessage(message: string): Observable<string | undefined> {
+    public signMessage(message: string): Observable<string> {
         const signMessage$ = this.walletStore.signMessage(new TextEncoder().encode(message));
 
         if (!signMessage$) {
-            console.error(new Error("Sign message method is not defined"));
-            return of();
+            return throwError(() => new Error("Sign message method is not defined"));
         }
 
         return signMessage$.pipe(
             map((signature) => {
                 return base58.encode(signature);
             }),
-            first()
+            first(),
+            switchMap((signed) => {
+                if(signed) {
+                    return of(signed);
+                }
+                return throwError(() => new Error("Unable to sign message through Solana wallet"));
+            })
         );
     }
 

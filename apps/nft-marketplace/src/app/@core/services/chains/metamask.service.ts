@@ -60,11 +60,17 @@ export class MetamaskService implements WalletService {
         );
     }
 
-    signMessage(message: string): Observable<string | undefined> {
+    signMessage(message: string): Observable<string> {
         return this.getEthersProvider().pipe(
             map((provider) => provider.getSigner()),
             switchMap((signer) => {
                 return from(signer.signMessage(message));
+            }),
+            switchMap((signed) => {
+                if(signed) {
+                    return of(signed);
+                }
+                return throwError(() => new Error("Unable to sign message through Metamask"));
             })
         );
     }

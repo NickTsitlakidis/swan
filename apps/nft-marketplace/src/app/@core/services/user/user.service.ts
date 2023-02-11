@@ -9,8 +9,7 @@ import {
     RefreshTokenDto,
     StartSignatureAuthenticationDto,
     TokenDto,
-    UserDto,
-    UserWalletDto
+    UserDto
 } from "@swan/dto";
 import { map } from "rxjs/operators";
 import { plainToClass, plainToInstance } from "class-transformer";
@@ -19,8 +18,6 @@ import { plainToClass, plainToInstance } from "class-transformer";
     providedIn: "root"
 })
 export class UserService {
-    public wallets: UserWalletDto[] = [];
-
     constructor(private readonly _httpClient: HttpClient) {}
 
     startSignatureAuthentication(body: StartSignatureAuthenticationDto): Observable<NonceDto> {

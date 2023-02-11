@@ -3,6 +3,7 @@ import { ClientAuthService } from "./@core/services/authentication/client_auth.s
 import { AnalyticsService } from "./@core/utils";
 import { WalletRegistryService } from "./@core/services/chains/wallet-registry.service";
 import { PrimeNGConfig } from "primeng/api";
+import { EvmContractsStore } from "./@core/store/evm-contracts-store";
 
 @Component({
     selector: "nft-marketplace-root",
@@ -10,17 +11,18 @@ import { PrimeNGConfig } from "primeng/api";
 })
 export class AppComponent implements OnInit {
     constructor(
+        private _contractsStore: EvmContractsStore,
         private _analytics: AnalyticsService,
         private _clientAuthService: ClientAuthService,
         private _walletRegistry: WalletRegistryService,
-        private primengConfig: PrimeNGConfig
+        private _primengConfig: PrimeNGConfig
     ) {}
 
     ngOnInit(): void {
         this._analytics.trackPageViews();
         this._clientAuthService.getAndStoreClientToken().subscribe(() => {
             this._walletRegistry.populateRegistry();
-            this.primengConfig.ripple = true;
+            this._primengConfig.ripple = true;
         });
     }
 }

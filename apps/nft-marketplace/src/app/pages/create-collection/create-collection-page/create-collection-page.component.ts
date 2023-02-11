@@ -1,12 +1,12 @@
-import { CategoriesFacade } from "../../../@core/store/categories-facade";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { CategoryDto, CollectionLinksDto, CreateCollectionDto } from "@swan/dto";
 import { CollectionsService } from "../../../@core/services/collections/collections.service";
 import { ValidateName, ValidateUrl } from "./create-collection-page.validator";
 import { DisplayedBlockchains, DisplayPaymentTokens } from "./create-collection";
-import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets-facade";
 import { Janitor } from "../../../@core/components/janitor";
+import { CategoriesStore } from "../../../@core/store/categories-store";
+import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
 
 @Component({
     selector: "nft-marketplace-create-collection-page",
@@ -83,15 +83,11 @@ export class CreateCollectionPageComponent extends Janitor implements OnInit {
     constructor(
         private _fb: UntypedFormBuilder,
         private _collectionsService: CollectionsService,
-        private _blockchainWalletsFacade: BlockchainWalletsFacade,
-        private _categoriesFacade: CategoriesFacade,
+        private _blockchainWalletsStore: BlockchainWalletsStore,
+        private _categoriesStore: CategoriesStore,
         private _cd: ChangeDetectorRef
     ) {
         super();
-        const categorySub = this._categoriesFacade.streamCategories().subscribe((categories) => {
-            this.categories = categories;
-        });
-        this.addSubscription(categorySub);
     }
 
     ngOnInit(): void {
@@ -114,22 +110,19 @@ export class CreateCollectionPageComponent extends Janitor implements OnInit {
             sensitiveContent: [undefined]
         });
 
-        const sub = this._blockchainWalletsFacade.streamWallets().subscribe((chainWallets) => {
-            this.blockchains = chainWallets.map((chain) => {
-                return {
-                    name: chain.blockchain.name,
-                    id: chain.blockchain.id
-                };
-            });
-            this.paymentTokens = chainWallets.map((chain) => {
-                return {
-                    name: chain.mainTokenSymbol
-                };
-            });
-            this._cd.detectChanges();
+        this.categories = this._categoriesStore.categories;
+        this.blockchains = this._blockchainWalletsStore.wallets.map((chain) => {
+            return {
+                name: chain.blockchain.name,
+                id: chain.blockchain.id
+            };
         });
-
-        this.addSubscription(sub);
+        this.paymentTokens = this._blockchainWalletsStore.wallets.map((chain) => {
+            return {
+                name: chain.mainTokenSymbol
+            };
+        });
+        this._cd.detectChanges();
     }
 
     updateLogoImage(file: File | null) {

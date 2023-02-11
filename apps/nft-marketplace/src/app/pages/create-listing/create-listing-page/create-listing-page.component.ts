@@ -5,11 +5,11 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@
 import { ActivateListingDto, BlockchainWalletDto, CreateListingDto, ProfileNftDto, SubmitListingDto } from "@swan/dto";
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { isEqual } from "lodash";
-import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets-facade";
 import { Janitor } from "../../../@core/components/janitor";
 import { UserFacade } from "../../../@core/store/user-facade";
-import { EvmContractsFacade } from "../../../@core/store/evm-contracts-facade";
 import { NftService } from "../../../@core/services/chains/nfts/nft.service";
+import { EvmContractsStore } from "../../../@core/store/evm-contracts-store";
+import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
 
 @Component({
     selector: "nft-marketplace-create-listing-page",
@@ -23,14 +23,14 @@ export class CreateListingPageComponent extends Janitor implements OnInit {
     public userNfts: ProfileNftDto[];
 
     constructor(
-        private _blockchainWalletsFacade: BlockchainWalletsFacade,
-        private _evmContractsFacade: EvmContractsFacade,
+        private _blockchainWalletsStore: BlockchainWalletsStore,
         private _fb: UntypedFormBuilder,
         private _cd: ChangeDetectorRef,
         private _listingsService: ListingsService,
         private _walletRegistryService: WalletRegistryService,
         private _userFacade: UserFacade,
-        private _nftService: NftService
+        private _nftService: NftService,
+        private _contractsStore: EvmContractsStore
     ) {
         super();
     }
@@ -80,25 +80,22 @@ export class CreateListingPageComponent extends Janitor implements OnInit {
             await firstValueFrom(this._nftService.createExternalNft(nft).pipe(mergeMap(() => EMPTY)));
         }
 
-        const [listingEntity, walletService, blockchainWallets, marketplaceContracts] = await firstValueFrom(
+        const [listingEntity, walletService] = await firstValueFrom(
             this._listingsService.createListing(dto).pipe(
                 mergeMap((listingEntity) => {
-                    return zip(
-                        of(listingEntity),
-                        this._walletRegistryService.getWalletService(nft.walletId),
-                        this._blockchainWalletsFacade.streamWallets(),
-                        this._evmContractsFacade.streamMarketplaceContracts()
-                    );
+                    return zip(of(listingEntity), this._walletRegistryService.getWalletService(nft.walletId));
                 })
             )
         );
 
         if (walletService) {
-            const matchingWallets = blockchainWallets.find(
+            const matchingWallets = this._blockchainWalletsStore.wallets.find(
                 (wallets) => wallets.blockchain.id === nft.blockchain.id
             ) as BlockchainWalletDto;
 
-            const matchingContract = marketplaceContracts.find((c) => c.blockchainId === nft.blockchain.id);
+            const matchingContract = this._contractsStore.marketplaceContracts.find(
+                (c) => c.blockchainId === nft.blockchain.id
+            );
 
             const transactionHash = await firstValueFrom(
                 walletService.createListing({

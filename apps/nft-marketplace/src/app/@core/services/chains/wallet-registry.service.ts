@@ -3,8 +3,9 @@ import { MetamaskService } from "./metamask.service";
 import { Injectable } from "@angular/core";
 import { SolflareWalletService } from "./solana-services/solflare.wallet.service";
 import { PhantomWalletService } from "./solana-services/phantom.wallet.service";
-import { map, Observable, of, Subject } from "rxjs";
-import { BlockchainWalletsFacade } from "../../store/blockchain-wallets-facade";
+import { Observable, of, Subject, switchMap, throwError } from "rxjs";
+import { BlockchainWalletsStore } from "../../store/blockchain-wallets-store";
+import { when } from "mobx";
 
 @Injectable({
     providedIn: "root"
@@ -17,27 +18,42 @@ export class WalletRegistryService {
         private _metamaskService: MetamaskService,
         private _solflareService: SolflareWalletService,
         private _phantomService: PhantomWalletService,
-        private _blockchainWalletsFacade: BlockchainWalletsFacade //todo: facades can potentially use this class. maybe a better architecture to avoid cyclic dependency
+        private _blockchainWalletsStore: BlockchainWalletsStore
     ) {
         this._registry = new Map();
         this._registryPopulated = new Subject<boolean>();
     }
 
-    getWalletService(walletId: string): Observable<WalletService | undefined> {
+    getWalletService(walletId: string): Observable<WalletService> {
         if (this._registry.size > 0) {
-            return of(this._registry.get(walletId));
+            const found = this._registry.get(walletId);
+            if (found) {
+                return of(found);
+            } else {
+                return throwError(() => "Unable to find wallet in registry");
+            }
         }
 
         return this._registryPopulated.pipe(
-            map(() => {
-                return this._registry.get(walletId);
+            switchMap(() => {
+                const found = this._registry.get(walletId);
+                if (found) {
+                    return of(found);
+                } else {
+                    return throwError(() => "Unable to find wallet in registry");
+                }
             })
         );
     }
 
     populateRegistry() {
-        this._blockchainWalletsFacade.streamWallets().subscribe((results) => {
-            results.forEach((dto) => {
+        const promise =
+            this._blockchainWalletsStore.wallets.length > 0
+                ? Promise.resolve()
+                : when(() => this._blockchainWalletsStore.wallets.length > 0, { timeout: 2000 });
+
+        promise.then(() => {
+            this._blockchainWalletsStore.wallets.forEach((dto) => {
                 dto.wallets.forEach((wallet) => {
                     if (!this._registry.has(wallet.id)) {
                         if (wallet.name === "Metamask") {
@@ -49,8 +65,8 @@ export class WalletRegistryService {
                         }
                     }
                 });
+                this._registryPopulated.next(true);
             });
-            this._registryPopulated.next(true);
         });
     }
 }

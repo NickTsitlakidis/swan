@@ -4,13 +4,12 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { plainToInstance } from "class-transformer";
 import { map, switchMap } from "rxjs/operators";
-import { SupportModule } from "./support.module";
 import { environment } from "../../../../environments/environment";
 import { SignS3URIResponse } from "./support";
 import { v4 as uuidv4 } from "uuid";
 
 @Injectable({
-    providedIn: SupportModule
+    providedIn: "root"
 })
 export class SupportService {
     constructor(private _httpClient: HttpClient) {}

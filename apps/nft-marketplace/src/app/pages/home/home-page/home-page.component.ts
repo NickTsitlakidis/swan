@@ -1,11 +1,10 @@
 import { BuyListingDto, ListingDto, PaginationDto } from "@swan/dto";
 import { Component, OnInit } from "@angular/core";
 import { ListingsService } from "../../../@core/services/listings/listings.service";
-import { BlockchainWalletsFacade } from "../../../@core/store/blockchain-wallets-facade";
-import { filter, first } from "rxjs/operators";
-import { from, of, switchMap, throwError, zip } from "rxjs";
+import { switchMap, throwError, zip } from "rxjs";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
 import { isNil } from "lodash";
+import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
 
 @Component({
     selector: "nft-marketplace-home-page",
@@ -16,7 +15,7 @@ export class HomePageComponent implements OnInit {
     listings: ListingDto[];
     constructor(
         private _listingService: ListingsService,
-        private _blockchainWalletsFacade: BlockchainWalletsFacade,
+        private _blockchainWalletsStore: BlockchainWalletsStore,
         private _walletRegistry: WalletRegistryService
     ) {}
 
@@ -32,31 +31,32 @@ export class HomePageComponent implements OnInit {
     }
 
     buyToken(listing: ListingDto) {
-        this._blockchainWalletsFacade
-            .streamBlockchains()
-            .pipe(
-                switchMap((chains) => from(chains)),
-                filter((everyChain) => everyChain.id === listing.blockchainId),
-                first(),
-                switchMap((blockchain) => {
-                    return zip(this._walletRegistry.getWalletService(listing.walletId), of(blockchain));
-                }),
-                switchMap(([walletService, blockchain]) => {
-                    if (isNil(walletService)) {
-                        return throwError(() => "No service found for wallet");
-                    }
-                    return walletService.buyToken(listing, blockchain);
-                }),
-                switchMap((hash) => {
-                    const dto = new BuyListingDto();
-                    dto.chainTransactionHash = hash;
-                    dto.listingId = listing.id;
-                    dto.walletId = listing.walletId;
-                    return this._listingService.buyListing(dto);
-                })
-            )
-            .subscribe((result) => {
-                console.log(result);
-            });
+        const listingChain = this._blockchainWalletsStore.blockchains.find(
+            (everyChain) => everyChain.id === listing.blockchainId
+        );
+        if (listingChain) {
+            this._walletRegistry
+                .getWalletService(listing.walletId)
+                .pipe(
+                    switchMap((walletService) => {
+                        if (isNil(walletService)) {
+                            return throwError(() => "No service found for wallet");
+                        }
+                        return walletService.buyToken(listing, listingChain);
+                    }),
+                    switchMap((hash) => {
+                        const dto = new BuyListingDto();
+                        dto.chainTransactionHash = hash;
+                        dto.listingId = listing.id;
+                        dto.walletId = listing.walletId;
+                        return this._listingService.buyListing(dto);
+                    })
+                )
+                .subscribe((result) => {
+                    console.log(result);
+                });
+        } else {
+            //todo: should only happen if the listing chain is disabled in swan, display error
+        }
     }
 }

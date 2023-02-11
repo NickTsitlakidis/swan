@@ -7,7 +7,7 @@ import { CreateListing } from "./create-listing";
 
 export interface WalletService {
     getPublicKey(): Observable<string>;
-    signMessage(message: string): Observable<string | undefined>;
+    signMessage(message: string): Observable<string>;
     mint(nft: CreateNft): Observable<NftMintTransactionDto>;
     getEvents(): Observable<WalletEvent>;
     createListing(listing: CreateListing): Observable<string>;
