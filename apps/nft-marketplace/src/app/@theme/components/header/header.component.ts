@@ -9,6 +9,7 @@ import { UserStore } from "../../../@core/store/user-store";
 import { isNil } from "lodash";
 import { makeObservable, when } from "mobx";
 import { computed } from "mobx-angular";
+import { ProgressStore } from "../../../@core/store/progress-store";
 
 @Component({
     selector: "nft-marketplace-header",
@@ -50,6 +51,7 @@ export class HeaderComponent implements OnInit {
 
     constructor(
         private _blockchainWalletsStore: BlockchainWalletsStore,
+        private _progressStore: ProgressStore,
         private _userStore: UserStore,
         private _router: Router,
         private _cd: ChangeDetectorRef,
@@ -84,6 +86,11 @@ export class HeaderComponent implements OnInit {
     @computed
     get wallets(): Array<BlockchainWalletDto> {
         return this._blockchainWalletsStore.wallets;
+    }
+
+    @computed
+    get isInProgress(): boolean {
+        return this._progressStore.isInProgress;
     }
 
     public async walletSelected(event: { originalEvent: PointerEvent; value: BlockchainDto }) {

@@ -1,49 +1,56 @@
-<div class="header" *mobxAutorun>
-    <div class="header-container w-100">
-        <div class="columns w-100">
-            <div class="column is-flex is-align-content-center" (click)="navigateTo('home')">
-                <span class="header-title">NFT Marketplace</span>
-            </div>
-            <div class="column">
-                <button pButton hero shape="semi-round" status="primary" (click)="navigateTo('/create-collection')">
-                    <i class="fa-regular fa-square-plus mr-3"></i>Create collection
-                </button>
-                <button
-                    pButton
-                    class="ml-4"
-                    hero
-                    shape="semi-round"
-                    status="primary"
-                    (click)="navigateTo('/create-nft')"
-                >
-                    <i class="fa-regular fa-square-plus mr-3"></i>Create nft
-                </button>
-                <button
-                    pButton
-                    class="ml-4"
-                    hero
-                    shape="semi-round"
-                    status="primary"
-                    (click)="navigateTo('/create-listing')"
-                >
-                    <i class="fa-regular fa-square-plus mr-3"></i>Create listing
-                </button>
-            </div>
-            <div class="column is-flex is-justify-content-center is-align-content-center">
-                <p-cascadeSelect
-                    class="mr-4"
-                    placeholder="Select a wallet"
-                    [(ngModel)]="selectedWallet"
-                    (onChange)="walletSelected($event)"
-                    [options]="wallets"
-                    optionLabel="name"
-                    optionGroupLabel="blockchain.name"
-                    [optionGroupChildren]="['wallets']"
-                ></p-cascadeSelect>
+<section *mobxAutorun>
+    <div [class]="{'is-invisible':!isInProgress}">
+        <p-progressBar mode="indeterminate" [style]="{'height': '4px'}"></p-progressBar>
+    </div>
 
-                <button type="button" pButton icon="pi pi-bars" (click)="menu.toggle($event)"></button>
-                <p-menu #menu [popup]="true" [model]="menuitems"></p-menu>
+    <div class="header">
+        <div class="header-container w-100">
+            <div class="columns w-100">
+                <div class="column is-flex is-align-content-center" (click)="navigateTo('home')">
+                    <span class="header-title">NFT Marketplace</span>
+                </div>
+                <div class="column">
+                    <button pButton hero shape="semi-round" status="primary" (click)="navigateTo('/create-collection')">
+                        <i class="fa-regular fa-square-plus mr-3"></i>Create collection
+                    </button>
+                    <button
+                        pButton
+                        class="ml-4"
+                        hero
+                        shape="semi-round"
+                        status="primary"
+                        (click)="navigateTo('/create-nft')"
+                    >
+                        <i class="fa-regular fa-square-plus mr-3"></i>Create nft
+                    </button>
+                    <button
+                        pButton
+                        class="ml-4"
+                        hero
+                        shape="semi-round"
+                        status="primary"
+                        (click)="navigateTo('/create-listing')"
+                    >
+                        <i class="fa-regular fa-square-plus mr-3"></i>Create listing
+                    </button>
+                </div>
+                <div class="column is-flex is-justify-content-center is-align-content-center">
+                    <p-cascadeSelect
+                        class="mr-4"
+                        placeholder="Select a wallet"
+                        [(ngModel)]="selectedWallet"
+                        (onChange)="walletSelected($event)"
+                        [options]="wallets"
+                        optionLabel="name"
+                        optionGroupLabel="blockchain.name"
+                        [optionGroupChildren]="['wallets']"
+                    ></p-cascadeSelect>
+
+                    <button type="button" pButton icon="pi pi-bars" (click)="menu.toggle($event)"></button>
+                    <p-menu #menu [popup]="true" [model]="menuitems"></p-menu>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+
