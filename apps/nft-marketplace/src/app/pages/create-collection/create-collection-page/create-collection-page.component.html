@@ -2,8 +2,8 @@
     <h2 class="has-text-centered is-size-2 m-4 has-text-weight-bold">Create your collection</h2>
 </div>
 
-<div class="container" *ngIf="blockchains?.length">
-    <div class="is-offset-one-fifth">
+<div class="container" *mobxAutorun>
+    <div class="is-offset-one-fifth" *ngIf="blockchains?.length">
         <form [formGroup]="createCollectionForm" (ngSubmit)="onSubmit()">
             <div class="columns">
                 <div class="column text-description">* Required fields</div>

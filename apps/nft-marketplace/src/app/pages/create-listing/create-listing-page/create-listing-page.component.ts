@@ -9,7 +9,8 @@ import { NftService } from "../../../@core/services/chains/nfts/nft.service";
 import { EvmContractsStore } from "../../../@core/store/evm-contracts-store";
 import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
 import { UserNftsStore } from "../../../@core/store/user-nfts-store";
-import { computed } from "mobx";
+import { computed } from "mobx-angular";
+import { makeObservable } from "mobx";
 
 @Component({
     selector: "nft-marketplace-create-listing-page",
@@ -30,7 +31,9 @@ export class CreateListingPageComponent implements OnInit {
         private _nftService: NftService,
         private _userNftsStore: UserNftsStore,
         private _contractsStore: EvmContractsStore
-    ) {}
+    ) {
+        makeObservable(this);
+    }
 
     ngOnInit(): void {
         this.createListingForm = this._fb.group({

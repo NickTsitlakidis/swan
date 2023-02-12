@@ -35,7 +35,7 @@
                     placeholder="Select a wallet"
                     [(ngModel)]="selectedWallet"
                     (onChange)="walletSelected($event)"
-                    [options]="blockchainWalletsStore.wallets"
+                    [options]="wallets"
                     optionLabel="name"
                     optionGroupLabel="blockchain.name"
                     [optionGroupChildren]="['wallets']"

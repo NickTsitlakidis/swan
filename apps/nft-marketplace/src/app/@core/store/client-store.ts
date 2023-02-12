@@ -1,12 +1,13 @@
 import { Injectable } from "@angular/core";
 import { StateStore } from "./state-store";
-import { action, computed, makeObservable, observable, runInAction } from "mobx";
 import { ComplexState } from "./complex-state";
 import { TokenDto } from "@swan/dto";
 import { isNil } from "lodash";
 import { DateTime } from "luxon";
 import { LocalStorageService } from "ngx-webstorage";
 import { ClientService } from "../services/client/client-service";
+import { action, computed, observable } from "mobx-angular";
+import { makeObservable, runInAction } from "mobx";
 
 @Injectable({ providedIn: "root" })
 export class ClientStore implements StateStore {

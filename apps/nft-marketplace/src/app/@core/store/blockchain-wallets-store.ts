@@ -1,10 +1,11 @@
 import { BlockchainDto, BlockchainWalletDto } from "@swan/dto";
-import { action, computed, makeObservable, observable, runInAction } from "mobx";
+import { action, computed, observable } from "mobx-angular";
 import { Injectable } from "@angular/core";
 import { unique } from "radash";
 import { ComplexState } from "./complex-state";
 import { SupportService } from "../services/support/support.service";
 import { StateStore } from "./state-store";
+import { makeObservable, runInAction } from "mobx";
 
 @Injectable({ providedIn: "root" })
 export class BlockchainWalletsStore implements StateStore {
@@ -30,6 +31,15 @@ export class BlockchainWalletsStore implements StateStore {
     @computed
     get wallets(): Array<BlockchainWalletDto> {
         return this.walletsState.hasState ? this.walletsState.state.slice(0) : [];
+    }
+
+    @computed
+    get tokenSymbols(): Array<string> {
+        if (!this.walletsState.hasState) {
+            return [];
+        }
+
+        return unique(this.walletsState.state.map((dto) => dto.mainTokenSymbol));
     }
 
     @computed

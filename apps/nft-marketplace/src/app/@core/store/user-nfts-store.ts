@@ -1,9 +1,10 @@
 import { Injectable } from "@angular/core";
-import { action, computed, makeObservable, observable, runInAction } from "mobx";
 import { ComplexState } from "./complex-state";
 import { ProfileNftDto } from "@swan/dto";
 import { UserService } from "../services/user/user.service";
 import { StateStore } from "./state-store";
+import { action, computed, observable } from "mobx-angular";
+import { makeObservable, runInAction } from "mobx";
 
 @Injectable({ providedIn: "root" })
 export class UserNftsStore implements StateStore {

@@ -1,5 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { UserNftsStore } from "../../../@core/store/user-nfts-store";
+import { makeObservable } from "mobx";
+import { computed } from "mobx-angular";
+import { ProfileNftDto } from "@swan/dto";
 
 @Component({
     selector: "nft-marketplace-profile-page",
@@ -7,11 +10,18 @@ import { UserNftsStore } from "../../../@core/store/user-nfts-store";
     styleUrls: ["./profile-page.component.scss"]
 })
 export class ProfilePageComponent implements OnInit {
-    constructor(public userNftsStore: UserNftsStore) {}
+    constructor(private _userNftsStore: UserNftsStore) {
+        makeObservable(this);
+    }
 
     ngOnInit(): void {
-        if (this.userNftsStore.all.length === 0) {
-            this.userNftsStore.fetchNft();
+        if (this._userNftsStore.all.length === 0) {
+            this._userNftsStore.fetchNft();
         }
+    }
+
+    @computed
+    get allNfts(): Array<ProfileNftDto> {
+        return this._userNftsStore.all;
     }
 }

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import { BlockchainDto, StartSignatureAuthenticationDto, SupportedWallets } from "@swan/dto";
+import { BlockchainDto, BlockchainWalletDto, StartSignatureAuthenticationDto } from "@swan/dto";
 
 import { Router } from "@angular/router";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
@@ -7,7 +7,8 @@ import { firstValueFrom, of } from "rxjs";
 import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
 import { UserStore } from "../../../@core/store/user-store";
 import { isNil } from "lodash";
-import { when } from "mobx";
+import { makeObservable, when } from "mobx";
+import { computed } from "mobx-angular";
 
 @Component({
     selector: "nft-marketplace-header",
@@ -16,7 +17,6 @@ import { when } from "mobx";
     templateUrl: "./header.component.html"
 })
 export class HeaderComponent implements OnInit {
-    public walletName: SupportedWallets;
     public selectedWallets: BlockchainDto[] | undefined;
 
     public menuitems = [
@@ -49,18 +49,20 @@ export class HeaderComponent implements OnInit {
     public selectedWallet: BlockchainDto | undefined;
 
     constructor(
-        public blockchainWalletsStore: BlockchainWalletsStore,
+        private _blockchainWalletsStore: BlockchainWalletsStore,
         private _userStore: UserStore,
         private _router: Router,
         private _cd: ChangeDetectorRef,
         private _walletRegistryService: WalletRegistryService
-    ) {}
+    ) {
+        makeObservable(this);
+    }
 
     ngOnInit() {
         when(() => !this._userStore.userState.isLoading).then(() => {
             const storedUser = this._userStore.user;
             if (!isNil(storedUser)) {
-                this.selectedWallets = this.blockchainWalletsStore.wallets
+                this.selectedWallets = this._blockchainWalletsStore.wallets
                     .flatMap((w) => w.wallets)
                     .filter((wallet) =>
                         storedUser.wallets.find((w) => w.wallet.chainId === wallet.chainId && w.wallet.id === wallet.id)
@@ -77,6 +79,11 @@ export class HeaderComponent implements OnInit {
             this._cd.detectChanges();
         });
         this._cd.detectChanges();
+    }
+
+    @computed
+    get wallets(): Array<BlockchainWalletDto> {
+        return this._blockchainWalletsStore.wallets;
     }
 
     public async walletSelected(event: { originalEvent: PointerEvent; value: BlockchainDto }) {

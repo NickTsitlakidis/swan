@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { action, computed, makeObservable, observable, runInAction } from "mobx";
+import { makeObservable, runInAction } from "mobx";
 import {
     CompleteSignatureAuthenticationDto,
     ProfileNftDto,
@@ -15,6 +15,7 @@ import { switchMap } from "rxjs";
 import { isNil } from "lodash";
 import { DateTime } from "luxon";
 import { StateStore } from "./state-store";
+import { action, computed, observable } from "mobx-angular";
 
 @Injectable({ providedIn: "root" })
 export class UserStore implements StateStore {

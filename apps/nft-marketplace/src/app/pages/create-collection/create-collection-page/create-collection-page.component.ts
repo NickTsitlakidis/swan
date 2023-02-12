@@ -1,11 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
-import { CategoryDto, CollectionLinksDto, CreateCollectionDto } from "@swan/dto";
+import { BlockchainDto, CategoryDto, CollectionLinksDto, CreateCollectionDto } from "@swan/dto";
 import { CollectionsService } from "../../../@core/services/collections/collections.service";
 import { ValidateName, ValidateUrl } from "./create-collection-page.validator";
-import { DisplayedBlockchains, DisplayPaymentTokens } from "./create-collection";
+import { DisplayPaymentTokens } from "./create-collection";
 import { CategoriesStore } from "../../../@core/store/categories-store";
 import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
+import { computed } from "mobx-angular";
+import { makeObservable } from "mobx";
 
 @Component({
     selector: "nft-marketplace-create-collection-page",
@@ -15,9 +17,6 @@ import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-
 })
 export class CreateCollectionPageComponent implements OnInit {
     public createCollectionForm: UntypedFormGroup;
-    public categories: CategoryDto[];
-    public blockchains: DisplayedBlockchains[];
-    public paymentTokens: DisplayPaymentTokens[];
     public labelsAndPlaceholders = {
         logoImage: {
             subtitle: "This image will also be used for navigation. 350 x 350 recommended.",
@@ -83,9 +82,10 @@ export class CreateCollectionPageComponent implements OnInit {
         private _fb: UntypedFormBuilder,
         private _collectionsService: CollectionsService,
         private _blockchainWalletsStore: BlockchainWalletsStore,
-        private _categoriesStore: CategoriesStore,
-        private _cd: ChangeDetectorRef
-    ) {}
+        private _categoriesStore: CategoriesStore
+    ) {
+        makeObservable(this);
+    }
 
     ngOnInit(): void {
         this.createCollectionForm = this._fb.group({
@@ -106,20 +106,25 @@ export class CreateCollectionPageComponent implements OnInit {
             percentageFee: [undefined],
             sensitiveContent: [undefined]
         });
+    }
 
-        this.categories = this._categoriesStore.categories;
-        this.blockchains = this._blockchainWalletsStore.wallets.map((chain) => {
+    @computed
+    get categories(): Array<CategoryDto> {
+        return this._categoriesStore.categories;
+    }
+
+    @computed
+    get paymentTokens(): DisplayPaymentTokens[] {
+        return this._blockchainWalletsStore.tokenSymbols.map((symbol) => {
             return {
-                name: chain.blockchain.name,
-                id: chain.blockchain.id
+                name: symbol
             };
         });
-        this.paymentTokens = this._blockchainWalletsStore.wallets.map((chain) => {
-            return {
-                name: chain.mainTokenSymbol
-            };
-        });
-        this._cd.detectChanges();
+    }
+
+    @computed
+    get blockchains(): BlockchainDto[] {
+        return this._blockchainWalletsStore.blockchains;
     }
 
     updateLogoImage(file: File | null) {

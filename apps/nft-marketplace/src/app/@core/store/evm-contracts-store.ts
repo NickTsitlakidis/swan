@@ -1,9 +1,10 @@
 import { Injectable } from "@angular/core";
-import { action, computed, makeObservable, observable, runInAction } from "mobx";
 import { EvmContractDto } from "@swan/dto";
 import { SupportService } from "../services/support/support.service";
 import { ComplexState } from "./complex-state";
 import { StateStore } from "./state-store";
+import { action, computed, observable } from "mobx-angular";
+import { makeObservable, runInAction } from "mobx";
 
 @Injectable({ providedIn: "root" })
 export class EvmContractsStore implements StateStore {

@@ -1,9 +1,9 @@
 <div *mobxAutorun>
-    <div  *ngIf="userNftsStore.all?.length">
+    <div  *ngIf="allNfts.length">
         <div class="columns p-4 is-multiline">
             <nft-marketplace-product-card
                 class="column is-1"
-                *ngFor="let prod of userNftsStore.all"
+                *ngFor="let prod of allNfts"
                 [imageUrl]="prod.imageUri"
                 [animationUrl]="prod.animationUri"
                 [productTitle]="prod.name"

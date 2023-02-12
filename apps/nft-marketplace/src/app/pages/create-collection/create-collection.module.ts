@@ -14,6 +14,7 @@ import { DropdownModule } from "primeng/dropdown";
 import { InputSwitchModule } from "primeng/inputswitch";
 import { InputTextModule } from "primeng/inputtext";
 import { InputTextareaModule } from "primeng/inputtextarea";
+import { MobxAngularModule } from "mobx-angular";
 
 @NgModule({
     imports: [
@@ -26,7 +27,8 @@ import { InputTextareaModule } from "primeng/inputtextarea";
         DropdownModule,
         InputSwitchModule,
         InputTextModule,
-        InputTextareaModule
+        InputTextareaModule,
+        MobxAngularModule
     ],
     declarations: [CreateCollectionComponent, CreateCollectionPageComponent],
     providers: [ValidateName, ValidateUrl]
