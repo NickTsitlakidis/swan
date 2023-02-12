@@ -17,7 +17,11 @@ export class CoinBaseWalletService extends EvmService {
     public override async getEthersProvider() {
         if (!this.wallet || this.wallet !== this._walletType) {
             this.wallet = this._walletType;
-            this._externalProvider = await (window as any).ethereum.providers.find((x: any) => x.isCoinbaseWallet);
+            if ((window as any).ethereum.isCoinbaseWallet) {
+                this._externalProvider = await (window as any).ethereum.isCoinbaseWallet;
+            } else {
+                this._externalProvider = await (window as any).ethereum.providers?.find((x: any) => x.isCoinbaseWallet);
+            }
         }
 
         return super.getEthersProvider();

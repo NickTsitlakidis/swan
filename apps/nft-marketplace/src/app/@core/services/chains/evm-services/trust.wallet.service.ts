@@ -17,7 +17,11 @@ export class TrustWalletService extends EvmService {
     public override async getEthersProvider() {
         if (!this.wallet || this.wallet !== this._walletType) {
             this.wallet = this._walletType;
-            this._externalProvider = await (window as any).ethereum.providers.find((x: any) => x.isTrust);
+            if ((window as any).ethereum.isMetaMask) {
+                this._externalProvider = await (window as any).ethereum.isTrust;
+            } else {
+                this._externalProvider = await (window as any).ethereum.providers?.find((x: any) => x.isTrust);
+            }
         }
 
         return super.getEthersProvider();
