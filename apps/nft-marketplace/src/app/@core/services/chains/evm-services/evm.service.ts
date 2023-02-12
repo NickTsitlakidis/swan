@@ -69,7 +69,7 @@ export class EvmService implements WalletService {
                 return from(signer.signMessage(message));
             }),
             switchMap((signed) => {
-                if(signed) {
+                if (signed) {
                     return of(signed);
                 }
                 return throwError(() => new Error("Unable to sign message through Metamask"));

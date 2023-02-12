@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChil
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
 import {
     BlockchainDto,
+    BlockchainWalletDto,
     CategoryDto,
     CollectionDto,
     NftMetadataAttributeDto,
@@ -247,7 +248,7 @@ export class CreateNFTPageComponent implements OnInit {
             // @ts-ignore: Object is possibly 'undefined'
             walletId = userWallets.at(0).wallet.id;
         } else if (userWallets.length > 1) {
-            const allWallets = this.blockchainWallets
+            const allWallets = this._blockchainWalletsStore.wallets
                 .filter((wal) => wal.blockchain.id === chainId)
                 .filter((wal) => {
                     wal.wallets = wal.wallets.filter((w) =>

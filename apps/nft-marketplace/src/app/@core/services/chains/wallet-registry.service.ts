@@ -1,10 +1,15 @@
 import { WalletService } from "./wallet-service";
-import { MetamaskService } from "./metamask.service";
 import { Injectable } from "@angular/core";
 import { SolflareWalletService } from "./solana-services/solflare.wallet.service";
 import { PhantomWalletService } from "./solana-services/phantom.wallet.service";
-import { map, Observable, of, Subject } from "rxjs";
-import { BlockchainWalletsFacade } from "../../store/blockchain-wallets-facade";
+import { Observable, of, Subject, switchMap, throwError } from "rxjs";
+import { BinanceWalletService } from "./evm-services/binance.wallet";
+import { MetamaskWalletService } from "./evm-services/metamask.wallet.service";
+import { CoinBaseWalletService } from "./evm-services/coinbase.wallet.service";
+import { BlockchainWalletsStore } from "../../store/blockchain-wallets-store";
+import { TrustWalletService } from "./evm-services/trust.wallet.service";
+import { when } from "mobx";
+import { SupportedWallets } from "@swan/dto";
 
 @Injectable({
     providedIn: "root"
