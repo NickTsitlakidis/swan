@@ -1,10 +1,14 @@
+import { TrustWalletService } from "./evm-services/trust.wallet.service";
+import { CoinBaseWalletService } from "./evm-services/coinbase.wallet.service";
 import { WalletService } from "./wallet-service";
-import { MetamaskService } from "./metamask.service";
 import { Injectable } from "@angular/core";
 import { SolflareWalletService } from "./solana-services/solflare.wallet.service";
 import { PhantomWalletService } from "./solana-services/phantom.wallet.service";
 import { map, Observable, of, Subject } from "rxjs";
 import { BlockchainWalletsFacade } from "../../store/blockchain-wallets-facade";
+import { MetamaskWalletService } from "./evm-services/metamask.wallet.service";
+import { BinanceWalletService } from "./evm-services/binance.wallet";
+import { SupportedWallets } from "@swan/dto";
 
 @Injectable({
     providedIn: "root"
@@ -14,7 +18,10 @@ export class WalletRegistryService {
     private _registryPopulated: Subject<boolean>;
 
     constructor(
-        private _metamaskService: MetamaskService,
+        private _binanceService: BinanceWalletService,
+        private _metamaskService: MetamaskWalletService,
+        private _trustService: TrustWalletService,
+        private _coinbaseService: CoinBaseWalletService,
         private _solflareService: SolflareWalletService,
         private _phantomService: PhantomWalletService,
         private _blockchainWalletsFacade: BlockchainWalletsFacade //todo: facades can potentially use this class. maybe a better architecture to avoid cyclic dependency
@@ -40,10 +47,16 @@ export class WalletRegistryService {
             results.forEach((dto) => {
                 dto.wallets.forEach((wallet) => {
                     if (!this._registry.has(wallet.id)) {
-                        if (wallet.name === "Metamask") {
+                        if (wallet.name === SupportedWallets.METAMASK) {
                             this._registry.set(wallet.id, this._metamaskService);
-                        } else if (wallet.name === "Phantom") {
+                        } else if (wallet.name === SupportedWallets.PHANTOM) {
                             this._registry.set(wallet.id, this._phantomService);
+                        } else if (wallet.name === SupportedWallets.BINANCE) {
+                            this._registry.set(wallet.id, this._binanceService);
+                        } else if (wallet.name === SupportedWallets.COINBASE) {
+                            this._registry.set(wallet.id, this._coinbaseService);
+                        } else if (wallet.name === SupportedWallets.TRUST) {
+                            this._registry.set(wallet.id, this._trustService);
                         } else if (wallet.name === "Solflare") {
                             this._registry.set(wallet.id, this._solflareService);
                         }
