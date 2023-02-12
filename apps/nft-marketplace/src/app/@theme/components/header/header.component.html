@@ -1,4 +1,4 @@
-<div class="header">
+<div class="header" *mobxAutorun>
     <div class="header-container w-100">
         <div class="columns w-100">
             <div class="column is-flex is-align-content-center" (click)="navigateTo('home')">
@@ -35,7 +35,7 @@
                     placeholder="Select a wallet"
                     [(ngModel)]="selectedWallet"
                     (onChange)="walletSelected($event)"
-                    [options]="chainsNew"
+                    [options]="blockchainWalletsStore.wallets"
                     optionLabel="name"
                     optionGroupLabel="blockchain.name"
                     [optionGroupChildren]="['wallets']"

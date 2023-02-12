@@ -3,9 +3,10 @@ import { action, computed, makeObservable, observable, runInAction } from "mobx"
 import { EvmContractDto } from "@swan/dto";
 import { SupportService } from "../services/support/support.service";
 import { ComplexState } from "./complex-state";
+import { StateStore } from "./state-store";
 
 @Injectable({ providedIn: "root" })
-export class EvmContractsStore {
+export class EvmContractsStore implements StateStore {
     @observable
     erc721ContractsState: ComplexState<Array<EvmContractDto>>;
 

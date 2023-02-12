@@ -3,9 +3,10 @@ import { action, computed, makeObservable, observable, runInAction } from "mobx"
 import { Injectable } from "@angular/core";
 import { SupportService } from "../services/support/support.service";
 import { ComplexState } from "./complex-state";
+import { StateStore } from "./state-store";
 
 @Injectable({ providedIn: "root" })
-export class CategoriesStore {
+export class CategoriesStore implements StateStore {
     @observable
     categoriesState: ComplexState<Array<CategoryDto>>;
 

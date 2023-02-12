@@ -4,9 +4,10 @@ import { Injectable } from "@angular/core";
 import { unique } from "radash";
 import { ComplexState } from "./complex-state";
 import { SupportService } from "../services/support/support.service";
+import { StateStore } from "./state-store";
 
 @Injectable({ providedIn: "root" })
-export class BlockchainWalletsStore {
+export class BlockchainWalletsStore implements StateStore {
     @observable
     walletsState: ComplexState<Array<BlockchainWalletDto>>;
 

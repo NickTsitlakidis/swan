@@ -72,6 +72,7 @@
         "lodash": "4.17.21",
         "luxon": "3.2.1",
         "mobx": "6.8.0",
+        "mobx-angular": "^4.7.1",
         "mongodb": "3.7.3",
         "nest-winston": "1.8.0",
         "ngx-cookie-service": "14.0.1",

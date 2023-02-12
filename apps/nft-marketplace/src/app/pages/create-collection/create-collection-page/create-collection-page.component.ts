@@ -4,7 +4,6 @@ import { CategoryDto, CollectionLinksDto, CreateCollectionDto } from "@swan/dto"
 import { CollectionsService } from "../../../@core/services/collections/collections.service";
 import { ValidateName, ValidateUrl } from "./create-collection-page.validator";
 import { DisplayedBlockchains, DisplayPaymentTokens } from "./create-collection";
-import { Janitor } from "../../../@core/components/janitor";
 import { CategoriesStore } from "../../../@core/store/categories-store";
 import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
 
@@ -14,7 +13,7 @@ import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-
     styleUrls: ["./create-collection-page.component.scss"],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CreateCollectionPageComponent extends Janitor implements OnInit {
+export class CreateCollectionPageComponent implements OnInit {
     public createCollectionForm: UntypedFormGroup;
     public categories: CategoryDto[];
     public blockchains: DisplayedBlockchains[];
@@ -86,9 +85,7 @@ export class CreateCollectionPageComponent extends Janitor implements OnInit {
         private _blockchainWalletsStore: BlockchainWalletsStore,
         private _categoriesStore: CategoriesStore,
         private _cd: ChangeDetectorRef
-    ) {
-        super();
-    }
+    ) {}
 
     ngOnInit(): void {
         this.createCollectionForm = this._fb.group({

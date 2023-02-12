@@ -1,18 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import {
-    BlockchainDto,
-    BlockchainWalletDto,
-    StartSignatureAuthenticationDto,
-    SupportedWallets,
-    UserWalletDto
-} from "@swan/dto";
+import { BlockchainDto, StartSignatureAuthenticationDto, SupportedWallets } from "@swan/dto";
 
 import { Router } from "@angular/router";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
 import { firstValueFrom, of } from "rxjs";
-import { UserFacade } from "../../../@core/store/user-facade";
-import { Janitor } from "../../../@core/components/janitor";
 import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
+import { UserStore } from "../../../@core/store/user-store";
+import { isNil } from "lodash";
+import { when } from "mobx";
 
 @Component({
     selector: "nft-marketplace-header",
@@ -20,10 +15,9 @@ import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-
     changeDetection: ChangeDetectionStrategy.OnPush,
     templateUrl: "./header.component.html"
 })
-export class HeaderComponent extends Janitor implements OnInit {
+export class HeaderComponent implements OnInit {
     public walletName: SupportedWallets;
     public selectedWallets: BlockchainDto[] | undefined;
-    public chainsNew: BlockchainWalletDto[]; //todo: replace with mobx
 
     public menuitems = [
         {
@@ -52,30 +46,24 @@ export class HeaderComponent extends Janitor implements OnInit {
         }
     ];
     public isSelected: { [name: string]: { [name: string]: boolean } } = {};
-    public userWallets: UserWalletDto[];
     public selectedWallet: BlockchainDto | undefined;
 
     constructor(
-        private _blockchainWalletsStore: BlockchainWalletsStore,
+        public blockchainWalletsStore: BlockchainWalletsStore,
+        private _userStore: UserStore,
         private _router: Router,
         private _cd: ChangeDetectorRef,
-        private _walletRegistryService: WalletRegistryService,
-        private _userFacade: UserFacade
-    ) {
-        super();
-        this.userWallets = [];
-    }
+        private _walletRegistryService: WalletRegistryService
+    ) {}
 
     ngOnInit() {
-        this.chainsNew = this._blockchainWalletsStore.wallets;
-
-        const userSub = this._userFacade.streamUser().subscribe((user) => {
-            if (user) {
-                this.userWallets = user.wallets;
-                this.selectedWallets = this.chainsNew
+        when(() => !this._userStore.userState.isLoading).then(() => {
+            const storedUser = this._userStore.user;
+            if (!isNil(storedUser)) {
+                this.selectedWallets = this.blockchainWalletsStore.wallets
                     .flatMap((w) => w.wallets)
                     .filter((wallet) =>
-                        this.userWallets.find((w) => w.wallet.chainId === wallet.chainId && w.wallet.id === wallet.id)
+                        storedUser.wallets.find((w) => w.wallet.chainId === wallet.chainId && w.wallet.id === wallet.id)
                     );
                 this.selectedWallets.forEach((wal) => {
                     if (!this.isSelected[wal.chainId]) {
@@ -88,8 +76,7 @@ export class HeaderComponent extends Janitor implements OnInit {
             }
             this._cd.detectChanges();
         });
-        this.addSubscription(userSub);
-        this._userFacade.refreshUser();
+        this._cd.detectChanges();
     }
 
     public async walletSelected(event: { originalEvent: PointerEvent; value: BlockchainDto }) {
@@ -104,11 +91,7 @@ export class HeaderComponent extends Janitor implements OnInit {
         authBody.address = walletAddress;
         authBody.blockchainId = wallet.chainId;
         authBody.walletId = wallet.id;
-        if (this.userWallets?.length) {
-            await this._userFacade.addUserWallet(authBody);
-        } else {
-            await this._userFacade.authenticateWithSignature(authBody);
-        }
+        this._userStore.authenticateWithSignature(authBody, service);
     }
 
     public navigateTo(link: string) {

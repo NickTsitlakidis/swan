@@ -9,6 +9,7 @@ import { CreateListingPageComponent } from "./create-listing-page/create-listing
 import { CreateListingRoutingModule } from "./create-listing-routing.module";
 import { CreateListingComponent } from "./create-listing.component";
 import { InputTextModule } from "primeng/inputtext";
+import { MobxAngularModule } from "mobx-angular";
 
 @NgModule({
     imports: [
@@ -17,7 +18,8 @@ import { InputTextModule } from "primeng/inputtext";
         ReactiveFormsModule,
         TitleSubTitleModule,
         ProductCardModule,
-        InputTextModule
+        InputTextModule,
+        MobxAngularModule
     ],
     declarations: [CreateListingComponent, CreateListingPageComponent]
 })

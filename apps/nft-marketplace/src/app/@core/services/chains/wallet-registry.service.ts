@@ -50,7 +50,7 @@ export class WalletRegistryService {
         const promise =
             this._blockchainWalletsStore.wallets.length > 0
                 ? Promise.resolve()
-                : when(() => this._blockchainWalletsStore.wallets.length > 0, { timeout: 2000 });
+                : when(() => this._blockchainWalletsStore.wallets.length > 0, { timeout: 5000 });
 
         promise.then(() => {
             this._blockchainWalletsStore.wallets.forEach((dto) => {

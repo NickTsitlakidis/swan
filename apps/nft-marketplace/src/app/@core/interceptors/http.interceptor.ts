@@ -2,15 +2,16 @@ import { HttpErrorResponse, HttpHandler, HttpInterceptor, HttpRequest } from "@a
 import { Injectable } from "@angular/core";
 import { catchError, mergeMap } from "rxjs/operators";
 import { environment } from "../../../environments/environment";
-import { ClientAuthService } from "../services/authentication/client_auth.service";
-import { from, map, Observable, of, switchMap, throwError } from "rxjs";
+import { from, map, Observable, throwError } from "rxjs";
 import { HttpErrorDto, TokenDto } from "@swan/dto";
-import { UserFacade } from "../store/user-facade";
 import { ComplexState } from "../store/complex-state";
 import { isNil } from "lodash";
 import { plainToClass } from "class-transformer";
 import { NotificationsService } from "../../@theme/services/notifications.service";
 import { SKIP_ERROR_TOAST } from "./http-context-tokens";
+import { UserStore } from "../store/user-store";
+import { when } from "mobx";
+import { ClientStore } from "../store/client-store";
 
 @Injectable()
 export class HttpRequestsInterceptor implements HttpInterceptor {
@@ -25,14 +26,14 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
     public clientLogin = "/client/login";
 
     constructor(
-        private _clientAuthService: ClientAuthService,
-        private _userFacade: UserFacade,
+        private _userStore: UserStore,
+        private _clientStore: ClientStore,
         private _notificationsService: NotificationsService
     ) {}
 
     intercept(req: HttpRequest<unknown>, next: HttpHandler) {
         const url = req.url;
-        const clientData = this._clientAuthService.getClientTokenData();
+        const clientData = this._clientStore.clientToken;
 
         const isClientRequest = this.clientRequests.some((requestString) => url.includes(requestString));
         const isUserRequest =
@@ -40,7 +41,7 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
             !req.url.includes(this.clientLogin) &&
             this.clientRequests.every((requestString) => !url.includes(requestString));
 
-        if (clientData.tokenValue && isClientRequest) {
+        if (clientData && isClientRequest) {
             req = this._addBearerToken(req, clientData.tokenValue);
         }
 
@@ -55,18 +56,10 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
         const retryable = fullUrlReq.clone();
 
         let toRun = next.handle(fullUrlReq);
+        const userToken = this._userStore.token;
 
-        if (isUserRequest) {
-            toRun = this._userFacade.streamToken().pipe(
-                map((tokenState) => {
-                    if (isNil(tokenState.state)) {
-                        return fullUrlReq;
-                    } else {
-                        return this._addBearerToken(fullUrlReq, tokenState.state.tokenValue);
-                    }
-                }),
-                mergeMap((urlReq) => next.handle(urlReq))
-            );
+        if (isUserRequest && !isNil(userToken)) {
+            toRun = next.handle(this._addBearerToken(fullUrlReq, userToken.tokenValue));
         }
 
         return toRun.pipe(
@@ -82,15 +75,16 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
                 let withNewToken: Observable<ComplexState<TokenDto>> = throwError(error);
 
                 if (isClientRequest) {
-                    withNewToken = this._clientAuthService.getAndStoreClientToken().pipe(
-                        map((token) => ComplexState.fromSuccess(token)),
-                        catchError((error) => of(ComplexState.fromError(error) as ComplexState<TokenDto>))
+                    this._clientStore.fetchToken();
+                    withNewToken = from(when(() => !this._clientStore.tokenState.isLoading, { timeout: 5000 })).pipe(
+                        map(() => this._clientStore.tokenState)
                     );
                 }
 
                 if (isUserRequest) {
-                    withNewToken = from(this._userFacade.refreshToken()).pipe(
-                        switchMap(() => this._userFacade.streamToken())
+                    this._userStore.refreshToken();
+                    withNewToken = from(when(() => !this._userStore.tokenState.isLoading, { timeout: 5000 })).pipe(
+                        map(() => this._userStore.tokenState)
                     );
                 }
 

@@ -9,13 +9,14 @@ import { CascadeSelectModule } from "primeng/cascadeselect";
 import { ButtonModule } from "primeng/button";
 import { MessageService } from "primeng/api";
 import { MenuModule } from "primeng/menu";
+import { MobxAngularModule } from "mobx-angular";
 
 const PRIME_NG_MODULES = [CascadeSelectModule, ButtonModule];
 const COMPONENTS = [HeaderComponent, FooterComponent];
 const PIPES = [CapitalizePipe, PluralPipe, RoundPipe, TimingPipe, NumberWithCommasPipe];
 
 @NgModule({
-    imports: [CommonModule, FormsModule, ImagesModule, ...PRIME_NG_MODULES, MenuModule],
+    imports: [CommonModule, FormsModule, ImagesModule, ...PRIME_NG_MODULES, MenuModule, MobxAngularModule],
     exports: [CommonModule, ...PIPES, ...COMPONENTS],
     declarations: [...COMPONENTS, ...PIPES],
     providers: [MessageService]

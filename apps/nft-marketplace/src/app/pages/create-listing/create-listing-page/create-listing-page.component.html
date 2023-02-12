@@ -2,12 +2,12 @@
     <h2 class="has-text-centered is-size-2 m-4 has-text-weight-bold">Create your Listing</h2>
 </div>
 
-<div class="container">
+<div class="container" *mobxAutorun>
     <div class="is-offset-one-fifth">
         <div class="columns is-multiline">
             <nft-marketplace-product-card
                 class="column is-3"
-                *ngFor="let nft of userNfts"
+                *ngFor="let nft of allNfts"
                 [imageUrl]="nft.imageUri"
                 [animationUrl]="nft.animationUri"
                 [productTitle]="nft.name"

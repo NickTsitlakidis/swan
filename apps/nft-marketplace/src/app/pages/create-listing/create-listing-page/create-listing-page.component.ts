@@ -5,11 +5,11 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@
 import { ActivateListingDto, BlockchainWalletDto, CreateListingDto, ProfileNftDto, SubmitListingDto } from "@swan/dto";
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { isEqual } from "lodash";
-import { Janitor } from "../../../@core/components/janitor";
-import { UserFacade } from "../../../@core/store/user-facade";
 import { NftService } from "../../../@core/services/chains/nfts/nft.service";
 import { EvmContractsStore } from "../../../@core/store/evm-contracts-store";
 import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
+import { UserNftsStore } from "../../../@core/store/user-nfts-store";
+import { computed } from "mobx";
 
 @Component({
     selector: "nft-marketplace-create-listing-page",
@@ -17,10 +17,9 @@ import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrls: ["./create-listing-page.component.scss"]
 })
-export class CreateListingPageComponent extends Janitor implements OnInit {
+export class CreateListingPageComponent implements OnInit {
     public createListingForm: UntypedFormGroup;
     public selectedForListingNft: ProfileNftDto | undefined;
-    public userNfts: ProfileNftDto[];
 
     constructor(
         private _blockchainWalletsStore: BlockchainWalletsStore,
@@ -28,27 +27,24 @@ export class CreateListingPageComponent extends Janitor implements OnInit {
         private _cd: ChangeDetectorRef,
         private _listingsService: ListingsService,
         private _walletRegistryService: WalletRegistryService,
-        private _userFacade: UserFacade,
         private _nftService: NftService,
+        private _userNftsStore: UserNftsStore,
         private _contractsStore: EvmContractsStore
-    ) {
-        super();
-    }
+    ) {}
 
     ngOnInit(): void {
         this.createListingForm = this._fb.group({
             price: [undefined, Validators.required]
         });
 
-        const nftSub = this._userFacade.streamNft().subscribe((nfts) => {
-            if (nfts.isEmpty) {
-                this._userFacade.getNfts();
-            } else {
-                this.userNfts = nfts.state;
-                this._cd.detectChanges();
-            }
-        });
-        this.addSubscription(nftSub);
+        if (this._userNftsStore.all.length === 0) {
+            this._userNftsStore.fetchNft();
+        }
+    }
+
+    @computed
+    get allNfts(): Array<ProfileNftDto> {
+        return this._userNftsStore.all;
     }
 
     async onSelectNft(nft: ProfileNftDto) {

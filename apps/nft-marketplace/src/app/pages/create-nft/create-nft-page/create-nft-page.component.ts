@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChil
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
 import {
     BlockchainDto,
-    BlockchainWalletDto,
     CategoryDto,
     CollectionDto,
     NftMetadataAttributeDto,
@@ -16,11 +15,11 @@ import { SupportService } from "../../../@core/services/support/support.service"
 import { firstValueFrom, of, switchMap } from "rxjs";
 import { NftService } from "../../../@core/services/chains/nfts/nft.service";
 import { CollectionsService } from "../../../@core/services/collections/collections.service";
-import { UserFacade } from "../../../@core/store/user-facade";
-import { Janitor } from "../../../@core/components/janitor";
 import { EvmContractsStore } from "../../../@core/store/evm-contracts-store";
 import { CategoriesStore } from "../../../@core/store/categories-store";
 import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
+import { UserStore } from "../../../@core/store/user-store";
+import { isNil } from "lodash";
 
 @Component({
     selector: "nft-marketplace-create-nft-page",
@@ -29,7 +28,7 @@ import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-
     styleUrls: ["./create-nft-page.component.scss"],
     animations: [fade]
 })
-export class CreateNFTPageComponent extends Janitor implements OnInit {
+export class CreateNFTPageComponent implements OnInit {
     @ViewChild("collectionSelect") collectionSelect: any;
     public labelsAndPlaceholders = {
         title: {
@@ -84,7 +83,7 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
     constructor(
         private _fb: UntypedFormBuilder,
         private _contractsStore: EvmContractsStore,
-        private _userFacade: UserFacade,
+        private _userStore: UserStore,
         private _blockchainWalletsStore: BlockchainWalletsStore,
         private _cd: ChangeDetectorRef,
         private _walletRegistryService: WalletRegistryService,
@@ -92,9 +91,7 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
         private _categoriesStore: CategoriesStore,
         private _nftService: NftService,
         private _collectionsService: CollectionsService
-    ) {
-        super();
-    }
+    ) {}
 
     ngOnInit(): void {
         this.createNFTForm = this._fb.group({
@@ -117,22 +114,19 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
         this.categories = this._categoriesStore.categories;
         this._cd.detectChanges();
 
-        const userSub = this._userFacade.streamUser().subscribe((user) => {
-            if (user) {
-                this.userWallets = user.wallets;
-                this.allBlockchains = this._blockchainWalletsStore.wallets
-                    .map((chain) => {
-                        return {
-                            name: chain.blockchain.name,
-                            id: chain.blockchain.id
-                        };
-                    })
-                    .filter((chain) => this.userWallets.find((wal) => wal.wallet.chainId === chain.id));
-                this.blockchains = [...this.allBlockchains];
-            }
+        if (!isNil(this._userStore.user)) {
+            this.userWallets = this._userStore.user.wallets;
+            this.allBlockchains = this._blockchainWalletsStore.wallets
+                .map((chain) => {
+                    return {
+                        name: chain.blockchain.name,
+                        id: chain.blockchain.id
+                    };
+                })
+                .filter((chain) => this.userWallets.find((wal) => wal.wallet.chainId === chain.id));
+            this.blockchains = [...this.allBlockchains];
             this._cd.detectChanges();
-        });
-        this.addSubscription(userSub);
+        }
     }
 
     public getAttributeValue(formAttributeName: string) {
@@ -213,7 +207,9 @@ export class CreateNFTPageComponent extends Janitor implements OnInit {
                     return this._nftService.createNft(nftMetadataDto);
                 }),
                 switchMap((nftResponse) => {
-                    const matchingWallets = this._blockchainWalletsStore.wallets.find((wallets) => wallets.blockchain.id === chainId);
+                    const matchingWallets = this._blockchainWalletsStore.wallets.find(
+                        (wallets) => wallets.blockchain.id === chainId
+                    );
                     const nft: CreateNft = {
                         id: nftResponse.id,
                         metadataUri: nftResponse.metadataUri,

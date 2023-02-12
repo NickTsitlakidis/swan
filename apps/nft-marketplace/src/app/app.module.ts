@@ -15,6 +15,7 @@ import { ChainsModule } from "./@core/services/chains/chains.module";
 import { SupportModule } from "./@core/services/support/support.module";
 import { ContractsModule } from "./@core/contracts.module";
 import { ToastModule } from "primeng/toast";
+import { MobxAngularModule } from "mobx-angular";
 
 @NgModule({
     declarations: [AppComponent],
@@ -33,7 +34,8 @@ import { ToastModule } from "primeng/toast";
         ChainsModule,
         SupportModule,
         ContractsModule,
-        ToastModule
+        ToastModule,
+        MobxAngularModule
     ],
     providers: [{ provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true }, WalletStore],
     bootstrap: [AppComponent]

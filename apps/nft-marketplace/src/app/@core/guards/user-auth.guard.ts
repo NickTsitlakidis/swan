@@ -1,44 +1,36 @@
 import { Injectable } from "@angular/core";
 import { CanActivate, Router, UrlTree } from "@angular/router";
-import { firstValueFrom, skipWhile, throwError, timeout } from "rxjs";
-import { UserFacade } from "../store/user-facade";
 import { isNil } from "lodash";
-import { take } from "rxjs/operators";
+import { UserStore } from "../store/user-store";
+import { when } from "mobx";
 
 @Injectable({
     providedIn: "root"
 })
 export class AuthGuard implements CanActivate {
-    constructor(private _router: Router, private _userFacade: UserFacade) {}
+    constructor(private _router: Router, private _userStore: UserStore) {}
 
     async canActivate(): Promise<boolean | UrlTree> {
-        const token = await firstValueFrom(this._userFacade.streamToken());
-        if (isNil(token.state)) {
+        if (isNil(this._userStore.token)) {
             return this._router.parseUrl("/home");
         }
 
-        const user = await firstValueFrom(this._userFacade.streamUser());
-
-        if (!isNil(user)) {
+        if (!isNil(this._userStore.user)) {
             return true;
         }
 
-        const userStream = this._userFacade.streamUser().pipe(
-            skipWhile((user) => isNil(user)),
-            timeout({
-                each: 2000,
-                with: () => throwError(() => new Error("User not found"))
-            }),
-            take(1)
-        );
-
-        this._userFacade.refreshUser();
-
-        try {
-            const refreshedUser = await firstValueFrom(userStream);
-            return true;
-        } catch (error) {
-            return this._router.parseUrl("/home");
-        }
+        this._userStore.refreshUser();
+        return when(() => !this._userStore.userState.isLoading, { timeout: 5000 })
+            .then(() => {
+                if (!isNil(this._userStore.user)) {
+                    return true;
+                } else {
+                    return this._router.parseUrl("/home");
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                return this._router.parseUrl("/home");
+            });
     }
 }
