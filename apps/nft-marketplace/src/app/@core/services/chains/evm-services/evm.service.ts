@@ -1,21 +1,23 @@
-import { WalletService } from "./wallet-service";
-import { from, map, Observable, of, Subject, switchMap, throwError, zip } from "rxjs";
-import { WalletEvent } from "./wallet-event";
+import { WalletService } from "../wallet-service";
+import { firstValueFrom, from, map, Observable, of, Subject, switchMap, throwError, zip } from "rxjs";
+import { WalletEvent } from "../wallet-event";
 import { ethers } from "ethers";
 import { isNil } from "lodash";
-import { CreateNft } from "./create-nft";
+import { CreateNft } from "../create-nft";
 import { Injectable } from "@angular/core";
-import { ChainsModule } from "./chains.module";
-import { BlockchainDto, ListingDto, NftMintTransactionDto } from "@swan/dto";
+import { ChainsModule } from "../chains.module";
+import { BlockchainDto, ListingDto, NftMintTransactionDto, SupportedWallets } from "@swan/dto";
 import { ContractFactory, MarketplaceResult } from "@swan/contracts";
-import { CreateListing } from "./create-listing";
+import { CreateListing } from "../create-listing";
 
 @Injectable({
     providedIn: ChainsModule
 })
-export class MetamaskService implements WalletService {
+export class EvmService implements WalletService {
     private _events: Subject<WalletEvent>;
     private _ethersProvider: ethers.providers.Web3Provider;
+    protected _externalProvider: any;
+    protected wallet: SupportedWallets;
 
     constructor(private _contractFactory: ContractFactory) {
         this._events = new Subject<WalletEvent>();
@@ -26,7 +28,7 @@ export class MetamaskService implements WalletService {
     }
 
     getPublicKey(): Observable<string> {
-        return this.getEthersProvider().pipe(
+        return from(this.getEthersProvider()).pipe(
             switchMap(() => {
                 return this._ethersProvider.getSigner().getAddress();
             })
@@ -61,7 +63,7 @@ export class MetamaskService implements WalletService {
     }
 
     signMessage(message: string): Observable<string> {
-        return this.getEthersProvider().pipe(
+        return from(this.getEthersProvider()).pipe(
             map((provider) => provider.getSigner()),
             switchMap((signer) => {
                 return from(signer.signMessage(message));
@@ -80,7 +82,7 @@ export class MetamaskService implements WalletService {
             return throwError(() => "Evm listings require contract information");
         }
 
-        return this.getEthersProvider().pipe(
+        return from(this.getEthersProvider()).pipe(
             switchMap((provider) => {
                 return zip(of(provider), from(this.switchNetwork(listing.blockchain.chainId)));
             }),
@@ -132,7 +134,7 @@ export class MetamaskService implements WalletService {
             return throwError(() => "Blockchain info is required in evm");
         }
 
-        return this.getEthersProvider().pipe(
+        return from(this.getEthersProvider()).pipe(
             switchMap((provider) => {
                 return zip(of(provider), from(this.switchNetwork(blockchain.chainId)));
             }),
@@ -162,17 +164,20 @@ export class MetamaskService implements WalletService {
         );
     }
 
-    private getEthersProvider(): Observable<ethers.providers.Web3Provider> {
+    protected getEthersProvider(): Promise<ethers.providers.Web3Provider> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const externalProvider = (window as any).ethereum;
-        if (!isNil(externalProvider)) {
+        //const externalProvider = (window as any).BinanceChain;
+        if (!isNil(this._externalProvider)) {
             if (!isNil(this._ethersProvider)) {
-                return of(this._ethersProvider);
+                return firstValueFrom(of(this._ethersProvider));
             }
-            this._ethersProvider = new ethers.providers.Web3Provider(externalProvider, "any");
-            return from(this._ethersProvider.send("eth_requestAccounts", [])).pipe(map(() => this._ethersProvider));
+
+            this._ethersProvider = new ethers.providers.Web3Provider(this._externalProvider, "any");
+            return firstValueFrom(
+                from(this._ethersProvider.send("eth_requestAccounts", [])).pipe(map(() => this._ethersProvider))
+            );
         } else {
-            return throwError(() => "Ethereum object is not added to window");
+            return firstValueFrom(throwError(() => "Ethereum object is not added to window"));
         }
     }
 
