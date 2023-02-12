@@ -5,10 +5,15 @@ import { compare } from "bcrypt";
 import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 import { TokenDto } from "@swan/dto";
 import { DateTime } from "luxon";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class ClientTokenIssuer {
-    constructor(private readonly _repository: ClientRepository, private readonly _signService: JwtService) {}
+    constructor(
+        private readonly _repository: ClientRepository,
+        private readonly _configService: ConfigService,
+        private readonly _signService: JwtService
+    ) {}
 
     async issueWithCredentials(encodedCredentials: string): Promise<TokenDto> {
         const decoded = new Buffer(encodedCredentials, "base64").toString("ascii");
@@ -30,14 +35,15 @@ export class ClientTokenIssuer {
             throw new UnauthorizedException("Invalid or missing credentials");
         }
 
+        const expiration = this._configService.getOrThrow<number>("CLIENT_TOKEN_EXPIRATION_MINUTES");
         const accessSignOptions: JwtSignOptions = {
             subject: found.applicationId,
             algorithm: "ES256",
-            expiresIn: "120m"
+            expiresIn: `${expiration}m`
         };
 
         const jwtAccessToken = this._signService.sign({}, accessSignOptions);
 
-        return new TokenDto(jwtAccessToken, DateTime.now().toUTC().plus({ minutes: 120 }));
+        return new TokenDto(jwtAccessToken, DateTime.now().toUTC().plus({ minutes: expiration }));
     }
 }

@@ -6,11 +6,13 @@ import { UnauthorizedException } from "@nestjs/common";
 import { RefreshToken } from "./refresh-token";
 import { getUnitTestingModule } from "../test-utils/test-modules";
 import { DateTime } from "luxon";
+import { ConfigService } from "@nestjs/config";
 
 let idGeneratorMock: IdGenerator;
 let jwtServiceMock: JwtService;
 let repoMock: RefreshTokenRepository;
 let issuer: UserTokenIssuer;
+let configService: ConfigService;
 
 beforeEach(async () => {
     const moduleRef = await getUnitTestingModule(UserTokenIssuer);
@@ -19,6 +21,7 @@ beforeEach(async () => {
     repoMock = moduleRef.get(RefreshTokenRepository);
     jwtServiceMock = moduleRef.get(JwtService);
     idGeneratorMock = moduleRef.get(IdGenerator);
+    configService = moduleRef.get(ConfigService);
 });
 
 test("issueFromId - creates and stores token", async () => {
@@ -32,6 +35,8 @@ test("issueFromId - creates and stores token", async () => {
     const saveSpy = jest.spyOn(repoMock, "save").mockResolvedValue(saved);
 
     const signSpy = jest.spyOn(jwtServiceMock, "sign").mockReturnValue("signed");
+
+    const configSpy = jest.spyOn(configService, "getOrThrow").mockReturnValue(50);
 
     const result = await issuer.issueFromId("the-user");
 
@@ -50,6 +55,8 @@ test("issueFromId - creates and stores token", async () => {
     delete expectedRefreshToken.issuedAt;
     expect(saveSpy).toHaveBeenCalledTimes(1);
     expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining(expectedRefreshToken));
+    expect(configSpy).toHaveBeenCalledTimes(1);
+    expect(configSpy).toHaveBeenCalledWith("USER_ACCESS_TOKEN_EXPIRATION_MINUTES");
 
     const expectedRefreshOptions: JwtSignOptions = {
         subject: "the-user",
@@ -59,7 +66,7 @@ test("issueFromId - creates and stores token", async () => {
 
     const expectedAccessOptions: JwtSignOptions = {
         subject: "the-user",
-        expiresIn: "120m",
+        expiresIn: "50m",
         algorithm: "ES256"
     };
 
@@ -122,6 +129,7 @@ test("issueFromRefreshToken - creates and returns for valid refresh token", asyn
 
     const findSpy = jest.spyOn(repoMock, "findByTokenValue").mockResolvedValue(found);
     const signSpy = jest.spyOn(jwtServiceMock, "sign").mockReturnValue("signed");
+    const configSpy = jest.spyOn(configService, "getOrThrow").mockReturnValue(50);
 
     const verified = {
         jti: "the-token"
@@ -138,10 +146,12 @@ test("issueFromRefreshToken - creates and returns for valid refresh token", asyn
     expect(verifySpy).toHaveBeenCalledWith("encoded-jwt");
     expect(findSpy).toHaveBeenCalledTimes(1);
     expect(findSpy).toHaveBeenCalledWith("the-token");
+    expect(configSpy).toHaveBeenCalledTimes(1);
+    expect(configSpy).toHaveBeenCalledWith("USER_ACCESS_TOKEN_EXPIRATION_MINUTES");
 
     const expectedAccessOptions: JwtSignOptions = {
         subject: "the-user",
-        expiresIn: "120m",
+        expiresIn: "50m",
         algorithm: "ES256"
     };
 

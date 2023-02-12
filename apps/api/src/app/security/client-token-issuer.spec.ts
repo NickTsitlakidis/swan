@@ -5,10 +5,12 @@ import { ClientRepository } from "./client-repository";
 import { UnauthorizedException } from "@nestjs/common";
 import { Client } from "./client";
 import { hashSync } from "bcrypt";
+import { ConfigService } from "@nestjs/config";
 
 let issuer: ClientTokenIssuer;
 let repository: ClientRepository;
 let jwtService: JwtService;
+let configService: ConfigService;
 
 beforeEach(async () => {
     const moduleRef = await getUnitTestingModule(ClientTokenIssuer);
@@ -16,6 +18,7 @@ beforeEach(async () => {
     issuer = moduleRef.get(ClientTokenIssuer);
     repository = moduleRef.get(ClientRepository);
     jwtService = moduleRef.get(JwtService);
+    configService = moduleRef.get(ConfigService);
 });
 
 test("issueWithCredentials - throws for non base64 value", async () => {
@@ -54,7 +57,7 @@ test("issueWithCredentials - issues jwt if credentials match", async () => {
     client.applicationId = "app";
     client.applicationSecret = hashSync("secret", 12);
     const findSpy = jest.spyOn(repository, "findByApplicationId").mockResolvedValue(client);
-
+    const configSpy = jest.spyOn(configService, "getOrThrow").mockReturnValue(88);
     const signSpy = jest.spyOn(jwtService, "sign").mockReturnValue("jwt-token");
 
     const encoded = Buffer.from(`app:secret`).toString("base64");
@@ -62,11 +65,13 @@ test("issueWithCredentials - issues jwt if credentials match", async () => {
 
     expect(token.tokenValue).toBe("jwt-token");
     expect(token.expiresAt).toBeDefined();
+    expect(configSpy).toHaveBeenCalledWith("CLIENT_TOKEN_EXPIRATION_MINUTES");
+    expect(configSpy).toHaveBeenCalledTimes(1);
 
     const expectedJwtSettings: JwtSignOptions = {
         subject: "app",
         algorithm: "ES256",
-        expiresIn: "120m"
+        expiresIn: "88m"
     };
 
     expect(findSpy).toHaveBeenCalledTimes(1);

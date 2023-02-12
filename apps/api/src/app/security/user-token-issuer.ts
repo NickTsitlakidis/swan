@@ -7,6 +7,7 @@ import { getLogger } from "../infrastructure/logging";
 import { isNil } from "lodash";
 import { TokenDto } from "@swan/dto";
 import { DateTime } from "luxon";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class UserTokenIssuer {
@@ -15,6 +16,7 @@ export class UserTokenIssuer {
     constructor(
         private readonly _signService: JwtService,
         private readonly _idGenerator: IdGenerator,
+        private readonly _configService: ConfigService,
         private readonly _refreshTokenRepository: RefreshTokenRepository
     ) {
         this._logger = getLogger(UserTokenIssuer);
@@ -29,10 +31,11 @@ export class UserTokenIssuer {
 
         const saved = await this._refreshTokenRepository.save(refreshToken);
 
+        const expirationMinutes = this._configService.getOrThrow<number>("USER_ACCESS_TOKEN_EXPIRATION_MINUTES");
         const accessSignOptions: JwtSignOptions = {
             subject: userId,
             algorithm: "ES256",
-            expiresIn: "120m"
+            expiresIn: `${expirationMinutes}m`
         };
 
         const refreshSignOptions: JwtSignOptions = {
@@ -45,7 +48,11 @@ export class UserTokenIssuer {
 
         const jwtAccessToken = this._signService.sign({}, accessSignOptions);
 
-        return new TokenDto(jwtAccessToken, DateTime.now().toUTC().plus({ minutes: 120 }), jwtRefreshToken);
+        return new TokenDto(
+            jwtAccessToken,
+            DateTime.now().toUTC().plus({ minutes: expirationMinutes }),
+            jwtRefreshToken
+        );
     }
 
     async issueFromRefreshToken(refreshTokenJwt: string): Promise<TokenDto> {
@@ -69,13 +76,18 @@ export class UserTokenIssuer {
 
         this._logger.debug(`Refreshing token for user ${found.userId}`);
 
+        const expirationMinutes = this._configService.getOrThrow<number>("USER_ACCESS_TOKEN_EXPIRATION_MINUTES");
         const accessSignOptions: JwtSignOptions = {
             subject: found.userId,
             algorithm: "ES256",
-            expiresIn: "120m"
+            expiresIn: `${expirationMinutes}m`
         };
         const jwtAccessToken = this._signService.sign({}, accessSignOptions);
 
-        return new TokenDto(jwtAccessToken, DateTime.now().toUTC().plus({ minutes: 120 }), refreshTokenJwt);
+        return new TokenDto(
+            jwtAccessToken,
+            DateTime.now().toUTC().plus({ minutes: expirationMinutes }),
+            refreshTokenJwt
+        );
     }
 }
