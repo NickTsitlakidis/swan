@@ -134,6 +134,10 @@ export class EvmService implements WalletService {
             return throwError(() => "Blockchain info is required in evm");
         }
 
+        if (isNil(marketplaceContractAddress)) {
+            return throwError(() => "MarketPlaceContract info is required in evm");
+        }
+
         return from(this.getEthersProvider()).pipe(
             switchMap((provider) => {
                 return zip(of(provider), from(this.switchNetwork(blockchain.chainId)));
