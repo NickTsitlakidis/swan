@@ -5,8 +5,8 @@ import { HttpClient } from "@angular/common/http";
 import { plainToInstance } from "class-transformer";
 import { map, switchMap } from "rxjs/operators";
 import { environment } from "../../../../environments/environment";
-import { SignS3URIResponse } from "./support";
 import { v4 as uuidv4 } from "uuid";
+import { SignS3URIResponse } from "./sign-s3-uri-response";
 
 @Injectable({
     providedIn: "root"

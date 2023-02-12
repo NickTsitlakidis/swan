@@ -12,7 +12,6 @@ import { AppRoutingModule } from "./app-routing.module";
 import { HttpRequestsInterceptor } from "./@core/interceptors/http.interceptor";
 import { NgxWebstorageModule } from "ngx-webstorage";
 import { ChainsModule } from "./@core/services/chains/chains.module";
-import { SupportModule } from "./@core/services/support/support.module";
 import { ContractsModule } from "./@core/contracts.module";
 import { ToastModule } from "primeng/toast";
 import { MobxAngularModule } from "mobx-angular";
@@ -32,7 +31,6 @@ import { MobxAngularModule } from "mobx-angular";
         }),
         HttpClientModule,
         ChainsModule,
-        SupportModule,
         ContractsModule,
         ToastModule,
         MobxAngularModule
