@@ -19,7 +19,7 @@ import { MobxAngularModule } from "mobx-angular";
 @NgModule({
     declarations: [AppComponent],
     imports: [
-        BrowserModule,
+        BrowserModule.withServerTransition({ appId: "serverApp" }),
         BrowserAnimationsModule,
         AppRoutingModule,
         CoreModule.forRoot(),
