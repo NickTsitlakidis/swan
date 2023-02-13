@@ -92,7 +92,7 @@ export class SolanaWalletService implements WalletService {
             }),
             first(),
             switchMap((signed) => {
-                if(signed) {
+                if (signed) {
                     return of(signed);
                 }
                 return throwError(() => new Error("Unable to sign message through Solana wallet"));

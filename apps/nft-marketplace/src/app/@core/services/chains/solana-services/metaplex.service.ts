@@ -1,15 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Wallet } from "@heavy-duty/wallet-adapter";
-import {
-    CreateAuctionHouseInput,
-    CreateNftInput,
-    Metaplex,
-    OperationOptions,
-    sol,
-    walletAdapterIdentity,
-    WRAPPED_SOL_MINT
-} from "@metaplex-foundation/js";
-import { clusterApiUrl, Connection, PublicKey, Signer } from "@solana/web3.js";
+import { CreateNftInput, Metaplex, sol, walletAdapterIdentity } from "@metaplex-foundation/js";
+import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
 import { ChainsModule } from "../chains.module";
 
 @Injectable({
