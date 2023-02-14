@@ -6,6 +6,7 @@
         "ng": "nx",
         "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2020 browser module main",
         "start": "npm run create-solidity-types && nx serve",
+        "start-ssr": "nx serve-ssr",
         "start-api": "npm run create-solidity-types && nx serve api",
         "start-all": "concurrently --kill-others \"npm run start-api\" \"nx serve\"",
         "build": "npm run create-solidity-types && nx build --skip-nx-cache",

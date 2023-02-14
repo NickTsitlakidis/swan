@@ -1,12 +1,9 @@
 import { Injectable } from "@angular/core";
-import { ChainsModule } from "../chains.module";
 import { EvmService } from "./evm.service";
 import { ContractFactory } from "@swan/contracts";
 import { SupportedWallets } from "@swan/dto";
 
-@Injectable({
-    providedIn: ChainsModule
-})
+@Injectable()
 export class MetamaskWalletService extends EvmService {
     private _walletType = SupportedWallets.METAMASK;
 

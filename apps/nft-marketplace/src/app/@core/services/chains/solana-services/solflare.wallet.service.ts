@@ -1,16 +1,13 @@
-import { CreateListing } from "./../create-listing";
+import { CreateListing } from "../create-listing";
 import { SolanaWalletService } from "./solana.wallet.service";
 
 import { ConnectionStore, WalletStore } from "@heavy-duty/wallet-adapter";
 import { MetaplexService } from "./metaplex.service";
 import { Injectable } from "@angular/core";
-import { ChainsModule } from "../chains.module";
 import { EMPTY, Observable, switchMap } from "rxjs";
 import { WalletName } from "@solana/wallet-adapter-base";
 
-@Injectable({
-    providedIn: ChainsModule
-})
+@Injectable()
 export class SolflareWalletService extends SolanaWalletService {
     constructor(connectionStore: ConnectionStore, walletStore: WalletStore, metaplexService: MetaplexService) {
         super(connectionStore, walletStore, metaplexService);

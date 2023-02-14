@@ -2,11 +2,8 @@ import { Injectable } from "@angular/core";
 import { Wallet } from "@heavy-duty/wallet-adapter";
 import { CreateNftInput, Metaplex, sol, walletAdapterIdentity } from "@metaplex-foundation/js";
 import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
-import { ChainsModule } from "../chains.module";
 
-@Injectable({
-    providedIn: ChainsModule
-})
+@Injectable()
 export class MetaplexService {
     private _metaplex: Metaplex;
     private _connection: Connection;

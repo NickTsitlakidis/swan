@@ -3,12 +3,11 @@ import { CommonModule } from "@angular/common";
 
 import { throwIfAlreadyLoaded } from "./module-import-guard";
 import { AnalyticsService } from "./utils";
-import { HdWalletAdapterModule } from "@heavy-duty/wallet-adapter";
 
 export const CORE_PROVIDERS = [AnalyticsService];
 
 @NgModule({
-    imports: [CommonModule, HdWalletAdapterModule.forRoot({ autoConnect: true })],
+    imports: [CommonModule],
     exports: [],
     declarations: []
 })

@@ -8,7 +8,7 @@ import { UserStore } from "./@core/store/user-store";
     selector: "nft-marketplace-root",
     templateUrl: "./app.component.html"
 })
-export class AppComponent implements OnInit {
+export class AppBrowserComponent implements OnInit {
     constructor(
         private _analytics: AnalyticsService,
         private _walletRegistry: WalletRegistryService,

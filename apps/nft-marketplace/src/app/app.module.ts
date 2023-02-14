@@ -1,41 +1,16 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
+import { HttpClientModule } from "@angular/common/http";
 
-import { WalletStore } from "@heavy-duty/wallet-adapter";
-
-import { AppComponent } from "./app.component";
-import { ThemeModule } from "./@theme/theme.module";
-import { CoreModule } from "./@core/core.module";
-import { AppRoutingModule } from "./app-routing.module";
-import { HttpRequestsInterceptor } from "./@core/interceptors/http.interceptor";
-import { NgxWebstorageModule } from "ngx-webstorage";
-import { ChainsModule } from "./@core/services/chains/chains.module";
-import { ContractsModule } from "./@core/contracts.module";
-import { ToastModule } from "primeng/toast";
 import { MobxAngularModule } from "mobx-angular";
 
 @NgModule({
-    declarations: [AppComponent],
     imports: [
         BrowserModule.withServerTransition({ appId: "serverApp" }),
         BrowserAnimationsModule,
-        AppRoutingModule,
-        CoreModule.forRoot(),
-        ThemeModule.forRoot(),
-        NgxWebstorageModule.forRoot({
-            prefix: "",
-            separator: "",
-            caseSensitive: true
-        }),
         HttpClientModule,
-        ChainsModule,
-        ContractsModule,
-        ToastModule,
         MobxAngularModule
-    ],
-    providers: [{ provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true }, WalletStore],
-    bootstrap: [AppComponent]
+    ]
 })
 export class AppModule {}
