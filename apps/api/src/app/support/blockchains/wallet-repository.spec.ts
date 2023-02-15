@@ -29,12 +29,15 @@ test("findAll - returns empty array for empty collection", async () => {
 test("findAll - returns all Wallet documents of collection", async () => {
     const w1 = new Wallet();
     w1._id = new ObjectId();
+    w1.enabled = true;
 
     const w2 = new Wallet();
     w2._id = new ObjectId();
+    w2.enabled = true;
 
     const w3 = new Wallet();
     w3._id = new ObjectId();
+    w3.enabled = true;
 
     await collection.insertOne(instanceToPlain(w1));
     await collection.insertOne(instanceToPlain(w2));
@@ -47,15 +50,41 @@ test("findAll - returns all Wallet documents of collection", async () => {
     expect(wallets[2]).toMatchObject(w3);
 });
 
-test("findById - returns matching wallet", async () => {
+test("findAll - returns all enabled Wallets documents of collection", async () => {
     const w1 = new Wallet();
     w1._id = new ObjectId();
+    w1.enabled = true;
 
     const w2 = new Wallet();
     w2._id = new ObjectId();
+    w2.enabled = false;
 
     const w3 = new Wallet();
     w3._id = new ObjectId();
+    w3.enabled = true;
+
+    await collection.insertOne(instanceToPlain(w1));
+    await collection.insertOne(instanceToPlain(w2));
+    await collection.insertOne(instanceToPlain(w3));
+
+    const wallets = await repository.findAll();
+    expect(wallets.length).toBe(2);
+    expect(wallets[0]).toMatchObject(w1);
+    expect(wallets[1]).toMatchObject(w3);
+});
+
+test("findById - returns matching wallet", async () => {
+    const w1 = new Wallet();
+    w1._id = new ObjectId();
+    w1.enabled = true;
+
+    const w2 = new Wallet();
+    w2._id = new ObjectId();
+    w2.enabled = true;
+
+    const w3 = new Wallet();
+    w3._id = new ObjectId();
+    w3.enabled = true;
 
     await collection.insertOne(instanceToPlain(w1));
     await collection.insertOne(instanceToPlain(w2));
@@ -65,15 +94,39 @@ test("findById - returns matching wallet", async () => {
     expect(wallet).toMatchObject(w2);
 });
 
-test("findById - returns null for no matching wallet", async () => {
+test("findById - returns null for non enabled matching wallet", async () => {
     const w1 = new Wallet();
     w1._id = new ObjectId();
+    w1.enabled = true;
 
     const w2 = new Wallet();
     w2._id = new ObjectId();
+    w2.enabled = false;
 
     const w3 = new Wallet();
     w3._id = new ObjectId();
+    w3.enabled = true;
+
+    await collection.insertOne(instanceToPlain(w1));
+    await collection.insertOne(instanceToPlain(w2));
+    await collection.insertOne(instanceToPlain(w3));
+
+    const wallet = await repository.findById(w2.id);
+    expect(wallet).toBeNull();
+});
+
+test("findById - returns null for no matching wallet", async () => {
+    const w1 = new Wallet();
+    w1._id = new ObjectId();
+    w1.enabled = true;
+
+    const w2 = new Wallet();
+    w2._id = new ObjectId();
+    w2.enabled = true;
+
+    const w3 = new Wallet();
+    w3._id = new ObjectId();
+    w3.enabled = true;
 
     await collection.insertOne(instanceToPlain(w1));
     await collection.insertOne(instanceToPlain(w2));
