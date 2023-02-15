@@ -5,6 +5,7 @@ import { switchMap, throwError, zip } from "rxjs";
 import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
 import { isNil } from "lodash";
 import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
+import { GetUserWalletService } from "../../../@core/services/chains/get-user-wallet.service";
 
 @Component({
     selector: "nft-marketplace-home-page",
@@ -16,7 +17,8 @@ export class HomePageComponent implements OnInit {
     constructor(
         private _listingService: ListingsService,
         private _blockchainWalletsStore: BlockchainWalletsStore,
-        private _walletRegistry: WalletRegistryService
+        private _walletRegistry: WalletRegistryService,
+        private _getUserWalletService: GetUserWalletService
     ) {}
 
     ngOnInit() {
@@ -30,25 +32,26 @@ export class HomePageComponent implements OnInit {
         });
     }
 
-    buyToken(listing: ListingDto) {
+    async buyToken(listing: ListingDto) {
         const listingChain = this._blockchainWalletsStore.blockchains.find(
             (everyChain) => everyChain.id === listing.blockchainId
         );
+        const walletId = await this._getUserWalletService.findAvailableWallet(listing.blockchainId);
         if (listingChain) {
             this._walletRegistry
-                .getWalletService(listing.walletId)
+                .getWalletService(walletId)
                 .pipe(
                     switchMap((walletService) => {
                         if (isNil(walletService)) {
                             return throwError(() => "No service found for wallet");
                         }
-                        return walletService.buyToken(listing, listingChain);
+                        return walletService.buyToken(listing, listingChain, listing.tokenContractAddress);
                     }),
                     switchMap((hash) => {
                         const dto = new BuyListingDto();
                         dto.chainTransactionHash = hash;
                         dto.listingId = listing.id;
-                        dto.walletId = listing.walletId;
+                        dto.walletId = walletId;
                         return this._listingService.buyListing(dto);
                     })
                 )

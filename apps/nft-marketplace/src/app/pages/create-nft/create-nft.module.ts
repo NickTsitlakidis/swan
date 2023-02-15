@@ -9,7 +9,6 @@ import { CreateNFTPageComponent } from "./create-nft-page/create-nft-page.compon
 import { CreateNFTRoutingModule } from "./create-nft-routing.module";
 import { CreateNFTComponent } from "./create-nft.component";
 import { ChainsModule } from "../../@core/services/chains/chains.module";
-import { SelectWalletDialogModule } from "../../@theme/components/select-wallet-dialog/select-wallet-dialog.module";
 import { InputSwitchModule } from "primeng/inputswitch";
 import { ButtonModule } from "primeng/button";
 import { InputTextModule } from "primeng/inputtext";
@@ -23,7 +22,6 @@ import { InputTextareaModule } from "primeng/inputtextarea";
         UploadModule,
         TitleSubTitleModule,
         ChainsModule,
-        SelectWalletDialogModule,
         DropdownModule,
         InputSwitchModule,
         ButtonModule,
