@@ -18,7 +18,7 @@ export class MetamaskWalletService extends EvmService {
         if (!this.wallet || this.wallet !== this._walletType) {
             this.wallet = this._walletType;
             if ((window as any).ethereum.isMetaMask) {
-                this._externalProvider = await (window as any).ethereum.isMetaMask;
+                this._externalProvider = await (window as any).ethereum;
             } else {
                 this._externalProvider = await (window as any).ethereum.providers?.find(
                     (provider: { isMetaMask: any }) => provider.isMetaMask

@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChil
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
 import {
     BlockchainDto,
-    BlockchainWalletDto,
     CategoryDto,
     CollectionDto,
     NftMetadataAttributeDto,
@@ -21,16 +20,14 @@ import { CategoriesStore } from "../../../@core/store/categories-store";
 import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
 import { UserStore } from "../../../@core/store/user-store";
 import { isNil } from "lodash";
-import { DialogService } from "primeng/dynamicdialog";
-import { SelectWalletDialogComponent } from "../../../@theme/components/select-wallet-dialog/select-wallet-dialog.component";
+import { GetUserWalletService } from "../../../@core/services/chains/get-user-wallet.service";
 
 @Component({
     selector: "nft-marketplace-create-nft-page",
     templateUrl: "./create-nft-page.component.html",
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrls: ["./create-nft-page.component.scss"],
-    animations: [fade],
-    providers: [DialogService]
+    animations: [fade]
 })
 export class CreateNFTPageComponent implements OnInit {
     @ViewChild("collectionSelect") collectionSelect: any;
@@ -95,7 +92,7 @@ export class CreateNFTPageComponent implements OnInit {
         private _categoriesStore: CategoriesStore,
         private _nftService: NftService,
         private _collectionsService: CollectionsService,
-        public dialogService: DialogService
+        private _getUserWalletService: GetUserWalletService
     ) {}
 
     ngOnInit(): void {
@@ -179,7 +176,7 @@ export class CreateNFTPageComponent implements OnInit {
 
     public async onSubmit() {
         const chainId = this.createNFTForm.get("blockchain")?.value.id;
-        const walletId = await this._findAvailableWallet(chainId);
+        const walletId = await this._getUserWalletService.findAvailableWallet(chainId);
         const walletService = await firstValueFrom(this._walletRegistryService.getWalletService(walletId));
         const metadata: NftMetadataAttributeDto[] = [];
         for (let index = 1; index <= this.attributes.length; index++) {
@@ -237,62 +234,5 @@ export class CreateNFTPageComponent implements OnInit {
                 })
             )
             .subscribe(console.log);
-    }
-
-    private async _findAvailableWallet(chainId: string): Promise<string> {
-        let walletId: string | undefined;
-        const userWallets = this.userWallets.filter((wallet) => wallet.wallet.chainId === chainId);
-
-        if (userWallets.length === 1) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore: Object is possibly 'undefined'
-            walletId = userWallets.at(0).wallet.id;
-        } else if (userWallets.length > 1) {
-            const allWallets = this._blockchainWalletsStore.wallets
-                .filter((wal) => wal.blockchain.id === chainId)
-                .filter((wal) => {
-                    wal.wallets = wal.wallets.filter((w) =>
-                        userWallets.find((userWallet) => userWallet.wallet.id === w.id)
-                    );
-                    return wal;
-                });
-            walletId = await this._getWallet(chainId, allWallets);
-        }
-
-        if (!walletId) {
-            // TODO Handle
-            return "";
-        }
-
-        return walletId;
-    }
-
-    private async _getWallet(chainId: string, wallets: BlockchainWalletDto[]): Promise<string | undefined> {
-        const selectWalletsInput = wallets
-            .filter((wallet) => wallet.blockchain.id === chainId)
-            .flatMap((wallet) => wallet.wallets)
-            .map((wallet) => {
-                return {
-                    img: `assets/images/${wallet.name}.png`,
-                    title: wallet.name,
-                    chain: this.blockchains.find((chain) => chain.id === wallet.chainId)?.name || ""
-                };
-            });
-        const dialogRef = this._openDialog(selectWalletsInput);
-        const walletName = await firstValueFrom(dialogRef.onClose);
-        const wallet = wallets
-            .filter((wallet) => wallet.blockchain.id === chainId)
-            .flatMap((wallet) => wallet.wallets)
-            .find((wallet) => wallet.name === walletName);
-        return wallet?.id;
-    }
-
-    private _openDialog(wallets: { img: string; title: string; chain: string }[]) {
-        return this.dialogService.open(SelectWalletDialogComponent, {
-            width: "500px",
-            data: {
-                wallets
-            }
-        });
     }
 }

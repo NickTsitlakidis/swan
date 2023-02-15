@@ -15,6 +15,8 @@ import { ChainsModule } from "./@core/services/chains/chains.module";
 import { ContractsModule } from "./@core/contracts.module";
 import { ToastModule } from "primeng/toast";
 import { MobxAngularModule } from "mobx-angular";
+import { SelectWalletDialogModule } from "./@theme/components/select-wallet-dialog/select-wallet-dialog.module";
+import { DialogService } from "primeng/dynamicdialog";
 
 @NgModule({
     declarations: [AppComponent],
@@ -33,9 +35,14 @@ import { MobxAngularModule } from "mobx-angular";
         ChainsModule,
         ContractsModule,
         ToastModule,
-        MobxAngularModule
+        MobxAngularModule,
+        SelectWalletDialogModule
     ],
-    providers: [{ provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true }, WalletStore],
+    providers: [
+        { provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true },
+        WalletStore,
+        DialogService
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule {}
