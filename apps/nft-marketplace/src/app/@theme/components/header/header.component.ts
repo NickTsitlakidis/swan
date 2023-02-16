@@ -6,10 +6,11 @@ import { WalletRegistryService } from "../../../@core/services/chains/wallet-reg
 import { firstValueFrom, of } from "rxjs";
 import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
 import { UserStore } from "../../../@core/store/user-store";
-import { makeObservable } from "mobx";
+import { makeObservable, when } from "mobx";
 import { computed } from "mobx-angular";
 import { ProgressStore } from "../../../@core/store/progress-store";
 import { PlatformUtils } from "../../../@core/utils/platform-utils";
+import { isNil } from "lodash";
 
 @Component({
     selector: "nft-marketplace-header",
@@ -62,26 +63,26 @@ export class HeaderComponent implements OnInit {
     }
 
     ngOnInit() {
-        // when(() => !this._userStore.userState.isLoading).then(() => {
-        //     const storedUser = this._userStore.user;
-        //     if (!isNil(storedUser)) {
-        //         this.selectedWallets = this._blockchainWalletsStore.wallets
-        //             .flatMap((w) => w.wallets)
-        //             .filter((wallet) =>
-        //                 storedUser.wallets.find((w) => w.wallet.chainId === wallet.chainId && w.wallet.id === wallet.id)
-        //             );
-        //         this.selectedWallets.forEach((wal) => {
-        //             if (!this.isSelected[wal.chainId]) {
-        //                 this.isSelected[wal.chainId] = {};
-        //             }
-        //             this.isSelected[wal.chainId][wal.name] = true;
-        //         });
-        //         // TODO previously used wallet functionality?
-        //         this.selectedWallet = this.selectedWallets[0];
-        //     }
-        //     this._cd.detectChanges();
-        // });
-        // this._cd.detectChanges();
+        when(() => !this._userStore.userState.isLoading).then(() => {
+            const storedUser = this._userStore.user;
+            if (!isNil(storedUser)) {
+                this.selectedWallets = this._blockchainWalletsStore.wallets
+                    .flatMap((w) => w.wallets)
+                    .filter((wallet) =>
+                        storedUser.wallets.find((w) => w.wallet.chainId === wallet.chainId && w.wallet.id === wallet.id)
+                    );
+                this.selectedWallets.forEach((wal) => {
+                    if (!this.isSelected[wal.chainId]) {
+                        this.isSelected[wal.chainId] = {};
+                    }
+                    this.isSelected[wal.chainId][wal.name] = true;
+                });
+                // TODO previously used wallet functionality?
+                this.selectedWallet = this.selectedWallets[0];
+            }
+            this._cd.detectChanges();
+        });
+        this._cd.detectChanges();
     }
 
     @computed

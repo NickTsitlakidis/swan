@@ -18,6 +18,7 @@ import { SignatureTypes } from "../../support/blockchains/signature-types";
 import { UserWallet } from "../../domain/user/user-wallet";
 import { getUnitTestingModule } from "../../test-utils/test-modules";
 import { DateTime } from "luxon";
+import { Token } from "../../security/token";
 
 let validatorMock: SignatureValidator;
 let authenticationRepoMock: SignatureAuthenticationRepository;
@@ -165,7 +166,11 @@ test("execute - returns token of existing user", async () => {
     wallet.userId = "user1";
     const findWalletSpy = jest.spyOn(walletViewRepoMock, "findByAddressAndBlockchain").mockResolvedValue(wallet);
 
-    const token = new TokenDto("t", DateTime.now());
+    const token: Token = {
+        expiresAt: DateTime.now(),
+        tokenValue: "t",
+        refreshToken: "r"
+    };
     const issuerSpy = jest.spyOn(issuerMock, "issueFromId").mockResolvedValue(token);
 
     const result = await executor.execute(command);
@@ -216,7 +221,11 @@ test("execute - returns token of new user", async () => {
 
     const findWalletSpy = jest.spyOn(walletViewRepoMock, "findByAddressAndBlockchain").mockResolvedValue(undefined);
 
-    const token = new TokenDto("t", DateTime.now());
+    const token: Token = {
+        expiresAt: DateTime.now(),
+        tokenValue: "t",
+        refreshToken: "r"
+    };
     const issuerSpy = jest.spyOn(issuerMock, "issueFromId").mockResolvedValue(token);
 
     const idSpy = jest.spyOn(idGeneratorMock, "generateEntityId").mockReturnValue("mongo-id");
