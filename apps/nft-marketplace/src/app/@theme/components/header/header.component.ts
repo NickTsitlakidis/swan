@@ -62,7 +62,6 @@ export class HeaderComponent implements OnInit {
     }
 
     ngOnInit() {
-        console.log("meh");
         // when(() => !this._userStore.userState.isLoading).then(() => {
         //     const storedUser = this._userStore.user;
         //     if (!isNil(storedUser)) {

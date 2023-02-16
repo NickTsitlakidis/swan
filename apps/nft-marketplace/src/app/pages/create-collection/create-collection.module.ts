@@ -9,7 +9,6 @@ import { CreateCollectionRoutingModule } from "./create-collection-routing.modul
 import { CreateCollectionComponent } from "./create-collection.component";
 
 import { ValidateName, ValidateUrl } from "./create-collection-page/create-collection-page.validator";
-import { CollectionsModule } from "../../@core/services/collections/collections.module";
 import { DropdownModule } from "primeng/dropdown";
 import { InputSwitchModule } from "primeng/inputswitch";
 import { InputTextModule } from "primeng/inputtext";
@@ -23,7 +22,6 @@ import { MobxAngularModule } from "mobx-angular";
         ReactiveFormsModule,
         TitleSubTitleModule,
         ImagePlaceholderModule,
-        CollectionsModule,
         DropdownModule,
         InputSwitchModule,
         InputTextModule,

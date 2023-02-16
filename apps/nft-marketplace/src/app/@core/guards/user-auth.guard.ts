@@ -14,7 +14,6 @@ export class AuthGuard implements CanActivate {
         // if (isNil(this._userStore.token)) {
         //     return this._router.parseUrl("/home");
         // }
-        console.log("called guard");
         if (!isNil(this._userStore.user)) {
             return true;
         }

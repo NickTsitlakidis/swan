@@ -114,7 +114,6 @@ export class UserStore implements StateStore {
                 });
             },
             error: (error) => {
-                console.log(error);
                 runInAction(() => {
                     this.tokenState = ComplexState.fromError(error);
                 });

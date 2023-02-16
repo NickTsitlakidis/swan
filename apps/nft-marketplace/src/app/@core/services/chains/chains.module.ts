@@ -9,6 +9,7 @@ import { PhantomWalletService } from "./solana-services/phantom.wallet.service";
 import { SolflareWalletService } from "./solana-services/solflare.wallet.service";
 import { WalletRegistryService } from "./wallet-registry.service";
 import { HdWalletAdapterModule, WalletStore } from "@heavy-duty/wallet-adapter";
+import { GetUserWalletService } from "./get-user-wallet.service";
 
 @NgModule({
     providers: [
@@ -21,7 +22,8 @@ import { HdWalletAdapterModule, WalletStore } from "@heavy-duty/wallet-adapter";
         PhantomWalletService,
         SolflareWalletService,
         WalletStore,
-        WalletRegistryService
+        WalletRegistryService,
+        GetUserWalletService
     ],
     imports: [HdWalletAdapterModule.forRoot({ autoConnect: true })]
 })
