@@ -7,7 +7,6 @@ export class ApiException extends Error {
 
     constructor(message: string, isExpected = true, code = "000000", httpStatus?: HttpStatus) {
         super(message);
-        this._httpStatus = httpStatus;
         this._code = code;
         if (isNil(httpStatus)) {
             this._httpStatus = isExpected ? HttpStatus.BAD_REQUEST : HttpStatus.INTERNAL_SERVER_ERROR;

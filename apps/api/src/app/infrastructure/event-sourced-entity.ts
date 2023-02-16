@@ -1,15 +1,16 @@
-import { sortBy, last, isNil } from "lodash";
+import { isNil } from "lodash";
 import { InternalServerErrorException, Logger } from "@nestjs/common";
 import { SourcedEvent } from "./sourced-event";
 import { EventPayload, getEventClassForName } from "./serialized-event";
 import { getLogger } from "./logging";
+import { sort } from "radash";
 
 const REGISTERED: Array<{
-    eventClass;
+    eventClass: any;
     processorKey: string;
 }> = [];
 
-function getEventProcessorKey(eventClass): string {
+function getEventProcessorKey(eventClass: any): string {
     const found = REGISTERED.find((pair) => pair.eventClass === eventClass);
     if (isNil(found)) {
         throw new InternalServerErrorException(`Event class ${eventClass.name} is missing processor.`);
@@ -25,7 +26,7 @@ function getEventProcessorKey(eventClass): string {
  * @param eventClass The event class that will trigger the function.
  * @constructor
  */
-export function EventProcessor(eventClass): PropertyDecorator {
+export function EventProcessor(eventClass: any): PropertyDecorator {
     return (propertyParent, propertyKey) => {
         REGISTERED.push({ eventClass: eventClass, processorKey: propertyKey as string });
     };
@@ -118,7 +119,7 @@ export abstract class EventSourcedEntity {
                     const eventClass = getEventClassForName(ev.eventName);
                     const processor = getEventProcessorKey(eventClass);
                     const mappedEvent = ev.getPayloadAs(eventClass);
-                    this[processor](mappedEvent);
+                    (this as any)[processor](mappedEvent);
                 } catch (error) {
                     this.logger.error(`Unable to process domain event : ${ev.eventName}.`);
                     throw error;
@@ -130,11 +131,12 @@ export abstract class EventSourcedEntity {
     }
 
     protected resolveVersion(events: Array<SourcedEvent>) {
-        const sorted: Array<SourcedEvent> = sortBy(events, (ev) => ev.aggregateVersion);
-        this._version = last(sorted).aggregateVersion;
+        const sorted = sort(events, (ev) => ev.aggregateVersion);
+        const last = sorted.at(-1);
+        this._version = isNil(last) ? -1 : last.aggregateVersion;
     }
 
     protected sortEvents(events: Array<SourcedEvent>): Array<SourcedEvent> {
-        return sortBy(events, (ev) => ev.aggregateVersion);
+        return sort(events, (ev) => ev.aggregateVersion);
     }
 }

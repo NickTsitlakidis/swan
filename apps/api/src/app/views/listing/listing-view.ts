@@ -23,14 +23,14 @@ export class ListingView extends MongoDocument {
     blockchainId: string;
 
     @Property()
-    tokenContractAddress?: string;
+    tokenContractAddress: string;
 
     @Property()
     nftAddress?: string;
 
     //todo : refactor this to number
     @Property()
-    chainTokenId?: string;
+    chainTokenId: string;
 
     @Property()
     status: ListingStatus;

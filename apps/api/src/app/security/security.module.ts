@@ -15,9 +15,9 @@ import { Client } from "./client";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 
 const jwtFactory = async (configService: ConfigService): Promise<JwtModuleOptions> => {
-    const privateKey = Buffer.from(configService.get<string>("ES256_PRIVATE_KEY"), "base64").toString("ascii");
+    const privateKey = Buffer.from(configService.getOrThrow<string>("ES256_PRIVATE_KEY"), "base64").toString("ascii");
 
-    const publicKey = Buffer.from(configService.get<string>("ES256_PUBLIC_KEY"), "base64").toString("ascii");
+    const publicKey = Buffer.from(configService.getOrThrow<string>("ES256_PUBLIC_KEY"), "base64").toString("ascii");
 
     return {
         privateKey: privateKey,

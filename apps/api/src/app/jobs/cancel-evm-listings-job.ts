@@ -30,7 +30,7 @@ export class CancelEvmListingsJob {
     confirmApprovalsAndOwners(): Subscription {
         const pageSize = +this._configService.getOrThrow<number>("JOB_PAGE_SIZE");
         let skip = 0;
-        const streamPage = (newSkip) => {
+        const streamPage = (newSkip: number) => {
             return from(this._listingViewRepository.findAllActive(newSkip, pageSize));
         };
 
@@ -68,7 +68,7 @@ export class CancelEvmListingsJob {
                 entity.cancel(true);
                 toCommit.push(entity);
             } catch (error) {
-                this._logger.debug(`Error during listing cancellation : ${error.message}`);
+                this._logger.debug(`Error during listing cancellation : ${(error as Error).message}`);
             }
         }
 

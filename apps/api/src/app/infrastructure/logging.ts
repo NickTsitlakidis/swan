@@ -2,15 +2,16 @@ import { Logger } from "@nestjs/common";
 import { isNil } from "lodash";
 import { DateTime } from "luxon";
 
-export function LogAsyncMethod(target, propertyKey: string, descriptor: PropertyDescriptor) {
-    if (isNil(descriptor)) {
-        descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
+export function LogAsyncMethod(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const ownPropertyDescriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
+    if (isNil(descriptor) && !isNil(ownPropertyDescriptor)) {
+        descriptor = ownPropertyDescriptor;
     }
 
     const logger = new Logger(target.constructor.name);
     const methodName = `${target.constructor.name} : ${propertyKey}`;
     const originalMethod = descriptor.value;
-    descriptor.value = async function (...args) {
+    descriptor.value = async function (...args: Array<unknown>) {
         const startedAt = DateTime.now();
         try {
             const result = await originalMethod.apply(this, args);
@@ -18,7 +19,8 @@ export function LogAsyncMethod(target, propertyKey: string, descriptor: Property
             logger.debug(`Method {${methodName}} duration : ${duration} ms`);
             return result;
         } catch (err) {
-            logger.error(`Method {${methodName}} / error message : ${err.message} / stack : ${err.stack}`);
+            const asError = err as Error;
+            logger.error(`Method {${methodName}} / error message : ${asError.message} / stack : ${asError.stack}`);
             throw err;
         }
     };

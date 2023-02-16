@@ -24,7 +24,7 @@ export class EventStore {
     private _logger: Logger;
 
     constructor(private _entityManager: EntityManager, configService: ConfigService, private _eventBus: QueueEventBus) {
-        this._mongoClient = new MongoClient(configService.get("MONGO_URI"));
+        this._mongoClient = new MongoClient(configService.getOrThrow("MONGO_URI"));
         this._logger = getLogger(EventStore);
     }
 
