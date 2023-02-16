@@ -51,11 +51,12 @@ export class UserController {
                 const expirationMinutes = this._configService.getOrThrow<number>(
                     "USER_REFRESH_TOKEN_EXPIRATION_MINUTES"
                 );
+                const cookieName = this._configService.getOrThrow("COOKIE_NAME");
                 const expiresAt = DateTime.now().toUTC().plus({ minute: expirationMinutes });
-                res.cookie("refresher", token.refreshToken, {
+                res.cookie(cookieName, token.refreshToken, {
                     expires: expiresAt.toJSDate(),
                     httpOnly: true,
-                    sameSite: false
+                    sameSite: false //todo make this secure for production
                 }).json(new TokenDto(token.tokenValue, token.expiresAt));
             });
     }
@@ -63,7 +64,8 @@ export class UserController {
     @Post("refresh-token")
     @UseGuards(ClientGuard)
     refreshToken(@Req() request: Request): Promise<TokenDto> {
-        const refresher = request.cookies["refresher"];
+        const cookieName = this._configService.getOrThrow("COOKIE_NAME");
+        const refresher = request.cookies[cookieName];
         return this._tokenIssuer.issueFromRefreshToken(refresher);
     }
 
