@@ -7,21 +7,24 @@ import { WalletRepository } from "../support/blockchains/wallet-repository";
 export class UserQueryHandler {
     constructor(private _userWalletRepository: UserWalletViewRepository, private _walletRepository: WalletRepository) {}
 
-    async getUserWallets(userId: string): Promise<Array<UserWalletDto>> {
+    async getUserWallets(userId: string): Promise<Array<UserWalletDto | undefined>> {
         const [views, wallets] = await Promise.all([
             this._userWalletRepository.findByUserId(userId),
             this._walletRepository.findAll()
         ]);
 
-        return views.map((view) => {
-            const walletMatch = wallets.find((supportedWallet) => supportedWallet.id === view.walletId);
-
-            const walletDto = new WalletDto(view.walletId, walletMatch.name, view.blockchainId);
-            return new UserWalletDto(view.userId, view.id, view.address, walletDto);
-        });
+        return views
+            .map((view) => {
+                const walletMatch = wallets.find((supportedWallet) => supportedWallet.id === view.walletId);
+                if (walletMatch) {
+                    const walletDto = new WalletDto(view.walletId, walletMatch.name, view.blockchainId);
+                    return new UserWalletDto(view.userId, view.id, view.address, walletDto);
+                }
+            })
+            .filter((view) => view);
     }
 
-    async getUser(userId: string): Promise<UserDto> {
+    async getUser(userId: string): Promise<UserDto | undefined> {
         const [views, wallets] = await Promise.all([
             this._userWalletRepository.findByUserId(userId),
             this._walletRepository.findAll()
@@ -31,11 +34,14 @@ export class UserQueryHandler {
             .filter((view) => wallets.some((w) => w.id === view.walletId))
             .map((view) => {
                 const walletMatch = wallets.find((supportedWallet) => supportedWallet.id === view.walletId);
-
-                const walletDto = new WalletDto(view.walletId, walletMatch.name, view.blockchainId);
-                return new UserWalletDto(view.userId, view.id, view.address, walletDto);
-            });
-
-        return new UserDto(userId, walletDtos);
+                if (walletMatch) {
+                    const walletDto = new WalletDto(view.walletId, walletMatch.name, view.blockchainId);
+                    return new UserWalletDto(view.userId, view.id, view.address, walletDto);
+                }
+            })
+            .filter((view) => view);
+        if (walletDtos?.length) {
+            return new UserDto(userId, walletDtos as UserWalletDto[]);
+        }
     }
 }

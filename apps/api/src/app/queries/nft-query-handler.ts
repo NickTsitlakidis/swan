@@ -10,6 +10,10 @@ import { unique } from "radash";
 import { LogAsyncMethod } from "../infrastructure/logging";
 import { isNil } from "lodash";
 import { SignatureTypes } from "../support/blockchains/signature-types";
+import { Category } from "../support/categories/category";
+import { Blockchain } from "../support/blockchains/blockchain";
+import { UserWalletView } from "../views/user-wallet/user-wallet-view";
+import { CollectionView } from "../views/collection/collection-view";
 
 @Injectable()
 export class NftQueryHandler {
@@ -32,12 +36,19 @@ export class NftQueryHandler {
         const collectionIds = unique(nfts.map((view) => view.collectionId));
         const userWalletIds = unique(nfts.map((view) => view.userWalletId));
 
-        const [collections, categories, blockchains, userWallets] = await Promise.all([
-            this._collectionViewRepository.findByIds(collectionIds),
-            this._categoryRepository.findAll(),
-            this._blockchainRepository.findAll(),
-            this._userWalletRepository.findByIds(userWalletIds)
-        ]);
+        const promises = [];
+        promises.push(this._categoryRepository.findAll());
+        promises.push(this._blockchainRepository.findAll());
+        promises.push(this._userWalletRepository.findByIds(userWalletIds));
+        if (collectionIds.length) {
+            this._collectionViewRepository.findByIds(collectionIds as string[]);
+        }
+        const results = await Promise.all(promises);
+
+        const categories = results[0] as Category[];
+        const blockchains = results[1] as Blockchain[];
+        const userWallets = results[2] as UserWalletView[];
+        const collections = collectionIds.length ? (results[3] as CollectionView[]) : [];
 
         return nfts
             .filter((nft) => categories.some((cat) => nft.categoryId === cat.id))
@@ -46,17 +57,24 @@ export class NftQueryHandler {
                 const dto = new ProfileNftDto();
 
                 const category = categories.find((cat) => cat.id === view.categoryId);
-                dto.category = new CategoryDto(category.name, category.id, category.imageUrl);
+                if (category) {
+                    dto.category = new CategoryDto(category.name, category.id, category.imageUrl);
+                }
 
                 const blockchain = blockchains.find((b) => b.id === view.blockchainId);
-                dto.blockchain = new BlockchainDto(blockchain.name, blockchain.id, blockchain.chainIdHex);
+                if (blockchain) {
+                    dto.blockchain = new BlockchainDto(blockchain.name, blockchain.id, blockchain.chainIdHex);
+                }
 
                 dto.id = view.id;
-                dto.walletId = userWallets.find((userWallet) => userWallet.id === view.userWalletId)?.walletId;
+                const walletId = userWallets.find((userWallet) => userWallet.id === view.userWalletId)?.walletId;
+                if (walletId) {
+                    dto.walletId = walletId;
+                }
                 dto.imageUri = view.fileUri;
 
                 dto.tokenId = view.tokenId;
-                if (blockchain.signatureType === SignatureTypes.EVM) {
+                if (blockchain?.signatureType === SignatureTypes.EVM) {
                     dto.tokenContractAddress = view.tokenContractAddress;
                 } else {
                     dto.nftAddress = view.tokenContractAddress;
@@ -90,38 +108,44 @@ export class NftQueryHandler {
         const chains = await this._blockchainRepository.findByIds(userWallets.map((wallet) => wallet.blockchainId));
         const categories = await this._categoryRepository.findAll();
 
-        let profileNfts = [];
+        let profileNfts: ProfileNftDto[] = [];
         for (const wallet of userWallets) {
             const service = await this._blockchainActions.getService(wallet.blockchainId);
-            const nfts = await service.getUserNfts(wallet.address, wallet.blockchainId);
-            const chain = chains.find((c) => c.id === wallet.blockchainId);
-            profileNfts = profileNfts.concat(
-                nfts.map((nft) => {
-                    const category = categories.find((cat) => cat.id === nft.categoryId);
-                    const profileNftDto = new ProfileNftDto();
-                    profileNftDto.blockchain = new BlockchainDto(chain.name, chain.id, chain.chainIdHex);
-                    profileNftDto.category = {
-                        id: category?.id,
-                        name: category?.name
-                    };
-                    /* profileNftDto.collection = {
+            if (service) {
+                const nfts = await service.getUserNfts(wallet.address, wallet.blockchainId);
+                const chain = chains.find((c) => c.id === wallet.blockchainId);
+                profileNfts = profileNfts.concat(
+                    nfts.map((nft) => {
+                        const category = categories.find((cat) => cat.id === nft.categoryId);
+                        const profileNftDto = new ProfileNftDto();
+                        if (chain) {
+                            profileNftDto.blockchain = new BlockchainDto(chain.name, chain.id, chain.chainIdHex);
+                        }
+                        if (category) {
+                            profileNftDto.category = {
+                                id: category?.id,
+                                name: category?.name
+                            };
+                        }
+                        /* profileNftDto.collection = {
                         name: nft.collection.name
                     }; */
-                    profileNftDto.animationUri = nft.animation_url;
-                    profileNftDto.imageUri = nft.image;
+                        profileNftDto.animationUri = nft.animation_url;
+                        profileNftDto.imageUri = nft.image;
 
-                    if (chain.signatureType === SignatureTypes.EVM) {
-                        profileNftDto.tokenId = nft.tokenId;
-                        profileNftDto.tokenContractAddress = nft.tokenContractAddress;
-                    } else {
-                        profileNftDto.nftAddress = nft.nftAddress;
-                        profileNftDto.mintAddress = nft.mintAddress;
-                    }
-                    profileNftDto.walletId = wallet.walletId;
-                    profileNftDto.metadataUri = nft.metadataUri;
-                    return profileNftDto;
-                })
-            );
+                        if (chain?.signatureType === SignatureTypes.EVM) {
+                            profileNftDto.tokenId = nft.tokenId;
+                            profileNftDto.tokenContractAddress = nft.tokenContractAddress;
+                        } else {
+                            profileNftDto.nftAddress = nft.nftAddress;
+                            profileNftDto.mintAddress = nft.mintAddress;
+                        }
+                        profileNftDto.walletId = wallet.walletId;
+                        profileNftDto.metadataUri = nft.metadataUri;
+                        return profileNftDto;
+                    })
+                );
+            }
         }
         return profileNfts;
     }

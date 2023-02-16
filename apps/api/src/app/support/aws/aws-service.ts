@@ -11,8 +11,8 @@ export class AwsService {
 
     constructor(private _configService: ConfigService) {
         const credentials = new AWS.Credentials(
-            this._configService.get("AWS_ACCESS_KEY"),
-            this._configService.get("AWS_SECRET_KEY")
+            this._configService.getOrThrow("AWS_ACCESS_KEY"),
+            this._configService.getOrThrow("AWS_SECRET_KEY")
         );
 
         const config = new AWS.Config({ credentials, region: this._configService.get("AWS_REGION") });
