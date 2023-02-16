@@ -6,7 +6,6 @@ import {
     EntityDto,
     NonceDto,
     ProfileNftDto,
-    RefreshTokenDto,
     StartSignatureAuthenticationDto,
     TokenDto,
     UserDto
@@ -40,7 +39,7 @@ export class UserService {
 
     completeSignatureAuthentication(completeBody: CompleteSignatureAuthenticationDto): Observable<TokenDto> {
         return this._httpClient
-            .post("/user/complete-signature-authentication", completeBody)
+            .post("/user/complete-signature-authentication", completeBody, { withCredentials: true })
             .pipe(map((httpResult) => plainToClass(TokenDto, httpResult)));
     }
 
@@ -48,9 +47,9 @@ export class UserService {
         return this._httpClient.get("/user").pipe(map((httpResult) => plainToClass(UserDto, httpResult)));
     }
 
-    refreshToken(refreshTokenValue: string): Observable<TokenDto> {
+    refreshToken(): Observable<TokenDto> {
         return this._httpClient
-            .post("/user/refresh-token", new RefreshTokenDto(refreshTokenValue))
+            .post("/user/refresh-token", {}, { withCredentials: true })
             .pipe(map((httpResult) => plainToClass(TokenDto, httpResult)));
     }
 

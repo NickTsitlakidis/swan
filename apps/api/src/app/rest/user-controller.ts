@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { ClientGuard } from "../security/guards/client-guard";
 import { StartSignatureAuthenticationCommand } from "../commands/user/start-signature-authentication-command";
@@ -7,7 +7,6 @@ import {
     CompleteSignatureAuthenticationDto,
     EntityDto,
     NonceDto,
-    RefreshTokenDto,
     StartSignatureAuthenticationDto,
     TokenDto,
     UserDto,
@@ -18,11 +17,16 @@ import { RequestUserId } from "../security/request-user-id";
 import { CompleteWalletAdditionCommand } from "../commands/user/complete-wallet-addition-command";
 import { UserTokenIssuer } from "../security/user-token-issuer";
 import { UserQueryHandler } from "../queries/user-query-handler";
+import { Response, Request } from "express";
+import { Token } from "../security/token";
+import { DateTime } from "luxon";
+import { ConfigService } from "@nestjs/config";
 
 @Controller("user")
 export class UserController {
     constructor(
         private readonly _commandBus: CommandBus,
+        private readonly _configService: ConfigService,
         private readonly _userQueryHandler: UserQueryHandler,
         private readonly _tokenIssuer: UserTokenIssuer
     ) {}
@@ -35,14 +39,32 @@ export class UserController {
 
     @Post("complete-signature-authentication")
     @UseGuards(ClientGuard)
-    completeAuthentication(@Body() body: CompleteSignatureAuthenticationDto): Promise<TokenDto> {
-        return this._commandBus.execute(CompleteSignatureAuthenticationCommand.fromDto(body));
+    completeAuthentication(
+        @Body() body: CompleteSignatureAuthenticationDto,
+        @Res({ passthrough: true }) res: Response
+    ) {
+        return this._commandBus
+            .execute<CompleteSignatureAuthenticationCommand, Token>(
+                CompleteSignatureAuthenticationCommand.fromDto(body)
+            )
+            .then((token) => {
+                const expirationMinutes = this._configService.getOrThrow<number>(
+                    "USER_REFRESH_TOKEN_EXPIRATION_MINUTES"
+                );
+                const expiresAt = DateTime.now().toUTC().plus({ minute: expirationMinutes });
+                res.cookie("refresher", token.refreshToken, {
+                    expires: expiresAt.toJSDate(),
+                    httpOnly: true,
+                    sameSite: false
+                }).json(new TokenDto(token.tokenValue, token.expiresAt));
+            });
     }
 
     @Post("refresh-token")
     @UseGuards(ClientGuard)
-    refreshToken(@Body() body: RefreshTokenDto): Promise<TokenDto> {
-        return this._tokenIssuer.issueFromRefreshToken(body.token);
+    refreshToken(@Req() request: Request): Promise<TokenDto> {
+        const refresher = request.cookies["refresher"];
+        return this._tokenIssuer.issueFromRefreshToken(refresher);
     }
 
     @Post("start-wallet-addition")

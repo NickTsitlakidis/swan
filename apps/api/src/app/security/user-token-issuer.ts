@@ -5,9 +5,9 @@ import { RefreshToken } from "./refresh-token";
 import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { getLogger } from "../infrastructure/logging";
 import { isNil } from "lodash";
-import { TokenDto } from "@swan/dto";
 import { DateTime } from "luxon";
 import { ConfigService } from "@nestjs/config";
+import { Token } from "./token";
 
 @Injectable()
 export class UserTokenIssuer {
@@ -22,7 +22,7 @@ export class UserTokenIssuer {
         this._logger = getLogger(UserTokenIssuer);
     }
 
-    async issueFromId(userId: string): Promise<TokenDto> {
+    async issueFromId(userId: string): Promise<Token> {
         const refreshToken = new RefreshToken();
         refreshToken.id = this._idGenerator.generateEntityId();
         refreshToken.tokenValue = this._idGenerator.generateUUID();
@@ -48,14 +48,14 @@ export class UserTokenIssuer {
 
         const jwtAccessToken = this._signService.sign({}, accessSignOptions);
 
-        return new TokenDto(
-            jwtAccessToken,
-            DateTime.now().toUTC().plus({ minutes: expirationMinutes }),
-            jwtRefreshToken
-        );
+        return {
+            tokenValue: jwtAccessToken,
+            refreshToken: jwtRefreshToken,
+            expiresAt: DateTime.now().toUTC().plus({ minutes: expirationMinutes })
+        };
     }
 
-    async issueFromRefreshToken(refreshTokenJwt: string): Promise<TokenDto> {
+    async issueFromRefreshToken(refreshTokenJwt: string): Promise<Token> {
         let decoded: { jti: string };
         try {
             decoded = this._signService.verify(refreshTokenJwt);
@@ -84,10 +84,10 @@ export class UserTokenIssuer {
         };
         const jwtAccessToken = this._signService.sign({}, accessSignOptions);
 
-        return new TokenDto(
-            jwtAccessToken,
-            DateTime.now().toUTC().plus({ minutes: expirationMinutes }),
-            refreshTokenJwt
-        );
+        return {
+            tokenValue: jwtAccessToken,
+            refreshToken: refreshTokenJwt,
+            expiresAt: DateTime.now().toUTC().plus({ minutes: expirationMinutes })
+        };
     }
 }

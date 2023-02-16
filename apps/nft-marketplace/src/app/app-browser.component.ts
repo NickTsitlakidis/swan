@@ -1,8 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { AnalyticsService } from "./@core/utils";
 import { WalletRegistryService } from "./@core/services/chains/wallet-registry.service";
-import { PrimeNGConfig } from "primeng/api";
 import { UserStore } from "./@core/store/user-store";
+import { PrimeNGConfig } from "primeng/api";
 
 @Component({
     selector: "nft-marketplace-root",
