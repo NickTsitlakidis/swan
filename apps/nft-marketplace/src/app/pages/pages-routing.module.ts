@@ -23,7 +23,9 @@ const routes: Routes = [
                 path: "create-collection",
                 canActivate: [AuthGuard],
                 loadChildren: () =>
-                    import("./create-collection/create-collection.module").then((m) => m.CreateCollectionModule)
+                    import("./create-collection/create-collection-page.module").then(
+                        (m) => m.CreateCollectionPageModule
+                    )
             },
             {
                 path: "create-nft",

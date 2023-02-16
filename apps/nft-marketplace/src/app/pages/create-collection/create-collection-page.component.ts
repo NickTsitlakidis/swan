@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { BlockchainDto, CategoryDto, CollectionLinksDto, CreateCollectionDto } from "@swan/dto";
-import { CollectionsService } from "../../../@core/services/collections/collections.service";
+import { CollectionsService } from "../../@core/services/collections/collections.service";
 import { ValidateName, ValidateUrl } from "./create-collection-page.validator";
 import { DisplayPaymentTokens } from "./create-collection";
-import { CategoriesStore } from "../../../@core/store/categories-store";
-import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
+import { CategoriesStore } from "../../@core/store/categories-store";
+import { BlockchainWalletsStore } from "../../@core/store/blockchain-wallets-store";
 import { computed } from "mobx-angular";
 import { makeObservable } from "mobx";
 

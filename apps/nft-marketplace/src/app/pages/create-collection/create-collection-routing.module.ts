@@ -1,18 +1,11 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
-import { CreateCollectionPageComponent } from "./create-collection-page/create-collection-page.component";
-import { CreateCollectionComponent } from "./create-collection.component";
+import { CreateCollectionPageComponent } from "./create-collection-page.component";
 
 const routes: Routes = [
     {
         path: "",
-        component: CreateCollectionComponent,
-        children: [
-            {
-                path: "",
-                component: CreateCollectionPageComponent
-            }
-        ]
+        component: CreateCollectionPageComponent
     }
 ];
 

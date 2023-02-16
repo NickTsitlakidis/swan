@@ -4,21 +4,9 @@ import { ThemeModule } from "../@theme/theme.module";
 import { PagesComponent } from "./pages.component";
 import { PagesRoutingModule } from "./pages-routing.module";
 import { MiscellaneousModule } from "./miscellaneous/miscellaneous.module";
-import { HomeModule } from "./home/home.module";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { CreateCollectionModule } from "./create-collection/create-collection.module";
-import { CreateNFTModule } from "./create-nft/create-nft.module";
 @NgModule({
-    imports: [
-        PagesRoutingModule,
-        ReactiveFormsModule,
-        FormsModule,
-        ThemeModule,
-        MiscellaneousModule,
-        HomeModule,
-        CreateCollectionModule,
-        CreateNFTModule
-    ],
+    imports: [PagesRoutingModule, ReactiveFormsModule, FormsModule, ThemeModule, MiscellaneousModule],
     declarations: [PagesComponent]
 })
 export class PagesModule {}

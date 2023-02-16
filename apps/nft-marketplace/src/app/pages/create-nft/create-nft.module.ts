@@ -5,9 +5,8 @@ import { TitleSubTitleModule } from "../../@theme/components/title-subtitle/titl
 import { UploadModule } from "../../@theme/components/upload/upload.module";
 
 import { ThemeModule } from "../../@theme/theme.module";
-import { CreateNFTPageComponent } from "./create-nft-page/create-nft-page.component";
+import { CreateNFTPageComponent } from "./create-nft-page.component";
 import { CreateNFTRoutingModule } from "./create-nft-routing.module";
-import { CreateNFTComponent } from "./create-nft.component";
 import { InputSwitchModule } from "primeng/inputswitch";
 import { ButtonModule } from "primeng/button";
 import { InputTextModule } from "primeng/inputtext";
@@ -26,6 +25,6 @@ import { InputTextareaModule } from "primeng/inputtextarea";
         InputTextModule,
         InputTextareaModule
     ],
-    declarations: [CreateNFTComponent, CreateNFTPageComponent]
+    declarations: [CreateNFTPageComponent]
 })
 export class CreateNFTModule {}

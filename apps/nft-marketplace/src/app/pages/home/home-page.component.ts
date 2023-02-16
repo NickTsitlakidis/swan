@@ -1,11 +1,11 @@
 import { BuyListingDto, ListingDto, PaginationDto } from "@swan/dto";
 import { Component, OnInit } from "@angular/core";
-import { ListingsService } from "../../../@core/services/listings/listings.service";
+import { ListingsService } from "../../@core/services/listings/listings.service";
 import { switchMap, throwError } from "rxjs";
-import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
+import { WalletRegistryService } from "../../@core/services/chains/wallet-registry.service";
 import { isNil } from "lodash";
-import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
-import { GetUserWalletService } from "../../../@core/services/chains/get-user-wallet.service";
+import { BlockchainWalletsStore } from "../../@core/store/blockchain-wallets-store";
+import { GetUserWalletService } from "../../@core/services/chains/get-user-wallet.service";
 
 @Component({
     selector: "nft-marketplace-home-page",
