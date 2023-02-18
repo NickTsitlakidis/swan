@@ -5,6 +5,7 @@ import { Collection } from "mongodb";
 import { EntityManager } from "@mikro-orm/mongodb";
 import { MikroORM } from "@mikro-orm/core";
 import { MongoOrmSubscriber } from "../infrastructure/mongo-orm-subscriber";
+import { ConfigModule } from "@nestjs/config";
 
 export function getUnitTestingModule(testClass: any): Promise<TestingModule> {
     return Test.createTestingModule({ providers: [testClass] })
@@ -19,6 +20,7 @@ export function getUnitTestingModule(testClass: any): Promise<TestingModule> {
 export async function getMongoTestingModule(entityClass: any, entityRepository: any): Promise<TestingModule> {
     return Test.createTestingModule({
         imports: [
+            ConfigModule.forRoot({ isGlobal: true }),
             MikroOrmModule.forRoot({
                 type: "mongo",
                 validateRequired: false,
