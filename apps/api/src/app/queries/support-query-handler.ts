@@ -49,7 +49,12 @@ export class SupportQueryHandler {
                 .filter((pair) => pair.blockchainId === chain.id)
                 .map((pair) => wallets.find((wallet) => wallet.id === pair.walletId))
                 .filter((wallet) => wallet)
-                .map((wallet) => new WalletDto(wallet.id, wallet.name, chain.id));
+                .map((wallet) => {
+                    if (wallet) {
+                        return new WalletDto(wallet.id, wallet.name, chain.id);
+                    }
+                })
+                .filter((wallet) => wallet);
 
             const blockchainDto = new BlockchainDto(chain.name, chain.id, chain.chainIdHex);
             return new BlockchainWalletDto(

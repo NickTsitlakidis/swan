@@ -4,5 +4,5 @@ export interface NftCreateExternal {
     userWalletId: string;
     tokenId: string;
     tokenAddress: string;
-    transactionId: string;
+    transactionId: string | undefined;
 }

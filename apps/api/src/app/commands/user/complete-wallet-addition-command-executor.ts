@@ -61,6 +61,9 @@ export class CompleteWalletAdditionCommandExecutor implements ICommandHandler<Co
             }
         }
 
+        if (!command.userId) {
+            throw new UnauthorizedException("Missing or invalid authentication");
+        }
         const userEvents = await this._eventStore.findEventsByAggregateId(command.userId);
         const user = this._userFactory.createFromEvents(command.userId, userEvents);
         const wallet = new UserWallet(

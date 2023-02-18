@@ -50,6 +50,9 @@ export class BuyListingCommandExecutor implements ICommandHandler<BuyListingComm
             throw new BadRequestException(`No blockchain was found. Input: Blockchain (${listing.blockchainId})`);
         }
 
+        if (isNil(listing.marketPlaceContractAddress)) {
+            throw new BadRequestException(`No Marketplace contract was found. Input: Listing (${listing.id})`);
+        }
         const customHttpProvider = new ethers.providers.JsonRpcProvider(blockchain.rpcUrl);
         const swanMarketPlace = this._contractFactory.createMarketplace(
             customHttpProvider,
@@ -62,11 +65,14 @@ export class BuyListingCommandExecutor implements ICommandHandler<BuyListingComm
             command.chainTransactionHash,
             buyer,
             fee,
-            CurrencyList[blockchain.mainTokenName],
+            CurrencyList[blockchain.mainTokenName as keyof typeof CurrencyList],
             command.blockNumber
         );
         await listing.commit();
 
+        if (!listing.nftId) {
+            throw new BadRequestException(`No NFT Id was found on Listing. Input: Listing (${listing.id})`);
+        }
         const nftEvents = await this._eventStore.findEventsByAggregateId(listing.nftId);
         const nft = this._nftFactory.createFromEvents(listing.nftId, nftEvents);
         nft.changeUser(command.userId, userWallet.id);

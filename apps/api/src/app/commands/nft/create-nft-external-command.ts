@@ -16,9 +16,9 @@ export class CreateNftExternalCommand {
 
         command.imageUri = dto.imageUri;
         command.categoryId = dto.category.id;
-        command.tokenId = dto.tokenId;
-        command.tokenContractAddress = dto.tokenContractAddress;
-        command.nftAddress = dto.nftAddress;
+        if (dto.tokenId) command.tokenId = dto.tokenId;
+        if (dto.tokenContractAddress) command.tokenContractAddress = dto.tokenContractAddress;
+        if (dto.nftAddress) command.nftAddress = dto.nftAddress;
         command.blockchainId = dto.blockchain.id;
         command.walletId = dto.walletId;
         command.userId = userId;

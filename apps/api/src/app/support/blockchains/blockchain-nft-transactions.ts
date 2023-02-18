@@ -1,6 +1,6 @@
 export interface BlockchainNftTransactionsBody {
     tokenAdress: string;
-    tokenId?: number;
+    tokenId: number;
     chainId?: number;
     rpcUrl?: string;
 }

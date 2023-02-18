@@ -40,6 +40,9 @@ export class Nft extends EventSourcedEntity {
 
     static createExternal(id: string, userId: string, createExternalNft: NftCreateExternal): Nft {
         const nft = new Nft(id);
+        if (!createExternalNft.transactionId) {
+            throw new BadRequestException(`Transaction id was not found for nft: ${createExternalNft.tokenId}`);
+        }
         nft._blockchainId = createExternalNft.blockchainId;
         nft._categoryId = createExternalNft.categoryId;
         nft._userId = userId;

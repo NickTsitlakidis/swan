@@ -33,7 +33,7 @@ export class Listing extends EventSourcedEntity {
     private _buyer: Buyer; // todo refactor the buyer to be a class for buyer and seller. also include wallet address there
     private _seller: Buyer;
     private _chainListingId: number;
-    private _animationUrl: string;
+    private _animationUrl: string | undefined;
     private _imageUrl: string;
     private _transactionFee: TransactionFee;
 
@@ -84,7 +84,7 @@ export class Listing extends EventSourcedEntity {
         return this._blockchainId;
     }
 
-    public get nftId(): string {
+    public get nftId(): string | undefined {
         return this._nftId;
     }
 
@@ -92,7 +92,7 @@ export class Listing extends EventSourcedEntity {
         return this._categoryId;
     }
 
-    get marketPlaceContractAddress(): string {
+    get marketPlaceContractAddress(): string | undefined {
         return this._marketPlaceContractAddress;
     }
 
@@ -104,15 +104,15 @@ export class Listing extends EventSourcedEntity {
         return this._price;
     }
 
-    get tokenContractAddress(): string {
+    get tokenContractAddress(): string | undefined {
         return this._tokenContractAddress;
     }
 
-    get nftAddress(): string {
+    get nftAddress(): string | undefined {
         return this._nftAddress;
     }
 
-    get chainTokenId(): string {
+    get chainTokenId(): string | undefined {
         return this._chainTokenId;
     }
 
@@ -132,7 +132,7 @@ export class Listing extends EventSourcedEntity {
         return this._chainListingId;
     }
 
-    get animationUrl(): string {
+    get animationUrl(): string | undefined {
         return this._animationUrl;
     }
 

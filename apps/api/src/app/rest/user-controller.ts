@@ -69,13 +69,13 @@ export class UserController {
 
     @Get("user-wallets")
     @UseGuards(UserGuard)
-    getUserWallets(@RequestUserId() userId: string): Promise<Array<UserWalletDto>> {
+    getUserWallets(@RequestUserId() userId: string): Promise<Array<UserWalletDto | undefined>> {
         return this._userQueryHandler.getUserWallets(userId);
     }
 
     @Get()
     @UseGuards(UserGuard)
-    getUser(@RequestUserId() userId: string): Promise<UserDto> {
+    getUser(@RequestUserId() userId: string): Promise<UserDto | undefined> {
         return this._userQueryHandler.getUser(userId);
     }
 }
