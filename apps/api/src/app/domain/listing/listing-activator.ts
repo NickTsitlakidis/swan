@@ -52,7 +52,9 @@ export class ListingActivator implements IEventHandler<ListingSubmittedEvent> {
         const found = marketplaceContracts.find((c) => c.blockchainId === blockchain.id);
         if (isNil(found)) {
             this._logger.error(`Unable to find marketplace contract with blockchain id : ${blockchain.id}`);
-            throw new InternalServerErrorException(`Unable to find marketplace contract with blockchain id : ${blockchain.id}`);
+            throw new InternalServerErrorException(
+                `Unable to find marketplace contract with blockchain id : ${blockchain.id}`
+            );
         }
 
         const provider = new ethers.providers.JsonRpcProvider(blockchain.rpcUrl);
