@@ -7,5 +7,8 @@ export class Wallet extends MongoDocument {
     name: string;
 
     @Property()
+    enabled: boolean;
+
+    @Property()
     supportsSignatureAuthentication: boolean;
 }

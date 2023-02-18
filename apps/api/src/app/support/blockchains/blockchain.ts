@@ -17,6 +17,9 @@ export class Blockchain extends MongoDocument {
     isTestNetwork: boolean;
 
     @Property()
+    enabled: boolean;
+
+    @Property()
     rpcUrl: string;
 
     @Property()
