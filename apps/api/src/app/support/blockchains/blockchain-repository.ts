@@ -1,20 +1,43 @@
 import { Injectable } from "@nestjs/common";
 import { Blockchain } from "./blockchain";
 import { EntityManager } from "@mikro-orm/mongodb";
+import { FilterQuery } from "@mikro-orm/core";
+import { ConfigService } from "@nestjs/config";
+import { EnvBlockChainType } from "@swan/dto";
 
 @Injectable()
 export class BlockchainRepository {
-    constructor(private _entityManager: EntityManager) {}
+    constructor(private _entityManager: EntityManager, private _configService: ConfigService) {}
 
     findAll(): Promise<Array<Blockchain>> {
-        return this._entityManager.fork().find(Blockchain, {});
+        let mongoQ: FilterQuery<Blockchain> = { enabled: true };
+        mongoQ = this._addOnlyMainnnets(mongoQ);
+        return this._entityManager.fork().find(Blockchain, mongoQ);
     }
 
     findById(id: string): Promise<Blockchain | null> {
-        return this._entityManager.fork().findOne(Blockchain, { id: id });
+        let mongoQ: FilterQuery<Blockchain> = { id, enabled: true };
+        mongoQ = this._addOnlyMainnnets(mongoQ);
+        return this._entityManager.fork().findOne(Blockchain, mongoQ);
     }
 
     findByIds(ids: Array<string>): Promise<Array<Blockchain>> {
-        return this._entityManager.fork().find(Blockchain, { id: { $in: ids } });
+        let mongoQ: FilterQuery<Blockchain> = { id: { $in: ids }, enabled: true };
+        mongoQ = this._addOnlyMainnnets(mongoQ);
+        return this._entityManager.fork().find(Blockchain, mongoQ);
+    }
+
+    private _addOnlyMainnnets(mongoQ: FilterQuery<Blockchain>) {
+        switch (this._configService.get("BLOCKCHAIN_TYPE")) {
+            case EnvBlockChainType.MAIN:
+                mongoQ["isTestNetwork"] = false;
+                break;
+            case EnvBlockChainType.TEST:
+                mongoQ["isTestNetwork"] = true;
+                break;
+            default:
+                break;
+        }
+        return mongoQ;
     }
 }

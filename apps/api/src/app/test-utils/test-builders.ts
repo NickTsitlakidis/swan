@@ -61,6 +61,7 @@ export function buildBlockchain(): Blockchain {
     b.mainTokenName = uid(5);
     b.mainTokenSymbol = uid(5);
     b.scanSiteUrl = uid(5);
+    b.enabled = true;
     b.rpcUrl = "https://rpc.testnet.fantom.network/";
     b.signatureType = SignatureTypes.EVM;
     return b;
