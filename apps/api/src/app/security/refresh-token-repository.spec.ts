@@ -67,9 +67,10 @@ test("findByEmail - returns match", async () => {
     });
 
     const found = await repository.findByTokenValue("the-token");
-    expect(found.userId).toBe("the-user");
-    expect(found.id).toBe(id.toHexString());
-    expect(found.tokenValue).toBe("the-token");
-    expect(found.issuedAt).toEqual(issueDate);
-    expect(found.isRevoked).toBe(true);
+    expect(found).not.toBeNull();
+    expect(found?.userId).toBe("the-user");
+    expect(found?.id).toBe(id.toHexString());
+    expect(found?.tokenValue).toBe("the-token");
+    expect(found?.issuedAt).toEqual(issueDate);
+    expect(found?.isRevoked).toBe(true);
 });

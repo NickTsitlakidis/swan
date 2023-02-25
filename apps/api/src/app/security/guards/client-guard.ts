@@ -3,7 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { isNil } from "lodash";
 import { ClientRepository } from "../client-repository";
 import { getLogger } from "../../infrastructure/logging";
-import { extractBearerValue, hasBearerToken } from "./token-utils";
+import { extractBearerValue } from "./token-utils";
 
 @Injectable()
 export class ClientGuard implements CanActivate {
@@ -14,10 +14,10 @@ export class ClientGuard implements CanActivate {
     }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        if (!hasBearerToken(context)) {
+        const token = extractBearerValue(context);
+        if (isNil(token)) {
             throw new UnauthorizedException("Invalid or missing credentials");
         }
-        const token = extractBearerValue(context);
         let verified;
 
         try {

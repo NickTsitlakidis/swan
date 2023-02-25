@@ -19,8 +19,8 @@ export class NftProjector implements IEventHandler<NftCreatedEvent | NftMintedEv
     }
 
     @LogAsyncMethod
-    async handle(event: NftCreatedEvent | NftMintedEvent | UploadedNftMetadataEvent): Promise<NftView> {
-        let view: NftView;
+    async handle(event: NftCreatedEvent | NftMintedEvent | UploadedNftMetadataEvent): Promise<NftView | undefined> {
+        let view: NftView | null;
 
         if (event instanceof NftCreatedEvent) {
             view = new NftView();

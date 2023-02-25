@@ -79,7 +79,7 @@ test("UserGuard canActivate - throws for not existing user", async () => {
             };
         }
     };
-    const repositorySpy = jest.spyOn(clientRepo, "findById").mockResolvedValue(undefined);
+    const repositorySpy = jest.spyOn(clientRepo, "findById").mockResolvedValue(null);
 
     await expect(guard.canActivate(context)).rejects.toThrow(UnauthorizedException);
 

@@ -13,7 +13,7 @@ export class ListingViewRepository {
             .then(() => view);
     }
 
-    findById(id: string): Promise<ListingView | undefined> {
+    findById(id: string): Promise<ListingView | null> {
         return this._entityManager.fork().findOne(ListingView, { id });
     }
 

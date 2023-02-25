@@ -4,7 +4,7 @@ export class StartSignatureAuthenticationCommand {
     address: string;
     blockchainId: string;
     walletId: string;
-    userId?: string;
+    userId: string;
 
     static fromDto(dto: StartSignatureAuthenticationDto): StartSignatureAuthenticationCommand {
         const mapped = new StartSignatureAuthenticationCommand();

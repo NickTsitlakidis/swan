@@ -17,6 +17,7 @@ import { CategoryByFileType } from "./category-by-file-type";
 import { Logger } from "@nestjs/common";
 import { getLogger } from "../../infrastructure/logging";
 import { BlockchainNftTransactionsBody, BlockchainNftTransactionsResponse } from "./blockchain-nft-transactions";
+import { DeleteObjectRequest, GetObjectRequest } from "aws-sdk/clients/s3";
 
 export abstract class BlockchainActions {
     protected logger: Logger;
@@ -36,10 +37,12 @@ export abstract class BlockchainActions {
 
     abstract getUserNfts(pubKey: string, blockchainId?: string): Promise<ChainNft[]>;
 
-    abstract fetchNftTransactions(body: BlockchainNftTransactionsBody): Promise<BlockchainNftTransactionsResponse[]>;
+    abstract fetchNftTransactions(
+        body: BlockchainNftTransactionsBody
+    ): Promise<BlockchainNftTransactionsResponse[] | []>;
 
     protected async uploadImage(s3Uri: string): Promise<string> {
-        const params = this.getS3ParamsFromMetadataURI(s3Uri);
+        const params = this.getS3ParamsFromMetadataURI(s3Uri) as GetObjectRequest;
         const file = await this._awsService.getObjectFromS3(params);
         const blob = new Blob([file.Body as Buffer]);
 
@@ -60,7 +63,7 @@ export abstract class BlockchainActions {
         const blob = new Blob([data as Buffer]);
 
         const metadataIPFSId = await this.metaplexService.getMetaplexor().storeBlob(blob as any);
-        const params = this.getS3ParamsFromMetadataURI(s3Uri);
+        const params = this.getS3ParamsFromMetadataURI(s3Uri) as DeleteObjectRequest;
         await this._awsService.deleteObjectFromS3(params);
 
         return `https://nftstorage.link/ipfs/${metadataIPFSId}`;
@@ -84,10 +87,10 @@ export abstract class BlockchainActions {
         if (!mimeType) {
             mimeType = this._checkIfFileIsMultipart(response);
         }
-        let category: CategoryDto;
+        let category: CategoryDto | undefined;
         for (const cat of categories) {
             const regex = new RegExp(`${cat.name.toLocaleLowerCase()}.*`);
-            if (regex.test(mimeType)) {
+            if (mimeType && regex.test(mimeType)) {
                 category = cat;
             }
         }
@@ -96,7 +99,7 @@ export abstract class BlockchainActions {
     }
 
     /* TODO PLACE THEM SOMEWHERE ELSE */
-    protected async getCategoriesDto(data: CategoryByFileType[]): Promise<CategoryDto[]> {
+    protected async getCategoriesDto(data: CategoryByFileType[]): Promise<CategoryDto[] | []> {
         const categories = await this.categoryRepository.findAll();
         const categoriesDto: CategoryDto[] = [];
         for (const cat of categories) {
@@ -104,11 +107,11 @@ export abstract class BlockchainActions {
             categoriesDto.push(dto);
         }
 
-        const resolvedPromises: CategoryDto[] | undefined = await parallel(50, data, async (nft) => {
+        const resolvedPromises = (await parallel(50, data, async (nft) => {
             const uri = nft.animation_url || nft.image;
             return await this.imageTypeFromURI(uri, categoriesDto);
-        });
-        return resolvedPromises;
+        })) as CategoryDto[] | undefined;
+        return resolvedPromises || [];
     }
 
     private _checkIfFileIsMultipart(response: AxiosResponse) {

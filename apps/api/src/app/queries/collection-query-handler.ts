@@ -31,12 +31,14 @@ export class CollectionQueryHandler {
     }
 
     @LogAsyncMethod
-    async getById(id: string): Promise<CollectionDto> {
+    async getById(id: string): Promise<CollectionDto | undefined> {
         const view = await this._collectionRepository.findOne(id);
         const cto = new CollectionDto();
-        cto.id = view.id;
-        cto.name = view.name;
-        cto.blockchainId = view.blockchainId;
-        return cto;
+        if (view) {
+            cto.id = view.id;
+            cto.name = view.name;
+            cto.blockchainId = view.blockchainId;
+            return cto;
+        }
     }
 }

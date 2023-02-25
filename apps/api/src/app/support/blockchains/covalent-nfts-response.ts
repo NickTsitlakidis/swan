@@ -36,7 +36,7 @@ export interface Item {
     native_token: boolean;
     type: string;
     balance: string;
-    balance_24h: string;
+    balance_24h?: string;
     quote_rate?: number;
     quote_rate_24h?: number;
     quote: number;

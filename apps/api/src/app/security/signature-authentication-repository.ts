@@ -20,7 +20,7 @@ export class SignatureAuthenticationRepository {
     findByAddressAndChainAndUserId(
         address: string,
         chainId: string,
-        userId: string
+        userId?: string
     ): Promise<SignatureAuthentication | null> {
         return this._entityManager
             .fork()

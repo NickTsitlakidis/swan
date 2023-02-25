@@ -37,7 +37,7 @@ export class SourcedEvent extends MongoDocument {
         this.aggregateId = aggregateId;
         if (serializable && hasEventName(serializable)) {
             this.payload = instanceToPlain(serializable, { exposeUnsetFields: false });
-            this.eventName = getEventNameForObject(serializable);
+            this.eventName = getEventNameForObject(serializable) as string;
         }
         this._id = new ObjectId();
         this.createdAt = DateTime.now().toUTC().toJSDate();

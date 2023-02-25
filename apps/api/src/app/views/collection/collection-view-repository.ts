@@ -18,7 +18,7 @@ export class CollectionViewRepository {
         return this._entityManager.persistAndFlush(view).then(() => view);
     }
 
-    findOne(id: string): Promise<CollectionView> {
+    findOne(id: string): Promise<CollectionView | null> {
         return this._entityManager.fork().findOne(CollectionView, { id: id });
     }
 

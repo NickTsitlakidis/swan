@@ -1,6 +1,6 @@
 import { EventBus, IEventHandler } from "@nestjs/cqrs";
 import { IEvent } from "@nestjs/cqrs/dist/interfaces";
-import { find, isNil } from "lodash";
+import { isNil } from "lodash";
 import { getLogger, LogAsyncMethod } from "./logging";
 
 /**
@@ -11,7 +11,7 @@ export class QueueEventBus extends EventBus {
     private _handlerPairs: Array<{ eventId: string; handler: IEventHandler<IEvent> }>;
 
     publish<T extends IEvent>(event: T) {
-        const found = find(this._handlerPairs, { eventId: this.getEventId(event) });
+        const found = this._handlerPairs.find((pair) => pair.eventId === this.getEventId(event));
         if (isNil(found)) {
             return Promise.resolve();
         }
@@ -22,7 +22,7 @@ export class QueueEventBus extends EventBus {
     @LogAsyncMethod
     publishAll<T extends IEvent>(events: T[]) {
         const withHandlers = events.filter((event) => {
-            const found = find(this._handlerPairs, { eventId: this.getEventId(event) });
+            const found = this._handlerPairs.find((pair) => pair.eventId === this.getEventId(event));
             return !isNil(found);
         });
 
@@ -35,8 +35,8 @@ export class QueueEventBus extends EventBus {
                     new Promise((resolve, reject) => {
                         handlerMatches[j].handler
                             .handle(event)
-                            .then((handlerResult) => resolve(handlerResult))
-                            .catch((error) => {
+                            .then((handlerResult: unknown) => resolve(handlerResult))
+                            .catch((error: unknown) => {
                                 reject(error);
                             });
                     });
@@ -76,7 +76,7 @@ export class QueueEventBus extends EventBus {
             try {
                 results.push(await promises[i]());
             } catch (error) {
-                logger.error("Failed to execute sequential promise with error: " + error.message);
+                logger.error(`Failed to execute sequential promise with error: ${(error as Error).message}`);
                 throw error;
             }
         }

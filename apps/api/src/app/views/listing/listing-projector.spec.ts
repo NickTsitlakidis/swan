@@ -30,7 +30,6 @@ beforeEach(async () => {
 
 test("handle ListingSoldEvent - updates view", async () => {
     const existingView = buildListingView();
-    delete existingView.status;
 
     const saved = new ListingView();
     const saveSpy = jest.spyOn(repositoryMock, "save").mockResolvedValue(saved);
@@ -67,7 +66,6 @@ test("handle ListingSoldEvent - updates view", async () => {
 
 test("handle ListingActivatedEvent - updates status, block number and listing id", async () => {
     const existingView = buildListingView();
-    delete existingView.status;
 
     const saved = new ListingView();
     const saveSpy = jest.spyOn(repositoryMock, "save").mockResolvedValue(saved);
@@ -93,7 +91,6 @@ test("handle ListingActivatedEvent - updates status, block number and listing id
 
 test("handle ListingCanceledEvent - updates status", async () => {
     const existingView = buildListingView();
-    delete existingView.status;
 
     const saved = new ListingView();
     const saveSpy = jest.spyOn(repositoryMock, "save").mockResolvedValue(saved);
@@ -117,7 +114,6 @@ test("handle ListingCanceledEvent - updates status", async () => {
 
 test("handle ListingSubmittedEvent - updates view with transaction and status", async () => {
     const existingView = buildListingView();
-    delete existingView.status;
 
     const saved = new ListingView();
     const saveSpy = jest.spyOn(repositoryMock, "save").mockResolvedValue(saved);
@@ -176,7 +172,7 @@ test("handle ListingCreatedEvent - Saves new ListingView", async () => {
 
     expect(handled).toBe(saved);
 
-    const expectedSaved = new ListingView();
+    const expectedSaved: Partial<ListingView> = new ListingView();
     expectedSaved.id = id;
     expectedSaved.price = 5;
     expectedSaved.categoryId = "category";

@@ -11,7 +11,7 @@ import { SupportModule } from "../support/support.module";
 
 const agendaFactory = async (configService: ConfigService): Promise<AgendaModuleOptions> => {
     return {
-        db: { address: configService.get("MONGO_SAFE_URI") },
+        db: { address: configService.getOrThrow<string>("MONGO_SAFE_URI") },
         defaultConcurrency: 1,
         defaultLockLimit: 1
     };

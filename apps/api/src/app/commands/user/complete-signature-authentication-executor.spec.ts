@@ -49,9 +49,7 @@ test("execute - throws if authentication is missing", async () => {
     command.blockchainId = "block";
     command.address = "addr";
 
-    const findAuthenticationSpy = jest
-        .spyOn(authenticationRepoMock, "findByAddressAndChain")
-        .mockResolvedValue(undefined);
+    const findAuthenticationSpy = jest.spyOn(authenticationRepoMock, "findByAddressAndChain").mockResolvedValue(null);
 
     await expect(executor.execute(command)).rejects.toThrow(UnauthorizedException);
 
@@ -219,7 +217,7 @@ test("execute - returns token of new user", async () => {
     const validatorSpy = jest.spyOn(validatorMock, "validateSolanaSignature").mockReturnValue(true);
     const deleteAuthSpy = jest.spyOn(authenticationRepoMock, "deleteById").mockResolvedValue(1);
 
-    const findWalletSpy = jest.spyOn(walletViewRepoMock, "findByAddressAndBlockchain").mockResolvedValue(undefined);
+    const findWalletSpy = jest.spyOn(walletViewRepoMock, "findByAddressAndBlockchain").mockResolvedValue(null);
 
     const token: Token = {
         expiresAt: DateTime.now(),

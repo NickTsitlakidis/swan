@@ -1,8 +1,8 @@
-import { find } from "lodash";
+import { find, isNil } from "lodash";
 import { InternalServerErrorException } from "@nestjs/common";
 import { IEvent } from "@nestjs/cqrs/dist/interfaces";
 
-const REGISTERED_EVENTS: Array<{ eventName: string; eventClass }> = [];
+const REGISTERED_EVENTS: Array<{ eventName: string; eventClass: any }> = [];
 
 export class EventPayload implements IEvent {
     aggregateId: string;
@@ -30,9 +30,9 @@ export function SerializedEvent(eventName: string): ClassDecorator {
  * Returns the event name that matches the class of the provided object.
  * @param target
  */
-export function getEventNameForObject(target: unknown) {
+export function getEventNameForObject(target: any) {
     const found = find(REGISTERED_EVENTS, { eventClass: target.constructor });
-    return found.eventName;
+    return isNil(found) ? undefined : found.eventName;
 }
 
 /**
@@ -41,13 +41,13 @@ export function getEventNameForObject(target: unknown) {
  */
 export function getEventClassForName(name: string) {
     const found = find(REGISTERED_EVENTS, { eventName: name });
-    return found.eventClass;
+    return isNil(found) ? undefined : found.eventClass;
 }
 
 /**
  * Returns if the provided class has a registered event name.
  * @param target The class to be checked.
  */
-export function hasEventName(target: unknown) {
+export function hasEventName(target: any) {
     return find(REGISTERED_EVENTS, { eventClass: target.constructor }) !== undefined;
 }

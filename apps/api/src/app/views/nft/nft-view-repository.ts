@@ -6,7 +6,7 @@ import { MongoEntityManager } from "@mikro-orm/mongodb";
 export class NftViewRepository {
     constructor(private readonly _entityManager: MongoEntityManager) {}
 
-    findByIdAndUserId(id: string, userId: string): Promise<NftView | undefined> {
+    findByIdAndUserId(id: string, userId: string): Promise<NftView | null> {
         return this._entityManager.findOne(NftView, { id: id, userId: userId });
     }
 
@@ -17,7 +17,7 @@ export class NftViewRepository {
             .then(() => view);
     }
 
-    findById(id: string): Promise<NftView | undefined> {
+    findById(id: string): Promise<NftView | null> {
         return this._entityManager.fork().findOne(NftView, { id });
     }
 

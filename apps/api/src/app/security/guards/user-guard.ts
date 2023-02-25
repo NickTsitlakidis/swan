@@ -3,7 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { getLogger } from "../../infrastructure/logging";
 import { UserViewRepository } from "../../views/user/user-view-repository";
 import { isNil } from "lodash";
-import { extractBearerValue, hasBearerToken } from "./token-utils";
+import { extractBearerValue } from "./token-utils";
 
 @Injectable()
 export class UserGuard implements CanActivate {
@@ -16,15 +16,14 @@ export class UserGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
 
-        if (!hasBearerToken(context)) {
+        const token = extractBearerValue(context);
+        if (isNil(token)) {
             throw new UnauthorizedException("Invalid or missing credentials");
         }
-        const token = extractBearerValue(context);
         let verified;
 
         try {
-            // todo:  Error ? 'Argument passed in must be a single String of 12 bytes or a string of 24 hex characters'
-            verified = this._signingService.verify(extractBearerValue(context));
+            verified = this._signingService.verify(token);
         } catch (error) {
             this._logger.error(`Detected unverified or expired user token ${token}`);
             throw new UnauthorizedException("Invalid or missing credentials");

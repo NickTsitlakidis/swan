@@ -16,7 +16,7 @@ export class BlockchainActionsRegistryService {
         private _solanaActionsService: SolanaActionsService
     ) {}
 
-    async getService(blockchainId: string): Promise<BlockchainActions> {
+    async getService(blockchainId: string): Promise<BlockchainActions | undefined> {
         await this._initBlockchains();
         const blockchain = this._blockchains.find((blockchain) => blockchain.id === blockchainId);
         if (blockchain?.signatureType === SignatureTypes.EVM) {

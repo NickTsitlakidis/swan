@@ -39,7 +39,8 @@ test("findByApplicationId - returns client for match", async () => {
     });
 
     const found = await repository.findByApplicationId("the-id");
-    expect(found.applicationSecret).toBe("the-secret");
-    expect(found.applicationId).toBe("the-id");
-    expect(found.applicationName).toBe("the-name");
+    expect(found).not.toBeNull();
+    expect(found?.applicationSecret).toBe("the-secret");
+    expect(found?.applicationId).toBe("the-id");
+    expect(found?.applicationName).toBe("the-name");
 });

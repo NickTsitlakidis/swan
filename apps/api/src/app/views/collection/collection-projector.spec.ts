@@ -44,7 +44,7 @@ test("handle CollectionCreatedEvent - saves new collection view", async () => {
 
     expect(handled).toBe(saved);
 
-    const expectedSaved = new CollectionView();
+    const expectedSaved: Partial<CollectionView> = new CollectionView();
     expectedSaved.id = id;
     expectedSaved.userId = "user";
     expectedSaved.blockchainId = event.blockchainId;

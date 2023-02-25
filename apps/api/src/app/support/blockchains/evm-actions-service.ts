@@ -139,12 +139,14 @@ export class EvmActionsService extends BlockchainActions {
         }
         const transactions = await this._covalentService.fetchNftTransactions(chainId, tokenId, tokenAdress);
 
-        return transactions.data.data.items.at(0).nft_transactions.map((tx) => {
-            const returnObject: BlockchainNftTransactionsResponse = {
-                transactionId: tx.tx_hash,
-                blockNumber: tx.block_height
-            };
-            return returnObject;
-        });
+        return (
+            transactions.data.data.items.at(0)?.nft_transactions.map((tx) => {
+                const returnObject: BlockchainNftTransactionsResponse = {
+                    transactionId: tx.tx_hash,
+                    blockNumber: tx.block_height
+                };
+                return returnObject;
+            }) || []
+        );
     }
 }

@@ -30,16 +30,15 @@ test("handle NftCreatedEvent - Saves new NftView", async () => {
 
     expect(handled).toBe(saved);
 
-    const expectedSaved = new NftView();
-    expectedSaved.id = id;
-    expectedSaved.userId = userId;
-    expectedSaved.blockchainId = chainId;
-    expectedSaved.categoryId = categoryId;
-    expectedSaved.userWalletId = walletId;
-    delete expectedSaved.createdAt;
-
     expect(saveSpy).toHaveBeenCalledTimes(1);
-    expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining(expectedSaved));
+
+    const saveParam = saveSpy.mock.calls.at(0)?.at(0);
+    expect(saveParam).toBeDefined();
+    expect(saveParam?.id).toBe(id);
+    expect(saveParam?.userId).toBe(userId);
+    expect(saveParam?.blockchainId).toBe(chainId);
+    expect(saveParam?.categoryId).toBe(categoryId);
+    expect(saveParam?.userWalletId).toBe(walletId);
 });
 
 test("handle UploadedNftMetadataEvent - Updates NftView with uploaded files event", async () => {
@@ -57,23 +56,22 @@ test("handle UploadedNftMetadataEvent - Updates NftView with uploaded files even
 
     expect(handled).toBe(saved);
 
-    const expectedSaved = new NftView();
-    expectedSaved.id = id;
-    expectedSaved.metadataUri = metadataUri;
-    expectedSaved.fileUri = fileUri;
-    delete expectedSaved.createdAt;
-
     expect(findSpy).toHaveBeenCalledTimes(1);
     expect(findSpy).toHaveBeenCalledWith(event.aggregateId);
     expect(saveSpy).toHaveBeenCalledTimes(1);
-    expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining(expectedSaved));
+
+    const saveParam = saveSpy.mock.calls.at(0)?.at(0);
+    expect(saveParam).toBeDefined();
+    expect(saveParam?.id).toBe(id);
+    expect(saveParam?.metadataUri).toBe(metadataUri);
+    expect(saveParam?.fileUri).toBe(fileUri);
 });
 
 test("handle UploadedNftMetadataEvent - Skip save when NftView was not found", async () => {
     const saved = new NftView();
     const id = new ObjectId().toHexString();
     saved.id = id;
-    const findSpy = jest.spyOn(repositoryMock, "findById").mockResolvedValue(undefined);
+    const findSpy = jest.spyOn(repositoryMock, "findById").mockResolvedValue(null);
     const saveSpy = jest.spyOn(repositoryMock, "save").mockResolvedValue(saved);
 
     const metadataUri = "metadataUri";
@@ -105,15 +103,13 @@ test("handle NftMintedEvent - Updates NftView with minted event", async () => {
 
     expect(handled).toBe(saved);
 
-    const expectedSaved = new NftView();
-    expectedSaved.id = id;
-    expectedSaved.transactionId = transactionId;
-    expectedSaved.tokenContractAddress = tokenAddress;
-    expectedSaved.tokenId = tokenId;
-    delete expectedSaved.createdAt;
-
     expect(findSpy).toHaveBeenCalledTimes(1);
     expect(findSpy).toHaveBeenCalledWith(event.aggregateId);
     expect(saveSpy).toHaveBeenCalledTimes(1);
-    expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining(expectedSaved));
+
+    const saveParam = saveSpy.mock.calls.at(0)?.at(0);
+    expect(saveParam).toBeDefined();
+    expect(saveParam?.transactionId).toBe(transactionId);
+    expect(saveParam?.tokenContractAddress).toBe(tokenAddress);
+    expect(saveParam?.tokenId).toBe(tokenId);
 });

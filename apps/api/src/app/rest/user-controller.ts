@@ -9,8 +9,7 @@ import {
     NonceDto,
     StartSignatureAuthenticationDto,
     TokenDto,
-    UserDto,
-    UserWalletDto
+    UserDto
 } from "@swan/dto";
 import { UserGuard } from "../security/guards/user-guard";
 import { RequestUserId } from "../security/request-user-id";
@@ -89,12 +88,6 @@ export class UserController {
         const mapped = CompleteWalletAdditionCommand.fromDto(body);
         mapped.userId = userId;
         return this._commandBus.execute(mapped);
-    }
-
-    @Get("user-wallets")
-    @UseGuards(UserGuard)
-    getUserWallets(@RequestUserId() userId: string): Promise<Array<UserWalletDto>> {
-        return this._userQueryHandler.getUserWallets(userId);
     }
 
     @Get()
