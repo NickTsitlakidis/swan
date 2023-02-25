@@ -13,7 +13,7 @@ export class MintNftCommand {
         command.id = dto.id;
         command.transactionId = dto.transactionId;
         command.tokenContractAddress = dto.tokenContractAddress;
-        command.tokenId = dto.tokenId;
+        if (dto.tokenId) command.tokenId = dto.tokenId;
         command.userId = userId;
 
         return command;

@@ -37,14 +37,14 @@ export class CreateNftExternalCommandExecutor implements ICommandHandler<CreateN
         }
 
         const blockChainService = await this._blockchainActionsRegistryService.getService(blockchain.id);
-        const transactions = await blockChainService.fetchNftTransactions({
+        const transactions = await blockChainService?.fetchNftTransactions({
             tokenAdress: command.nftAddress || command.tokenContractAddress,
-            tokenId: command.tokenId && parseInt(command.tokenId),
+            tokenId: parseInt(command.tokenId),
             rpcUrl: blockchain.rpcUrl,
             chainId: blockchain.chainIdDecimal
         });
 
-        const transactionId = transactions.at(0).transactionId;
+        const transactionId = transactions?.at(0)?.transactionId;
 
         const newNft = this._factory.createExternal(command.userId, {
             blockchainId: command.blockchainId,

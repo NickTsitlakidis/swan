@@ -50,7 +50,7 @@ test("execute - throws bad request for missing category", async () => {
 test("execute - throws bad request for invalid blockchain id", async () => {
     const collectionSpy = jest.spyOn(collectionRepo, "countByName").mockResolvedValue(0);
     const categorySpy = jest.spyOn(categoryRepo, "countById").mockResolvedValue(1);
-    const blockchainSpy = jest.spyOn(blockchainRepo, "findById").mockResolvedValue(undefined);
+    const blockchainSpy = jest.spyOn(blockchainRepo, "findById").mockResolvedValue(null);
 
     const command = new CreateCollectionCommand();
     command.blockchainId = "block";

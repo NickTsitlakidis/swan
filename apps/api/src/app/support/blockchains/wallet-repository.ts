@@ -10,7 +10,7 @@ export class WalletRepository {
         return this.entityManager.find(Wallet, { enabled: true });
     }
 
-    findById(id: string): Promise<Wallet | undefined> {
+    findById(id: string): Promise<Wallet | null> {
         return this.entityManager.findOne(Wallet, { id, enabled: true });
     }
 }

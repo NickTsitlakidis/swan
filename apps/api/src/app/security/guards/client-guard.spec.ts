@@ -102,7 +102,7 @@ test("canActivate - throws for not matching client", async () => {
         }
     };
 
-    const repositorySpy = jest.spyOn(clientRepo, "findByApplicationId").mockResolvedValue(undefined);
+    const repositorySpy = jest.spyOn(clientRepo, "findByApplicationId").mockResolvedValue(null);
 
     await expect(guard.canActivate(context)).rejects.toThrow(UnauthorizedException);
 

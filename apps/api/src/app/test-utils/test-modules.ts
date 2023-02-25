@@ -7,7 +7,7 @@ import { MikroORM } from "@mikro-orm/core";
 import { MongoOrmSubscriber } from "../infrastructure/mongo-orm-subscriber";
 import { ConfigModule } from "@nestjs/config";
 
-export function getUnitTestingModule(testClass): Promise<TestingModule> {
+export function getUnitTestingModule(testClass: any): Promise<TestingModule> {
     return Test.createTestingModule({ providers: [testClass] })
         .useMocker((token) => {
             if (typeof token === "function") {
@@ -17,7 +17,7 @@ export function getUnitTestingModule(testClass): Promise<TestingModule> {
         .compile();
 }
 
-export async function getMongoTestingModule(entityClass, entityRepository): Promise<TestingModule> {
+export async function getMongoTestingModule(entityClass: any, entityRepository: any): Promise<TestingModule> {
     return Test.createTestingModule({
         imports: [
             ConfigModule.forRoot({ isGlobal: true }),

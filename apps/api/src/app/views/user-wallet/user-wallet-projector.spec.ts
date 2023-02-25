@@ -27,14 +27,13 @@ test("handle UserCreatedEvent - saves new wallet view", async () => {
 
     expect(handled).toBe(saved);
 
-    const expectedSaved = new UserWalletView();
-    expectedSaved.id = event.wallet.id;
-    expectedSaved.address = "123";
-    expectedSaved.userId = id;
-    expectedSaved.walletId = "wallet";
-    expectedSaved.blockchainId = "chain";
-    delete expectedSaved.createdAt;
-
     expect(saveSpy).toHaveBeenCalledTimes(1);
-    expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining(expectedSaved));
+
+    const saveParam = saveSpy.mock.calls.at(0)?.at(0);
+    expect(saveParam).toBeDefined();
+    expect(saveParam?.id).toBe(event.wallet.id);
+    expect(saveParam?.userId).toBe(id);
+    expect(saveParam?.blockchainId).toBe("chain");
+    expect(saveParam?.walletId).toBe("wallet");
+    expect(saveParam?.address).toBe("123");
 });

@@ -12,15 +12,12 @@ import { Category } from "../../support/categories/category";
 import { Blockchain } from "../../support/blockchains/blockchain";
 import { BlockchainActionsRegistryService } from "../../support/blockchains/blockchain-actions-registry-service";
 import { CreateNftExternalCommand } from "./create-nft-external-command";
-import { AwsService } from "../../support/aws/aws-service";
 import { ConfigService } from "@nestjs/config";
-import { MetaplexService } from "../../support/metaplex/metaplex-service";
-import { HttpService } from "@nestjs/axios";
-import { MetadataValidator } from "../../support/blockchains/metadata-validator";
 import { ObjectId } from "@mikro-orm/mongodb";
 import { BlockchainNftTransactionsResponse } from "../../support/blockchains/blockchain-nft-transactions";
 import { Nft } from "../../domain/nft/nft";
 import { NftDto } from "@swan/dto";
+import { createMock } from "@golevelup/ts-jest";
 
 let testModule: TestingModule;
 let executor: CreateNftExternalCommandExecutor;
@@ -132,14 +129,7 @@ test("execute - returns NftDto with valid data", async () => {
     blockchain.id = new ObjectId().toHexString();
     const category = new Category();
     const confService = new ConfigService();
-    const solanaActionsService = new SolanaActionsService(
-        new AwsService(confService),
-        confService,
-        new MetaplexService(confService),
-        new HttpService(),
-        categoryRepo,
-        new MetadataValidator()
-    );
+    const solanaActionsService = createMock<SolanaActionsService>();
 
     const newNft = Nft.create("nftId", command.userId, command.blockchainId, command.categoryId, command.walletId);
 

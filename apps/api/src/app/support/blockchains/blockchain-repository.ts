@@ -27,17 +27,14 @@ export class BlockchainRepository {
         return this._entityManager.fork().find(Blockchain, mongoQ);
     }
 
-    private _addOnlyMainnnets(mongoQ: FilterQuery<Blockchain>) {
+    private _addOnlyMainnnets(mongoQ: FilterQuery<Blockchain>): FilterQuery<Blockchain> {
         switch (this._configService.get("BLOCKCHAIN_TYPE")) {
             case EnvBlockChainType.MAIN:
-                mongoQ["isTestNetwork"] = false;
-                break;
+                return Object.assign({ isTestNetwork: false }, mongoQ);
             case EnvBlockChainType.TEST:
-                mongoQ["isTestNetwork"] = true;
-                break;
+                return Object.assign({ isTestNetwork: true }, mongoQ);
             default:
-                break;
+                return mongoQ;
         }
-        return mongoQ;
     }
 }

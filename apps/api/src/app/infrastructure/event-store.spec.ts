@@ -12,6 +12,7 @@ import { instanceToPlain } from "class-transformer";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { ConfigModule } from "@nestjs/config";
 import { AggregateConcurrencyException } from "./aggregate-concurrency-exception";
+import { createMock } from "@golevelup/ts-jest";
 
 let eventStore: EventStore;
 let eventsCollection: Collection<any>;
@@ -30,9 +31,7 @@ class TestEntity extends EventSourcedEntity {
     }
 }
 
-const eventBusMock: Partial<QueueEventBus> = {
-    publishAll: () => undefined
-};
+const eventBusMock = createMock<QueueEventBus>();
 
 beforeEach(async () => {
     process.env.MONGO_URI = process.env.MONGO_URL;

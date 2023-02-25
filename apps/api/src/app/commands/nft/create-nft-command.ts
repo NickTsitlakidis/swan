@@ -18,7 +18,7 @@ export class CreateNftCommand {
     static fromDto(dto: NftMetadataDto): CreateNftCommand {
         const command = new CreateNftCommand();
 
-        command.collectionId = dto.collectionId;
+        if (dto.collectionId) command.collectionId = dto.collectionId;
         command.imageType = dto.imageType;
         command.imageName = dto.imageName;
         command.categoryId = dto.categoryId;

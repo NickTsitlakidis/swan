@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ContractFactory } from "@swan/contracts";
 import { BlockchainRepository } from "../support/blockchains/blockchain-repository";
 import { EvmContractsRepository } from "../support/evm-contracts/evm-contracts-repository";
@@ -8,11 +8,14 @@ import { ethers } from "ethers";
 import { Blockchain } from "../support/blockchains/blockchain";
 import { EvmContract } from "../support/evm-contracts/evm-contract";
 import { EvmContractType } from "../support/evm-contracts/evm-contract-type";
+import { isNil } from "lodash";
+import { getLogger } from "../infrastructure/logging";
 
 @Injectable()
 export class ListingFilters {
     private _allChains: Array<Blockchain>;
     private _activeMarketplaceContracts: Array<EvmContract>;
+    private _logger: Logger;
 
     constructor(
         private readonly _contractFactory: ContractFactory,
@@ -21,18 +24,24 @@ export class ListingFilters {
     ) {
         this._allChains = [];
         this._activeMarketplaceContracts = [];
+        this._logger = getLogger(ListingFilters);
     }
 
     async filterForInvalidUsingContract(listings: Array<ListingView>): Promise<Array<ListingView>> {
         const groupedListings = group(listings, (listing) => listing.blockchainId);
         const chains = await this.getChains();
-        const activeContracts = await this.getActiveMarketplaceContracts();
+        const activeContracts: Array<EvmContract> = await this.getActiveMarketplaceContracts();
 
         let allInvalid: Array<ListingView> = [];
         for (const [blockchainId, listings] of Object.entries(groupedListings)) {
             const chain = chains.find((c) => c.id === blockchainId);
+            const blockchainContract = activeContracts.find((c) => c.blockchainId === blockchainId);
+            if (isNil(chain) || isNil(blockchainContract)) {
+                this._logger.error(`Unable to find chain or contract with blockchain id : ${blockchainId}`);
+                break;
+            }
             const provider = new ethers.providers.JsonRpcProvider(chain.rpcUrl);
-            const contractAddress = activeContracts.find((c) => c.blockchainId === blockchainId).deploymentAddress;
+            const contractAddress = blockchainContract.deploymentAddress;
             const contract = this._contractFactory.createMarketplace(provider, contractAddress);
 
             const invalidIds = await contract.filterForInvalid(

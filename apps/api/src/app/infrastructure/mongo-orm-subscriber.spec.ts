@@ -1,7 +1,7 @@
 import { MongoDocument } from "./mongo-document";
 import { Embeddable, Embedded, Entity, Property } from "@mikro-orm/core";
 import { cleanUpMongo, getCollection } from "../test-utils/test-modules";
-import { Test } from "@nestjs/testing";
+import { Test, TestingModule } from "@nestjs/testing";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { EntityManager } from "@mikro-orm/mongodb";
 import { Collection, ObjectId } from "mongodb";
@@ -11,22 +11,22 @@ import { MongoOrmSubscriber } from "./mongo-orm-subscriber";
 @Embeddable()
 class Nested {
     @Property()
-    nestedProp: string;
+    nestedProp: string | undefined | null;
 }
 
 @Entity({ collection: "test-entities" })
 class TestEntity extends MongoDocument {
     @Property()
-    prop1: string;
+    prop1: string | undefined | null;
 
     @Property()
-    prop2: number;
+    prop2: string | undefined | null | number;
 
     @Embedded(() => Nested, { object: true, nullable: true })
     prop3: Nested;
 }
 
-let testModule;
+let testModule: TestingModule;
 let entityManager: EntityManager;
 let collection: Collection<any>;
 
@@ -73,7 +73,7 @@ test("removeUnsetValues - clears nested null values", async () => {
 test("removeUnsetValues - clears nested undefined values", async () => {
     const en = new TestEntity();
     en.prop1 = "down";
-    en.prop2 = 34;
+    en.prop2 = "34";
     en.prop3 = new Nested();
     en.prop3.nestedProp = undefined;
     en.id = new ObjectId().toHexString();

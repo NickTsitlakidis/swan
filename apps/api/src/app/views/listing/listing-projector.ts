@@ -49,19 +49,23 @@ export class ListingProjector
             | ListingSoldEvent
             | ListingSubmittedEvent
             | ListingUpdatedPriceEvent
-    ): Promise<ListingView> {
-        let view: ListingView;
+    ): Promise<ListingView | undefined> {
+        let view: ListingView | null;
 
         if (event instanceof ListingCreatedEvent) {
             view = new ListingView();
             view.id = event.aggregateId;
             view.price = event.price;
-            view.tokenContractAddress = event.tokenContractAddress;
+            if (event.tokenContractAddress) {
+                view.tokenContractAddress = event.tokenContractAddress;
+            }
             view.nftAddress = event.nftAddress;
             view.blockchainId = event.blockchainId;
             view.nftId = event.nftId;
             view.categoryId = event.categoryId;
-            view.chainTokenId = event.chainTokenId;
+            if (event.chainTokenId) {
+                view.chainTokenId = event.chainTokenId;
+            }
             view.status = ListingStatus.CREATED;
             view.animationUrl = event.animationUrl;
             view.imageUrl = event.imageUrl;

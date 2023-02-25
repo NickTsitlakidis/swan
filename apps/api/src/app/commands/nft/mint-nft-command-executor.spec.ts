@@ -34,7 +34,7 @@ test("execute - throws not found exception in case the Nft does not exist on the
     command.userId = "user";
     command.transactionId = "transactionId";
 
-    const viewRepositorySpy = jest.spyOn(viewRepository, "findByIdAndUserId").mockResolvedValue(undefined);
+    const viewRepositorySpy = jest.spyOn(viewRepository, "findByIdAndUserId").mockResolvedValue(null);
 
     await expect(executor.execute(command)).rejects.toThrow(NotFoundException);
 

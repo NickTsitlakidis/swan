@@ -1,15 +1,17 @@
 import { QueueEventBus } from "./queue-event-bus";
-import { IEventHandler } from "@nestjs/cqrs";
+import { CommandBus, IEventHandler } from "@nestjs/cqrs";
 import { IEvent } from "@nestjs/cqrs/dist/interfaces";
 import { firstValueFrom, of, switchMap, throwError, timer } from "rxjs";
 import { EVENT_METADATA } from "@nestjs/cqrs/dist/decorators/constants";
+import { createMock } from "@golevelup/ts-jest";
+import { ModuleRef } from "@nestjs/core";
 
 class TestEvent1 implements IEvent {}
 
 class TestEvent2 implements IEvent {}
 
 test("onModuleDestroy - removes pairs", () => {
-    const bus = new QueueEventBus(undefined, undefined);
+    const bus = new QueueEventBus(createMock<CommandBus>(), createMock<ModuleRef>());
 
     const handler: IEventHandler<TestEvent1> = {
         handle: () => undefined
@@ -22,7 +24,7 @@ test("onModuleDestroy - removes pairs", () => {
 });
 
 test("bind - adds pair", () => {
-    const bus = new QueueEventBus(undefined, undefined);
+    const bus = new QueueEventBus(createMock<CommandBus>(), createMock<ModuleRef>());
 
     const handler: IEventHandler<TestEvent1> = {
         handle: () => undefined
@@ -36,7 +38,7 @@ test("bind - adds pair", () => {
 });
 
 test("bind - adds multiple pairs", () => {
-    const bus = new QueueEventBus(undefined, undefined);
+    const bus = new QueueEventBus(createMock<CommandBus>(), createMock<ModuleRef>());
 
     const handler: IEventHandler<TestEvent1> = {
         handle: () => undefined
@@ -58,7 +60,7 @@ test("bind - adds multiple pairs", () => {
 });
 
 test("publish - resolves empty when event doesnt match", async () => {
-    const bus = new QueueEventBus(undefined, undefined);
+    const bus = new QueueEventBus(createMock<CommandBus>(), createMock<ModuleRef>());
 
     let called = false;
     const handler: IEventHandler<TestEvent2> = {
@@ -75,7 +77,7 @@ test("publish - resolves empty when event doesnt match", async () => {
 });
 
 test("publish - resolves when matched", async () => {
-    const bus = new QueueEventBus(undefined, undefined);
+    const bus = new QueueEventBus(createMock<CommandBus>(), createMock<ModuleRef>());
 
     let calledWith = undefined;
     const handler: IEventHandler<TestEvent1> = {
@@ -95,9 +97,9 @@ test("publish - resolves when matched", async () => {
 });
 
 test("publishAll - ignores events without handlers", async () => {
-    const bus = new QueueEventBus(undefined, undefined);
+    const bus = new QueueEventBus(createMock<CommandBus>(), createMock<ModuleRef>());
 
-    const handlerParameters = [];
+    const handlerParameters: Array<TestEvent1> = [];
 
     const handler: IEventHandler<TestEvent1> = {
         handle: (event: TestEvent1) => {
@@ -127,7 +129,7 @@ test("publishAll - ignores events without handlers", async () => {
 });
 
 test("publishAll - stops after error on handler", (endTest) => {
-    const bus = new QueueEventBus(undefined, undefined);
+    const bus = new QueueEventBus(createMock<CommandBus>(), createMock<ModuleRef>());
 
     const handlerParameters = [];
     const handler1: IEventHandler<TestEvent1> = {
@@ -168,9 +170,10 @@ test("publishAll - stops after error on handler", (endTest) => {
 });
 
 test("publishAll - runs all handlers sequentially when all match", async () => {
-    const bus = new QueueEventBus(undefined, undefined);
+    const bus = new QueueEventBus(createMock<CommandBus>(), createMock<ModuleRef>());
 
-    const handlerParameters = [];
+    const handlerParameters: Array<TestEvent1> = [];
+
     const handler1: IEventHandler<TestEvent1> = {
         handle: (event: TestEvent1) => {
             return firstValueFrom(
@@ -218,7 +221,7 @@ test("publishAll - runs all handlers sequentially when all match", async () => {
 });
 
 test("publishAll - runs multiple handlers for the same event", async () => {
-    const bus = new QueueEventBus(undefined, undefined);
+    const bus = new QueueEventBus(createMock<CommandBus>(), createMock<ModuleRef>());
 
     const handlerParameters: string[] = [];
     const handler1: IEventHandler<TestEvent1> = {

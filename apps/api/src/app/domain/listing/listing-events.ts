@@ -60,7 +60,7 @@ export class ListingSoldEvent extends EventPayload {
     @Type(() => Buyer)
     public buyer: Buyer;
     public transactionFee: TransactionFee;
-    public blockNumber: number;
+    public blockNumber?: number;
 
     constructor(transactionHash: string, buyer: Buyer, transactionFee: TransactionFee, blockNumber?: number) {
         super();

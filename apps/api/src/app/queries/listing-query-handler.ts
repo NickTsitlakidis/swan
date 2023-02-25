@@ -13,7 +13,7 @@ export class ListingQueryHandler {
             paginationDto.skip,
             paginationDto.limit
         );
-        const listingDtos = [];
+        const listingDtos: ListingDto[] = [];
         listings.forEach((listing) => {
             const lto = new ListingDto();
             lto.id = listing.id;
