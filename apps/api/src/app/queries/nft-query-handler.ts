@@ -41,7 +41,7 @@ export class NftQueryHandler {
         promises.push(this._blockchainRepository.findAll());
         promises.push(this._userWalletRepository.findByIds(userWalletIds));
         if (collectionIds.length) {
-            this._collectionViewRepository.findByIds(collectionIds as string[]);
+            promises.push(this._collectionViewRepository.findByIds(collectionIds as string[]));
         }
         const results = await Promise.all(promises);
 

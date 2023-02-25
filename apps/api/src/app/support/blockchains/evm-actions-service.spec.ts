@@ -27,8 +27,8 @@ let contractsRepo: EvmContractsRepository;
 
 const covalentResponse: CovalentNftsResponse = {
     error: false,
-    error_message: null,
-    error_code: null,
+    error_message: undefined,
+    error_code: undefined,
     data: {
         address: "0x8438a93e0d2c5986bc9336490add3961fd127782",
         updated_at: "2022-08-14T19:06:38.128993333Z",
@@ -47,19 +47,19 @@ const covalentResponse: CovalentNftsResponse = {
                 native_token: false,
                 type: "nft",
                 balance: "1",
-                balance_24h: null,
+                balance_24h: undefined,
                 quote_rate: 0.0,
-                quote_rate_24h: null,
+                quote_rate_24h: undefined,
                 quote: 0.0,
-                quote_24h: null,
+                quote_24h: undefined,
                 nft_data: [
                     {
                         token_id: "11001",
                         token_balance: "1",
                         token_url: "https://artion1.mypinata.cloud/ipfs/QmRZGMTyrLfPna9WiKRLw5iXdP1VT6jUAKi8CZkRUnr32G",
                         supports_erc: ["erc20", "erc721"],
-                        token_price_wei: null,
-                        token_quote_rate_eth: null,
+                        token_price_wei: undefined,
+                        token_quote_rate_eth: undefined,
                         original_owner: "0xe5dfee9b72dcb2e3aca9895bc8dec15b3e8b74dc",
                         external_data: {
                             name: "night123",
@@ -71,13 +71,11 @@ const covalentResponse: CovalentNftsResponse = {
                                 "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=512,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
                             image_1024:
                                 "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=1024,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
-                            animation_url: null,
-                            external_url: null,
-                            attributes: [],
-                            owner: null
+                            animation_url: undefined,
+                            external_url: undefined,
+                            attributes: []
                         },
                         owner: "0x8438a93e0d2c5986bc9336490add3961fd127782",
-                        owner_address: null,
                         burned: null
                     }
                 ]
@@ -93,19 +91,14 @@ const covalentResponse: CovalentNftsResponse = {
                 native_token: false,
                 type: "nft",
                 balance: "1",
-                balance_24h: null,
                 quote_rate: 0.0,
-                quote_rate_24h: null,
                 quote: 0.0,
-                quote_24h: null,
                 nft_data: [
                     {
                         token_id: "11001",
                         token_balance: "1",
                         token_url: "https://artion1.mypinata.cloud/ipfs/QmRZGMTyrLfPna9WiKRLw5iXdP1VT6jUAKi8CZkRUnr32G",
                         supports_erc: ["erc20", "erc721"],
-                        token_price_wei: null,
-                        token_quote_rate_eth: null,
                         original_owner: "0xe5dfee9b72dcb2e3aca9895bc8dec15b3e8b74dc",
                         external_data: {
                             name: "night123",
@@ -117,13 +110,11 @@ const covalentResponse: CovalentNftsResponse = {
                                 "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=512,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
                             image_1024:
                                 "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=1024,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
-                            animation_url: null,
-                            external_url: null,
-                            attributes: [],
-                            owner: null
+                            animation_url: undefined,
+                            external_url: undefined,
+                            attributes: []
                         },
                         owner: "0x8438a93e0d2c5986bc9336490add3961fd127782",
-                        owner_address: null,
                         burned: null
                     },
                     {
@@ -131,8 +122,6 @@ const covalentResponse: CovalentNftsResponse = {
                         token_balance: "1",
                         token_url: "https://artion1.mypinata.cloud/ipfs/QmRZGMTyrLfPna9WiKRLw5iXdP1VT6jUAKi8CZkRUnr32G",
                         supports_erc: ["erc20", "erc721"],
-                        token_price_wei: null,
-                        token_quote_rate_eth: null,
                         original_owner: "0xe5dfee9b72dcb2e3aca9895bc8dec15b3e8b74dc",
                         external_data: {
                             name: "night123",
@@ -144,13 +133,11 @@ const covalentResponse: CovalentNftsResponse = {
                                 "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=512,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
                             image_1024:
                                 "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=1024,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
-                            animation_url: null,
-                            external_url: null,
-                            attributes: [],
-                            owner: null
+                            animation_url: undefined,
+                            external_url: undefined,
+                            attributes: []
                         },
                         owner: "0x8438a93e0d2c5986bc9336490add3961fd127782",
-                        owner_address: null,
                         burned: null
                     }
                 ]
@@ -166,19 +153,14 @@ const covalentResponse: CovalentNftsResponse = {
                 native_token: false,
                 type: "nft",
                 balance: "1",
-                balance_24h: null,
                 quote_rate: 0.0,
-                quote_rate_24h: null,
                 quote: 0.0,
-                quote_24h: null,
                 nft_data: [
                     {
                         token_id: "11001",
                         token_balance: "1",
                         token_url: "https://artion1.mypinata.cloud/ipfs/QmRZGMTyrLfPna9WiKRLw5iXdP1VT6jUAKi8CZkRUnr32G",
                         supports_erc: ["erc20", "erc721"],
-                        token_price_wei: null,
-                        token_quote_rate_eth: null,
                         original_owner: "0xe5dfee9b72dcb2e3aca9895bc8dec15b3e8b74dc",
                         external_data: {
                             name: "night123",
@@ -190,13 +172,11 @@ const covalentResponse: CovalentNftsResponse = {
                                 "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=512,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
                             image_1024:
                                 "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=1024,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
-                            animation_url: null,
-                            external_url: null,
-                            attributes: [],
-                            owner: null
+                            animation_url: undefined,
+                            external_url: undefined,
+                            attributes: []
                         },
                         owner: "0x8438a93e0d2c5986bc9336490add3961fd127782",
-                        owner_address: null,
                         burned: null
                     },
                     {
@@ -204,8 +184,6 @@ const covalentResponse: CovalentNftsResponse = {
                         token_balance: "1",
                         token_url: "https://artion1.mypinata.cloud/ipfs/QmRZGMTyrLfPna9WiKRLw5iXdP1VT6jUAKi8CZkRUnr32G",
                         supports_erc: ["erc20", "erc721"],
-                        token_price_wei: null,
-                        token_quote_rate_eth: null,
                         original_owner: "0xe5dfee9b72dcb2e3aca9895bc8dec15b3e8b74dc",
                         external_data: {
                             name: "night123",
@@ -217,13 +195,11 @@ const covalentResponse: CovalentNftsResponse = {
                                 "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=512,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
                             image_1024:
                                 "https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=1024,fit/https://artion1.mypinata.cloud/ipfs/QmR6nMJRB3DjK8ZjjfdUqNKzxSPMz15YN1dhZZwVb49bgx",
-                            animation_url: null,
-                            external_url: null,
-                            attributes: [],
-                            owner: null
+                            animation_url: undefined,
+                            external_url: undefined,
+                            attributes: []
                         },
                         owner: "0x8438a93e0d2c5986bc9336490add3961fd127782",
-                        owner_address: null,
                         burned: null
                     }
                 ]
@@ -305,9 +281,9 @@ test("getUserNfts - returns empty array if all nfts are invalid", async () => {
     expect(covalentServiceSpy).toHaveBeenCalledWith(blockchain.chainIdDecimal, "otinanai");
 
     expect(validatorSpy).toHaveBeenCalledTimes(3);
-    expect(validatorSpy).nthCalledWith(1, covalentResponse.data.items.at(0).nft_data.at(0).external_data);
-    expect(validatorSpy).nthCalledWith(2, covalentResponse.data.items.at(1).nft_data.at(0).external_data);
-    expect(validatorSpy).nthCalledWith(3, covalentResponse.data.items.at(1).nft_data.at(1).external_data);
+    expect(validatorSpy).nthCalledWith(1, covalentResponse.data.items[0].nft_data[0].external_data);
+    expect(validatorSpy).nthCalledWith(2, covalentResponse.data.items[1].nft_data[0].external_data);
+    expect(validatorSpy).nthCalledWith(3, covalentResponse.data.items[1].nft_data[1].external_data);
 
     expect(historySpy).toHaveBeenCalledTimes(1);
     expect(historySpy).toHaveBeenCalledWith(EvmContractType.ERC721);
@@ -483,8 +459,8 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
     expect(httpServiceSpy).toHaveBeenNthCalledWith(2, imageUrl, imageHeaders);
 
     expect(validatorSpy).toHaveBeenCalledTimes(2);
-    expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items.at(1).nft_data.at(0).external_data);
-    expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items.at(1).nft_data.at(1).external_data);
+    expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items[1].nft_data[0].external_data);
+    expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items[1].nft_data[1].external_data);
 
     expect(historySpy).toHaveBeenCalledTimes(1);
     expect(historySpy).toHaveBeenCalledWith(EvmContractType.ERC721);
@@ -597,8 +573,8 @@ test("getUserNfts - returns array with excluded nfts of swan contracts", async (
     expect(httpServiceSpy).toHaveBeenNthCalledWith(2, imageUrl, imageHeaders);
 
     expect(validatorSpy).toHaveBeenCalledTimes(2);
-    expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items.at(1).nft_data.at(0).external_data);
-    expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items.at(1).nft_data.at(1).external_data);
+    expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items[1].nft_data[0].external_data);
+    expect(validatorSpy).toHaveBeenCalledWith(covalentResponse.data.items[1].nft_data[1].external_data);
 
     expect(historySpy).toHaveBeenCalledTimes(1);
     expect(historySpy).toHaveBeenCalledWith(EvmContractType.ERC721);

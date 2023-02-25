@@ -27,10 +27,6 @@ test("handle UserCreatedEvent - saves new user view", async () => {
 
     expect(handled).toBe(saved);
 
-    const expectedSaved = new UserView();
-    expectedSaved.id = id;
-    delete expectedSaved.memberSince;
-
     expect(saveSpy).toHaveBeenCalledTimes(1);
-    expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining(expectedSaved));
+    expect(saveSpy.mock.calls.at(0)?.at(0)?.id).toBe(id);
 });

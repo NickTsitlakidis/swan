@@ -29,9 +29,7 @@ beforeEach(async () => {
 });
 
 test("execute - throws for invalid combination", async () => {
-    const chainWalletSpy = jest
-        .spyOn(chainWalletRepoMock, "findByWalletIdAndBlockchainId")
-        .mockResolvedValue(undefined);
+    const chainWalletSpy = jest.spyOn(chainWalletRepoMock, "findByWalletIdAndBlockchainId").mockResolvedValue(null);
 
     const command = new StartSignatureAuthenticationCommand();
     command.blockchainId = "b-id";
@@ -95,7 +93,7 @@ test("execute - builds and saves authentication after deleting previous", async 
 
     expect(idSpy).toHaveBeenCalledTimes(1);
 
-    const expectedAuthentication = new SignatureAuthentication();
+    const expectedAuthentication: Partial<SignatureAuthentication> = new SignatureAuthentication();
     expectedAuthentication.walletId = "w-id";
     expectedAuthentication.address = "the-address";
     expectedAuthentication.message = "message intro the-id";

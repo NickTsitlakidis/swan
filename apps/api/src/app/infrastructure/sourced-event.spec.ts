@@ -6,7 +6,7 @@ import { Settings } from "luxon";
 @SerializedEvent("test-event")
 class TestEvent extends EventPayload {
     field1: string;
-    field2: string;
+    field2?: string;
 }
 
 test("constructor - skips serializable", () => {
@@ -33,7 +33,7 @@ test("constructor - handles serializable", () => {
     expect(event._id).toBeDefined();
     expect(event.createdAt).toEqual(expectedDate);
     expect(keys(event.payload).length).toEqual(1);
-    expect(event.payload["field1"]).toBe("the-field");
+    expect((event.payload as any).field1).toBe("the-field");
     expect(event.eventName).toBe("test-event");
 });
 

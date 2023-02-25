@@ -47,7 +47,7 @@ test("issueFromId - creates and stores token", async () => {
     expect(generateDisplayIdSpy).toHaveBeenCalledTimes(1);
     expect(generateEntityIdSpy).toHaveBeenCalledTimes(1);
 
-    const expectedRefreshToken = new RefreshToken();
+    const expectedRefreshToken: Partial<RefreshToken> = new RefreshToken();
     expectedRefreshToken.userId = "the-user";
     expectedRefreshToken.tokenValue = "uuid";
     expectedRefreshToken.isRevoked = false;
@@ -76,7 +76,7 @@ test("issueFromId - creates and stores token", async () => {
 });
 
 test("issueFromRefreshToken - throws for non existing token", async () => {
-    const findSpy = jest.spyOn(repoMock, "findByTokenValue").mockResolvedValue(undefined);
+    const findSpy = jest.spyOn(repoMock, "findByTokenValue").mockResolvedValue(null);
 
     const verified = {
         jti: "the-token"
