@@ -1,4 +1,4 @@
-import { find, isNil } from "lodash";
+import { isNil } from "lodash";
 import { InternalServerErrorException } from "@nestjs/common";
 import { IEvent } from "@nestjs/cqrs/dist/interfaces";
 
@@ -31,7 +31,7 @@ export function SerializedEvent(eventName: string): ClassDecorator {
  * @param target
  */
 export function getEventNameForObject(target: any) {
-    const found = find(REGISTERED_EVENTS, { eventClass: target.constructor });
+    const found = REGISTERED_EVENTS.find((registered) => registered.eventClass === target.constructor);
     return isNil(found) ? undefined : found.eventName;
 }
 
@@ -40,7 +40,7 @@ export function getEventNameForObject(target: any) {
  * @param name The event name to be checked.
  */
 export function getEventClassForName(name: string) {
-    const found = find(REGISTERED_EVENTS, { eventName: name });
+    const found = REGISTERED_EVENTS.find((registered) => registered.eventName === name);
     return isNil(found) ? undefined : found.eventClass;
 }
 
@@ -49,5 +49,5 @@ export function getEventClassForName(name: string) {
  * @param target The class to be checked.
  */
 export function hasEventName(target: any) {
-    return find(REGISTERED_EVENTS, { eventClass: target.constructor }) !== undefined;
+    return REGISTERED_EVENTS.some((registered) => registered.eventClass === target.constructor);
 }

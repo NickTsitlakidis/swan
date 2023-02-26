@@ -1,5 +1,5 @@
 import { ExecutionContext } from "@nestjs/common";
-import { isNil, startsWith } from "lodash";
+import { isNil } from "lodash";
 
 export function hasBearerToken(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
@@ -8,7 +8,7 @@ export function hasBearerToken(context: ExecutionContext): boolean {
         !isNil(request) &&
         !isNil(request.headers) &&
         !isNil(request.headers.authorization) &&
-        startsWith(request.headers.authorization, "Bearer ")
+        request.headers.authorization.startsWith("Bearer ")
     );
 }
 

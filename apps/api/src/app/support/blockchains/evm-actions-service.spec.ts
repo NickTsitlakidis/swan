@@ -9,7 +9,6 @@ import { InternalServerErrorException } from "@nestjs/common";
 import { AxiosResponse } from "axios";
 import { Blockchain } from "./blockchain";
 import { CovalentNftsResponse } from "./covalent-nfts-response";
-import { cloneDeep } from "lodash";
 import { Category } from "../categories/category";
 import { ChainNft } from "./chain-nft";
 import { EvmContractsRepository } from "../evm-contracts/evm-contracts-repository";
@@ -295,8 +294,8 @@ test("getUserNfts - returns empty array if all nfts are erc20", async () => {
 
     const blockchainRepoSpy = jest.spyOn(blockchainRepo, "findById").mockResolvedValue(blockchain);
 
-    const clonedResponse = cloneDeep(covalentResponse);
-    clonedResponse.data.items.forEach((item) => {
+    const clonedResponse = JSON.parse(JSON.stringify(covalentResponse));
+    clonedResponse.data.items.forEach((item: any) => {
         item.supports_erc = ["erc20"];
     });
 
@@ -327,7 +326,7 @@ test("getUserNfts - returns empty array if user has no items", async () => {
 
     const blockchainRepoSpy = jest.spyOn(blockchainRepo, "findById").mockResolvedValue(blockchain);
 
-    const clonedResponse = cloneDeep(covalentResponse);
+    const clonedResponse = JSON.parse(JSON.stringify(covalentResponse));
     clonedResponse.data.items = [];
 
     const fakeResponse: AxiosResponse = {
@@ -359,13 +358,13 @@ test("getUserNfts - returns array of valid erc721 or valid erc1155", async () =>
 
     const blockchainRepoSpy = jest.spyOn(blockchainRepo, "findById").mockResolvedValue(blockchain);
 
-    const clonesResponse = cloneDeep(covalentResponse);
-    clonesResponse.data.items[0].supports_erc = ["erc20"];
-    clonesResponse.data.items.pop();
+    const clonedResponse: any = JSON.parse(JSON.stringify(covalentResponse));
+    clonedResponse.data.items[0].supports_erc = ["erc20"];
+    clonedResponse.data.items.pop();
 
     const fakeResponse: AxiosResponse = {
         status: 200,
-        data: clonesResponse,
+        data: clonedResponse,
         statusText: ""
     } as AxiosResponse;
 
@@ -476,7 +475,7 @@ test("getUserNfts - returns array with excluded nfts of swan contracts", async (
 
     const blockchainRepoSpy = jest.spyOn(blockchainRepo, "findById").mockResolvedValue(blockchain);
 
-    const clonesResponse = cloneDeep(covalentResponse);
+    const clonesResponse: any = JSON.parse(JSON.stringify(covalentResponse));
     clonesResponse.data.items[0].supports_erc = ["erc20"];
 
     const fakeResponse: AxiosResponse = {

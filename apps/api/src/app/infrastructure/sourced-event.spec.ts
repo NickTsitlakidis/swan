@@ -1,6 +1,5 @@
 import { EventPayload, SerializedEvent } from "./serialized-event";
 import { SourcedEvent } from "./sourced-event";
-import { keys } from "lodash";
 import { Settings } from "luxon";
 
 @SerializedEvent("test-event")
@@ -32,7 +31,7 @@ test("constructor - handles serializable", () => {
     expect(event.aggregateId).toBe("agr-id");
     expect(event._id).toBeDefined();
     expect(event.createdAt).toEqual(expectedDate);
-    expect(keys(event.payload).length).toEqual(1);
+    expect(Object.keys(event.payload as any).length).toEqual(1);
     expect((event.payload as any).field1).toBe("the-field");
     expect(event.eventName).toBe("test-event");
 });

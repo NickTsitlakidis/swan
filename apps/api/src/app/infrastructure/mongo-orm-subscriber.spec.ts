@@ -5,7 +5,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { EntityManager } from "@mikro-orm/mongodb";
 import { Collection, ObjectId } from "mongodb";
-import { keys } from "lodash";
 import { MongoOrmSubscriber } from "./mongo-orm-subscriber";
 
 @Embeddable()
@@ -67,7 +66,7 @@ test("removeUnsetValues - clears nested null values", async () => {
     await entityManager.fork().persistAndFlush(en);
     const found = await collection.find({ _id: en._id }).toArray();
     expect(found[0].prop3).toBeDefined();
-    expect(keys(found[0].prop3).length).toBe(0);
+    expect(Object.keys(found[0].prop3).length).toBe(0);
 });
 
 test("removeUnsetValues - clears nested undefined values", async () => {
@@ -81,7 +80,7 @@ test("removeUnsetValues - clears nested undefined values", async () => {
     await entityManager.fork().persistAndFlush(en);
     const found = await collection.find({ _id: en._id }).toArray();
     expect(found[0].prop3).toBeDefined();
-    expect(keys(found[0].prop3).length).toBe(0);
+    expect(Object.keys(found[0].prop3).length).toBe(0);
 });
 
 test("removeUnsetValues - clears top level null values", async () => {
@@ -92,7 +91,7 @@ test("removeUnsetValues - clears top level null values", async () => {
 
     await entityManager.fork().persistAndFlush(en);
     const found = await collection.find({ _id: en._id }).toArray();
-    expect(keys(found[0]).length).toBe(1);
+    expect(Object.keys(found[0]).length).toBe(1);
 });
 
 test("removeUnsetValues - clears top level undefined values", async () => {
@@ -103,7 +102,7 @@ test("removeUnsetValues - clears top level undefined values", async () => {
 
     await entityManager.fork().persistAndFlush(en);
     const found = await collection.find({ _id: en._id }).toArray();
-    expect(keys(found[0]).length).toBe(1);
+    expect(Object.keys(found[0]).length).toBe(1);
 });
 
 test("removeUnsetValues - clears both top level and nested values", async () => {
@@ -116,9 +115,9 @@ test("removeUnsetValues - clears both top level and nested values", async () => 
 
     await entityManager.fork().persistAndFlush(en);
     const found = await collection.find({ _id: en._id }).toArray();
-    expect(keys(found[0]).length).toBe(2);
+    expect(Object.keys(found[0]).length).toBe(2);
     expect(found[0].prop3).toBeDefined();
-    expect(keys(found[0].prop3).length).toBe(0);
+    expect(Object.keys(found[0].prop3).length).toBe(0);
 });
 
 test("removeUnsetValues - leaves unaffected nested values", async () => {

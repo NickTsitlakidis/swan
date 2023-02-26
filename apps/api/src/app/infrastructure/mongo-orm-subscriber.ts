@@ -1,5 +1,5 @@
 import { EventSubscriber, FlushEventArgs } from "@mikro-orm/core";
-import { isNil, isObject, isObjectLike, keys } from "lodash";
+import { isNil, isObject, isObjectLike } from "lodash";
 
 export class MongoOrmSubscriber implements EventSubscriber {
     /**
@@ -10,12 +10,12 @@ export class MongoOrmSubscriber implements EventSubscriber {
      */
     async beforeFlush(args: FlushEventArgs): Promise<void> {
         args.uow.getPersistStack().forEach((entry) => {
-            keys(entry).forEach((key) => {
+            Object.keys(entry).forEach((key) => {
                 if (isNil(entry[key])) {
                     delete entry[key];
                 } else {
                     if (isObject(entry[key]) || isObjectLike(entry[key])) {
-                        keys(entry[key]).forEach((nestedKey) => {
+                        Object.keys(entry[key]).forEach((nestedKey) => {
                             if (isNil(entry[key][nestedKey])) {
                                 delete entry[key][nestedKey];
                             }

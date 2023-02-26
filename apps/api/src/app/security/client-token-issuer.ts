@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { isNil, split } from "lodash";
+import { isNil } from "lodash";
 import { ClientRepository } from "./client-repository";
 import { compare } from "bcrypt";
 import { JwtService, JwtSignOptions } from "@nestjs/jwt";
@@ -22,7 +22,7 @@ export class ClientTokenIssuer {
             throw new UnauthorizedException("Invalid or missing credentials");
         }
 
-        const [appId, appSecret] = split(decoded, ":");
+        const [appId, appSecret] = decoded.split(":");
         const found = await this._repository.findByApplicationId(appId);
 
         if (isNil(found)) {
