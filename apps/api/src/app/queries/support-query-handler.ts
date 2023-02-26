@@ -7,6 +7,7 @@ import { BlockchainRepository } from "../support/blockchains/blockchain-reposito
 import { WalletRepository } from "../support/blockchains/wallet-repository";
 import { EvmContractsRepository } from "../support/evm-contracts/evm-contracts-repository";
 import { EvmContractType } from "../support/evm-contracts/evm-contract-type";
+import { Wallet } from "../support/blockchains/wallet";
 
 @Injectable()
 export class SupportQueryHandler {
@@ -47,14 +48,9 @@ export class SupportQueryHandler {
         return blockchains.map((chain) => {
             const finalWallets = blockchainWallets
                 .filter((pair) => pair.blockchainId === chain.id)
-                .map((pair) => wallets.find((wallet) => wallet.id === pair.walletId))
-                .filter((wallet) => wallet)
-                .map((wallet) => {
-                    if (wallet) {
-                        return new WalletDto(wallet.id, wallet.name, chain.id);
-                    }
-                })
-                .filter((wallet) => wallet);
+                .filter((pair) => wallets.some((wallet) => wallet.id === pair.walletId))
+                .map((pair) => wallets.find((wallet) => wallet.id === pair.walletId) as Wallet)
+                .map((wallet) => new WalletDto(wallet.id, wallet.name, chain.id));
 
             const blockchainDto = new BlockchainDto(chain.name, chain.id, chain.chainIdHex);
             return new BlockchainWalletDto(
