@@ -7,7 +7,7 @@ import { HttpErrorDto, TokenDto } from "@swan/dto";
 import { ComplexState } from "../store/complex-state";
 import { plainToClass } from "class-transformer";
 import { NotificationsService } from "../../@theme/services/notifications.service";
-import { SKIP_ERROR_TOAST } from "./http-context-tokens";
+import { SKIP_ERROR_TOAST, SKIP_RETRY } from "./http-context-tokens";
 import { UserStore } from "../store/user-store";
 import { when } from "mobx";
 import { ClientStore } from "../store/client-store";
@@ -86,14 +86,14 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
 
                 let withNewToken: Observable<ComplexState<TokenDto>> = throwError(() => error);
 
-                if (isClientRequest) {
+                if (isClientRequest && !req.context.get(SKIP_RETRY)) {
                     this._clientStore.fetchToken();
                     withNewToken = from(when(() => !this._clientStore.tokenState.isLoading, { timeout: 5000 })).pipe(
                         map(() => this._clientStore.tokenState)
                     );
                 }
 
-                if (isUserRequest) {
+                if (isUserRequest && !req.context.get(SKIP_RETRY)) {
                     this._userStore.refreshToken();
                     withNewToken = from(when(() => !this._userStore.tokenState.isLoading, { timeout: 5000 })).pipe(
                         map(() => this._userStore.tokenState)

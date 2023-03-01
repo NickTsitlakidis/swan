@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpContext } from "@angular/common/http";
 import { Observable } from "rxjs";
 import {
     CompleteSignatureAuthenticationDto,
@@ -12,6 +12,7 @@ import {
 } from "@swan/dto";
 import { map } from "rxjs/operators";
 import { plainToClass, plainToInstance } from "class-transformer";
+import { SKIP_ERROR_TOAST, SKIP_RETRY } from "../../interceptors/http-context-tokens";
 
 @Injectable({
     providedIn: "root"
@@ -49,7 +50,11 @@ export class UserService {
 
     refreshToken(): Observable<TokenDto> {
         return this._httpClient
-            .post("/user/refresh-token", {}, { withCredentials: true })
+            .post(
+                "/user/refresh-token",
+                {},
+                { withCredentials: true, context: new HttpContext().set(SKIP_RETRY, true).set(SKIP_ERROR_TOAST, true) }
+            )
             .pipe(map((httpResult) => plainToClass(TokenDto, httpResult)));
     }
 
