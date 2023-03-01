@@ -10,6 +10,7 @@ import { EventStore } from "../infrastructure/event-store";
 import { ListingFactory } from "../domain/listing/listing-factory";
 import { Listing } from "../domain/listing/listing";
 import { ListingFilters } from "./listing-filters";
+import { SourcedEvent } from "../infrastructure/sourced-event";
 
 @Processor()
 export class CancelEvmListingsJob {
