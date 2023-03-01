@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { ClientRepository } from "./client-repository";
 import { compare } from "bcrypt";
 import { JwtService, JwtSignOptions } from "@nestjs/jwt";

@@ -8,12 +8,12 @@ import { NftViewRepository } from "../views/nft/nft-view-repository";
 import { CollectionViewRepository } from "../views/collection/collection-view-repository";
 import { unique } from "radash";
 import { LogAsyncMethod } from "../infrastructure/logging";
-import { isNil } from "lodash";
 import { SignatureTypes } from "../support/blockchains/signature-types";
 import { Category } from "../support/categories/category";
 import { Blockchain } from "../support/blockchains/blockchain";
 import { UserWalletView } from "../views/user-wallet/user-wallet-view";
 import { CollectionView } from "../views/collection/collection-view";
+import { isNil } from "@nft-marketplace/utils";
 
 @Injectable()
 export class NftQueryHandler {

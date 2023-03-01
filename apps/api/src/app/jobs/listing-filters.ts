@@ -8,7 +8,7 @@ import { ethers } from "ethers";
 import { Blockchain } from "../support/blockchains/blockchain";
 import { EvmContract } from "../support/evm-contracts/evm-contract";
 import { EvmContractType } from "../support/evm-contracts/evm-contract-type";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { getLogger } from "../infrastructure/logging";
 
 @Injectable()
@@ -33,7 +33,8 @@ export class ListingFilters {
         const activeContracts: Array<EvmContract> = await this.getActiveMarketplaceContracts();
 
         let allInvalid: Array<ListingView> = [];
-        for (const [blockchainId, listings] of Object.entries(groupedListings)) {
+        const blockchainIds = Object.keys(groupedListings);
+        for (const blockchainId of blockchainIds) {
             const chain = chains.find((c) => c.id === blockchainId);
             const blockchainContract = activeContracts.find((c) => c.blockchainId === blockchainId);
             if (isNil(chain) || isNil(blockchainContract)) {
@@ -45,7 +46,7 @@ export class ListingFilters {
             const contract = this._contractFactory.createMarketplace(provider, contractAddress);
 
             const invalidIds = await contract.filterForInvalid(
-                listings.map((listing) => ({
+                (groupedListings[blockchainId] as Array<ListingView>).map((listing) => ({
                     seller: listing.seller.address,
                     price: listing.price,
                     listingId: listing.chainListingId,

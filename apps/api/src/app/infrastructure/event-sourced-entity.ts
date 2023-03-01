@@ -1,4 +1,4 @@
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { InternalServerErrorException, Logger } from "@nestjs/common";
 import { SourcedEvent } from "./sourced-event";
 import { EventPayload, getEventClassForName } from "./serialized-event";

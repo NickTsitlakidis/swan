@@ -1,4 +1,4 @@
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 
 export class ComplexState<T> {
     private _state: T;

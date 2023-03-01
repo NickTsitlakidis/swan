@@ -7,7 +7,7 @@ import { SourcedEvent } from "../../infrastructure/sourced-event";
 import { NftMetadata } from "./nft-metadata";
 import { MintNftCommand } from "../../commands/nft/mint-nft-command";
 import { BlockchainActionsRegistryService } from "../../support/blockchains/blockchain-actions-registry-service";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { NftCreateExternal } from "./nft-create-external";
 
 export class Nft extends EventSourcedEntity {

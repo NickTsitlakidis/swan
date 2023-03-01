@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { CanActivate, Router, UrlTree } from "@angular/router";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { UserStore } from "../store/user-store";
 import { when } from "mobx";
 

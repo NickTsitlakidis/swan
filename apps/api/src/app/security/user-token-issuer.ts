@@ -4,7 +4,7 @@ import { IdGenerator } from "../infrastructure/id-generator";
 import { RefreshToken } from "./refresh-token";
 import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { getLogger } from "../infrastructure/logging";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { DateTime } from "luxon";
 import { ConfigService } from "@nestjs/config";
 import { Token } from "./token";

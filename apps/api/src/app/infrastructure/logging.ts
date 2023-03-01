@@ -1,5 +1,5 @@
 import { Logger } from "@nestjs/common";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { DateTime } from "luxon";
 
 export function LogAsyncMethod(target: any, propertyKey: string, descriptor: PropertyDescriptor) {

@@ -1,4 +1,4 @@
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { InternalServerErrorException } from "@nestjs/common";
 import { IEvent } from "@nestjs/cqrs/dist/interfaces";
 

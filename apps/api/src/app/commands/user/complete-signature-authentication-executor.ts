@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CompleteSignatureAuthenticationCommand } from "./complete-signature-authentication-command";
 import { SignatureAuthenticationRepository } from "../../security/signature-authentication-repository";
 import { InternalServerErrorException, Logger, UnauthorizedException } from "@nestjs/common";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { getLogger, LogAsyncMethod } from "../../infrastructure/logging";
 import { UserTokenIssuer } from "../../security/user-token-issuer";
 import { TokenDto } from "@swan/dto";

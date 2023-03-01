@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { MetaplexMetadata, NFTStorageMetaplexor } from "@nftstorage/metaplex-auth";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { Metaplex } from "@metaplex-foundation/js";
 import { Connection, clusterApiUrl, PublicKey, Keypair } from "@solana/web3.js";
 import axios from "axios";

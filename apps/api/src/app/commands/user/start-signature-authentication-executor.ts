@@ -8,7 +8,7 @@ import { ConfigService } from "@nestjs/config";
 import { BadRequestException } from "@nestjs/common";
 import { WalletRepository } from "../../support/blockchains/wallet-repository";
 import { BlockchainWalletRepository } from "../../support/blockchains/blockchain-wallet-repository";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { LogAsyncMethod } from "../../infrastructure/logging";
 
 @CommandHandler(StartSignatureAuthenticationCommand)

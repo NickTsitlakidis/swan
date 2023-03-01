@@ -7,7 +7,7 @@ import { UserWalletViewRepository } from "../../views/user-wallet/user-wallet-vi
 import { UserFactory } from "../../domain/user/user-factory";
 import { getLogger } from "../../infrastructure/logging";
 import { InternalServerErrorException, Logger, UnauthorizedException } from "@nestjs/common";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { EntityDto } from "@swan/dto";
 import { EventStore } from "../../infrastructure/event-store";
 import { BlockchainRepository } from "../../support/blockchains/blockchain-repository";

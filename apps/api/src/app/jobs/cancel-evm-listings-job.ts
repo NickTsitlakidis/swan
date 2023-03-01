@@ -10,6 +10,7 @@ import { EventStore } from "../infrastructure/event-store";
 import { ListingFactory } from "../domain/listing/listing-factory";
 import { Listing } from "../domain/listing/listing";
 import { ListingFilters } from "./listing-filters";
+import { SourcedEvent } from "../infrastructure/sourced-event";
 
 @Processor()
 export class CancelEvmListingsJob {
@@ -58,11 +59,13 @@ export class CancelEvmListingsJob {
     }
 
     private async cancelListings(listings: Array<ListingView>) {
-        const events = await this._eventStore.findEventsByAggregateIds(listings.map((l) => l.id));
-        const groupedEvents = group(events, (ev) => ev.aggregateId);
+        const storedEvents = await this._eventStore.findEventsByAggregateIds(listings.map((l) => l.id));
+        const groupedEvents = group(storedEvents, (ev) => ev.aggregateId);
 
         const toCommit: Array<Listing> = [];
-        for (const [aggregateId, events] of Object.entries(groupedEvents)) {
+        const aggregateIds = Object.keys(groupedEvents);
+        for (const aggregateId of aggregateIds) {
+            const events = groupedEvents[aggregateId] as Array<SourcedEvent>;
             const entity = this._listingFactory.createFromEvents(aggregateId, events);
             try {
                 entity.cancel(true);

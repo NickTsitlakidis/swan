@@ -1,6 +1,6 @@
 import { EventBus, IEventHandler } from "@nestjs/cqrs";
 import { IEvent } from "@nestjs/cqrs/dist/interfaces";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { getLogger, LogAsyncMethod } from "./logging";
 
 /**

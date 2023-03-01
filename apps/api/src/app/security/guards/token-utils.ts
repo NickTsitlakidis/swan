@@ -1,5 +1,5 @@
 import { ExecutionContext } from "@nestjs/common";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 
 export function hasBearerToken(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();

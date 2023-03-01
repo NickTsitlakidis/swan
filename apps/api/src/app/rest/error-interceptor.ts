@@ -2,7 +2,7 @@ import { CallHandler, ExecutionContext, HttpException, HttpStatus, Injectable, N
 import { catchError, Observable, throwError } from "rxjs";
 import { ApiException } from "../infrastructure/api-exception";
 import { HttpErrorDto } from "@swan/dto";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 
 @Injectable()
 export class ErrorInterceptor implements NestInterceptor {

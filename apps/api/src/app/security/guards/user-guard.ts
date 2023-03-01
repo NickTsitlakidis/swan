@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable, Logger, UnauthorizedExceptio
 import { JwtService } from "@nestjs/jwt";
 import { getLogger } from "../../infrastructure/logging";
 import { UserViewRepository } from "../../views/user/user-view-repository";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { extractBearerValue } from "./token-utils";
 
 @Injectable()

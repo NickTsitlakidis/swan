@@ -11,7 +11,7 @@ import { UserWalletViewRepository } from "../../views/user-wallet/user-wallet-vi
 import { ListingViewRepository } from "../../views/listing/listing-view-repository";
 import { EvmContractsRepository } from "../../support/evm-contracts/evm-contracts-repository";
 import { EvmContractType } from "../../support/evm-contracts/evm-contract-type";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { InternalServerErrorException, Logger } from "@nestjs/common";
 
 @EventsHandler(ListingSubmittedEvent)

@@ -4,13 +4,13 @@ import { ListingsService } from "../../../@core/services/listings/listings.servi
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { ActivateListingDto, BlockchainWalletDto, CreateListingDto, ProfileNftDto, SubmitListingDto } from "@swan/dto";
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
-import { isEqual } from "lodash";
 import { NftService } from "../../../@core/services/chains/nfts/nft.service";
 import { EvmContractsStore } from "../../../@core/store/evm-contracts-store";
 import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
 import { UserNftsStore } from "../../../@core/store/user-nfts-store";
 import { computed } from "mobx-angular";
 import { makeObservable } from "mobx";
+import { isEqual } from "radash";
 
 @Component({
     selector: "nft-marketplace-create-listing-page",
