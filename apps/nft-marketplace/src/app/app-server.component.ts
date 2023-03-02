@@ -4,6 +4,4 @@ import { Component } from "@angular/core";
     selector: "nft-marketplace-root",
     templateUrl: "./app.component.html"
 })
-export class AppServerComponent {
-    constructor() {}
-}
+export class AppServerComponent {}
