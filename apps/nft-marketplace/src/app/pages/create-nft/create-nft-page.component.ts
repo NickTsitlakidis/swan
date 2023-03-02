@@ -23,7 +23,7 @@ import { isNil } from "@nft-marketplace/utils";
 import { GetUserWalletService } from "../../@core/services/chains/get-user-wallet.service";
 
 @Component({
-    selector: "nft-marketplace-create-nft-page",
+    selector: "swan-create-nft-page",
     templateUrl: "./create-nft-page.component.html",
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrls: ["./create-nft-page.component.scss"],

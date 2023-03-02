@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, ViewEncapsulation } from "@angular/
 import { DynamicDialogConfig, DynamicDialogRef } from "primeng/dynamicdialog";
 
 @Component({
-    selector: "nft-marketplace-select-wallet-dialog",
+    selector: "swan-select-wallet-dialog",
     templateUrl: "./select-wallet-dialog.component.html",
     styleUrls: ["./select-wallet-dialog.component.scss"],
     changeDetection: ChangeDetectionStrategy.OnPush,

@@ -5,7 +5,7 @@ import { UserStore } from "./@core/store/user-store";
 import { PrimeNGConfig } from "primeng/api";
 
 @Component({
-    selector: "nft-marketplace-root",
+    selector: "swan-root",
     templateUrl: "./app.component.html"
 })
 export class AppBrowserComponent implements OnInit {

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
 
 @Component({
-    selector: "nft-marketplace-title-subtitle",
+    selector: "swan-title-subtitle",
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrls: ["./title-subtitle.component.scss"],
     template: `

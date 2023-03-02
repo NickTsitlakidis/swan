@@ -3,7 +3,7 @@ import { NgxDropzoneChangeEvent, NgxDropzoneComponent } from "ngx-dropzone";
 import { BehaviorSubject } from "rxjs";
 
 @Component({
-    selector: "nft-marketplace-upload",
+    selector: "swan-upload",
     templateUrl: "./upload.component.html",
     styleUrls: ["./upload.component.scss"]
 })

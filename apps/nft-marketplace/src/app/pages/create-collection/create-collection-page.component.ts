@@ -10,7 +10,7 @@ import { computed } from "mobx-angular";
 import { makeObservable } from "mobx";
 
 @Component({
-    selector: "nft-marketplace-create-collection-page",
+    selector: "swan-create-collection-page",
     templateUrl: "./create-collection-page.component.html",
     styleUrls: ["./create-collection-page.component.scss"],
     changeDetection: ChangeDetectionStrategy.OnPush

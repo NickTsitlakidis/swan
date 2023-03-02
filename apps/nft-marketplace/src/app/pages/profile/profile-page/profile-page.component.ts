@@ -5,7 +5,7 @@ import { computed } from "mobx-angular";
 import { ProfileNftDto } from "@swan/dto";
 
 @Component({
-    selector: "nft-marketplace-profile-page",
+    selector: "swan-profile-page",
     templateUrl: "./profile-page.component.html",
     styleUrls: ["./profile-page.component.scss"]
 })

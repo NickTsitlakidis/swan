@@ -5,21 +5,21 @@
 <div class="container" *mobxAutorun>
     <div class="is-offset-one-fifth">
         <div class="columns is-multiline">
-            <nft-marketplace-product-card
+            <swan-product-card
                 class="column is-3"
                 *ngFor="let nft of allNfts"
                 [imageUrl]="nft.imageUri"
                 [animationUrl]="nft.animationUri"
                 [productTitle]="nft.name"
                 (click)="onSelectNft(nft)"
-            ></nft-marketplace-product-card>
+            ></swan-product-card>
         </div>
 
         <form *ngIf="selectedForListingNft" [formGroup]="createListingForm">
             <!-- NFT's max supply -->
             <div class="columns">
                 <div class="column mt-4">
-                    <nft-marketplace-title-subtitle [title]="'NFT listing price'"></nft-marketplace-title-subtitle>
+                    <swan-title-subtitle [title]="'NFT listing price'"></swan-title-subtitle>
                     <input pInputText type="number" formControlName="price" />
                 </div>
             </div>

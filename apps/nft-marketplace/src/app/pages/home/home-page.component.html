@@ -3,12 +3,12 @@
 </div>
 <div *ngIf="listings?.length">
     <div class="columns p-4">
-        <nft-marketplace-product-card
+        <swan-product-card
             class="column"
             *ngFor="let listing of listings"
             [imageUrl]="listing.imageUrl"
             [animationUrl]="listing.animationUrl"
             (click)="buyToken(listing)"
-        ></nft-marketplace-product-card>
+        ></swan-product-card>
     </div>
 </div>

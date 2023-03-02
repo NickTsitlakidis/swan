@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 
 @Component({
-    selector: "nft-marketplace-footer",
+    selector: "swan-footer",
     styleUrls: ["./footer.component.scss"],
     template: `
         <div class="footer-container">

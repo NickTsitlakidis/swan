@@ -8,7 +8,7 @@ import { BlockchainWalletsStore } from "../../@core/store/blockchain-wallets-sto
 import { GetUserWalletService } from "../../@core/services/chains/get-user-wallet.service";
 
 @Component({
-    selector: "nft-marketplace-home-page",
+    selector: "swan-home-page",
     templateUrl: "./home-page.component.html",
     styleUrls: ["./home-page.component.scss"]
 })

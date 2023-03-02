@@ -13,7 +13,7 @@ import { PlatformUtils } from "../../../@core/utils/platform-utils";
 import { isNil } from "@nft-marketplace/utils";
 
 @Component({
-    selector: "nft-marketplace-header",
+    selector: "swan-header",
     styleUrls: ["./header.component.scss"],
     changeDetection: ChangeDetectionStrategy.OnPush,
     templateUrl: "./header.component.html"

@@ -12,22 +12,22 @@
             <!-- Collection's logo image -->
             <div class="columns">
                 <div class="column is-12">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.logoImage.title"
                         [subtitle]="labelsAndPlaceholders.logoImage.subtitle"
-                    ></nft-marketplace-title-subtitle>
-                    <nft-marketplace-image-placeholder
+                    ></swan-title-subtitle>
+                    <swan-image-placeholder
                         (uploadedImage)="updateLogoImage($event)"
-                    ></nft-marketplace-image-placeholder>
+                    ></swan-image-placeholder>
                 </div>
             </div>
 
             <!-- Collection's name -->
             <div class="columns">
                 <div class="column is-12">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.collectionName.title"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <input
                         pInputText
                         class="w-50"
@@ -63,10 +63,10 @@
             <!-- Collection's marketPlaceUrl -->
             <div class="columns">
                 <div class="column is-12">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.marketPlaceUrl.title"
                         [subtitle]="labelsAndPlaceholders.marketPlaceUrl.subtitle"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <input
                         class="w-50"
                         pInputText
@@ -91,10 +91,10 @@
             <!-- Collection's Description -->
             <div class="columns">
                 <div class="column is-12">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.description.title"
                         [subtitle]="labelsAndPlaceholders.description.subtitle"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <textarea pInputTextarea class="w-50" formControlName="description"></textarea>
                     <div
                         class="has-text-danger mt-2 mb-2"
@@ -112,10 +112,10 @@
             <!-- Collection's Category -->
             <div class="columns">
                 <div class="column is-12">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.category.title"
                         [subtitle]="labelsAndPlaceholders.category.subtitle"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <p-dropdown
                         formControlName="category"
                         [options]="categories"
@@ -141,10 +141,10 @@
             <!-- Collection's Social links -->
             <div class="columns is-multiline">
                 <div formGroupName="socialLinks">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         class="column is-12 pb-0"
                         [title]="labelsAndPlaceholders.socialLinks.title"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
 
                     <div class="column is-12">
                         <!-- Your site -->
@@ -221,10 +221,10 @@
             <!-- Collection's Blockchain -->
             <div class="columns">
                 <div class="column is-12">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.chain.title"
                         [subtitle]="labelsAndPlaceholders.chain.subtitle"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <p-dropdown
                         formControlName="chain"
                         [options]="blockchains"
@@ -247,10 +247,10 @@
             <!-- Collection's Payment token -->
             <div class="columns">
                 <div class="column is-12">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.paymentToken.title"
                         [subtitle]="labelsAndPlaceholders.paymentToken.subtitle"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <p-dropdown
                         formControlName="paymentToken"
                         [options]="paymentTokens"
@@ -263,10 +263,10 @@
             <!-- Collection's percentage fee -->
             <div class="columns">
                 <div class="column is-12">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.percentageFee.title"
                         [subtitle]="labelsAndPlaceholders.percentageFee.subtitle"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <input
                         pInputText
                         class="w-15"
@@ -282,10 +282,10 @@
             <!-- Collection's is sensitive content -->
             <div class="columns">
                 <div class="column is-12">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.sensitiveContent.title"
                         [subtitle]="labelsAndPlaceholders.sensitiveContent.subtitle"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <p-inputSwitch formControlName="sensitiveContent" [ngModel]="false"></p-inputSwitch>
                 </div>
             </div>

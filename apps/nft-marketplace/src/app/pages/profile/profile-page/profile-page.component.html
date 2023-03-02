@@ -1,13 +1,13 @@
 <div *mobxAutorun>
     <div  *ngIf="allNfts.length">
         <div class="columns p-4 is-multiline">
-            <nft-marketplace-product-card
+            <swan-product-card
                 class="column is-1"
                 *ngFor="let prod of allNfts"
                 [imageUrl]="prod.imageUri"
                 [animationUrl]="prod.animationUri"
                 [productTitle]="prod.name"
-            ></nft-marketplace-product-card>
+            ></swan-product-card>
         </div>
     </div>
 </div>

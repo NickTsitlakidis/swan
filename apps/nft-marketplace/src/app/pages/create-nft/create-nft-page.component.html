@@ -4,14 +4,14 @@
 
 <div class="container">
     <div class="is-offset-one-fifth">
-        <nft-marketplace-upload (uploadFiles)="uploadFiles($event)"></nft-marketplace-upload>
+        <swan-upload (uploadFiles)="uploadFiles($event)"></swan-upload>
         <form [formGroup]="createNFTForm">
             <!-- NFT's title -->
             <div class="columns">
                 <div class="column mt-4">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.title.name"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <input
                         pInputText
                         class="w-100"
@@ -34,9 +34,9 @@
             <!-- NFT's symbol -->
             <div class="columns">
                 <div class="column mt-4">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.symbol.name"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <input
                         pInputText
                         class="w-100"
@@ -59,9 +59,9 @@
             <!-- NFT's is parent collection -->
             <div class="columns">
                 <div class="column mt-4">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.isParentCollection"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <p-inputSwitch formControlName="isParentCollection"></p-inputSwitch>
                 </div>
             </div>
@@ -69,9 +69,9 @@
             <!-- NFT's Description -->
             <div class="columns">
                 <div class="column mt-4">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.description.title"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <textarea
                         pInputTextarea
                         class="w-50"
@@ -94,10 +94,10 @@
             <div class="columns">
                 <div class="column mt-4">
                     <div *ngIf="collections?.length">
-                        <nft-marketplace-title-subtitle
+                        <swan-title-subtitle
                             [title]="labelsAndPlaceholders.collection.title"
                             [subtitle]="labelsAndPlaceholders.collection.subtitle"
-                        ></nft-marketplace-title-subtitle>
+                        ></swan-title-subtitle>
                         <div class="is-flex is-align-content-center">
                             <p-dropdown
                                 #collectionSelect
@@ -120,10 +120,10 @@
                         </div>
                     </div>
                     <div *ngIf="!collections?.length">
-                        <nft-marketplace-title-subtitle
+                        <swan-title-subtitle
                             [title]="labelsAndPlaceholders.collection.title"
                             [subtitle]="labelsAndPlaceholders.collection.emptyCategory"
-                        ></nft-marketplace-title-subtitle>
+                        ></swan-title-subtitle>
                         <a href="./create-collection">Create</a>
                     </div>
                 </div>
@@ -132,10 +132,10 @@
             <!-- NFT's Chain -->
             <div class="columns">
                 <div class="column mt-4" *ngIf="blockchains?.length">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.chain.title"
                         [subtitle]="labelsAndPlaceholders.chain.subtitle"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <p-dropdown
                         formControlName="blockchain"
                         [options]="blockchains"
@@ -158,10 +158,10 @@
             <!-- NFT's Category -->
             <div class="columns">
                 <div class="column mt-4" *ngIf="categories?.length">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.category.title"
                         [subtitle]="labelsAndPlaceholders.category.subtitle"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <p-dropdown
                         formControlName="category"
                         [options]="categories"
@@ -184,9 +184,9 @@
             <!-- NFT's max supply -->
             <div class="columns">
                 <div class="column mt-4">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.maxSupply.title"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <input
                         pInputText
                         type="number"
@@ -235,9 +235,9 @@
                             [formControlName]="'attributeDisplay' + (i + 1)"
                         />
                     </div>
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.attributes"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <button pButton type="text" (click)="addAtrribute()" class="add-attribute-button">
                         + Add attribute
                     </button>
@@ -247,10 +247,10 @@
             <!-- Collection's percentage fee -->
             <div class="columns">
                 <div class="column mt-4">
-                    <nft-marketplace-title-subtitle
+                    <swan-title-subtitle
                         [title]="labelsAndPlaceholders.royalties.title"
                         [subtitle]="labelsAndPlaceholders.royalties.subtitle"
-                    ></nft-marketplace-title-subtitle>
+                    ></swan-title-subtitle>
                     <input
                         class="w-15"
                         pInputText

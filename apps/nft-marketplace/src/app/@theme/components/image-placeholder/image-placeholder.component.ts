@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from "@angular/core";
 
 @Component({
-    selector: "nft-marketplace-image-placeholder",
+    selector: "swan-image-placeholder",
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrls: ["./image-placeholder.component.scss"],
     templateUrl: "image-placeholder.component.html"

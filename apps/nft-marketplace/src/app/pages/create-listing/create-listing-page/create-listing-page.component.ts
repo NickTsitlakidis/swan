@@ -13,7 +13,7 @@ import { makeObservable } from "mobx";
 import { isEqual } from "radash";
 
 @Component({
-    selector: "nft-marketplace-create-listing-page",
+    selector: "swan-create-listing-page",
     templateUrl: "./create-listing-page.component.html",
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrls: ["./create-listing-page.component.scss"]

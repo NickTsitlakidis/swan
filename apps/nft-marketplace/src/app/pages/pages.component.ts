@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 
 @Component({
-    selector: "nft-marketplace-pages",
+    selector: "swan-pages",
     styleUrls: ["pages.component.scss"],
     template: ` <router-outlet></router-outlet> `
 })

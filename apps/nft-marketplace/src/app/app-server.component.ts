@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 
 @Component({
-    selector: "nft-marketplace-root",
+    selector: "swan-root",
     templateUrl: "./app.component.html"
 })
 export class AppServerComponent {}

@@ -19,7 +19,7 @@
                     "error",
                     {
                         "type": "attribute",
-                        "prefix": "nftMarketplace",
+                        "prefix": "swan",
                         "style": "camelCase"
                     }
                 ],
@@ -27,7 +27,7 @@
                     "error",
                     {
                         "type": "element",
-                        "prefix": "nft-marketplace",
+                        "prefix": "swan",
                         "style": "kebab-case"
                     }
                 ]
