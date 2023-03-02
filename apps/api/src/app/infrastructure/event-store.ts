@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Aggregate } from "./aggregate";
 import { MongoClient, ObjectId } from "mongodb";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { getLogger, LogAsyncMethod } from "./logging";
 import { SourcedEvent } from "./sourced-event";
 import { EventSourcedEntity } from "./event-sourced-entity";

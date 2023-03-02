@@ -7,7 +7,7 @@ import { EventStore } from "../../infrastructure/event-store";
 import { BadRequestException } from "@nestjs/common";
 import { Buyer } from "../../domain/listing/buyer";
 import { UserWalletViewRepository } from "../../views/user-wallet/user-wallet-view-repository";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { ethers } from "ethers";
 import { NftFactory } from "../../domain/nft/nft-factory";
 import { ContractFactory } from "@swan/contracts";

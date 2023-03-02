@@ -7,7 +7,7 @@ import { CategoryRepository } from "../../support/categories/category-repository
 import { BlockchainRepository } from "../../support/blockchains/blockchain-repository";
 import { NftViewRepository } from "../../views/nft/nft-view-repository";
 import { BadRequestException } from "@nestjs/common";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { LogAsyncMethod } from "../../infrastructure/logging";
 import { BlockchainWalletRepository } from "../../support/blockchains/blockchain-wallet-repository";
 import { UserWalletViewRepository } from "../../views/user-wallet/user-wallet-view-repository";

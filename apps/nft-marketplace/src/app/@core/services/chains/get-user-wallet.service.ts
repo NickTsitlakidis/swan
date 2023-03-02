@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BlockchainWalletDto, UserWalletDto } from "@swan/dto";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { when } from "mobx";
 import { DialogService } from "primeng/dynamicdialog";
 import { firstValueFrom } from "rxjs";

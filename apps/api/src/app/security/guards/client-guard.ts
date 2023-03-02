@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { ClientRepository } from "../client-repository";
 import { getLogger } from "../../infrastructure/logging";
 import { extractBearerValue } from "./token-utils";

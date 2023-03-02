@@ -5,6 +5,7 @@
         "contracts": "libs/contracts",
         "dto": "libs/dto",
         "nft-marketplace": "apps/nft-marketplace",
-        "nft-marketplace-e2e": "apps/nft-marketplace-e2e"
+        "nft-marketplace-e2e": "apps/nft-marketplace-e2e",
+        "utils": "libs/utils"
     }
 }

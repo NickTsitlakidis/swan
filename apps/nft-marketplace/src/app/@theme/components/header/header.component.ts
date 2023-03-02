@@ -10,7 +10,7 @@ import { makeObservable, when } from "mobx";
 import { computed } from "mobx-angular";
 import { ProgressStore } from "../../../@core/store/progress-store";
 import { PlatformUtils } from "../../../@core/utils/platform-utils";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 
 @Component({
     selector: "nft-marketplace-header",

@@ -7,7 +7,7 @@ import { EntityDto } from "@swan/dto";
 import { CategoryRepository } from "../../support/categories/category-repository";
 import { LogAsyncMethod } from "../../infrastructure/logging";
 import { BlockchainRepository } from "../../support/blockchains/blockchain-repository";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 
 @CommandHandler(CreateCollectionCommand)
 export class CreateCollectionCommandExecutor implements ICommandHandler<CreateCollectionCommand> {

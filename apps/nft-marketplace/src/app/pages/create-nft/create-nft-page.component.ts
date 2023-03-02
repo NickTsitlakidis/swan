@@ -19,7 +19,7 @@ import { EvmContractsStore } from "../../@core/store/evm-contracts-store";
 import { CategoriesStore } from "../../@core/store/categories-store";
 import { BlockchainWalletsStore } from "../../@core/store/blockchain-wallets-store";
 import { UserStore } from "../../@core/store/user-store";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { GetUserWalletService } from "../../@core/services/chains/get-user-wallet.service";
 
 @Component({

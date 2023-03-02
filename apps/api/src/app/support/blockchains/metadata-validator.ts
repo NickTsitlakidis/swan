@@ -1,5 +1,5 @@
 import * as Joi from "joi";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()

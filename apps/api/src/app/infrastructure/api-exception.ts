@@ -1,5 +1,5 @@
 import { HttpStatus } from "@nestjs/common";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 
 export class ApiException extends Error {
     private readonly _httpStatus: HttpStatus;

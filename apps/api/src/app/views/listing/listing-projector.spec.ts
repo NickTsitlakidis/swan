@@ -15,8 +15,8 @@ import { ListingStatus } from "../../domain/listing/listing-status";
 import { Buyer } from "../../domain/listing/buyer";
 import { BuyerView } from "./buyer-view";
 import { buildListingView } from "../../test-utils/test-builders";
-import { cloneDeep } from "lodash";
 import { CurrencyList } from "@swan/dto";
+import { clone } from "radash";
 
 let repositoryMock: ListingViewRepository;
 let projector: ListingProjector;
@@ -52,7 +52,8 @@ test("handle ListingSoldEvent - updates view", async () => {
 
     expect(findSpy).toHaveBeenCalledTimes(1);
     expect(findSpy).toHaveBeenCalledWith(event.aggregateId);
-    const cloned = cloneDeep(existingView);
+
+    const cloned = clone(existingView);
     cloned.status = ListingStatus.SOLD;
     cloned.listingSoldTransaction.blockNumber = 99;
     cloned.listingSoldTransaction.transactionHash = "the-hash";
@@ -80,7 +81,7 @@ test("handle ListingActivatedEvent - updates status, block number and listing id
 
     expect(findSpy).toHaveBeenCalledTimes(1);
     expect(findSpy).toHaveBeenCalledWith(event.aggregateId);
-    const cloned = cloneDeep(existingView);
+    const cloned = clone(existingView);
     cloned.status = ListingStatus.ACTIVE;
     cloned.chainListingId = 55;
     cloned.listingCreatedTransaction.blockNumber = 44;
@@ -105,7 +106,7 @@ test("handle ListingCanceledEvent - updates status", async () => {
 
     expect(findSpy).toHaveBeenCalledTimes(1);
     expect(findSpy).toHaveBeenCalledWith(event.aggregateId);
-    const cloned = cloneDeep(existingView);
+    const cloned = clone(existingView);
     cloned.status = ListingStatus.CANCELED;
 
     expect(saveSpy).toHaveBeenCalledTimes(1);
@@ -128,7 +129,7 @@ test("handle ListingSubmittedEvent - updates view with transaction and status", 
 
     expect(findSpy).toHaveBeenCalledTimes(1);
     expect(findSpy).toHaveBeenCalledWith(event.aggregateId);
-    const cloned = cloneDeep(existingView);
+    const cloned = clone(existingView);
     cloned.status = ListingStatus.SUBMITTED;
     cloned.listingCreatedTransaction.transactionHash = "the-hash";
 

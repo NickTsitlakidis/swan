@@ -8,7 +8,7 @@ import { ethers } from "ethers";
 import { Blockchain } from "../support/blockchains/blockchain";
 import { EvmContract } from "../support/evm-contracts/evm-contract";
 import { EvmContractType } from "../support/evm-contracts/evm-contract-type";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { getLogger } from "../infrastructure/logging";
 
 @Injectable()

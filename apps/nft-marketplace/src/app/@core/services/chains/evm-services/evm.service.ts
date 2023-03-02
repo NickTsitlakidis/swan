@@ -2,7 +2,7 @@ import { WalletService } from "../wallet-service";
 import { firstValueFrom, from, map, Observable, of, Subject, switchMap, throwError, zip } from "rxjs";
 import { WalletEvent } from "../wallet-event";
 import { ethers } from "ethers";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { CreateNft } from "../create-nft";
 import { Injectable } from "@angular/core";
 import { BlockchainDto, ListingDto, NftMintTransactionDto, SupportedWallets } from "@swan/dto";

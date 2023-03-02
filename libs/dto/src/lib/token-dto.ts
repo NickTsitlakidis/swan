@@ -1,6 +1,6 @@
 import { Transform, Type } from "class-transformer";
-import { isNil } from "lodash";
 import { DateTime } from "luxon";
+import { isNil } from "@nft-marketplace/utils";
 
 export class TokenDto {
     tokenValue: string;

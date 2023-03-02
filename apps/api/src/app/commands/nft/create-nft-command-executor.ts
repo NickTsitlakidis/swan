@@ -9,7 +9,7 @@ import { BadRequestException } from "@nestjs/common";
 import { BlockchainRepository } from "../../support/blockchains/blockchain-repository";
 import { NftMetadata } from "../../domain/nft/nft-metadata";
 import { NftDto } from "@swan/dto";
-import { isNil } from "lodash";
+import { isNil } from "@nft-marketplace/utils";
 import { LogAsyncMethod } from "../../infrastructure/logging";
 
 @CommandHandler(CreateNftCommand)
