@@ -8,12 +8,9 @@ import {
     UserDto
 } from "@swan/dto";
 import { ComplexState } from "./complex-state";
-import { LocalStorageService } from "ngx-webstorage";
 import { UserService } from "../services/user/user.service";
 import { WalletService } from "../services/chains/wallet-service";
 import { switchMap } from "rxjs";
-import { isNil } from "lodash";
-import { DateTime } from "luxon";
 import { StateStore } from "./state-store";
 import { action, computed, observable } from "mobx-angular";
 
@@ -28,15 +25,11 @@ export class UserStore implements StateStore {
     @observable
     nft: ComplexState<Array<ProfileNftDto>>;
 
-    constructor(private readonly _storageService: LocalStorageService, private readonly _userService: UserService) {
+    constructor(private readonly _userService: UserService) {
         this.tokenState = new ComplexState<TokenDto>();
         this.userState = new ComplexState<UserDto>();
         this.nft = new ComplexState<Array<ProfileNftDto>>();
         makeObservable(this);
-        const existingToken = this.readTokenFromStorage();
-        if (existingToken) {
-            this.tokenState = ComplexState.fromSuccess(existingToken);
-        }
     }
 
     @action
@@ -56,7 +49,6 @@ export class UserStore implements StateStore {
             )
             .subscribe({
                 next: (token) => {
-                    this.saveTokenToStorage(token);
                     runInAction(() => {
                         this.tokenState = ComplexState.fromSuccess(token);
                     });
@@ -72,10 +64,6 @@ export class UserStore implements StateStore {
 
     @action
     refreshUser() {
-        if (!this.tokenState.hasState) {
-            return;
-        }
-
         this.userState = ComplexState.fromLoading();
         this._userService.getUser().subscribe({
             next: (user) => {
@@ -118,26 +106,19 @@ export class UserStore implements StateStore {
 
     @action
     refreshToken() {
-        const tokenValue = this.tokenState.state.refreshToken;
         this.tokenState = ComplexState.fromLoading();
-        if (isNil(tokenValue)) {
-            const e = new Error("Refresh token should always exist for user tokens");
-            this.tokenState = ComplexState.fromError(e);
-        } else {
-            this._userService.refreshToken(tokenValue).subscribe({
-                next: (refreshedToken) => {
-                    this.saveTokenToStorage(refreshedToken);
-                    runInAction(() => {
-                        this.tokenState = ComplexState.fromSuccess(refreshedToken);
-                    });
-                },
-                error: (error) => {
-                    runInAction(() => {
-                        this.tokenState = ComplexState.fromError(error);
-                    });
-                }
-            });
-        }
+        this._userService.refreshToken().subscribe({
+            next: (refreshedToken) => {
+                runInAction(() => {
+                    this.tokenState = ComplexState.fromSuccess(refreshedToken);
+                });
+            },
+            error: (error) => {
+                runInAction(() => {
+                    this.tokenState = ComplexState.fromError(error);
+                });
+            }
+        });
     }
 
     @action
@@ -173,23 +154,5 @@ export class UserStore implements StateStore {
     @computed
     get user(): UserDto | undefined {
         return this.userState.state;
-    }
-
-    private saveTokenToStorage(token: TokenDto) {
-        this._storageService.store("userTokenValue", token.tokenValue);
-        this._storageService.store("userExpiresAt", token.expiresAt.toISO());
-        this._storageService.store("userRefreshToken", token.refreshToken);
-    }
-
-    private readTokenFromStorage(): TokenDto | undefined {
-        const userToken = this._storageService.retrieve("userTokenValue");
-        const expiresAt = this._storageService.retrieve("userExpiresAt");
-        const refreshToken = this._storageService.retrieve("userRefreshToken");
-
-        if (!isNil(userToken) && !isNil(expiresAt) && !isNil(refreshToken)) {
-            return new TokenDto(userToken, DateTime.fromISO(expiresAt), refreshToken);
-        }
-
-        return undefined;
     }
 }

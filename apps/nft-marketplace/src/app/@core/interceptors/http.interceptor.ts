@@ -1,14 +1,13 @@
 import { HttpErrorResponse, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { catchError, mergeMap } from "rxjs/operators";
+import { catchError, mergeMap, switchMap } from "rxjs/operators";
 import { environment } from "../../../environments/environment";
 import { from, map, Observable, throwError } from "rxjs";
 import { HttpErrorDto, TokenDto } from "@swan/dto";
 import { ComplexState } from "../store/complex-state";
-import { isNil } from "lodash";
 import { plainToClass } from "class-transformer";
 import { NotificationsService } from "../../@theme/services/notifications.service";
-import { SKIP_ERROR_TOAST } from "./http-context-tokens";
+import { SKIP_ERROR_TOAST, SKIP_RETRY } from "./http-context-tokens";
 import { UserStore } from "../store/user-store";
 import { when } from "mobx";
 import { ClientStore } from "../store/client-store";
@@ -56,10 +55,23 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
         const retryable = fullUrlReq.clone();
 
         let toRun = next.handle(fullUrlReq);
-        const userToken = this._userStore.token;
 
-        if (isUserRequest && !isNil(userToken)) {
-            toRun = next.handle(this._addBearerToken(fullUrlReq, userToken.tokenValue));
+        if (isUserRequest) {
+            if (this._userStore.token) {
+                const userToken = this._userStore.token;
+                toRun = next.handle(this._addBearerToken(fullUrlReq, userToken.tokenValue));
+            } else {
+                this._userStore.refreshToken();
+                toRun = from(when(() => !this._userStore.tokenState.isLoading, { timeout: 5000 })).pipe(
+                    switchMap(() => {
+                        const userToken = this._userStore.token;
+                        if (userToken) {
+                            return next.handle(this._addBearerToken(fullUrlReq, userToken.tokenValue));
+                        }
+                        return throwError(() => "Unable to get new token");
+                    })
+                );
+            }
         }
 
         return toRun.pipe(
@@ -72,16 +84,16 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
                     return throwError(() => mappedError);
                 }
 
-                let withNewToken: Observable<ComplexState<TokenDto>> = throwError(error);
+                let withNewToken: Observable<ComplexState<TokenDto>> = throwError(() => error);
 
-                if (isClientRequest) {
+                if (isClientRequest && !req.context.get(SKIP_RETRY)) {
                     this._clientStore.fetchToken();
                     withNewToken = from(when(() => !this._clientStore.tokenState.isLoading, { timeout: 5000 })).pipe(
                         map(() => this._clientStore.tokenState)
                     );
                 }
 
-                if (isUserRequest) {
+                if (isUserRequest && !req.context.get(SKIP_RETRY)) {
                     this._userStore.refreshToken();
                     withNewToken = from(when(() => !this._userStore.tokenState.isLoading, { timeout: 5000 })).pipe(
                         map(() => this._userStore.tokenState)

@@ -2,7 +2,6 @@ import { BuyListingDto, HttpErrorDto, INVALID_LISTING_STATUS, PageDto, Paginatio
 import { HttpClient, HttpContext, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { ActivateListingDto, CreateListingDto, EntityDto, ListingDto, SubmitListingDto } from "@swan/dto";
-import { CoreModule } from "../../core.module";
 import { map, Observable, throwError } from "rxjs";
 import { plainToInstance } from "class-transformer";
 import { SKIP_ERROR_TOAST } from "../../interceptors/http-context-tokens";
@@ -10,7 +9,7 @@ import { catchError } from "rxjs/operators";
 import { NotificationsService } from "../../../@theme/services/notifications.service";
 
 @Injectable({
-    providedIn: CoreModule
+    providedIn: "root"
 })
 export class ListingsService {
     constructor(private _httpClient: HttpClient, private _notificationsService: NotificationsService) {}

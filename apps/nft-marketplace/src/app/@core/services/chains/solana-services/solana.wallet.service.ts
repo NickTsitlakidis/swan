@@ -5,7 +5,7 @@ import * as base58 from "bs58";
 import { defer, EMPTY, forkJoin, from, of, Subject, throwError, Observable } from "rxjs";
 import { concatMap, first, map, switchMap, take, filter } from "rxjs/operators";
 
-import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
+//import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { environment } from "../../../../../environments/environment";
 import { WalletService } from "../wallet-service";
 import { CreateNft } from "../create-nft";
@@ -45,7 +45,7 @@ export class SolanaWalletService implements WalletService {
         const network = environment.production ? WalletAdapterNetwork.Mainnet : WalletAdapterNetwork.Devnet;
         const endpoint = clusterApiUrl(network);
         this.changeNetwork(endpoint);
-        this.walletStore.setAdapters([new PhantomWalletAdapter(), new SolflareWalletAdapter()]);
+        //this.walletStore.setAdapters([new PhantomWalletAdapter(), new SolflareWalletAdapter()]);
         this.walletStore.connected$.subscribe(() => {
             const e = {
                 type: WalletEventType.Connected,

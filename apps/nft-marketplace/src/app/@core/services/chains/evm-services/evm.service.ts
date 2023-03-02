@@ -5,14 +5,11 @@ import { ethers } from "ethers";
 import { isNil } from "lodash";
 import { CreateNft } from "../create-nft";
 import { Injectable } from "@angular/core";
-import { ChainsModule } from "../chains.module";
 import { BlockchainDto, ListingDto, NftMintTransactionDto, SupportedWallets } from "@swan/dto";
 import { ContractFactory, MarketplaceResult } from "@swan/contracts";
 import { CreateListing } from "../create-listing";
 
-@Injectable({
-    providedIn: ChainsModule
-})
+@Injectable()
 export class EvmService implements WalletService {
     private _events: Subject<WalletEvent>;
     private _ethersProvider: ethers.providers.Web3Provider;

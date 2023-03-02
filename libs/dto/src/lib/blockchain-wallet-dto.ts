@@ -11,7 +11,7 @@ export class BlockchainWalletDto {
     rpcUrl: string;
     scanSiteUrl: string;
     @Type(() => BlockchainDto)
-    wallets: Array<WalletDto | undefined>;
+    wallets: Array<WalletDto>;
 
     constructor(
         blockchain: BlockchainDto,
@@ -20,7 +20,7 @@ export class BlockchainWalletDto {
         isTestNetwork: boolean,
         rpcUrl: string,
         scanSiteUrl: string,
-        wallets: Array<WalletDto | undefined>
+        wallets: Array<WalletDto>
     ) {
         this.blockchain = blockchain;
         this.mainTokenName = mainTokenName;

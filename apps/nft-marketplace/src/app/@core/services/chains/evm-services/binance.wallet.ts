@@ -1,13 +1,10 @@
 import { Injectable } from "@angular/core";
-import { ChainsModule } from "../chains.module";
 import { EvmService } from "./evm.service";
 import { ContractFactory } from "@swan/contracts";
 import { from, Observable, switchMap } from "rxjs";
 import { SupportedWallets } from "@swan/dto";
 
-@Injectable({
-    providedIn: ChainsModule
-})
+@Injectable()
 export class BinanceWalletService extends EvmService {
     private _walletType = SupportedWallets.BINANCE;
 

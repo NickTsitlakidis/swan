@@ -11,10 +11,9 @@ export class AuthGuard implements CanActivate {
     constructor(private _router: Router, private _userStore: UserStore) {}
 
     async canActivate(): Promise<boolean | UrlTree> {
-        if (isNil(this._userStore.token)) {
-            return this._router.parseUrl("/home");
-        }
-
+        // if (isNil(this._userStore.token)) {
+        //     return this._router.parseUrl("/home");
+        // }
         if (!isNil(this._userStore.user)) {
             return true;
         }

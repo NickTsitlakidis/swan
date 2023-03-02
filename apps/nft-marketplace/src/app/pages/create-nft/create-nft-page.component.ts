@@ -8,19 +8,19 @@ import {
     NftMetadataDto,
     UserWalletDto
 } from "@swan/dto";
-import { fade } from "../../../@core/animations/enter-leave.animation";
-import { CreateNft } from "../../../@core/services/chains/create-nft";
-import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
-import { SupportService } from "../../../@core/services/support/support.service";
+import { fade } from "../../@core/animations/enter-leave.animation";
+import { CreateNft } from "../../@core/services/chains/create-nft";
+import { WalletRegistryService } from "../../@core/services/chains/wallet-registry.service";
+import { SupportService } from "../../@core/services/support/support.service";
 import { firstValueFrom, of, switchMap } from "rxjs";
-import { NftService } from "../../../@core/services/chains/nfts/nft.service";
-import { CollectionsService } from "../../../@core/services/collections/collections.service";
-import { EvmContractsStore } from "../../../@core/store/evm-contracts-store";
-import { CategoriesStore } from "../../../@core/store/categories-store";
-import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
-import { UserStore } from "../../../@core/store/user-store";
+import { NftService } from "../../@core/services/chains/nfts/nft.service";
+import { CollectionsService } from "../../@core/services/collections/collections.service";
+import { EvmContractsStore } from "../../@core/store/evm-contracts-store";
+import { CategoriesStore } from "../../@core/store/categories-store";
+import { BlockchainWalletsStore } from "../../@core/store/blockchain-wallets-store";
+import { UserStore } from "../../@core/store/user-store";
 import { isNil } from "lodash";
-import { GetUserWalletService } from "../../../@core/services/chains/get-user-wallet.service";
+import { GetUserWalletService } from "../../@core/services/chains/get-user-wallet.service";
 
 @Component({
     selector: "nft-marketplace-create-nft-page",

@@ -2,9 +2,6 @@ import { Injectable } from "@angular/core";
 import { StateStore } from "./state-store";
 import { ComplexState } from "./complex-state";
 import { TokenDto } from "@swan/dto";
-import { isNil } from "lodash";
-import { DateTime } from "luxon";
-import { LocalStorageService } from "ngx-webstorage";
 import { ClientService } from "../services/client/client-service";
 import { action, computed, observable } from "mobx-angular";
 import { makeObservable, runInAction } from "mobx";
@@ -14,13 +11,9 @@ export class ClientStore implements StateStore {
     @observable
     tokenState: ComplexState<TokenDto>;
 
-    constructor(private readonly _storageService: LocalStorageService, private readonly _clientService: ClientService) {
+    constructor(private readonly _clientService: ClientService) {
         this.tokenState = new ComplexState<TokenDto>();
         makeObservable(this);
-        const existingToken = this.readTokenFromStorage();
-        if (existingToken) {
-            this.tokenState = ComplexState.fromSuccess(existingToken);
-        }
     }
 
     @action
@@ -28,7 +21,6 @@ export class ClientStore implements StateStore {
         this.tokenState = ComplexState.fromLoading();
         this._clientService.login().subscribe({
             next: (token) => {
-                this.saveTokenToStorage(token);
                 runInAction(() => (this.tokenState = ComplexState.fromSuccess(token)));
             },
             error: (error) => runInAction(() => (this.tokenState = ComplexState.fromError(error)))
@@ -43,21 +35,5 @@ export class ClientStore implements StateStore {
     @computed
     get clientToken(): TokenDto | undefined {
         return this.tokenState.state;
-    }
-
-    private saveTokenToStorage(token: TokenDto) {
-        this._storageService.store("clientTokenValue", token.tokenValue);
-        this._storageService.store("clientExpiresAt", token.expiresAt.toISO());
-    }
-
-    private readTokenFromStorage(): TokenDto | undefined {
-        const userToken = this._storageService.retrieve("clientTokenValue");
-        const expiresAt = this._storageService.retrieve("clientExpiresAt");
-
-        if (!isNil(userToken) && !isNil(expiresAt)) {
-            return new TokenDto(userToken, DateTime.fromISO(expiresAt));
-        }
-
-        return undefined;
     }
 }

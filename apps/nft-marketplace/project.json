@@ -9,7 +9,7 @@
             "executor": "@angular-devkit/build-angular:browser",
             "outputs": ["{options.outputPath}"],
             "options": {
-                "outputPath": "dist/apps/nft-marketplace",
+                "outputPath": "dist/apps/nft-marketplace/browser",
                 "index": "apps/nft-marketplace/src/index.html",
                 "main": "apps/nft-marketplace/src/main.ts",
                 "polyfills": "apps/nft-marketplace/src/polyfills.ts",
@@ -100,6 +100,62 @@
                 "jestConfig": "apps/nft-marketplace/jest.config.ts",
                 "passWithNoTests": true
             }
+        },
+        "server": {
+            "executor": "@angular-devkit/build-angular:server",
+            "options": {
+                "outputPath": "dist/apps/apps/nft-marketplace/server",
+                "main": "apps/nft-marketplace/server.ts",
+                "tsConfig": "apps/nft-marketplace/tsconfig.server.json"
+            },
+            "configurations": {
+                "production": {
+                    "outputHashing": "media",
+                    "fileReplacements": [
+                        {
+                            "replace": "apps/nft-marketplace/src/environments/environment.ts",
+                            "with": "apps/nft-marketplace/src/environments/environment.prod.ts"
+                        }
+                    ]
+                },
+                "development": {
+                    "optimization": false,
+                    "sourceMap": true,
+                    "extractLicenses": false
+                }
+            },
+            "defaultConfiguration": "production"
+        },
+        "serve-ssr": {
+            "executor": "@nguniversal/builders:ssr-dev-server",
+            "configurations": {
+                "development": {
+                    "browserTarget": "nft-marketplace:build:development",
+                    "serverTarget": "nft-marketplace:server:development"
+                },
+                "production": {
+                    "browserTarget": "nft-marketplace:build:production",
+                    "serverTarget": "nft-marketplace:server:production"
+                }
+            },
+            "defaultConfiguration": "development"
+        },
+        "prerender": {
+            "executor": "@nguniversal/builders:prerender",
+            "options": {
+                "routes": ["/"]
+            },
+            "configurations": {
+                "development": {
+                    "browserTarget": "nft-marketplace:build:development",
+                    "serverTarget": "nft-marketplace:server:development"
+                },
+                "production": {
+                    "browserTarget": "nft-marketplace:build:production",
+                    "serverTarget": "nft-marketplace:server:production"
+                }
+            },
+            "defaultConfiguration": "production"
         }
     },
     "tags": []

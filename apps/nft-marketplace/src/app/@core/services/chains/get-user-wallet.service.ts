@@ -8,16 +8,14 @@ import { SelectWalletDialogComponent } from "../../../@theme/components/select-w
 import { BlockchainWalletsStore } from "../../store/blockchain-wallets-store";
 import { UserStore } from "../../store/user-store";
 
-@Injectable({
-    providedIn: "root"
-})
+@Injectable()
 export class GetUserWalletService {
     private userWallets: UserWalletDto[];
     private blockchains: { name: string; id: string }[];
 
     constructor(
         private _userStore: UserStore,
-        private dialogService: DialogService,
+        private _dialogService: DialogService,
         private _blockchainWalletsStore: BlockchainWalletsStore
     ) {}
 
@@ -82,7 +80,7 @@ export class GetUserWalletService {
     }
 
     private _openDialog(wallets: { img: string; title: string; chain: string }[]) {
-        return this.dialogService.open(SelectWalletDialogComponent, {
+        return this._dialogService.open(SelectWalletDialogComponent, {
             width: "500px",
             data: {
                 wallets

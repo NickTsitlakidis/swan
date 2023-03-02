@@ -34,7 +34,7 @@
                         <i class="fa-regular fa-square-plus mr-3"></i>Create listing
                     </button>
                 </div>
-                <div class="column is-flex is-justify-content-center is-align-content-center">
+                <div *ngIf="isBrowser" class="column is-flex is-justify-content-center is-align-content-center">
                     <p-cascadeSelect
                         class="mr-4"
                         placeholder="Select a wallet"

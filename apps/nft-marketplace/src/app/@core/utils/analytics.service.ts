@@ -5,7 +5,9 @@ import { filter } from "rxjs/operators";
 
 declare const ga: any;
 
-@Injectable()
+@Injectable({
+    providedIn: "root"
+})
 export class AnalyticsService {
     private enabled: boolean;
 

@@ -1,18 +1,18 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpContext } from "@angular/common/http";
 import { Observable } from "rxjs";
 import {
     CompleteSignatureAuthenticationDto,
     EntityDto,
     NonceDto,
     ProfileNftDto,
-    RefreshTokenDto,
     StartSignatureAuthenticationDto,
     TokenDto,
     UserDto
 } from "@swan/dto";
 import { map } from "rxjs/operators";
 import { plainToClass, plainToInstance } from "class-transformer";
+import { SKIP_ERROR_TOAST, SKIP_RETRY } from "../../interceptors/http-context-tokens";
 
 @Injectable({
     providedIn: "root"
@@ -40,7 +40,7 @@ export class UserService {
 
     completeSignatureAuthentication(completeBody: CompleteSignatureAuthenticationDto): Observable<TokenDto> {
         return this._httpClient
-            .post("/user/complete-signature-authentication", completeBody)
+            .post("/user/complete-signature-authentication", completeBody, { withCredentials: true })
             .pipe(map((httpResult) => plainToClass(TokenDto, httpResult)));
     }
 
@@ -48,9 +48,13 @@ export class UserService {
         return this._httpClient.get("/user").pipe(map((httpResult) => plainToClass(UserDto, httpResult)));
     }
 
-    refreshToken(refreshTokenValue: string): Observable<TokenDto> {
+    refreshToken(): Observable<TokenDto> {
         return this._httpClient
-            .post("/user/refresh-token", new RefreshTokenDto(refreshTokenValue))
+            .post(
+                "/user/refresh-token",
+                {},
+                { withCredentials: true, context: new HttpContext().set(SKIP_RETRY, true).set(SKIP_ERROR_TOAST, true) }
+            )
             .pipe(map((httpResult) => plainToClass(TokenDto, httpResult)));
     }
 

@@ -2,10 +2,9 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { EntityDto, NftDto, NftMetadataDto, NftMintTransactionDto, ProfileNftDto } from "@swan/dto";
 import { Observable } from "rxjs";
-import { CoreModule } from "../../../core.module";
 
 @Injectable({
-    providedIn: CoreModule
+    providedIn: "root"
 })
 export class NftService {
     constructor(private _httpClient: HttpClient) {}

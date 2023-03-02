@@ -1,10 +1,9 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { AvailabilityDto, CollectionDto, CreateCollectionDto, EntityDto } from "@swan/dto";
-import { CoreModule } from "../../core.module";
 
 @Injectable({
-    providedIn: CoreModule
+    providedIn: "root"
 })
 export class CollectionsService {
     constructor(private _httpClient: HttpClient) {}
