@@ -6,7 +6,7 @@ import { map, Observable, throwError } from "rxjs";
 import { plainToInstance } from "class-transformer";
 import { SKIP_ERROR_TOAST } from "../../interceptors/http-context-tokens";
 import { catchError } from "rxjs/operators";
-import { NotificationsService } from "../../../@theme/services/notifications.service";
+import { NotificationsService } from "../notifications.service";
 
 @Injectable({
     providedIn: "root"

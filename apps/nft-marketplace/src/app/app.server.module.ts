@@ -3,22 +3,22 @@ import { ServerModule } from "@angular/platform-server";
 
 import { AppServerComponent } from "./app-server.component";
 import { AppRoutingModule } from "./app-routing.module";
-import { ThemeModule } from "./@theme/theme.module";
 import { ToastModule } from "primeng/toast";
-import { WalletRegistryService } from "./@core/services/chains/wallet-registry.service";
+import { WalletRegistryService } from "./common/services/chains/wallet-registry.service";
 import { HTTP_INTERCEPTORS } from "@angular/common/http";
-import { HttpRequestsInterceptor } from "./@core/interceptors/http.interceptor";
+import { HttpRequestsInterceptor } from "./common/interceptors/http.interceptor";
 import { BrowserModule } from "@angular/platform-browser";
-import { GetUserWalletService } from "./@core/services/chains/get-user-wallet.service";
+import { GetUserWalletService } from "./common/services/chains/get-user-wallet.service";
 import { initializeSwan } from "./application-initializer";
-import { ClientStore } from "./@core/store/client-store";
+import { ClientStore } from "./common/store/client-store";
+import { SwanCommonModule } from "./common/swan-common.module";
 
 @NgModule({
     declarations: [AppServerComponent],
     imports: [
         ServerModule,
+        SwanCommonModule,
         AppRoutingModule,
-        ThemeModule.forRoot(),
         ToastModule,
         BrowserModule.withServerTransition({ appId: "serverApp" })
     ],

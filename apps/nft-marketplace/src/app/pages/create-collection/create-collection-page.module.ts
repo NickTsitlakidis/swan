@@ -1,9 +1,8 @@
 import { NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
-import { ImagePlaceholderModule } from "../../@theme/components/image-placeholder/image-placeholder.module";
-import { TitleSubTitleModule } from "../../@theme/components/title-subtitle/title-subtitle.module";
+import { ImagePlaceholderModule } from "../../common/components/image-placeholder/image-placeholder.module";
+import { TitleSubTitleModule } from "../../common/components/title-subtitle/title-subtitle.module";
 
-import { ThemeModule } from "../../@theme/theme.module";
 import { CreateCollectionPageComponent } from "./create-collection-page.component";
 import { CreateCollectionRoutingModule } from "./create-collection-routing.module";
 
@@ -13,10 +12,11 @@ import { InputSwitchModule } from "primeng/inputswitch";
 import { InputTextModule } from "primeng/inputtext";
 import { InputTextareaModule } from "primeng/inputtextarea";
 import { MobxAngularModule } from "mobx-angular";
+import { CommonModule } from "@angular/common";
 
 @NgModule({
     imports: [
-        ThemeModule,
+        CommonModule,
         CreateCollectionRoutingModule,
         ReactiveFormsModule,
         TitleSubTitleModule,

@@ -4,7 +4,7 @@ import { isNil } from "@nft-marketplace/utils";
 import { when } from "mobx";
 import { DialogService } from "primeng/dynamicdialog";
 import { firstValueFrom } from "rxjs";
-import { SelectWalletDialogComponent } from "../../../@theme/components/select-wallet-dialog/select-wallet-dialog.component";
+import { SelectWalletDialogComponent } from "../../components/select-wallet-dialog/select-wallet-dialog.component";
 import { BlockchainWalletsStore } from "../../store/blockchain-wallets-store";
 import { UserStore } from "../../store/user-store";
 

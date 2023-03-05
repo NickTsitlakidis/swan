@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { UserNftsStore } from "../../../@core/store/user-nfts-store";
+import { UserNftsStore } from "../../../common/store/user-nfts-store";
 import { makeObservable } from "mobx";
 import { computed } from "mobx-angular";
 import { ProfileNftDto } from "@swan/dto";

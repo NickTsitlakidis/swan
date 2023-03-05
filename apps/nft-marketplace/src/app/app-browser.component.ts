@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
-import { AnalyticsService } from "./@core/utils";
-import { WalletRegistryService } from "./@core/services/chains/wallet-registry.service";
-import { UserStore } from "./@core/store/user-store";
+import { AnalyticsService } from "./common/utils";
+import { WalletRegistryService } from "./common/services/chains/wallet-registry.service";
+import { UserStore } from "./common/store/user-store";
 import { PrimeNGConfig } from "primeng/api";
 
 @Component({

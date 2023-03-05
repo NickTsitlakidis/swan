@@ -1,11 +1,11 @@
 import { BuyListingDto, ListingDto, PaginationDto } from "@swan/dto";
 import { Component, OnInit } from "@angular/core";
-import { ListingsService } from "../../@core/services/listings/listings.service";
+import { ListingsService } from "../../common/services/listings/listings.service";
 import { switchMap, throwError } from "rxjs";
-import { WalletRegistryService } from "../../@core/services/chains/wallet-registry.service";
+import { WalletRegistryService } from "../../common/services/chains/wallet-registry.service";
 import { isNil } from "@nft-marketplace/utils";
-import { BlockchainWalletsStore } from "../../@core/store/blockchain-wallets-store";
-import { GetUserWalletService } from "../../@core/services/chains/get-user-wallet.service";
+import { BlockchainWalletsStore } from "../../common/store/blockchain-wallets-store";
+import { GetUserWalletService } from "../../common/services/chains/get-user-wallet.service";
 
 @Component({
     selector: "swan-home-page",

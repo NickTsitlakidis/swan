@@ -2,14 +2,14 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@
 import { BlockchainDto, BlockchainWalletDto, StartSignatureAuthenticationDto } from "@swan/dto";
 
 import { Router } from "@angular/router";
-import { WalletRegistryService } from "../../../@core/services/chains/wallet-registry.service";
+import { WalletRegistryService } from "../../services/chains/wallet-registry.service";
 import { firstValueFrom, of } from "rxjs";
-import { BlockchainWalletsStore } from "../../../@core/store/blockchain-wallets-store";
-import { UserStore } from "../../../@core/store/user-store";
+import { BlockchainWalletsStore } from "../../store/blockchain-wallets-store";
+import { UserStore } from "../../store/user-store";
 import { makeObservable, when } from "mobx";
 import { computed } from "mobx-angular";
-import { ProgressStore } from "../../../@core/store/progress-store";
-import { PlatformUtils } from "../../../@core/utils/platform-utils";
+import { ProgressStore } from "../../store/progress-store";
+import { PlatformUtils } from "../../utils/platform-utils";
 import { isNil } from "@nft-marketplace/utils";
 
 @Component({

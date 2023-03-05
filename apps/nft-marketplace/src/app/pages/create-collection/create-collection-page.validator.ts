@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { AbstractControl, AsyncValidatorFn, ValidationErrors } from "@angular/forms";
 import { AvailabilityDto } from "@swan/dto";
 import { debounceTime, distinctUntilChanged, map, Observable } from "rxjs";
-import { CollectionsService } from "../../@core/services/collections/collections.service";
+import { CollectionsService } from "../../common/services/collections/collections.service";
 
 @Injectable()
 export class ValidateUrl {

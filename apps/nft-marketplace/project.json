@@ -17,8 +17,8 @@
                 "inlineStyleLanguage": "scss",
                 "assets": ["apps/nft-marketplace/src/favicon.ico", "apps/nft-marketplace/src/assets"],
                 "styles": [
-                    "apps/nft-marketplace/src/app/@theme/styles/styles.scss",
-                    "apps/nft-marketplace/src/app/@theme/styles/primeng-theme.scss",
+                    "apps/nft-marketplace/src/app/theme/styles.scss",
+                    "apps/nft-marketplace/src/app/theme/primeng-theme.scss",
                     "node_modules/primeicons/primeicons.css",
                     "node_modules/primeng/resources/primeng.min.css"
                 ],

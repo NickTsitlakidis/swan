@@ -1,12 +1,12 @@
 import { NgModule } from "@angular/core";
-import { ProductCardModule } from "../../@theme/components/product-card/product-card.module";
+import { ProductCardModule } from "../../common/components/product-card/product-card.module";
 
-import { ThemeModule } from "../../@theme/theme.module";
 import { HomePageComponent } from "./home-page.component";
 import { HomeRoutingModule } from "./home-routing.module";
+import { CommonModule } from "@angular/common";
 
 @NgModule({
-    imports: [ThemeModule, HomeRoutingModule, ProductCardModule],
+    imports: [HomeRoutingModule, ProductCardModule, CommonModule],
     declarations: [HomePageComponent]
 })
 export class HomeModule {}

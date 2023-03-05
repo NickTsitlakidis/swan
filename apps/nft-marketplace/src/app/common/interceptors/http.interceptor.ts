@@ -6,11 +6,12 @@ import { from, map, Observable, throwError } from "rxjs";
 import { HttpErrorDto, TokenDto } from "@swan/dto";
 import { ComplexState } from "../store/complex-state";
 import { plainToClass } from "class-transformer";
-import { NotificationsService } from "../../@theme/services/notifications.service";
+import { NotificationsService } from "../services/notifications.service";
 import { SKIP_ERROR_TOAST, SKIP_RETRY } from "./http-context-tokens";
 import { UserStore } from "../store/user-store";
 import { when } from "mobx";
 import { ClientStore } from "../store/client-store";
+import { PlatformUtils } from "../utils/platform-utils";
 
 @Injectable()
 export class HttpRequestsInterceptor implements HttpInterceptor {
@@ -26,6 +27,7 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
 
     constructor(
         private _userStore: UserStore,
+        private _platformUtils: PlatformUtils,
         private _clientStore: ClientStore,
         private _notificationsService: NotificationsService
     ) {}
@@ -78,7 +80,7 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
             catchError((error: HttpErrorResponse) => {
                 if (error.status !== 401) {
                     const mappedError = plainToClass(HttpErrorDto, error.error as unknown);
-                    if (!req.context.get(SKIP_ERROR_TOAST)) {
+                    if (!req.context.get(SKIP_ERROR_TOAST) && this._platformUtils.isBrowser) {
                         this._notificationsService.displayHttpError(mappedError);
                     }
                     return throwError(() => mappedError);
@@ -110,7 +112,7 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
                     }),
                     catchError((retriedError) => {
                         const mappedError = plainToClass(HttpErrorDto, retriedError.error as unknown);
-                        if (!req.context.get(SKIP_ERROR_TOAST)) {
+                        if (!req.context.get(SKIP_ERROR_TOAST) && this._platformUtils.isBrowser) {
                             this._notificationsService.displayHttpError(mappedError);
                         }
                         return throwError(() => mappedError);
