@@ -1,56 +1,45 @@
 <section *mobxAutorun>
-    <div [class]="{'is-invisible':!isInProgress}">
-        <p-progressBar mode="indeterminate" [style]="{'height': '4px'}"></p-progressBar>
-    </div>
-
-    <div class="header">
-        <div class="header-container w-100">
-            <div class="columns w-100">
-                <div class="column is-flex is-align-content-center" (click)="navigateTo('home')">
-                    <span class="header-title">NFT Marketplace</span>
+    <header class="header py-3">
+            <div class="columns is-vcentered">
+                <div class="column">
+                    <img src="../../../../assets/images/logo.png" (click)="navigateTo('home')" class="is-clickable"/>
                 </div>
                 <div class="column">
-                    <button pButton hero shape="semi-round" status="primary" (click)="navigateTo('/create-collection')">
-                        <i class="fa-regular fa-square-plus mr-3"></i>Create collection
-                    </button>
-                    <button
-                        pButton
-                        class="ml-4"
-                        hero
-                        shape="semi-round"
-                        status="primary"
-                        (click)="navigateTo('/create-nft')"
-                    >
-                        <i class="fa-regular fa-square-plus mr-3"></i>Create nft
-                    </button>
-                    <button
-                        pButton
-                        class="ml-4"
-                        hero
-                        shape="semi-round"
-                        status="primary"
-                        (click)="navigateTo('/create-listing')"
-                    >
-                        <i class="fa-regular fa-square-plus mr-3"></i>Create listing
-                    </button>
+<!--                    <span>search input</span>-->
                 </div>
-                <div *ngIf="isBrowser" class="column is-flex is-justify-content-center is-align-content-center">
-                    <p-cascadeSelect
-                        class="mr-4"
-                        placeholder="Select a wallet"
-                        [(ngModel)]="selectedWallet"
-                        (onChange)="walletSelected($event)"
-                        [options]="wallets"
-                        optionLabel="name"
-                        optionGroupLabel="blockchain.name"
-                        [optionGroupChildren]="['wallets']"
-                    ></p-cascadeSelect>
+                <div class="column">
+                    <div *ngIf="!isLoggedIn" class="is-flex is-align-content-center is-justify-content-end">
+                        <button type="button" pButton pRipple class="custom-label p-button-text p-button-rounded p-button-icon-only">
+                            <img src="../../../../assets/images/notifications-menu-icon.svg"/>
+                        </button>
+                        <button type="button" pButton pRipple class="custom-label p-button-text p-button-rounded p-button-icon-only">
+                            <img src="../../../../assets/images/user-menu-icon.svg"/>
+                        </button>
+                    </div>
+                    <div *ngIf="isLoggedIn" class="is-pulled-right">
+                        <button type="button" pButton pRipple class="custom-label p-button-text p-button-plain">
+                            <img src="../../../../assets/images/wallet-menu-icon.svg"/>
+                            <span class="ml-2">Connect a wallet</span>
+                        </button>
+                    </div>
+                </div>
 
-                    <button type="button" pButton icon="pi pi-bars" (click)="menu.toggle($event)"></button>
-                    <p-menu #menu [popup]="true" [model]="menuitems"></p-menu>
-                </div>
+<!--                <div *ngIf="isBrowser" class="column is-flex is-justify-content-center is-align-content-center">-->
+<!--                    <p-cascadeSelect-->
+<!--                        class="mr-4"-->
+<!--                        placeholder="Select a wallet"-->
+<!--                        [(ngModel)]="selectedWallet"-->
+<!--                        (onChange)="walletSelected($event)"-->
+<!--                        [options]="wallets"-->
+<!--                        optionLabel="name"-->
+<!--                        optionGroupLabel="blockchain.name"-->
+<!--                        [optionGroupChildren]="['wallets']"-->
+<!--                    ></p-cascadeSelect>-->
+
+<!--                    <button type="button" pButton icon="pi pi-bars" (click)="menu.toggle($event)"></button>-->
+<!--                    <p-menu #menu [popup]="true" [model]="menuitems"></p-menu>-->
+<!--                </div>-->
             </div>
-        </div>
-    </div>
+    </header>
 </section>
 

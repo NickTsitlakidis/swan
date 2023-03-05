@@ -121,7 +121,7 @@
         "@openzeppelin/contracts-upgradeable": "4.8.0",
         "@openzeppelin/hardhat-upgrades": "1.22.0",
         "@schematics/angular": "14.2.4",
-        "@shelf/jest-mongodb": "4.1.6",
+        "@shelf/jest-mongodb": "4.1.7",
         "@typechain/ethers-v5": "10.2.0",
         "@typechain/hardhat": "6.1.5",
         "@types/bcrypt": "5.0.0",

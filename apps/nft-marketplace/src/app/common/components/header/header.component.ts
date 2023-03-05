@@ -2,15 +2,14 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@
 import { BlockchainDto, BlockchainWalletDto, StartSignatureAuthenticationDto } from "@swan/dto";
 
 import { Router } from "@angular/router";
-import { WalletRegistryService } from "../../services/chains/wallet-registry.service";
 import { firstValueFrom, of } from "rxjs";
-import { BlockchainWalletsStore } from "../../store/blockchain-wallets-store";
-import { UserStore } from "../../store/user-store";
 import { makeObservable, when } from "mobx";
 import { computed } from "mobx-angular";
-import { ProgressStore } from "../../store/progress-store";
-import { PlatformUtils } from "../../utils/platform-utils";
 import { isNil } from "@nft-marketplace/utils";
+import { PlatformUtils } from "../../utils/platform-utils";
+import { UserStore } from "../../store/user-store";
+import { WalletRegistryService } from "../../services/chains/wallet-registry.service";
+import { BlockchainWalletsStore } from "../../store/blockchain-wallets-store";
 
 @Component({
     selector: "swan-header",
@@ -53,7 +52,6 @@ export class HeaderComponent implements OnInit {
     constructor(
         private _blockchainWalletsStore: BlockchainWalletsStore,
         private _platformUtils: PlatformUtils,
-        private _progressStore: ProgressStore,
         private _userStore: UserStore,
         private _router: Router,
         private _cd: ChangeDetectorRef,
@@ -91,8 +89,8 @@ export class HeaderComponent implements OnInit {
     }
 
     @computed
-    get isInProgress(): boolean {
-        return this._progressStore.isInProgress;
+    get isLoggedIn(): boolean {
+        return !isNil(this._userStore.user);
     }
 
     @computed
