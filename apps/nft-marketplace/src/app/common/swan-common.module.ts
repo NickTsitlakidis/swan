@@ -12,6 +12,8 @@ import { HeaderComponent } from "./components/header/header.component";
 import { FooterComponent } from "./components/footer/footer.component";
 import { FormsModule } from "@angular/forms";
 import { MessagesModule } from "primeng/messages";
+import { OnlySsrDirective } from "./directives/only-ssr.directive";
+import { NoSsrDirective } from "./directives/no-ssr.directive";
 
 const PIPES = [CapitalizePipe, PluralPipe, RoundPipe, TimingPipe, NumberWithCommasPipe];
 const COMPONENTS = [HeaderComponent, FooterComponent];
@@ -33,7 +35,7 @@ const COMPONENTS = [HeaderComponent, FooterComponent];
             useValue: new ContractFactory()
         }
     ],
-    declarations: [...PIPES, ...COMPONENTS],
+    declarations: [...PIPES, ...COMPONENTS, OnlySsrDirective, NoSsrDirective],
     exports: [...PIPES, ...COMPONENTS]
 })
 export class SwanCommonModule {}
