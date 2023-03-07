@@ -21,7 +21,8 @@
         "lint-libs-contracts-fix": "nx lint contracts --fix --skip-nx-cache",
         "test-api": "npm run create-solidity-types && nx test api --skip-nx-cache",
         "test-solidity": "cd ./apps/solidity-contracts && npx hardhat test",
-        "create-solidity-types": "cd ./apps/solidity-contracts && npx hardhat typechain"
+        "create-solidity-types": "cd ./apps/solidity-contracts && npx hardhat typechain",
+        "prepare": "husky install"
     },
     "private": true,
     "dependencies": {
