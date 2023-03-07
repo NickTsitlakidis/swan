@@ -10,7 +10,8 @@
             "options": {
                 "lintFilePatterns": ["libs/dto/**/*.ts"]
             }
-        }
+        },
+        "fix": true
     },
     "tags": []
 }

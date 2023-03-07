@@ -40,7 +40,8 @@
             "outputs": ["{options.outputFile}"],
             "options": {
                 "lintFilePatterns": ["apps/api/**/*.ts"]
-            }
+            },
+            "fix": true
         },
         "test": {
             "executor": "@nrwl/jest:jest",
