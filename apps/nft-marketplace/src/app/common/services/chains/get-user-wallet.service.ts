@@ -23,24 +23,24 @@ export class GetUserWalletService {
         await when(() => !this._userStore.userState.isLoading).then();
         if (!isNil(this._userStore.user)) {
             this.userWallets = this._userStore.user.wallets;
-            this.blockchains = this._blockchainWalletsStore.wallets
+            this.blockchains = this._blockchainWalletsStore.blockchainWallets
                 .map((chain) => {
                     return {
                         name: chain.blockchain.name,
                         id: chain.blockchain.id
                     };
                 })
-                .filter((chain) => this.userWallets.find((wal) => wal.wallet.chainId === chain.id));
+                .filter((chain) => this.userWallets.find((wal) => wal.wallet.blockchainId === chain.id));
         }
         let walletId: string | undefined;
-        const userWallets = this.userWallets.filter((wallet) => wallet.wallet.chainId === chainId);
+        const userWallets = this.userWallets.filter((wallet) => wallet.wallet.blockchainId === chainId);
         console.log(this.userWallets, chainId);
         if (userWallets.length === 1) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore: Object is possibly 'undefined'
             walletId = userWallets.at(0).wallet.id;
         } else if (userWallets.length > 1) {
-            const allWallets = this._blockchainWalletsStore.wallets
+            const allWallets = this._blockchainWalletsStore.blockchainWallets
                 .filter((wal) => wal.blockchain.id === chainId)
                 .filter((wal) => {
                     wal.wallets = wal.wallets.filter((w) =>
@@ -67,7 +67,7 @@ export class GetUserWalletService {
                 return {
                     img: `assets/images/${wallet.name}.png`,
                     title: wallet.name,
-                    chain: this.blockchains.find((chain) => chain.id === wallet.chainId)?.name || ""
+                    chain: this.blockchains.find((chain) => chain.id === wallet.blockchainId)?.name || ""
                 };
             });
         const dialogRef = this._openDialog(selectWalletsInput);

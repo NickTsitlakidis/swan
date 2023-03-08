@@ -1,0 +1,12 @@
+<section *mobxAutorun>
+    <p-tabMenu [model]="tabItems" [activeItem]="tabItems[0]"></p-tabMenu>
+    <div class="columns is-multiline is-gapless">
+        <div *ngFor="let wallet of wallets" class="column is-half p-5">
+            <button pButton class="p-button-text is-flex is-flex-direction-column w-100" (click)="onWalletSelect(wallet)">
+                <img class="image is-64x64" [src]="'../../../../../assets/images/'+wallet.name+'.png'"/>
+                <p class="mt-4">{{wallet.name}}</p>
+            </button>
+        </div>
+    </div>
+</section>
+

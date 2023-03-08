@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import { BlockchainDto, BlockchainWalletDto, StartSignatureAuthenticationDto } from "@swan/dto";
+import { ChangeDetectionStrategy, Component, OnDestroy } from "@angular/core";
+import { WalletDto } from "@swan/dto";
 
-import { Router } from "@angular/router";
-import { firstValueFrom, of } from "rxjs";
-import { makeObservable, when } from "mobx";
+import { of, switchMap, zip } from "rxjs";
+import { makeObservable } from "mobx";
 import { computed } from "mobx-angular";
 import { isNil } from "@nft-marketplace/utils";
-import { PlatformUtils } from "../../utils/platform-utils";
 import { UserStore } from "../../store/user-store";
 import { WalletRegistryService } from "../../services/chains/wallet-registry.service";
-import { BlockchainWalletsStore } from "../../store/blockchain-wallets-store";
+import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
+import { ConnectWalletDialogComponent } from "./connect-wallet-dialog/connect-wallet-dialog.component";
+import { filter } from "rxjs/operators";
 
 @Component({
     selector: "swan-header",
@@ -17,9 +17,7 @@ import { BlockchainWalletsStore } from "../../store/blockchain-wallets-store";
     changeDetection: ChangeDetectionStrategy.OnPush,
     templateUrl: "./header.component.html"
 })
-export class HeaderComponent implements OnInit {
-    public selectedWallets: BlockchainDto[] | undefined;
-
+export class HeaderComponent implements OnDestroy {
     public menuitems = [
         {
             label: "Profile",
@@ -46,46 +44,21 @@ export class HeaderComponent implements OnInit {
             disabled: true
         }
     ];
-    public isSelected: { [name: string]: { [name: string]: boolean } } = {};
-    public selectedWallet: BlockchainDto | undefined;
+
+    private _dialogReference: DynamicDialogRef;
 
     constructor(
-        private _blockchainWalletsStore: BlockchainWalletsStore,
-        private _platformUtils: PlatformUtils,
+        private _dialogService: DialogService,
         private _userStore: UserStore,
-        private _router: Router,
-        private _cd: ChangeDetectorRef,
         private _walletRegistryService: WalletRegistryService
     ) {
         makeObservable(this);
     }
 
-    ngOnInit() {
-        when(() => !this._userStore.userState.isLoading).then(() => {
-            const storedUser = this._userStore.user;
-            if (!isNil(storedUser)) {
-                this.selectedWallets = this._blockchainWalletsStore.wallets
-                    .flatMap((w) => w.wallets)
-                    .filter((wallet) =>
-                        storedUser.wallets.find((w) => w.wallet.chainId === wallet.chainId && w.wallet.id === wallet.id)
-                    );
-                this.selectedWallets.forEach((wal) => {
-                    if (!this.isSelected[wal.chainId]) {
-                        this.isSelected[wal.chainId] = {};
-                    }
-                    this.isSelected[wal.chainId][wal.name] = true;
-                });
-                // TODO previously used wallet functionality?
-                this.selectedWallet = this.selectedWallets[0];
-            }
-            this._cd.detectChanges();
-        });
-        this._cd.detectChanges();
-    }
-
-    @computed
-    get wallets(): Array<BlockchainWalletDto> {
-        return this._blockchainWalletsStore.wallets;
+    ngOnDestroy(): void {
+        if (!isNil(this._dialogReference)) {
+            this._dialogReference.close();
+        }
     }
 
     @computed
@@ -93,27 +66,24 @@ export class HeaderComponent implements OnInit {
         return !isNil(this._userStore.user);
     }
 
-    @computed
-    get isBrowser(): boolean {
-        return this._platformUtils.isBrowser;
-    }
+    onConnectWallet() {
+        this._dialogReference = this._dialogService.open(ConnectWalletDialogComponent, {
+            header: "Select a wallet",
+            maximizable: false
+        });
 
-    public async walletSelected(event: { originalEvent: PointerEvent; value: BlockchainDto }) {
-        const wallet = event.value;
-        if (!wallet) {
-            // TODO handle it
-            return;
-        }
-        const service = await firstValueFrom(this._walletRegistryService.getWalletService(wallet.id));
-        const walletAddress = await firstValueFrom(service?.getPublicKey() || of());
-        const authBody = new StartSignatureAuthenticationDto();
-        authBody.address = walletAddress;
-        authBody.blockchainId = wallet.chainId;
-        authBody.walletId = wallet.id;
-        this._userStore.authenticateWithSignature(authBody, service);
-    }
-
-    public navigateTo(link: string) {
-        this._router.navigate([link]);
+        this._dialogReference.onClose
+            .pipe(
+                filter((selected: WalletDto) => !isNil(selected)),
+                switchMap((selected: WalletDto) => {
+                    return zip(of(selected), this._walletRegistryService.getWalletService(selected.id));
+                }),
+                switchMap(([selected, service]) => {
+                    return zip(of(selected), of(service), service.getPublicKey());
+                })
+            )
+            .subscribe(([selected, service, address]) => {
+                this._userStore.authenticateWithSignature(selected, address, service);
+            });
     }
 }

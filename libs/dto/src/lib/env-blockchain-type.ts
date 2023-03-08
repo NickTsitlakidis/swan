@@ -1,5 +1,5 @@
 export enum EnvBlockChainType {
-    ALL = "All",
-    MAIN = "Mainnet",
-    TEST = "Testnet"
+    ALL = "ALL",
+    MAIN = "MAIN",
+    TEST = "TEST"
 }

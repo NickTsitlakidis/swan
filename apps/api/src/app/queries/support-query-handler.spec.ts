@@ -76,10 +76,10 @@ test("getBlockchainWallets - skips blockchain wallets that dont match a blockcha
     expect(result[0].wallets.length).toBe(2);
     expect(result[0].wallets[0]?.id).toBe(wallets[0].id);
     expect(result[0].wallets[0]?.name).toBe(wallets[0].name);
-    expect(result[0].wallets[0]?.chainId).toBe(blockchains[0].id);
+    expect(result[0].wallets[0]?.blockchainId).toBe(blockchains[0].id);
     expect(result[0].wallets[1]?.id).toBe(wallets[1].id);
     expect(result[0].wallets[1]?.name).toBe(wallets[1].name);
-    expect(result[0].wallets[1]?.chainId).toBe(blockchains[0].id);
+    expect(result[0].wallets[1]?.blockchainId).toBe(blockchains[0].id);
 
     expect(result[1].rpcUrl).toBe(blockchains[1].rpcUrl);
     expect(result[1].mainTokenName).toBe(blockchains[1].mainTokenName);
@@ -92,7 +92,7 @@ test("getBlockchainWallets - skips blockchain wallets that dont match a blockcha
     expect(result[1].wallets.length).toBe(1);
     expect(result[1].wallets[0]?.id).toBe(wallets[2].id);
     expect(result[1].wallets[0]?.name).toBe(wallets[2].name);
-    expect(result[1].wallets[0]?.chainId).toBe(blockchains[1].id);
+    expect(result[1].wallets[0]?.blockchainId).toBe(blockchains[1].id);
 
     expect(walletSpy).toHaveBeenCalledTimes(1);
     expect(blockchainSpy).toHaveBeenCalledTimes(1);
@@ -133,10 +133,10 @@ test("getBlockchainWallets - skips blockchain wallets that dont match a wallet",
     expect(result[0].wallets.length).toBe(2);
     expect(result[0].wallets[0]?.id).toBe(wallets[0].id);
     expect(result[0].wallets[0]?.name).toBe(wallets[0].name);
-    expect(result[0].wallets[0]?.chainId).toBe(blockchains[0].id);
+    expect(result[0].wallets[0]?.blockchainId).toBe(blockchains[0].id);
     expect(result[0].wallets[1]?.id).toBe(wallets[1].id);
     expect(result[0].wallets[1]?.name).toBe(wallets[1].name);
-    expect(result[0].wallets[1]?.chainId).toBe(blockchains[0].id);
+    expect(result[0].wallets[1]?.blockchainId).toBe(blockchains[0].id);
 
     expect(result[1].rpcUrl).toBe(blockchains[1].rpcUrl);
     expect(result[1].mainTokenName).toBe(blockchains[1].mainTokenName);
@@ -149,7 +149,7 @@ test("getBlockchainWallets - skips blockchain wallets that dont match a wallet",
     expect(result[1].wallets.length).toBe(1);
     expect(result[1].wallets[0]?.id).toBe(wallets[2].id);
     expect(result[1].wallets[0]?.name).toBe(wallets[2].name);
-    expect(result[1].wallets[0]?.chainId).toBe(blockchains[1].id);
+    expect(result[1].wallets[0]?.blockchainId).toBe(blockchains[1].id);
 
     expect(walletSpy).toHaveBeenCalledTimes(1);
     expect(blockchainSpy).toHaveBeenCalledTimes(1);

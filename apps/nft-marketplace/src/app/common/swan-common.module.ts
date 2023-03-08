@@ -8,7 +8,6 @@ import { MobxAngularModule } from "mobx-angular";
 import { ProgressBarModule } from "primeng/progressbar";
 import { CommonModule } from "@angular/common";
 import { MessageService } from "primeng/api";
-import { HeaderComponent } from "./components/header/header.component";
 import { FooterComponent } from "./components/footer/footer.component";
 import { FormsModule } from "@angular/forms";
 import { MessagesModule } from "primeng/messages";
@@ -17,7 +16,7 @@ import { OnlySsrDirective } from "./directives/only-ssr.directive";
 import { NoSsrDirective } from "./directives/no-ssr.directive";
 
 const PIPES = [CapitalizePipe, PluralPipe, RoundPipe, TimingPipe, NumberWithCommasPipe];
-const COMPONENTS = [HeaderComponent, FooterComponent, HttpProgressBarComponent];
+const COMPONENTS = [FooterComponent, HttpProgressBarComponent];
 @NgModule({
     imports: [
         FormsModule,
@@ -37,6 +36,6 @@ const COMPONENTS = [HeaderComponent, FooterComponent, HttpProgressBarComponent];
         }
     ],
     declarations: [...PIPES, ...COMPONENTS, OnlySsrDirective, NoSsrDirective],
-    exports: [...PIPES, ...COMPONENTS]
+    exports: [...PIPES, ...COMPONENTS, NoSsrDirective]
 })
 export class SwanCommonModule {}
