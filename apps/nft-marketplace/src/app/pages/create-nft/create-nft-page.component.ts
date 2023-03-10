@@ -118,14 +118,14 @@ export class CreateNFTPageComponent implements OnInit {
 
         if (!isNil(this._userStore.user)) {
             this.userWallets = this._userStore.user.wallets;
-            this.allBlockchains = this._blockchainWalletsStore.wallets
+            this.allBlockchains = this._blockchainWalletsStore.blockchainWallets
                 .map((chain) => {
                     return {
                         name: chain.blockchain.name,
                         id: chain.blockchain.id
                     };
                 })
-                .filter((chain) => this.userWallets.find((wal) => wal.wallet.chainId === chain.id));
+                .filter((chain) => this.userWallets.find((wal) => wal.wallet.blockchainId === chain.id));
             this.blockchains = [...this.allBlockchains];
             this._cd.detectChanges();
         }
@@ -209,7 +209,7 @@ export class CreateNFTPageComponent implements OnInit {
                     return this._nftService.createNft(nftMetadataDto);
                 }),
                 switchMap((nftResponse) => {
-                    const matchingWallets = this._blockchainWalletsStore.wallets.find(
+                    const matchingWallets = this._blockchainWalletsStore.blockchainWallets.find(
                         (wallets) => wallets.blockchain.id === chainId
                     );
                     const nft: CreateNft = {

@@ -5,7 +5,8 @@ import {
     ProfileNftDto,
     StartSignatureAuthenticationDto,
     TokenDto,
-    UserDto
+    UserDto,
+    WalletDto
 } from "@swan/dto";
 import { ComplexState } from "./complex-state";
 import { UserService } from "../services/user/user.service";
@@ -33,8 +34,12 @@ export class UserStore implements StateStore {
     }
 
     @action
-    authenticateWithSignature(body: StartSignatureAuthenticationDto, walletService: WalletService) {
+    authenticateWithSignature(wallet: WalletDto, address: string, walletService: WalletService) {
         this.tokenState = ComplexState.fromLoading();
+        const body = new StartSignatureAuthenticationDto();
+        body.address = address;
+        body.blockchainId = wallet.blockchainId;
+        body.walletId = wallet.id;
         this._userService
             .startSignatureAuthentication(body)
             .pipe(

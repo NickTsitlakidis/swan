@@ -67,12 +67,12 @@ export class WalletRegistryService {
             })
             .then((serviceImport) => {
                 trustService = this._injector.get(serviceImport.TrustWalletService);
-                return this._blockchainWalletsStore.wallets.length > 0
+                return this._blockchainWalletsStore.blockchainWallets.length > 0
                     ? Promise.resolve()
-                    : when(() => this._blockchainWalletsStore.wallets.length > 0, { timeout: 5000 });
+                    : when(() => this._blockchainWalletsStore.blockchainWallets.length > 0, { timeout: 5000 });
             })
             .then(() => {
-                this._blockchainWalletsStore.wallets.forEach((dto) => {
+                this._blockchainWalletsStore.blockchainWallets.forEach((dto) => {
                     dto.wallets.forEach((wallet) => {
                         if (!this._registry.has(wallet.id)) {
                             if (wallet.name === SupportedWallets.METAMASK) {
@@ -85,7 +85,7 @@ export class WalletRegistryService {
                                 this._registry.set(wallet.id, coinbaseService);
                             } else if (wallet.name === SupportedWallets.TRUST) {
                                 this._registry.set(wallet.id, trustService);
-                            } else if (wallet.name === "Solflare") {
+                            } else if (wallet.name === SupportedWallets.SOLFLARE) {
                                 this._registry.set(wallet.id, solflareService);
                             }
                         }

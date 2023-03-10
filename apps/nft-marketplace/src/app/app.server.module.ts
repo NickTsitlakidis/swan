@@ -12,6 +12,7 @@ import { GetUserWalletService } from "./common/services/chains/get-user-wallet.s
 import { initializeSwan } from "./application-initializer";
 import { ClientStore } from "./common/store/client-store";
 import { SwanCommonModule } from "./common/swan-common.module";
+import { HeaderModule } from "./common/components/header/header.module";
 
 @NgModule({
     declarations: [AppServerComponent],
@@ -19,6 +20,7 @@ import { SwanCommonModule } from "./common/swan-common.module";
         ServerModule,
         SwanCommonModule,
         AppRoutingModule,
+        HeaderModule,
         ToastModule,
         BrowserModule.withServerTransition({ appId: "serverApp" })
     ],

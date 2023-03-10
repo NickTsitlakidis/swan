@@ -47,13 +47,13 @@ test("getUser - skips wallet views that dont match wallets", async () => {
     expect(user.wallets[0].userId).toBe(userWallets[0].userId);
     expect(user.wallets[0].userWalletId).toBe(userWallets[0].id);
     expect(user.wallets[0].address).toBe(userWallets[0].address);
-    expect(user.wallets[0].wallet.chainId).toBe(userWallets[0].blockchainId);
+    expect(user.wallets[0].wallet.blockchainId).toBe(userWallets[0].blockchainId);
     expect(user.wallets[0].wallet.name).toBe(wallets[0].name);
     expect(user.wallets[0].wallet.id).toBe(wallets[0].id);
     expect(user.wallets[1].userId).toBe(userWallets[1].userId);
     expect(user.wallets[1].userWalletId).toBe(userWallets[1].id);
     expect(user.wallets[1].address).toBe(userWallets[1].address);
-    expect(user.wallets[1].wallet.chainId).toBe(userWallets[1].blockchainId);
+    expect(user.wallets[1].wallet.blockchainId).toBe(userWallets[1].blockchainId);
     expect(user.wallets[1].wallet.name).toBe(wallets[1].name);
     expect(user.wallets[1].wallet.id).toBe(wallets[1].id);
 

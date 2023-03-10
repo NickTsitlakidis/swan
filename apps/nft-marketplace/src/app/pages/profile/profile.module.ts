@@ -5,10 +5,10 @@ import { ProfilePageComponent } from "./profile-page/profile-page.component";
 import { ProfileRoutingModule } from "./profile-routing.module";
 import { ProfileComponent } from "./profile.component";
 import { MobxAngularModule } from "mobx-angular";
-import { SwanCommonModule } from "../../common/swan-common.module";
+import { CommonModule } from "@angular/common";
 
 @NgModule({
-    imports: [SwanCommonModule, ProfileRoutingModule, ProductCardModule, MobxAngularModule],
+    imports: [CommonModule, ProfileRoutingModule, ProductCardModule, MobxAngularModule],
     declarations: [ProfileComponent, ProfilePageComponent]
 })
 export class ProfileModule {}

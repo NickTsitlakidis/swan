@@ -88,7 +88,7 @@ export class CreateListingPageComponent implements OnInit {
         );
 
         if (walletService) {
-            const matchingWallets = this._blockchainWalletsStore.wallets.find(
+            const matchingWallets = this._blockchainWalletsStore.blockchainWallets.find(
                 (wallets) => wallets.blockchain.id === nft.blockchain.id
             ) as BlockchainWalletDto;
 

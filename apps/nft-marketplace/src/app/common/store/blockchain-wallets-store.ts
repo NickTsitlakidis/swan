@@ -1,4 +1,4 @@
-import { BlockchainDto, BlockchainWalletDto } from "@swan/dto";
+import { BlockchainDto, BlockchainWalletDto, WalletDto } from "@swan/dto";
 import { action, computed, observable } from "mobx-angular";
 import { Injectable } from "@angular/core";
 import { unique } from "radash";
@@ -29,7 +29,7 @@ export class BlockchainWalletsStore implements StateStore {
     }
 
     @computed
-    get wallets(): Array<BlockchainWalletDto> {
+    get blockchainWallets(): Array<BlockchainWalletDto> {
         return this.walletsState.hasState ? this.walletsState.state.slice(0) : [];
     }
 

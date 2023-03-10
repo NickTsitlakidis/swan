@@ -14,6 +14,7 @@ import { DialogService } from "primeng/dynamicdialog";
 import { ClientStore } from "./common/store/client-store";
 import { initializeSwan } from "./application-initializer";
 import { SwanCommonModule } from "./common/swan-common.module";
+import { HeaderModule } from "./common/components/header/header.module";
 
 @NgModule({
     declarations: [AppBrowserComponent],
@@ -23,6 +24,7 @@ import { SwanCommonModule } from "./common/swan-common.module";
         BrowserAnimationsModule,
         HttpClientModule,
         SwanCommonModule,
+        HeaderModule,
         ToastModule,
         MobxAngularModule,
         ChainsModule,

@@ -60,7 +60,8 @@ export class SupportQueryHandler {
                 chain.isTestNetwork,
                 chain.rpcUrl,
                 chain.scanSiteUrl,
-                finalWallets
+                finalWallets,
+                chain.group
             );
         });
     }
