@@ -22,6 +22,7 @@ export class HeaderComponent implements OnDestroy {
     public userMenuItems: Array<MenuItem> = [
         {
             label: "Profile",
+            routerLink: "/profile",
             icon: "pi menu-profile-icon"
         },
         {
