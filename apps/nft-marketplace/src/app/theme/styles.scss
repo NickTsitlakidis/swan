@@ -31,3 +31,71 @@ body {
 .w-100 {
     width: 100%;
 }
+
+.blockchain-icon {
+    width: 30px;
+    height: 30px;
+    background-size: 30px;
+}
+
+.avalanche-icon {
+    @extend .blockchain-icon;
+    background-image: url("../../assets/images/avalanche-icon.svg");
+}
+
+.binance-icon {
+    @extend .blockchain-icon;
+    background-image: url("../../assets/images/bnb-chain-icon.svg");
+}
+
+.ethereum-icon {
+    @extend .blockchain-icon;
+    background-image: url("../../assets/images/ethereum-icon.png");
+}
+
+.fantom-icon {
+    @extend .blockchain-icon;
+    background-image: url("../../assets/images/fantom-icon.svg");
+}
+
+.polygon-icon {
+    @extend .blockchain-icon;
+    background-image: url("../../assets/images/polygon-icon.png");
+}
+
+.solana-icon {
+    @extend .blockchain-icon;
+    background-image: url("../../assets/images/solana-icon.svg");
+}
+
+.menu-icon {
+    width: 25px;
+    height: 25px;
+    background-size: 25px;
+    background-repeat: no-repeat;
+}
+
+.menu-profile-icon {
+    @extend .menu-icon;
+    background-image: url("../../assets/images/user-menu-icon.svg");
+}
+
+.menu-create-icon {
+    @extend .menu-icon;
+    background-image: url("../../assets/images/create-menu-icon.svg");
+}
+
+.menu-wallet-icon {
+    @extend .menu-icon;
+    background-image: url("../../assets/images/wallet-menu-icon.svg");
+}
+
+.menu-favorites-icon {
+    @extend .menu-icon;
+    background-image: url("../../assets/images/heart-menu-icon.svg");
+}
+
+.menu-logout-icon {
+    @extend .menu-icon;
+    background-image: url("../../assets/images/logout-menu-icon.svg");
+}

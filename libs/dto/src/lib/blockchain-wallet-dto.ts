@@ -5,6 +5,7 @@ import { Type } from "class-transformer";
 export class BlockchainWalletDto {
     @Type(() => BlockchainDto)
     blockchain: BlockchainDto;
+    group: string;
     mainTokenName: string;
     mainTokenSymbol: string;
     isTestNetwork: boolean;
@@ -20,7 +21,8 @@ export class BlockchainWalletDto {
         isTestNetwork: boolean,
         rpcUrl: string,
         scanSiteUrl: string,
-        wallets: Array<WalletDto>
+        wallets: Array<WalletDto>,
+        group: string
     ) {
         this.blockchain = blockchain;
         this.mainTokenName = mainTokenName;
@@ -29,5 +31,6 @@ export class BlockchainWalletDto {
         this.rpcUrl = rpcUrl;
         this.scanSiteUrl = scanSiteUrl;
         this.wallets = wallets;
+        this.group = group;
     }
 }

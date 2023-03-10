@@ -46,6 +46,7 @@ export class ConnectWalletDialogComponent implements OnInit {
             return {
                 label: blockchainWallets.blockchain.name,
                 id: blockchainWallets.blockchain.id,
+                icon: `pi ${blockchainWallets.group}-icon`,
                 command: (event) => this.updateSelectedChain(event.item.id)
             };
         });

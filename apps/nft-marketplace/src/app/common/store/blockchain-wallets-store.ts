@@ -34,16 +34,6 @@ export class BlockchainWalletsStore implements StateStore {
     }
 
     @computed
-    get wallets(): Array<WalletDto> {
-        if (!this.walletsState.hasState) {
-            return [];
-        }
-
-        const flatWallets = this.walletsState.state.flatMap((pair) => pair.wallets);
-        return unique(flatWallets, (wallet) => wallet.id);
-    }
-
-    @computed
     get tokenSymbols(): Array<string> {
         if (!this.walletsState.hasState) {
             return [];

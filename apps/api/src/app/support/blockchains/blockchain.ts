@@ -33,4 +33,7 @@ export class Blockchain extends MongoDocument {
 
     @Property()
     signatureType: SignatureTypes;
+
+    @Property()
+    group: string;
 }

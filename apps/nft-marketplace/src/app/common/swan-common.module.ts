@@ -36,6 +36,6 @@ const COMPONENTS = [FooterComponent, HttpProgressBarComponent];
         }
     ],
     declarations: [...PIPES, ...COMPONENTS, OnlySsrDirective, NoSsrDirective],
-    exports: [...PIPES, ...COMPONENTS, NoSsrDirective]
+    exports: [...PIPES, ...COMPONENTS, NoSsrDirective, OnlySsrDirective]
 })
 export class SwanCommonModule {}

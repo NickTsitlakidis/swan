@@ -9,6 +9,7 @@ import { ButtonModule } from "primeng/button";
 import { RouterLink } from "@angular/router";
 import { TabMenuModule } from "primeng/tabmenu";
 import { RippleModule } from "primeng/ripple";
+import { MenuModule } from "primeng/menu";
 
 @NgModule({
     providers: [DialogService],
@@ -21,7 +22,8 @@ import { RippleModule } from "primeng/ripple";
         ButtonModule,
         RouterLink,
         TabMenuModule,
-        RippleModule
+        RippleModule,
+        MenuModule
     ],
     exports: [HeaderComponent]
 })

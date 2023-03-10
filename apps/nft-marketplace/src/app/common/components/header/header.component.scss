@@ -1,7 +1,17 @@
+@import "../../../theme/theme-variables";
+
 .p-button-text {
     img {
         width: 24px;
     }
 }
 
-
+header {
+    background-color: $background-color;
+    border-bottom-color: #3a3939;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    position: sticky;
+    top: 0;
+    z-index: 99;
+}

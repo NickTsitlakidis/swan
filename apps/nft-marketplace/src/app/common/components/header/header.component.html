@@ -1,31 +1,30 @@
-<section *mobxAutorun>
-    <header class="header py-3">
-        <div class="columns is-vcentered">
-            <div class="column">
-                <a><img routerLink="/home" src="../../../../assets/images/logo.png"/></a>
+<header class="header py-3 px-6" *mobxAutorun>
+    <div class="columns is-vcentered">
+        <div class="column">
+            <a><img routerLink="/home" src="../../../../assets/images/logo.png"/></a>
+        </div>
+        <div class="column">
+        </div>
+        <div class="column" *swanNoSsr>
+            <div *ngIf="isLoggedIn" class="is-flex is-align-content-center is-justify-content-end">
+                <button type="button" pButton pRipple
+                        class="p-button-text p-button-rounded p-button-icon-only mr-5">
+                    <img src="../../../../assets/images/notifications-menu-icon.svg"/>
+                </button>
+                <button type="button" pButton pRipple (click)="userMenu.toggle($event)"
+                        class="p-button-text p-button-rounded p-button-icon-only">
+                    <img src="../../../../assets/images/user-menu-icon.svg"/>
+                </button>
+                <p-menu #userMenu [popup]="true" [model]="userMenuItems"></p-menu>
             </div>
-            <div class="column">
-            </div>
-            <div class="column" *swanNoSsr>
-                <div *ngIf="isLoggedIn" class="is-flex is-align-content-center is-justify-content-end">
-                    <button type="button" pButton pRipple
-                            class="custom-label p-button-text p-button-rounded p-button-icon-only">
-                        <img src="../../../../assets/images/notifications-menu-icon.svg"/>
-                    </button>
-                    <button type="button" pButton pRipple
-                            class="custom-label p-button-text p-button-rounded p-button-icon-only">
-                        <img src="../../../../assets/images/user-menu-icon.svg"/>
-                    </button>
-                </div>
-                <div *ngIf="!isLoggedIn" class="is-pulled-right">
-                    <button (click)="onConnectWallet()" type="button" pButton pRipple
-                            class="custom-label p-button-text p-button-plain">
-                        <img src="../../../../assets/images/wallet-menu-icon.svg"/>
-                        <span class="ml-2">Connect a wallet</span>
-                    </button>
-                </div>
+            <div *ngIf="!isLoggedIn" class="is-pulled-right">
+                <button (click)="onConnectWallet()" type="button" pButton pRipple
+                        class="custom-label p-button-text p-button-plain">
+                    <img src="../../../../assets/images/wallet-menu-icon.svg"/>
+                    <span class="ml-2">Connect a wallet</span>
+                </button>
             </div>
         </div>
-    </header>
-</section>
+    </div>
+</header>
 

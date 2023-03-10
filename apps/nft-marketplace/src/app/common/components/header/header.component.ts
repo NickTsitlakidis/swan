@@ -10,6 +10,7 @@ import { WalletRegistryService } from "../../services/chains/wallet-registry.ser
 import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
 import { ConnectWalletDialogComponent } from "./connect-wallet-dialog/connect-wallet-dialog.component";
 import { filter } from "rxjs/operators";
+import { MenuItem } from "primeng/api";
 
 @Component({
     selector: "swan-header",
@@ -18,30 +19,27 @@ import { filter } from "rxjs/operators";
     templateUrl: "./header.component.html"
 })
 export class HeaderComponent implements OnDestroy {
-    public menuitems = [
+    public userMenuItems: Array<MenuItem> = [
         {
             label: "Profile",
-            routerLink: "/profile"
+            icon: "pi menu-profile-icon"
         },
         {
             label: "Favorites",
-            routerLink: "/favorites",
-            disabled: true
+            icon: "pi menu-favorites-icon"
         },
         {
-            label: "Watchlist",
-            routerLink: "/watchlist",
-            disabled: true
+            label: "Create",
+            routerLink: "/create-nft",
+            icon: "pi menu-create-icon"
         },
         {
-            label: "My collections",
-            routerLink: "/collections",
-            disabled: true
+            label: "Wallets",
+            icon: "pi menu-wallet-icon"
         },
         {
-            label: "Settings",
-            routerLink: "/settings",
-            disabled: true
+            label: "Logout",
+            icon: "pi menu-logout-icon"
         }
     ];
 
