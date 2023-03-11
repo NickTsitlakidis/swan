@@ -14,8 +14,9 @@ import { MessagesModule } from "primeng/messages";
 import { HttpProgressBarComponent } from "./components/http-progress-bar/http-progress-bar.component";
 import { OnlySsrDirective } from "./directives/only-ssr.directive";
 import { NoSsrDirective } from "./directives/no-ssr.directive";
+import { VolumePipe } from "./pipes/volume.pipe";
 
-const PIPES = [CapitalizePipe, PluralPipe, RoundPipe, TimingPipe, NumberWithCommasPipe];
+const PIPES = [CapitalizePipe, PluralPipe, RoundPipe, TimingPipe, NumberWithCommasPipe, VolumePipe];
 const COMPONENTS = [FooterComponent, HttpProgressBarComponent];
 @NgModule({
     imports: [

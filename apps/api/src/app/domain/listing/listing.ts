@@ -239,9 +239,7 @@ export class Listing extends EventSourcedEntity {
     };
 
     @EventProcessor(ListingUpdatedPriceEvent)
-    private processListingUpdatedPriceEvent = () => {
-        EMPTY;
-    };
+    private processListingUpdatedPriceEvent = () => {};
 
     @EventProcessor(ListingSoldEvent)
     private processListingSoldEvent = (event: ListingSoldEvent) => {

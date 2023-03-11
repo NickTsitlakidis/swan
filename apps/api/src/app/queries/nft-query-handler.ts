@@ -1,7 +1,7 @@
 import { CategoryRepository } from "../support/categories/category-repository";
 import { BlockchainActionsRegistryService } from "../support/blockchains/blockchain-actions-registry-service";
 import { Injectable } from "@nestjs/common";
-import { BlockchainDto, CategoryDto, CollectionDto, ProfileNftDto } from "@swan/dto";
+import { BlockchainDto, CategoryDto, ProfileNftDto } from "@swan/dto";
 import { UserWalletViewRepository } from "../views/user-wallet/user-wallet-view-repository";
 import { BlockchainRepository } from "../support/blockchains/blockchain-repository";
 import { NftViewRepository } from "../views/nft/nft-view-repository";
@@ -12,8 +12,6 @@ import { SignatureTypes } from "../support/blockchains/signature-types";
 import { Category } from "../support/categories/category";
 import { Blockchain } from "../support/blockchains/blockchain";
 import { UserWalletView } from "../views/user-wallet/user-wallet-view";
-import { CollectionView } from "../views/collection/collection-view";
-import { isNil } from "@nft-marketplace/utils";
 
 @Injectable()
 export class NftQueryHandler {
@@ -33,22 +31,17 @@ export class NftQueryHandler {
             return [];
         }
 
-        const collectionIds = unique(nfts.map((view) => view.collectionId));
         const userWalletIds = unique(nfts.map((view) => view.userWalletId));
 
         const promises = [];
         promises.push(this._categoryRepository.findAll());
         promises.push(this._blockchainRepository.findAll());
         promises.push(this._userWalletRepository.findByIds(userWalletIds));
-        if (collectionIds.length) {
-            promises.push(this._collectionViewRepository.findByIds(collectionIds as string[]));
-        }
         const results = await Promise.all(promises);
 
         const categories = results[0] as Category[];
         const blockchains = results[1] as Blockchain[];
         const userWallets = results[2] as UserWalletView[];
-        const collections = collectionIds.length ? (results[3] as CollectionView[]) : [];
 
         return nfts
             .filter((nft) => categories.some((cat) => nft.categoryId === cat.id))
@@ -81,21 +74,7 @@ export class NftQueryHandler {
                 }
 
                 dto.metadataUri = view.metadataUri;
-
-                const collection = collections.find((c) => c.id === view.collectionId);
-                if (!isNil(collection)) {
-                    dto.collection = new CollectionDto();
-                    dto.collection.id = collection.id;
-                    dto.collection.categoryId = collection.categoryId;
-                    dto.collection.customUrl = collection.customUrl;
-                    dto.collection.description = collection.description;
-                    dto.collection.isExplicit = collection.isExplicit;
-                    dto.collection.imageUrl = collection.imageUrl;
-                    dto.collection.salePercentage = collection.salePercentage;
-                    dto.collection.blockchainId = collection.blockchainId;
-                    dto.collection.paymentToken = collection.imageUrl;
-                    dto.collection.salePercentage = collection.salePercentage;
-                }
+                dto.collectionId = view.collectionId;
 
                 return dto;
             });

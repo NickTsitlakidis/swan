@@ -32,14 +32,14 @@ export class CollectionController {
     }
 
     @UseGuards(UserGuard)
-    @Get("get-user-collection")
-    fetchUserCollection(@RequestUserId() userId: string): Promise<CollectionDto[]> {
+    @Get("user-collections")
+    fetchUserCollections(@RequestUserId() userId: string): Promise<CollectionDto[]> {
         return this._collectionQueryHandler.getCollectionByUserId(userId);
     }
 
     @Get("/")
     @UseGuards(ClientGuard)
-    fetchCollection(@Query("id") id: string): Promise<CollectionDto | undefined> {
+    fetchCollection(@Query("id") id: string): Promise<CollectionDto> {
         return this._collectionQueryHandler.getById(id);
     }
 }

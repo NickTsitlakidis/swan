@@ -38,6 +38,13 @@ const routes: Routes = [
                 loadChildren: () => import("./create-listing/create-listing.module").then((m) => m.CreateListingModule)
             },
             {
+                path: "explore-collections",
+                loadChildren: () =>
+                    import("./explore-collections/explore-collections-page.module").then(
+                        (m) => m.ExploreCollectionsPageModule
+                    )
+            },
+            {
                 path: "miscellaneous",
                 loadChildren: () => import("./miscellaneous/miscellaneous.module").then((m) => m.MiscellaneousModule)
             },

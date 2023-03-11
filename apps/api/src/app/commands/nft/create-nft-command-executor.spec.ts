@@ -1,4 +1,4 @@
-import { NftFactory } from "./../../domain/nft/nft-factory";
+import { NftFactory } from "../../domain/nft/nft-factory";
 import { TestingModule } from "@nestjs/testing";
 import { getUnitTestingModule } from "../../test-utils/test-modules";
 import { CreateNftCommandExecutor } from "./create-nft-command-executor";

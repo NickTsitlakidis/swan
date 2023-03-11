@@ -8,6 +8,7 @@ import { UserNftsStore } from "./user-nfts-store";
 import { UserStore } from "./user-store";
 import { StateStore } from "./state-store";
 import { computed } from "mobx-angular";
+import { CollectionsStore } from "./collections-store";
 
 @Injectable({
     providedIn: "root"
@@ -16,6 +17,7 @@ export class ProgressStore {
     private _stores: Array<StateStore>;
 
     constructor(
+        collectionsStore: CollectionsStore,
         blockchainWalletsStore: BlockchainWalletsStore,
         categoriesStore: CategoriesStore,
         clientStore: ClientStore,
@@ -24,6 +26,7 @@ export class ProgressStore {
         userStore: UserStore
     ) {
         this._stores = [
+            collectionsStore,
             blockchainWalletsStore,
             categoriesStore,
             clientStore,

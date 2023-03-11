@@ -128,7 +128,6 @@ test("execute - returns NftDto with valid data", async () => {
     const blockchain = new Blockchain();
     blockchain.id = new ObjectId().toHexString();
     const category = new Category();
-    const confService = new ConfigService();
     const solanaActionsService = createMock<SolanaActionsService>();
 
     const newNft = Nft.create("nftId", command.userId, command.blockchainId, command.categoryId, command.walletId);

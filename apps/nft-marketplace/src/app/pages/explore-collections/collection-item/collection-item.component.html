@@ -1,0 +1,26 @@
+<div class="card is-clickable" (click)="onClick()">
+    <div class="card-image">
+        <figure class="image is-2by1" id="banner-image">
+            <img alt="Collection banner image" [src]="collection.bannerImageUrl">
+        </figure>
+    </div>
+
+    <div class="px-4">
+        <div class="is-flex is-align-items-end" id="name-wrapper">
+            <figure class="image" id="logo-image">
+                <img alt="Collection logo image" [src]="collection.logoImageUrl">
+            </figure>
+            <p class="title is-5 ml-4">{{collection.name}}</p>
+        </div>
+        <div class="mt-3 py-3 is-flex is-justify-content-space-between is-align-items-center">
+            <p class="m-0 subtitle is-6">{{collection.totalItems}} Items</p>
+            <p class="m-0 subtitle is-6">
+                <span class="icon">
+                    <i [ngClass]="'cf '+paymentTokenClassName"></i>
+                </span>
+                <span class="has-text-weight-bold">{{collection.volume | volume}}</span>
+                Volume
+            </p>
+        </div>
+    </div>
+</div>

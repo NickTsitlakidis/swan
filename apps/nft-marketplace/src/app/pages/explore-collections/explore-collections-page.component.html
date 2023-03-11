@@ -1,0 +1,8 @@
+<section *mobxAutorun>
+    <p class="title is-2">Explore Collections</p>
+    <div class="columns is-multiline">
+        <div class="column is-one-fifth" *ngFor="let collection of displayedCollections">
+            <swan-collection-item (selected)="onItemSelection($event)"  [collection]="collection"></swan-collection-item>
+        </div>
+    </div>
+</section>

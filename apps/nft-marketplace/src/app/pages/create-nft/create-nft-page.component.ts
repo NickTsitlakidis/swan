@@ -108,7 +108,7 @@ export class CreateNFTPageComponent implements OnInit {
             collection: [undefined]
         });
 
-        this._collectionsService.getCollectionByUserId().subscribe((collections) => {
+        this._collectionsService.getCollectionsByUserId().subscribe((collections) => {
             this.collections = collections;
             this._cd.detectChanges();
         });

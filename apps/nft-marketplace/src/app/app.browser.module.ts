@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, NgModule } from "@angular/core";
+import { APP_INITIALIZER, ErrorHandler, NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { AppRoutingModule } from "./app-routing.module";
@@ -15,6 +15,7 @@ import { ClientStore } from "./common/store/client-store";
 import { initializeSwan } from "./application-initializer";
 import { SwanCommonModule } from "./common/swan-common.module";
 import { HeaderModule } from "./common/components/header/header.module";
+import { GlobalErrorHandler } from "./common/utils/global-error-handler";
 
 @NgModule({
     declarations: [AppBrowserComponent],
@@ -34,6 +35,7 @@ import { HeaderModule } from "./common/components/header/header.module";
     providers: [
         { provide: APP_INITIALIZER, useFactory: initializeSwan, deps: [ClientStore], multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true },
+        { provide: ErrorHandler, useClass: GlobalErrorHandler },
         WalletStore,
         DialogService
     ],

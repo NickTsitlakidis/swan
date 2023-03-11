@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { AvailabilityDto, CollectionDto } from "@swan/dto";
 import { CollectionViewRepository } from "../views/collection/collection-view-repository";
 import { LogAsyncMethod } from "../infrastructure/logging";
@@ -31,7 +31,7 @@ export class CollectionQueryHandler {
     }
 
     @LogAsyncMethod
-    async getById(id: string): Promise<CollectionDto | undefined> {
+    async getById(id: string): Promise<CollectionDto> {
         const view = await this._collectionRepository.findOne(id);
         const cto = new CollectionDto();
         if (view) {
@@ -40,5 +40,7 @@ export class CollectionQueryHandler {
             cto.blockchainId = view.blockchainId;
             return cto;
         }
+
+        throw new NotFoundException("Collection was not found");
     }
 }

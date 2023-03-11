@@ -1,6 +1,5 @@
 import { IdGenerator } from "../../infrastructure/id-generator";
 import { SignatureAuthenticationRepository } from "../../security/signature-authentication-repository";
-import { TokenDto } from "@swan/dto";
 import { CompleteSignatureAuthenticationExecutor } from "./complete-signature-authentication-executor";
 import { SignatureValidator } from "./signature-validator";
 import { UserTokenIssuer } from "../../security/user-token-issuer";

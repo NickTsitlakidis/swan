@@ -19,9 +19,7 @@ export class ProfileNftDto {
     @Type(() => BlockchainDto)
     public blockchain: BlockchainDto;
 
-    @Type(() => CollectionDto)
-    public collection?: CollectionDto;
-
     @Type(() => CategoryDto)
     public category: CategoryDto;
+    public collectionId?: string;
 }

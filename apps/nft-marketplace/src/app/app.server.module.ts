@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, NgModule } from "@angular/core";
+import { APP_INITIALIZER, ErrorHandler, NgModule } from "@angular/core";
 import { ServerModule } from "@angular/platform-server";
 
 import { AppServerComponent } from "./app-server.component";
@@ -13,6 +13,7 @@ import { initializeSwan } from "./application-initializer";
 import { ClientStore } from "./common/store/client-store";
 import { SwanCommonModule } from "./common/swan-common.module";
 import { HeaderModule } from "./common/components/header/header.module";
+import { GlobalErrorHandler } from "./common/utils/global-error-handler";
 
 @NgModule({
     declarations: [AppServerComponent],
@@ -33,6 +34,7 @@ import { HeaderModule } from "./common/components/header/header.module";
             provide: GetUserWalletService,
             useValue: undefined
         },
+        { provide: ErrorHandler, useClass: GlobalErrorHandler },
         { provide: APP_INITIALIZER, useFactory: initializeSwan, deps: [ClientStore], multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true }
     ],

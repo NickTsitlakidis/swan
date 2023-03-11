@@ -1,5 +1,5 @@
-@import "bulma/css/bulma.css";
-@import "theme-variables";
+@import "theme-variables"; // first we import the variables, then bulma to customize it
+@import "bulma";
 
 html {
     height: 100%;
