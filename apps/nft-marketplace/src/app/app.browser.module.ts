@@ -15,7 +15,8 @@ import { ClientStore } from "./common/store/client-store";
 import { initializeSwan } from "./application-initializer";
 import { SwanCommonModule } from "./common/swan-common.module";
 import { HeaderModule } from "./common/components/header/header.module";
-import { GlobalErrorHandler } from "./common/utils/global-error-handler";
+import { PlatformUtils } from "./common/utils/platform-utils";
+import { UserStore } from "./common/store/user-store";
 
 @NgModule({
     declarations: [AppBrowserComponent],
@@ -33,9 +34,13 @@ import { GlobalErrorHandler } from "./common/utils/global-error-handler";
         HdWalletAdapterModule.forRoot({ autoConnect: true })
     ],
     providers: [
-        { provide: APP_INITIALIZER, useFactory: initializeSwan, deps: [ClientStore], multi: true },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: initializeSwan,
+            deps: [ClientStore, PlatformUtils, UserStore],
+            multi: true
+        },
         { provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true },
-        { provide: ErrorHandler, useClass: GlobalErrorHandler },
         WalletStore,
         DialogService
     ],

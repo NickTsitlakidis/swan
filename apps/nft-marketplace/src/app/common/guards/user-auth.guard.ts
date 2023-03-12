@@ -3,6 +3,9 @@ import { CanActivate, Router, UrlTree } from "@angular/router";
 import { isNil } from "@nft-marketplace/utils";
 import { UserStore } from "../store/user-store";
 import { when } from "mobx";
+import { from, mergeMap, Observable, of } from "rxjs";
+import { getApplicationStatus } from "../../application-initializer";
+import { catchError, filter } from "rxjs/operators";
 
 @Injectable({
     providedIn: "root"
@@ -10,26 +13,25 @@ import { when } from "mobx";
 export class AuthGuard implements CanActivate {
     constructor(private _router: Router, private _userStore: UserStore) {}
 
-    async canActivate(): Promise<boolean | UrlTree> {
-        // if (isNil(this._userStore.token)) {
-        //     return this._router.parseUrl("/home");
-        // }
+    canActivate(): Observable<boolean | UrlTree> {
         if (!isNil(this._userStore.user)) {
-            return true;
+            return of(true);
         }
 
-        this._userStore.refreshUser();
-        return when(() => !this._userStore.userState.isLoading, { timeout: 5000 })
-            .then(() => {
+        return getApplicationStatus().pipe(
+            filter((isInitialized) => isInitialized),
+            mergeMap(() => from(when(() => !this._userStore.userState.isLoading, { timeout: 5000 }))),
+            mergeMap(() => {
                 if (!isNil(this._userStore.user)) {
-                    return true;
+                    return of(true);
                 } else {
-                    return this._router.parseUrl("/home");
+                    return of(this._router.parseUrl("/home"));
                 }
-            })
-            .catch((error) => {
+            }),
+            catchError((error) => {
                 console.log(error);
-                return this._router.parseUrl("/home");
-            });
+                return of(this._router.parseUrl("/home"));
+            })
+        );
     }
 }

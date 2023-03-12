@@ -13,7 +13,8 @@ import { initializeSwan } from "./application-initializer";
 import { ClientStore } from "./common/store/client-store";
 import { SwanCommonModule } from "./common/swan-common.module";
 import { HeaderModule } from "./common/components/header/header.module";
-import { GlobalErrorHandler } from "./common/utils/global-error-handler";
+import { PlatformUtils } from "./common/utils/platform-utils";
+import { UserStore } from "./common/store/user-store";
 
 @NgModule({
     declarations: [AppServerComponent],
@@ -34,8 +35,12 @@ import { GlobalErrorHandler } from "./common/utils/global-error-handler";
             provide: GetUserWalletService,
             useValue: undefined
         },
-        { provide: ErrorHandler, useClass: GlobalErrorHandler },
-        { provide: APP_INITIALIZER, useFactory: initializeSwan, deps: [ClientStore], multi: true },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: initializeSwan,
+            deps: [ClientStore, PlatformUtils, UserStore],
+            multi: true
+        },
         { provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true }
     ],
     bootstrap: [AppServerComponent]
