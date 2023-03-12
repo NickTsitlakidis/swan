@@ -17,7 +17,8 @@ export class CollectionProjector implements IEventHandler<CollectionCreatedEvent
         view.categoryId = event.categoryId;
         view.customUrl = event.customUrl;
         view.description = event.description;
-        view.imageUrl = event.imageUrl;
+        view.logoImageUrl = event.logoImageUrl;
+        view.bannerImageUrl = event.bannerImageUrl;
         view.isExplicit = event.isExplicit;
         view.links = new CollectionLinksView(
             event.instagramLink,
@@ -27,10 +28,11 @@ export class CollectionProjector implements IEventHandler<CollectionCreatedEvent
             event.mediumLink
         );
         view.name = event.name;
-        view.paymentToken = event.paymentToken;
+        view.paymentTokenSymbol = event.paymentToken;
         view.salePercentage = event.salePercentage;
         view.userId = event.userId;
-
+        view.totalItems = 0;
+        view.volume = 0;
         return this._repository.save(view);
     }
 }

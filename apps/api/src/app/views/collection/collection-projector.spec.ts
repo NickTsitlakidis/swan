@@ -29,6 +29,7 @@ test("handle CollectionCreatedEvent - saves new collection view", async () => {
         "desc",
         false,
         "img",
+        "banner-image",
         1,
         "block",
         "token",
@@ -51,7 +52,7 @@ test("handle CollectionCreatedEvent - saves new collection view", async () => {
     expectedSaved.categoryId = event.categoryId;
     expectedSaved.customUrl = event.customUrl;
     expectedSaved.description = event.description;
-    expectedSaved.imageUrl = event.imageUrl;
+    expectedSaved.logoImageUrl = event.logoImageUrl;
     expectedSaved.isExplicit = event.isExplicit;
     expectedSaved.links = new CollectionLinksView(
         event.instagramLink,
@@ -61,8 +62,11 @@ test("handle CollectionCreatedEvent - saves new collection view", async () => {
         event.mediumLink
     );
     expectedSaved.name = event.name;
-    expectedSaved.paymentToken = event.paymentToken;
+    expectedSaved.paymentTokenSymbol = event.paymentToken;
     expectedSaved.salePercentage = event.salePercentage;
+    expectedSaved.bannerImageUrl = event.bannerImageUrl;
+    expectedSaved.volume = 0;
+    expectedSaved.totalItems = 0;
     delete expectedSaved.createdAt;
 
     expect(saveSpy).toHaveBeenCalledTimes(1);

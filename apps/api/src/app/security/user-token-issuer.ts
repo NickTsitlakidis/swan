@@ -60,12 +60,14 @@ export class UserTokenIssuer {
         try {
             decoded = this._signService.verify(refreshTokenJwt);
         } catch (error) {
+            this._logger.debug("Attempted to refresh token with invalid JWT");
             throw new UnauthorizedException("Invalid credentials");
         }
 
         const found = await this._refreshTokenRepository.findByTokenValue(decoded.jti);
 
         if (isNil(found)) {
+            this._logger.debug("Attempted to refresh token with non-existing token");
             throw new UnauthorizedException("Invalid credentials");
         }
 
@@ -73,8 +75,6 @@ export class UserTokenIssuer {
             this._logger.log(`Attempted refresh of revoked token : ${found.id}`);
             throw new UnauthorizedException("Invalid credentials");
         }
-
-        this._logger.debug(`Refreshing token for user ${found.userId}`);
 
         const expirationMinutes = this._configService.getOrThrow<number>("USER_ACCESS_TOKEN_EXPIRATION_MINUTES");
         const accessSignOptions: JwtSignOptions = {

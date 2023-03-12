@@ -31,6 +31,12 @@ export class CollectionController {
         return this._commandBus.execute(command);
     }
 
+    @Get("/trending")
+    @UseGuards(ClientGuard)
+    getTrending(): Promise<Array<CollectionDto>> {
+        return this._collectionQueryHandler.getTrending();
+    }
+
     @UseGuards(UserGuard)
     @Get("user-collections")
     fetchUserCollections(@RequestUserId() userId: string): Promise<CollectionDto[]> {

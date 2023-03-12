@@ -1,10 +1,10 @@
 @import "../../../theme/theme-variables";
 
-#name-wrapper {
+.name-wrapper {
     margin-top: -44px;
 }
 
-#logo-image {
+.logo-image {
     height: 88px;
     width: 88px;
     border-radius: 10px;
@@ -16,11 +16,11 @@
     }
 }
 
-.card:hover #banner-image img {
+.card:hover .banner-image img {
     transform: scale(1.2);
 }
 
-#banner-image {
+.banner-image {
     overflow: hidden;
     img {
         transition: transform .2s ease-in-out;

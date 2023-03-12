@@ -8,7 +8,7 @@ test("fromDto - maps properties to new CreateCollectionCommand", () => {
     dto.name = "named";
     dto.description = "described";
     dto.customUrl = "a url here please";
-    dto.imageUrl = "an image url?";
+    dto.logoImageUrl = "an image url?";
     dto.isExplicit = true;
     dto.links = new CollectionLinksDto();
     dto.links.discord = "disc";
@@ -24,7 +24,7 @@ test("fromDto - maps properties to new CreateCollectionCommand", () => {
     expect(mapped.categoryId).toBe(dto.categoryId);
     expect(mapped.name).toBe(dto.name);
     expect(mapped.customUrl).toBe(dto.customUrl);
-    expect(mapped.imageUrl).toBe(dto.imageUrl);
+    expect(mapped.logoImageUrl).toBe(dto.logoImageUrl);
     expect(mapped.description).toBe(dto.description);
     expect(mapped.isExplicit).toBe(dto.isExplicit);
     expect(mapped.salePercentage).toBe(dto.salePercentage);

@@ -42,9 +42,9 @@ export function buildCollectionView(): CollectionView {
     view.customUrl = uid(5);
     view.salePercentage = random(0, 100);
     view.description = uid(5);
-    view.imageUrl = uid(5);
+    view.logoImageUrl = uid(5);
     view.isExplicit = false;
-    view.paymentToken = uid(5);
+    view.paymentTokenSymbol = uid(5);
     view.userId = uid(5);
     view.links = new CollectionLinksView(uid(5), uid(5), uid(5), uid(5), uid(5));
 

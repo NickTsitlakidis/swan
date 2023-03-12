@@ -20,7 +20,16 @@ export class CollectionView extends MongoDocument {
     isExplicit: boolean;
 
     @Property()
-    imageUrl: string;
+    logoImageUrl: string;
+
+    @Property()
+    bannerImageUrl: string;
+
+    @Property()
+    volume: number;
+
+    @Property()
+    totalItems: number;
 
     @Embedded(() => CollectionLinksView, { object: true, nullable: true })
     links: CollectionLinksView;
@@ -32,7 +41,7 @@ export class CollectionView extends MongoDocument {
     blockchainId: string;
 
     @Property()
-    paymentToken: string;
+    paymentTokenSymbol: string;
 
     @Property()
     userId: string;

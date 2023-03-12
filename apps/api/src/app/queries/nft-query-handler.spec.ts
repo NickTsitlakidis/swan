@@ -87,7 +87,6 @@ test("getByUserId - returns nfts with no matching collection", async () => {
     blockchains[1].id = nftViews[1].blockchainId;
 
     const walletsSpy = jest.spyOn(userWalletRepository, "findByIds").mockResolvedValue(walletViews);
-    const collectionSpy = jest.spyOn(collectionRepository, "findByIds").mockResolvedValue([]);
     const categorySpy = jest.spyOn(categoryRepository, "findAll").mockResolvedValue([cat1, cat2]);
     const nftFindSpy = jest.spyOn(nftViewRepository, "findByUserId").mockResolvedValue(nftViews);
     const blockchainSpy = jest.spyOn(blockchainRepository, "findAll").mockResolvedValue(blockchains);
@@ -106,7 +105,6 @@ test("getByUserId - returns nfts with no matching collection", async () => {
     expect(nfts[0].category.name).toBe(cat1.name);
     expect(nfts[0].category.id).toBe(cat1.id);
     expect(nfts[0].category.imageUrl).toBe(cat1.imageUrl);
-    expect(nfts[0].collection).toBeUndefined();
 
     expect(nfts[1].id).toBe(nftViews[1].id);
     expect(nfts[1].nftAddress).toBe(nftViews[1].nftAddress);
@@ -120,14 +118,11 @@ test("getByUserId - returns nfts with no matching collection", async () => {
     expect(nfts[1].category.name).toBe(cat2.name);
     expect(nfts[1].category.id).toBe(cat2.id);
     expect(nfts[1].category.imageUrl).toBe(cat2.imageUrl);
-    expect(nfts[1].collection).toBeUndefined();
 
     expect(nftFindSpy).toHaveBeenCalledTimes(1);
     expect(blockchainSpy).toHaveBeenCalledTimes(1);
     expect(nftFindSpy).toHaveBeenCalledWith("the-user");
     expect(categorySpy).toHaveBeenCalledTimes(1);
-    expect(collectionSpy).toHaveBeenCalledTimes(1);
-    expect(collectionSpy).toHaveBeenCalledWith([nftViews[0].collectionId, nftViews[1].collectionId]);
     expect(walletsSpy).toHaveBeenCalledTimes(1);
     expect(walletsSpy).toHaveBeenCalledWith([walletViews[0].id]);
 });

@@ -31,7 +31,6 @@ export class SupportQueryHandler {
         });
     }
 
-    @LogAsyncMethod
     async getCategories(): Promise<Array<CategoryDto>> {
         const views = await this._categoryRepository.findAll();
         return views.map((view) => {

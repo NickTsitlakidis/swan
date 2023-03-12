@@ -1,6 +1,5 @@
 import { Type } from "class-transformer";
 import { BlockchainDto } from "./blockchain-dto";
-import { CollectionDto } from "./collection-dto";
 import { CategoryDto } from "./category-dto";
 
 export class ProfileNftDto {

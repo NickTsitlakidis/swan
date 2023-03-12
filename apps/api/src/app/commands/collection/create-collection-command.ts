@@ -5,7 +5,8 @@ export class CreateCollectionCommand {
     name: string;
     description: string;
     isExplicit: boolean;
-    imageUrl: string;
+    logoImageUrl: string;
+    bannerImageUrl: string;
     categoryId: string;
     customUrl: string;
     salePercentage: number;
@@ -19,7 +20,8 @@ export class CreateCollectionCommand {
         mapped.categoryId = dto.categoryId;
         mapped.customUrl = dto.customUrl;
         mapped.name = dto.name;
-        mapped.imageUrl = dto.imageUrl;
+        mapped.logoImageUrl = dto.logoImageUrl;
+        mapped.bannerImageUrl = dto.bannerImageUrl;
         mapped.isExplicit = dto.isExplicit;
         mapped.description = dto.description;
         mapped.paymentToken = dto.paymentToken;

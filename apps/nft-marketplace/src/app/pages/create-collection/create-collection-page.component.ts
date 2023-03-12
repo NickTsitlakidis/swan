@@ -151,11 +151,13 @@ export class CreateCollectionPageComponent implements OnInit {
         body.customUrl = this.createCollectionForm.get("marketPlaceUrl")?.value;
         body.description = this.createCollectionForm.get("description")?.value;
         body.isExplicit = this.createCollectionForm.get("sensitiveContent")?.value;
-        body.imageUrl = this.createCollectionForm.get("logoImage")?.value;
+        body.logoImageUrl = this.createCollectionForm.get("logoImage")?.value;
         body.salePercentage = this.createCollectionForm.get("percentageFee")?.value;
         body.paymentToken = this.createCollectionForm.get("paymentToken")?.value?.name;
         body.blockchainId = this.createCollectionForm.get("chain")?.value?.id;
+        body.bannerImageUrl =
+            "https://i.seadn.io/gae/mi1iSP8F-Gw27BMNiIvNYdTqSdDbtfITotwS9176a0TKLDAVEql1Zopy_vEHRqM1pRthHWYo0-A0X9lGf91K749JGrGkD6K98uEtaKY?auto=format&w=1920";
 
-        this._collectionsService.createCollection(body).subscribe(() => undefined);
+        this._collectionsService.createCollection(body).subscribe(() => {});
     }
 }

@@ -14,6 +14,10 @@ export class CollectionViewRepository {
         return this._entityManager.fork().count(CollectionView, { customUrl: url });
     }
 
+    findTrending(): Promise<Array<CollectionView>> {
+        return this._entityManager.fork().find(CollectionView, {});
+    }
+
     save(view: CollectionView): Promise<CollectionView> {
         return this._entityManager.persistAndFlush(view).then(() => view);
     }
@@ -28,9 +32,5 @@ export class CollectionViewRepository {
 
     findByUserId(userId: string): Promise<CollectionView[]> {
         return this._entityManager.fork().find(CollectionView, { userId: userId });
-    }
-
-    findByIds(ids: Array<string>): Promise<Array<CollectionView>> {
-        return this._entityManager.fork().find(CollectionView, { id: { $in: ids } });
     }
 }

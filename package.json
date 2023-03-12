@@ -8,7 +8,6 @@
         "start": "npm run create-solidity-types && nx serve",
         "start-ssr": "npm run create-solidity-types && nx serve-ssr --skip-nx-cache",
         "start-api": "npm run create-solidity-types && nx serve api",
-        "start-all": "concurrently --kill-others \"npm run start-api\" \"nx serve\"",
         "build": "npm run create-solidity-types && nx build --skip-nx-cache",
         "build-api": "npm run create-solidity-types && nx build api",
         "lint-api": "nx lint api",

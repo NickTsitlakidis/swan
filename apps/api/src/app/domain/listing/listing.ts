@@ -12,7 +12,6 @@ import {
     ListingSubmittedEvent,
     ListingUpdatedPriceEvent
 } from "./listing-events";
-import { EMPTY } from "rxjs";
 import { Buyer } from "./buyer";
 import { CurrencyList, INVALID_LISTING_STATUS } from "@swan/dto";
 import { TransactionFee } from "./transaction-fee";
