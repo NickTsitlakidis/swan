@@ -9,9 +9,7 @@
             <!-- NFT's title -->
             <div class="columns">
                 <div class="column mt-4">
-                    <swan-title-subtitle
-                        [title]="labelsAndPlaceholders.title.name"
-                    ></swan-title-subtitle>
+                    <swan-title-subtitle [title]="labelsAndPlaceholders.title.name"></swan-title-subtitle>
                     <input
                         pInputText
                         class="w-100"
@@ -34,9 +32,7 @@
             <!-- NFT's symbol -->
             <div class="columns">
                 <div class="column mt-4">
-                    <swan-title-subtitle
-                        [title]="labelsAndPlaceholders.symbol.name"
-                    ></swan-title-subtitle>
+                    <swan-title-subtitle [title]="labelsAndPlaceholders.symbol.name"></swan-title-subtitle>
                     <input
                         pInputText
                         class="w-100"
@@ -59,9 +55,7 @@
             <!-- NFT's is parent collection -->
             <div class="columns">
                 <div class="column mt-4">
-                    <swan-title-subtitle
-                        [title]="labelsAndPlaceholders.isParentCollection"
-                    ></swan-title-subtitle>
+                    <swan-title-subtitle [title]="labelsAndPlaceholders.isParentCollection"></swan-title-subtitle>
                     <p-inputSwitch formControlName="isParentCollection"></p-inputSwitch>
                 </div>
             </div>
@@ -69,9 +63,7 @@
             <!-- NFT's Description -->
             <div class="columns">
                 <div class="column mt-4">
-                    <swan-title-subtitle
-                        [title]="labelsAndPlaceholders.description.title"
-                    ></swan-title-subtitle>
+                    <swan-title-subtitle [title]="labelsAndPlaceholders.description.title"></swan-title-subtitle>
                     <textarea
                         pInputTextarea
                         class="w-50"
@@ -184,9 +176,7 @@
             <!-- NFT's max supply -->
             <div class="columns">
                 <div class="column mt-4">
-                    <swan-title-subtitle
-                        [title]="labelsAndPlaceholders.maxSupply.title"
-                    ></swan-title-subtitle>
+                    <swan-title-subtitle [title]="labelsAndPlaceholders.maxSupply.title"></swan-title-subtitle>
                     <input
                         pInputText
                         type="number"
@@ -199,7 +189,11 @@
             <!-- NFT's custom attributes -->
             <div class="columns">
                 <div class="column mt-4">
-                    <div @fade *ngFor="let attribute of attributes; let i = index">
+                    <div
+                        swanAnimation
+                        [animation]="'fade_in_quick'"
+                        *ngFor="let attribute of attributes; let i = index"
+                    >
                         <input
                             pInputText
                             class="m-2"
@@ -235,9 +229,7 @@
                             [formControlName]="'attributeDisplay' + (i + 1)"
                         />
                     </div>
-                    <swan-title-subtitle
-                        [title]="labelsAndPlaceholders.attributes"
-                    ></swan-title-subtitle>
+                    <swan-title-subtitle [title]="labelsAndPlaceholders.attributes"></swan-title-subtitle>
                     <button pButton type="text" (click)="addAtrribute()" class="add-attribute-button">
                         + Add attribute
                     </button>

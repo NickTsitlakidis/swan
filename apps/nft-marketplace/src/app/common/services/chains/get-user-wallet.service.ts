@@ -33,8 +33,7 @@ export class GetUserWalletService {
                 .filter((chain) => this.userWallets.find((wal) => wal.wallet.chainId === chain.id));
         }
         let walletId: string | undefined;
-        const userWallets = this.userWallets.filter((wallet) => wallet.wallet.chainId === chainId);
-        console.log(this.userWallets, chainId);
+        const userWallets = this.userWallets?.filter((wallet) => wallet.wallet.chainId === chainId);
         if (userWallets.length === 1) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore: Object is possibly 'undefined'
