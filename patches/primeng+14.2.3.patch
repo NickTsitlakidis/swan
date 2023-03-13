@@ -1,0 +1,39 @@
+diff --git a/node_modules/primeng/esm2020/tabmenu/tabmenu.mjs b/node_modules/primeng/esm2020/tabmenu/tabmenu.mjs
+index 935f3ba..3265369 100644
+--- a/node_modules/primeng/esm2020/tabmenu/tabmenu.mjs
++++ b/node_modules/primeng/esm2020/tabmenu/tabmenu.mjs
+@@ -68,6 +68,8 @@ export class TabMenu {
+         }
+         this.activeItem = item;
+         this.tabChanged = true;
++        this.cd.detectChanges();
++        console.log("detected");
+     }
+     updateInkBar() {
+         const tabHeader = DomHandler.findSingle(this.navbar.nativeElement, 'li.p-highlight');
+diff --git a/node_modules/primeng/fesm2015/primeng-tabmenu.mjs b/node_modules/primeng/fesm2015/primeng-tabmenu.mjs
+index ed92bc5..81efd28 100644
+--- a/node_modules/primeng/fesm2015/primeng-tabmenu.mjs
++++ b/node_modules/primeng/fesm2015/primeng-tabmenu.mjs
+@@ -69,6 +69,8 @@ class TabMenu {
+         }
+         this.activeItem = item;
+         this.tabChanged = true;
++        this.cd.detectChanges();
++        console.log("detected");
+     }
+     updateInkBar() {
+         const tabHeader = DomHandler.findSingle(this.navbar.nativeElement, 'li.p-highlight');
+diff --git a/node_modules/primeng/fesm2020/primeng-tabmenu.mjs b/node_modules/primeng/fesm2020/primeng-tabmenu.mjs
+index 6b03578..114a472 100644
+--- a/node_modules/primeng/fesm2020/primeng-tabmenu.mjs
++++ b/node_modules/primeng/fesm2020/primeng-tabmenu.mjs
+@@ -69,6 +69,8 @@ class TabMenu {
+         }
+         this.activeItem = item;
+         this.tabChanged = true;
++        this.cd.detectChanges();
++        console.log("detected");
+     }
+     updateInkBar() {
+         const tabHeader = DomHandler.findSingle(this.navbar.nativeElement, 'li.p-highlight');

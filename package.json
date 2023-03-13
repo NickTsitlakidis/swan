@@ -4,7 +4,7 @@
     "license": "MIT",
     "scripts": {
         "ng": "nx",
-        "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2020 browser module main",
+        "postinstall": "patch-package && node ./decorate-angular-cli.js && ngcc --properties es2020 browser module main",
         "start": "npm run create-solidity-types && nx serve",
         "start-ssr": "npm run create-solidity-types && nx serve-ssr --skip-nx-cache",
         "start-api": "npm run create-solidity-types && nx serve api",
@@ -152,6 +152,7 @@
         "jest-preset-angular": "12.2.2",
         "jest-verify-node-version": "1.0.3",
         "nx": "15.0.13",
+        "patch-package": "^6.5.1",
         "prettier": "2.8.4",
         "serverless": "3.25.1",
         "supertest": "6.1.3",
