@@ -3,6 +3,7 @@ import { AvailabilityDto, CollectionDto, CollectionLinksDto } from "@swan/dto";
 import { CollectionViewRepository } from "../views/collection/collection-view-repository";
 import { LogAsyncMethod } from "../infrastructure/logging";
 import { CollectionView } from "../views/collection/collection-view";
+import { isNil } from "@nft-marketplace/utils";
 
 @Injectable()
 export class CollectionQueryHandler {
@@ -60,12 +61,15 @@ export class CollectionQueryHandler {
         dto.totalItems = view.totalItems;
         dto.paymentTokenSymbol = view.paymentTokenSymbol;
         dto.isExplicit = view.isExplicit;
-        dto.links = new CollectionLinksDto();
-        dto.links.discord = view.links.discord;
-        dto.links.instagram = view.links.instagram;
-        dto.links.medium = view.links.medium;
-        dto.links.telegram = view.links.telegram;
-        dto.links.website = view.links.website;
+        if (!isNil(view.links)) {
+            dto.links = new CollectionLinksDto();
+            dto.links.discord = view.links.discord;
+            dto.links.instagram = view.links.instagram;
+            dto.links.medium = view.links.medium;
+            dto.links.telegram = view.links.telegram;
+            dto.links.website = view.links.website;
+        }
+
         return dto;
     }
 }
