@@ -21,7 +21,8 @@
             "outputs": ["{options.outputFile}"],
             "options": {
                 "lintFilePatterns": ["apps/nft-marketplace-e2e/**/*.{js,ts}"]
-            }
+            },
+            "fix": true
         }
     },
     "tags": [],

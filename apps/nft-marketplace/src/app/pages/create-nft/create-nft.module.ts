@@ -1,3 +1,4 @@
+import { AnimationsModule } from "./../../common/animations/animation.module";
 import { DropdownModule } from "primeng/dropdown";
 import { NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
@@ -23,7 +24,8 @@ import { CommonModule } from "@angular/common";
         InputSwitchModule,
         ButtonModule,
         InputTextModule,
-        InputTextareaModule
+        InputTextareaModule,
+        AnimationsModule
     ],
     declarations: [CreateNFTPageComponent]
 })

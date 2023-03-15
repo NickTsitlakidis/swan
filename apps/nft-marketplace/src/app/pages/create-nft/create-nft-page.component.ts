@@ -8,7 +8,6 @@ import {
     NftMetadataDto,
     UserWalletDto
 } from "@swan/dto";
-import { fade } from "../../common/animations/enter-leave.animation";
 import { CreateNft } from "../../common/services/chains/create-nft";
 import { WalletRegistryService } from "../../common/services/chains/wallet-registry.service";
 import { SupportService } from "../../common/services/support/support.service";
@@ -26,8 +25,7 @@ import { GetUserWalletService } from "../../common/services/chains/get-user-wall
     selector: "swan-create-nft-page",
     templateUrl: "./create-nft-page.component.html",
     changeDetection: ChangeDetectionStrategy.OnPush,
-    styleUrls: ["./create-nft-page.component.scss"],
-    animations: [fade]
+    styleUrls: ["./create-nft-page.component.scss"]
 })
 export class CreateNFTPageComponent implements OnInit {
     @ViewChild("collectionSelect") collectionSelect: any;
